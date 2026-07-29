@@ -1,0 +1,11 @@
+RewriteEngine On
+# Home
+RewriteRule ^$ pages/index.php [L]
+# Se il file o la cartella esistono, servili normalmente
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+# API
+RewriteRule ^api/?(.*)$ api/index.php [L,QSA]
+# Tutte le pagine
+RewriteRule ^(.+)$ pages/index.php [L,QSA]

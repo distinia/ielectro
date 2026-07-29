@@ -1,0 +1,15 @@
+{
+    "username_changed": "You changed your username from {from} to {to} on {datetime}.",
+    "password_changed": "You updated your password on {datetime}.",
+    "login_success": "You signed in successfully on {datetime}.",
+    "login_failed": "A failed sign-in attempt was recorded on {datetime}.",
+    "logout": "You signed out on {datetime}.",
+    "session_revoked": "A device session was revoked on {datetime}.",
+    "logout_all_devices": "You signed out all other devices on {datetime}.",
+    "password_recovery_requested": "Password recovery was requested on {datetime}.",
+    "password_reset_completed": "Your password was reset via recovery on {datetime}.",
+    "account_created": "Your account was created on {datetime}.",
+    "account_deletion_scheduled": "Account deletion was scheduled on {datetime}.",
+    "account_deletion_cancelled": "Scheduled account deletion was cancelled on {datetime}.",
+    "default": "{details} ({datetime})"
+}

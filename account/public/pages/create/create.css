@@ -1,0 +1,386 @@
+@import "../../components/guests/guests.css";
+:root {
+  --create-bg: #0f172a;
+  --create-surface: #ffffff;
+  --create-muted: #64748b;
+  --create-border: #e2e8f0;
+  --create-accent: #2563eb;
+  --create-accent-soft: rgba(37, 99, 235, 0.12);
+  --create-radius: 14px;
+  --create-shadow: 0 24px 64px rgba(15, 23, 42, 0.35);
+}
+body {
+  margin: 0;
+  overflow-x: hidden;
+  max-width: 100%;
+  min-height: 100vh;
+    background:
+    radial-gradient(ellipse 100% 80% at 50% -30%,
+      rgb(49 67 105 / 35%),
+      transparent),
+    linear-gradient(180deg, #0f172a 0%, #3a85ff 100%);
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+body input,
+body textarea,
+body select {
+  user-select: text;
+}
+.create-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px 48px;
+}
+.create-brand {
+  text-align: center;
+  margin-bottom: 22px;
+}
+.create-logo {
+  width: 72px;
+  height: auto;
+  margin: 0 auto 12px;
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.25));
+}
+.create-card .create-tagline {
+  margin: 0 0 20px;
+  padding: 0;
+  font-size: clamp(1.35rem, 4vw, 1.65rem);
+  letter-spacing: -0.04em;
+  line-height: 1.2;
+  text-align: center;
+  background: linear-gradient(120deg,
+      #0f172a 0%,
+      #1d4ed8 42%,
+      #3b82f6 78%,
+      #60a5fa 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 14px rgba(37, 99, 235, 0.12));
+}
+.create-card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--create-surface);
+  border-radius: var(--create-radius);
+  box-shadow: var(--create-shadow);
+  padding: 28px 26px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.create-progress {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+.create-progress-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--create-border);
+  transition:
+    background 0.25s ease,
+    transform 0.25s ease;
+}
+.create-progress-dot.is-active {
+  background: var(--create-accent);
+  transform: scale(1.15);
+}
+.create-step-label {
+  margin: 0 0 16px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+}
+p.create-step-label {
+  margin-top: 0;
+}
+.create-field-group {
+  margin-bottom: 16px;
+}
+.create-field-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--create-muted);
+  margin-bottom: 8px;
+}
+.input-field,
+.select-field,
+.birthday-select,
+#login-form .input-field,
+#recovery-form .input-field {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid var(--create-border);
+  border-radius: 10px;
+  font-size: 15px;
+  font-family: inherit;
+  background: #fafbfc;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+.input-field:focus,
+.select-field:focus,
+.birthday-select:focus,
+#login-form .input-field:focus,
+#recovery-form .input-field:focus {
+  outline: none;
+  border-color: var(--create-accent);
+  box-shadow: 0 0 0 3px var(--create-accent-soft);
+  background: #fff;
+}
+.input-field {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+.input-field:last-of-type {
+  margin-bottom: 0;
+}
+#login-form .input-field,
+#recovery-form .input-field {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+#recovery-form .input-field:last-of-type {
+  margin-bottom: 0;
+}
+.birthday-selects {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  gap: 10px;
+  align-items: stretch;
+}
+.birthday-selects .birthday-select {
+  margin: 0;
+}
+.select-field.gender {
+  margin-top: 4px;
+}
+.create-terms-card {
+  padding: 18px 16px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid var(--create-border);
+  margin-bottom: 4px;
+}
+.create-terms-title {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+.create-terms-lead {
+  margin: 0 0 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--create-muted);
+}
+.terms-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 12px;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid var(--create-border);
+}
+.terms-wrapper input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  cursor: pointer;
+  accent-color: var(--create-accent);
+}
+.terms-wrapper label {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #334155;
+  cursor: pointer;
+  margin: 0;
+}
+.terms-wrapper label a {
+  color: var(--create-accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+.terms-wrapper label a:hover {
+  text-decoration: underline;
+}
+.create-card .buttons {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  margin-top: 20px;
+}
+.create-card .prev-button,
+.create-card .next-button {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f5f9;
+  border: 1px solid var(--create-border);
+  color: #475569;
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    color 0.2s,
+    transform 0.2s;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+.create-card .prev-button:hover,
+.create-card .next-button:hover {
+  background: var(--create-accent-soft);
+  border-color: var(--create-accent);
+  color: var(--create-accent);
+  transform: scale(1.05);
+}
+.create-card .create-button {
+  flex: 1;
+  min-height: 46px;
+  background: var(--create-accent);
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 20px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.create-card .create-button:hover {
+  background: #1d4ed8;
+}
+.input-field.field-available {
+  border-color: #059669 !important;
+  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.12) !important;
+}
+.input-field.field-taken {
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.1) !important;
+}
+.field-auth-error,
+.input-field.field-auth-error,
+select.field-auth-error,
+.birthday-select.field-auth-error,
+input[type="checkbox"].field-auth-error {
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.12) !important;
+  cursor: help;
+}
+.auth-flow-page .auth-lead {
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--create-muted);
+}
+.auth-flow-page .auth-submit-btn {
+  width: 100%;
+  margin-top: 6px;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 10px;
+  background: var(--create-accent);
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.auth-flow-page .auth-submit-btn:hover {
+  background: #1d4ed8;
+}
+.auth-flow-page .auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0 14px;
+  color: var(--create-muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.auth-flow-page .auth-divider::before,
+.auth-flow-page .auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--create-border);
+}
+.auth-flow-page .auth-google-wrap {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+.auth-flow-page .auth-google-wrap .g_id_signin {
+  width: 100% !important;
+  max-width: 100%;
+}
+.auth-flow-page .auth-google-wrap>div {
+  width: 100%;
+}
+.auth-flow-page .auth-links {
+  margin-top: 22px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.auth-flow-page .auth-links-single {
+  justify-content: center;
+}
+.auth-flow-page .auth-links a {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--create-accent);
+  text-decoration: none;
+}
+.auth-flow-page .auth-links a:hover {
+  text-decoration: underline;
+}
+.fade-in {
+  animation: createFadeIn 0.28s ease-out;
+}
+@keyframes createFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (max-width: 480px) {
+  .birthday-selects {
+    grid-template-columns: 1fr;
+  }
+  .create-card {
+    padding: 22px 18px 18px;
+  }
+}

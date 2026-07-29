@@ -1,0 +1,15 @@
+{
+    "follow": "{user} started following you",
+    "unfollow": "{user} stopped following you",
+    "like": "{user} liked your {post_type} \"{article}\"",
+    "unlike": "{user} removed a like from your {post_type} \"{article}\"",
+    "comment": "{user} commented on your {post_type} \"{article}\"",
+    "reply": "{user} replied to your comment on {post_type} \"{article}\"",
+    "post": "{user} published a new {post_type} \"{article}\"",
+    "mention": "{user} mentioned you in {post_type} \"{article}\"",
+    "share": "{user} shared your {post_type} \"{article}\"",
+    "chat_message": "{message}",
+    "chat_post": "sent a {post_type} of {post_author}",
+    "system": "{details}",
+    "default": "You have a new notification"
+}

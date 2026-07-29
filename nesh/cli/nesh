@@ -1,0 +1,23 @@
+<?php
+require __DIR__.'/../src/autoload.php';
+global $argv;
+$first = strtolower($argv[1] ?? '');
+if ($first === '') {
+    echo "Usage: php nesh <application> <command> [arguments]".PHP_EOL;
+    exit(1);
+}
+if (is_file(NESH_CLI.'/'.$first.'.php')) {
+    $command = $first;
+} else {
+    $command = strtolower($argv[2] ?? '');
+   if ($command === '') {
+        echo "Missing command.".PHP_EOL;
+        exit(1);
+    }
+}
+$file = NESH_CLI.'/'.$command.'.php';
+if (!is_file($file)) {
+    echo "Unknown command: {$command}".PHP_EOL;
+    exit(1);
+}
+require $file;

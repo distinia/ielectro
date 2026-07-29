@@ -1,0 +1,108 @@
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 268px;
+    height: 100vh;
+    background: linear-gradient(180deg, var(--surface) 0%, #f8fafc 100%);
+    border-right: 1px solid var(--border-color);
+    box-shadow: 4px 0 32px rgba(15, 23, 42, 0.06);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    padding: 28px 0;
+    user-select: none;
+}
+.sidebar .logo {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 36px;
+    padding: 12px;
+    border-radius: var(--radius-lg);
+    transition:
+        transform var(--transition-smooth),
+        filter var(--transition-smooth);
+    filter: drop-shadow(0 4px 12px rgba(15, 23, 42, 0.08));
+}
+.sidebar .logo:hover {
+    transform: scale(1.06);
+}
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex: 1;
+}
+.sidebar ul li {
+    margin: 2px 0;
+    padding: 0 16px;
+    cursor: pointer;
+}
+.sidebar ul li a {
+    display: flex;
+    align-items: center;
+    padding: 13px 18px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    transition:
+        background-color var(--transition-fast),
+        color var(--transition-fast),
+        transform var(--transition-fast);
+    font-weight: 500;
+    font-size: 15px;
+    position: relative;
+}
+.sidebar ul li a::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%) scaleY(0);
+    width: 3px;
+    height: 60%;
+    background: var(--primary-color);
+    border-radius: 0 3px 3px 0;
+    transition: transform var(--transition-smooth);
+}
+.sidebar ul li a:hover {
+    background-color: var(--primary-soft);
+    color: var(--primary-color);
+    text-decoration: none;
+    transform: translateX(2px);
+}
+.sidebar ul li a:hover::before {
+    transform: translateY(-50%) scaleY(1);
+}
+.sidebar ul li a.active {
+    background: linear-gradient(90deg, var(--primary-soft), transparent);
+    color: var(--primary-color);
+    font-weight: 600;
+}
+.sidebar ul li a.active::before {
+    transform: translateY(-50%) scaleY(1);
+}
+.sidebar ul li a.logout {
+    color: var(--danger-color);
+}
+.sidebar ul li a.logout:hover {
+    background-color: rgba(220, 38, 38, 0.1);
+    color: #b91c1c;
+}
+body {
+    padding-left: 268px;
+}
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform var(--transition-smooth);
+        box-shadow: none;
+    }
+    .sidebar:hover {
+        transform: translateX(0);
+        box-shadow: 8px 0 40px rgba(15, 23, 42, 0.15);
+    }
+    body {
+        padding-left: 0;
+    }
+}

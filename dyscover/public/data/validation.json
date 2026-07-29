@@ -1,0 +1,96 @@
+{
+    "register": {
+        "name": {
+            "pattern": "^[a-zA-Z]{2,}$",
+            "errorMessage": "Please enter a valid name"
+        },
+        "surname": {
+            "pattern": "^[a-zA-Z]{2,}$",
+            "errorMessage": "Please enter a valid surname"
+        },
+        "birthday": {
+            "pattern": "^.*$",
+            "errorMessage": "Please enter your birthday"
+        },
+        "gender": {
+            "pattern": "^.*$",
+            "errorMessage": "Please select your gender"
+        },
+        "email": {
+            "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+            "errorMessage": "Please enter a valid email address"
+        },
+        "username": {
+            "pattern": "^[a-zA-Z0-9._]+$",
+            "errorMessage": "Please enter a valid username (only letters, numbers, '.' and '_' allowed)"
+        },
+        "password": {
+            "pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&_])[A-Za-z\\d@$!%*?&_]{8,}$",
+            "errorMessage": "Please enter a valid password (minimum 8 characters, including an uppercase letter, a lowercase letter, a number, and a special character)"
+        },
+        "terms-of-service-agreement": {
+            "pattern": "^.*$",
+            "errorMessage": "Please accept the terms of service agreement"
+        }
+    },
+    "create-article": {
+        "title": {
+            "pattern": ".+",
+            "errorMessage": "Please enter a valid title"
+        },
+        "description": {
+            "pattern": ".+",
+            "errorMessage": "Please enter a valid description"
+        },
+        "tags": {
+            "pattern": "^(?:[^,]+(?:,[^,]+)*)?$",
+            "errorMessage": "Please enter valid tags separated by commas"
+        }
+    },
+    "upload-media": {
+        "title": {
+            "pattern": ".+",
+            "errorMessage": "Please enter a valid title"
+        },
+        "media": {
+            "pattern": ".+",
+            "errorMessage": "Please select a valid media file (image, video, audio, or PDF)"
+        },
+        "description": {
+            "pattern": ".+",
+            "errorMessage": "Please enter a valid description"
+        },
+        "tags": {
+            "pattern": "^(?:[^,]+(?:,[^,]+)*)?$",
+            "errorMessage": "Please enter valid tags separated by commas"
+        }
+    },
+    "edit-media": {
+        "title": {
+            "pattern": ".+",
+            "errorMessage": "Please enter a valid title"
+        },
+        "description": {
+            "pattern": ".+",
+            "errorMessage": "Please enter a valid description"
+        },
+        "tags": {
+            "pattern": "^(?:[^,]+(?:,[^,]+)*)?$",
+            "errorMessage": "Please enter valid tags separated by commas"
+        }
+    },
+    "create-template": {
+        "title": {
+            "pattern": ".+",
+            "errorMessage": "Please enter a valid title"
+        },
+        "description": {
+            "pattern": ".+",
+            "errorMessage": "Please enter a valid description"
+        },
+        "tags": {
+            "pattern": "^(?:[^,]+(?:,[^,]+)*)?$",
+            "errorMessage": "Please enter valid tags separated by commas"
+        }
+    }
+}

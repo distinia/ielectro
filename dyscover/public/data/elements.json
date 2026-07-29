@@ -1,0 +1,242 @@
+[
+    {
+        "element": "paragraph",
+        "childrenAllowed": true,
+        "text": ""
+    },
+    {
+        "title": "Save",
+        "class": "Save",
+        "icon": "save"
+    },
+    {
+        "title": "Generate",
+        "class": "Generate",
+        "icon": "aperture"
+    },
+    {
+        "title": "Replace",
+        "class": "ReplaceText",
+        "icon": "search"
+    },
+    {
+        "title": "Format",
+        "class": "FormatText",
+        "icon": "card-sim"
+    },
+    {
+        "title": "Heading",
+        "class": "Heading",
+        "icon": "heading-1",
+        "regex": "^# (.*)$",
+        "element": "heading",
+        "childrenAllowed": false,
+        "text": ""
+    },
+    {
+        "title": "Sub heading",
+        "class": "Subheading",
+        "icon": "heading-2",
+        "regex": "^## (.*)$",
+        "element": "sub-heading",
+        "childrenAllowed": false,
+        "text": ""
+    },
+    {
+        "title": "Center",
+        "class": "Center",
+        "icon": "align-center"
+    },
+    {
+        "title": "Bold",
+        "class": "Bold",
+        "icon": "bold",
+        "regex": "\\*\\*(.*?)\\*\\*",
+        "element": "bold",
+        "childrenAllowed": false,
+        "text": ""
+    },
+    {
+        "title": "Italic",
+        "class": "italic",
+        "icon": "italic",
+        "regex": "\\*(.*?)\\*",
+        "element": "italic",
+        "childrenAllowed": false,
+        "text": ""
+    },
+    {
+        "title": "Caption",
+        "class": "caption",
+        "icon": "title",
+        "regex": "^> (.*)$",
+        "element": "caption",
+        "childrenAllowed": true,
+        "text": ""
+    },
+    {
+        "title": "Link",
+        "class": "link",
+        "icon": "link",
+        "regex": "\\[(.*?)\\]\\((.*?)\\)",
+        "element": "link",
+        "childrenAllowed": false,
+        "text": "",
+        "url": ""
+    },
+    {
+        "title": "Point list",
+        "class": "pointList",
+        "icon": "list",
+        "regex": "^- (.*)$",
+        "element": "point-list",
+        "childrenAllowed": true,
+        "items": [
+            ""
+        ]
+    },
+    {
+        "title": "Number list",
+        "class": "numberList",
+        "icon": "list-ordered",
+        "regex": "^\\d+\\. (.*)$",
+        "element": "number-list",
+        "childrenAllowed": true,
+        "items": [
+            ""
+        ]
+    },
+    {
+        "title": "Percentage",
+        "class": "percentage",
+        "icon": "percent",
+        "element": "percentage",
+        "childrenAllowed": false,
+        "value": ""
+    },
+    {
+        "title": "Legend",
+        "class": "legend",
+        "icon": "book",
+        "element": "legend",
+        "childrenAllowed": true,
+        "color": "",
+        "text": ""
+    },
+    {
+        "title": "Media",
+        "class": "media",
+        "icon": "image",
+        "regex": "!\\[(.*?)\\]\\((.*?)\\)"
+    },
+        {
+        "element": "image",
+        "childrenAllowed": true,
+        "url": "",
+        "caption": ""
+    },
+    {
+        "element": "image-table",
+        "childrenAllowed": false,
+        "url": ""
+    },
+    {
+        "element": "template-image",
+        "childrenAllowed": false,
+        "url": "",
+        "width": ""
+    },
+    {
+        "element": "icon-image",
+        "childrenAllowed": false,
+        "url": ""
+    },
+    {
+        "element": "video",
+        "childrenAllowed": false,
+        "url": ""
+    },
+    {
+        "element": "audio",
+        "childrenAllowed": false,
+        "url": ""
+    },
+    {
+        "title": "Table",
+        "class": "table",
+        "icon": "table",
+        "regex": "\\|(.+?)\\|",
+        "element": "table",
+        "childrenAllowed": true,
+        "headers": [
+            "",
+            ""
+        ],
+        "rows":[
+            [
+                [],
+                []
+            ]
+        ]
+    },
+    {
+        "title": "Template",
+        "class": "template",
+        "icon": "file",
+        "element": "template",
+        "childrenAllowed": true,
+        "file": "",
+        "fields": [
+            {
+                "name": "",
+                "type": "text",
+                "content": ""
+            },
+            {
+                "name": "",
+                "type": "definition",
+                "items": [
+                    ""
+                ]
+            },
+            {
+                "name": "",
+                "type": "image",
+                "url": ""
+            },
+            {
+                "name": "",
+                "type": "large-image",
+                "url": ""
+            },
+            {
+                "name": "",
+                "type": "double-image",
+                "urls": [
+                    "",
+                    ""
+                ]
+            },
+            {
+                "name": "",
+                "type": "double-column",
+                "left": [
+                    ""
+                ],
+                "right": [
+                    ""
+                ]
+            },
+            {
+                "name": "",
+                "type": "double-column-extended",
+                "left": [
+                    ""
+                ],
+                "right": [
+                    ""
+                ]
+            }
+        ]
+    }
+]

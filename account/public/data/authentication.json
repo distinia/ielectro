@@ -1,0 +1,34 @@
+{
+    "name": {
+        "pattern": "^[a-zA-Z]{2,}$",
+        "errorMessage": "Please enter a valid name"
+    },
+    "surname": {
+        "pattern": "^[a-zA-Z]{2,}$",
+        "errorMessage": "Please enter a valid surname"
+    },
+    "birthday": {
+        "pattern": "^.*$",
+        "errorMessage": "Please enter your birthday"
+    },
+    "gender": {
+        "pattern": "^.*$",
+        "errorMessage": "Please select your gender"
+    },
+    "email": {
+        "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+        "errorMessage": "Please enter a valid email address"
+    },
+    "username": {
+        "pattern": "^[a-zA-Z0-9._]+$",
+        "errorMessage": "Please enter a valid username (only letters, numbers, '.' and '_' allowed)"
+    },
+    "password": {
+        "pattern": "^.{6,}$",
+        "errorMessage": "Password must be at least 6 characters long"
+    },
+    "terms-of-service-agreement": {
+        "pattern": "^.*$",
+        "errorMessage": "Please accept the terms of service agreement"
+    }
+}
