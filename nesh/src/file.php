@@ -421,4 +421,41 @@ class File
             . DIRECTORY_SEPARATOR
             . ltrim($filename, '/\\');
     }
+    public static function copyDirectory(string $source, string $destination, bool $overwrite = false): bool 
+        {
+        if (!is_dir($source)) {
+            return false;
+        }
+
+        self::makeDirectory($destination);
+
+        foreach (self::scan($source) as $item) {
+
+            $from = self::joinPath($source, $item);
+            $to = self::joinPath($destination, $item);
+
+            if (is_dir($from)) {
+
+                self::copyDirectory(
+                    $from,
+                    $to,
+                    $overwrite
+                );
+
+                continue;
+            }
+
+            if (
+                !self::copyPath(
+                    $from,
+                    $to,
+                    $overwrite
+                )
+            ) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
