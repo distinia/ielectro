@@ -133,5 +133,6 @@ class Routing
                 return;
             }
         }
+        Response::notFound();
     }
 }
