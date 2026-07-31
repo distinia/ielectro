@@ -1,11 +1,9 @@
 RewriteEngine On
-
 <IfModule mod_headers.c>
    SetEnvIf Origin "^https://([a-zA-Z0-9-]+\.)?ielectro\.com$" CORS_ORIGIN=$0
    Header always set Access-Control-Allow-Origin "%{CORS_ORIGIN}e" env=CORS_ORIGIN
     Header always set Access-Control-Allow-Credentials "true" env=CORS_ORIGIN
     Header always set Vary "Origin"
-
 </IfModule>
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d

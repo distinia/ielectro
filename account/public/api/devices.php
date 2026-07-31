@@ -9,7 +9,7 @@ class Devices
 {
     public function index(): void
     {
-        Request::dispatch([
+        Routing::method([
             'GET' => [$this, 'list'],
             'DELETE' => [$this, 'remove']
         ]);

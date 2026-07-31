@@ -78,4 +78,8 @@ class Strings
     {
         return is_string($string);
     }
+    public static function className(string $string): string
+    {
+        return str_replace(' ', '', self::title(str_replace(['-', '_'], ' ', $string)));
+    }
 }

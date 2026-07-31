@@ -9,13 +9,13 @@ class Verification
 {
     public function email(): void
     {
-        Request::post();
+        Routing::post();
         EmailVerification::send(Session::userId());
         Response::success('Verification email sent');
     }
     public function confirm(): void
     {
-        Request::post();
+        Routing::post();
         $otp = trim((string) Request::value('otp'));
         if ($otp === '') {
             Response::badRequest('OTP is required');

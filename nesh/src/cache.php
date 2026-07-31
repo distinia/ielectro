@@ -31,7 +31,7 @@ class Cache
     }
     public static function set(string $key, mixed $value, ?int $ttl = 3600): bool
     {
-        File::makeDirectory(CACHE_PATH);
+        File::makeDirectory(APP_CACHE);
         return File::write(
             self::path($key),
             json_encode(
@@ -70,7 +70,7 @@ class Cache
     }
     public static function clear(): bool
     {
-        return File::emptyDirectory(CACHE_PATH);
+        return File::emptyDirectory(APP_CACHE);
     }
     public static function expires(string $key): ?int
     {
@@ -100,7 +100,7 @@ class Cache
     }
     public static function flushExpired(): void
     {
-        foreach (glob(CACHE_PATH.DIRECTORY_SEPARATOR.'*.json') as $file) {
+        foreach (glob(APP_CACHE.DIRECTORY_SEPARATOR.'*.json') as $file) {
             $cache = self::read($file);
             if (
                 $cache !== null &&
@@ -113,7 +113,7 @@ class Cache
     }
     private static function path(string $key): string
     {
-        return rtrim(CACHE_PATH, '/\\')
+        return rtrim(APP_CACHE, '/\\')
            .DIRECTORY_SEPARATOR
            .sha1($key)
            .'.json';

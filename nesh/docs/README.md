@@ -207,7 +207,7 @@ Example
 ```php
 $email = Request::value("email");
 $file = Request::file("avatar");
-$route = Request::route();
+$route = Routing::path();
 ```
 ---
 ## Response

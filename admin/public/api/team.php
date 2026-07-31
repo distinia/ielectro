@@ -72,7 +72,7 @@ class Team
     public static function save() {
         Auth::requirePrivileged();
         Request::allow(['POST']);
-        $input = Request::input();
+        $input = Request::body();
         $id = (int) ($input['id'] ?? 0);
         $title = Data::clean($input['title'] ?? '');
         $body = Data::clean($input['body'] ?? '');

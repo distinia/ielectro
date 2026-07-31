@@ -39,7 +39,7 @@ class Request
             Response::methodNotAllowed();
         }
     }
-    public static function input(): array
+    public static function body(): array
     {
         static $input = null;
         if ($input !== null) {
@@ -68,7 +68,7 @@ class Request
         if (isset($_GET[$key])) {
             return $_GET[$key];
         }
-        return self::input()[$key] ?? $default;
+        return self::body()[$key] ?? $default;
     }
     public static function file(string $key): ?array
     {
@@ -84,59 +84,6 @@ class Request
     public static function userAgent(): string
     {
         return trim((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''));
-    }
-    public static function route(): string
-    {
-        $route = trim(
-            (string) parse_url(
-                $_SERVER['REQUEST_URI'] ?? '/',
-                PHP_URL_PATH
-            ),
-            '/'
-        );
-        return $route === '' ? 'home' : $route;
-    }
-    public static function segment(int $index, mixed $default = null): mixed
-    {
-        $segments = explode('/', self::route());
-        return $segments[$index] ?? $default;
-    }
-    public static function id(?int $default = null): ?int
-    {
-        foreach (explode('/', self::route()) as $segment) {
-            if (ctype_digit($segment)) {
-                return (int) $segment;
-            }
-        }
-        return $default;
-    }
-    public static function dispatch(array $methods): void
-    {
-        $method = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
-        if (!isset($methods[$method])) {
-            Response::methodNotAllowed();
-        }
-        $methods[$method]();
-    }
-    public static function get(): void
-    {
-        self::cors(['GET', 'OPTIONS']);
-    }
-    public static function post(): void
-    {
-        self::cors(['POST', 'OPTIONS']);
-    }
-    public static function put(): void
-    {
-        self::cors(['PUT', 'OPTIONS']);
-    }
-    public static function delete(): void
-    {
-        self::cors(['DELETE', 'OPTIONS']);
-    }
-    public static function patch(): void
-    {
-        self::cors(['PATCH', 'OPTIONS']);
     }
     public static function browser(): string
     {

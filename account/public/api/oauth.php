@@ -8,7 +8,7 @@ use Nesh\Client;
 class Oauth {
     public function google(): void
     {
-        Request::post();
+        Routing::post();
         $credential = trim((string) Request::value('credential'));
         if ($credential === '') {
             Response::badRequest('Google credential is required');

@@ -8,8 +8,8 @@ class Availability
 {
     public function username(): void
     {
-        Request::get();
-        $username = trim((string) Request::segment(3));
+        Routing::get();
+        $username = trim((string) Routing::segment(3));
         if (!Validate::username($username)) {
             Response::badRequest('Invalid username');
         }
@@ -22,8 +22,8 @@ class Availability
     }
     public function email(): void
     {
-        Request::get();
-        $email = trim((string) Request::segment(3));
+        Routing::get();
+        $email = trim((string) Routing::segment(3));
         if (!Validate::email($email)) {
             Response::badRequest('Invalid email');
         }
@@ -36,8 +36,8 @@ class Availability
     }
     public function phone(): void
     {
-        Request::get();
-        $phone = trim((string) Request::segment(3));
+        Routing::get();
+        $phone = trim((string) Routing::segment(3));
         if (!Validate::phone($phone)) {
             Response::badRequest('Invalid phone number');
         }

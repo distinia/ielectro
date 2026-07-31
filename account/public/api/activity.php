@@ -22,27 +22,7 @@ class Activity
     }
     public function index(): void
     {
-        Request::get();
-        $limit = max(1, min(100, (int) Request::value('limit', 50)));
-        $offset = max(0, (int) Request::value('offset', 0));
-        Response::success(
-            Query::fetchAll(
-                "SELECT id, action, details, ip_address, device_info, created_at
-                FROM account_activity
-                WHERE account_id = ?
-                ORDER BY id DESC
-                LIMIT ? OFFSET ?",
-                [
-                    Session::userId(),
-                    $limit,
-                    $offset
-                ]
-            )
-        );
-    }
-    public function dashboard(): void
-    {
-        Request::get();
+        Routing::get();
         $accountId = Session::userId();
         Response::success([
             'active_sessions' => Query::count(

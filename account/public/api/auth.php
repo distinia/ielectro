@@ -125,9 +125,9 @@ class Auth
 {
     public function login(): void
     {
-        Request::post();
+        Routing::post();
         RateLimit::check('login', 30, 900);
-        $input = Request::input();
+        $input = Request::body();
         $identifier = trim((string) ($input['identifier'] ?? ''));
         $password = (string) ($input['password'] ?? '');
         if (!Validate::required($identifier) || !Validate::required($password)) {
@@ -148,14 +148,8 @@ class Auth
     }
     public function logout(): void
     {
-        Request::post();
+        Routing::post();
         AuthSession::destroy();
         Response::success('Signed out successfully');
-    }
-    public function refresh(): void
-    {
-        Request::post();
-        AuthSession::refresh();
-        Response::success();
     }
 }

@@ -1,20 +1,16 @@
 # Environment
 .env
 .env.*
-
 # Dependencies
 /vendor/
 /node_modules/
-
 # Storage
 /storage/
 /docs/
 /dyscover/assets/users/
-
 # Logs
 *.log
 logs/
-
 # Archives
 *.zip
 *.rar
@@ -23,23 +19,18 @@ logs/
 *.gz
 *.bz2
 *.xz
-
 # Cache
 .cache/
 tmp/
 temp/
-
 # IDE
 .vscode/
 .idea/
-
 # OS
 .DS_Store
 Thumbs.db
 desktop.ini
-
 # PHPUnit
 .phpunit.result.cache
-
 # Xdebug
 xdebug.log

@@ -25,7 +25,7 @@ class File
         ?string $name = null,
         bool $overwrite = false
     ): static {
-        return new static(self::storeUpload($file, TEMP_PATH, $name, $overwrite));
+        return new static(self::storeUpload($file, APP_TEMP, $name, $overwrite));
     }
     protected static function storeUpload(
         array $file,
@@ -183,9 +183,9 @@ class File
     }
     public function temp(): string
     {
-        self::makeDirectory(TEMP_PATH);
+        self::makeDirectory(APP_TEMP);
         $extension = $this->extension !== null ? '.' . $this->extension : '';
-        return self::joinPath(TEMP_PATH, Identifier::token() . $extension);
+        return self::joinPath(APP_TEMP, Identifier::token() . $extension);
     }
     public static function create(string $path, string $content = ''): bool
     {
@@ -327,7 +327,7 @@ class File
     {
         return is_dir($path)
             ? true
-            : \mkdir($path, $permissions, true);
+            : mkdir($path, $permissions, true);
     }
     public static function deleteDirectory(string $path): bool
     {
@@ -422,29 +422,22 @@ class File
             . ltrim($filename, '/\\');
     }
     public static function copyDirectory(string $source, string $destination, bool $overwrite = false): bool 
-        {
+    {
         if (!is_dir($source)) {
             return false;
         }
-
         self::makeDirectory($destination);
-
         foreach (self::scan($source) as $item) {
-
             $from = self::joinPath($source, $item);
             $to = self::joinPath($destination, $item);
-
             if (is_dir($from)) {
-
                 self::copyDirectory(
                     $from,
                     $to,
                     $overwrite
                 );
-
                 continue;
             }
-
             if (
                 !self::copyPath(
                     $from,
@@ -455,7 +448,6 @@ class File
                 return false;
             }
         }
-
         return true;
     }
 }

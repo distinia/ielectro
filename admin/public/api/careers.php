@@ -8,7 +8,7 @@ class Careers
 {
     public static function submit() {
         Request::allow(['POST']);
-        $input = Request::input();
+        $input = Request::body();
         $fullName = Data::clean($input['fullName'] ?? '');
         $email = Data::clean($input['email'] ?? '');
         $position = Data::clean($input['position'] ?? '');
@@ -100,7 +100,7 @@ class Careers
     public static function saveContent() {
         Auth::requirePrivileged();
         Request::allow(['POST']);
-        $input = Request::input();
+        $input = Request::body();
         $id = (int) ($input['id'] ?? 0);
         $title = Data::clean($input['title'] ?? '');
         $slug = Data::clean($input['slug'] ?? '');
