@@ -142,7 +142,7 @@ class Video extends File
     }
     protected function runOutput(string $command, string $extension): void
     {
-        $destination = self::joinPath(TEMP_PATH, Identifier::token() . '.' . ltrim($extension, '.'));
+        $destination = self::joinPath(TEMP_PATH, Generate::token() . '.' . ltrim($extension, '.'));
         self::makeDirectory(TEMP_PATH);
         if (!self::runFfmpeg($command . ' ' . escapeshellarg($destination))) {
             Response::error('Video processing failed');
@@ -175,7 +175,7 @@ class Video extends File
     }
     public function thumbnail(int $second = 1, string $format = 'jpg'): static
     {
-        $destination = self::joinPath(TEMP_PATH, Identifier::token() . '.' . ltrim($format, '.'));
+        $destination = self::joinPath(TEMP_PATH, Generate::token() . '.' . ltrim($format, '.'));
         self::makeDirectory(TEMP_PATH);
         $command =
             'ffmpeg -y -ss ' . (int) $second . ' ' .

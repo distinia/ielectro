@@ -42,7 +42,7 @@ class File
         }
         self::makeDirectory($directory);
         $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-        $filename = $name ?? Identifier::token();
+        $filename = $name ?? Generate::token();
         if ($extension !== '') {
             $filename .= '.' . $extension;
         }
@@ -185,7 +185,7 @@ class File
     {
         self::makeDirectory(APP_TEMP);
         $extension = $this->extension !== null ? '.' . $this->extension : '';
-        return self::joinPath(APP_TEMP, Identifier::token() . $extension);
+        return self::joinPath(APP_TEMP, Generate::token() . $extension);
     }
     public static function create(string $path, string $content = ''): bool
     {

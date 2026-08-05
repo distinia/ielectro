@@ -1,13 +1,13 @@
 <?php
 namespace Account;
-use Nesh\Identifier;
+use Nesh\Generate;
 use Nesh\Password;
 use Nesh\Query;
 use Nesh\Request;
 use Nesh\Response;
 use Nesh\Strings;
 use Nesh\Validate;
-use Nesh\Session;
+use Nesh\Identity;
 use Nesh\Routing;
 class User
 {
@@ -25,10 +25,10 @@ class User
     public function index(): void
     {
         Routing::method([
-            'GET' => [$this->data, 'index'],
-            'POST' => [$this->create, 'index'],
-            'PATCH' => [$this->update, 'index'],
-            'DELETE' => [$this->delete, 'index'],
+            'GET'    => fn() => $this->data->index(),
+            'POST'   => fn() => $this->create->index(),
+            'PATCH'  => fn() => $this->update->index(),
+            'DELETE' => fn() => $this->delete->index(),
         ]);
     }
     public function cancelDeletion(): void
@@ -40,11 +40,11 @@ class Create
 {
     public function index(): void
     {
-        Routing::post();
+        Request::post();
         $account = $this->validate();
         $accountId = $this->insert($account);
         Services::create($accountId);
-        AuthSession::create($accountId);
+        Session::create($accountId);
         Activity::log(
             $accountId,
             'register',
@@ -67,7 +67,7 @@ class Create
             $account['username'] = $this->generateUsername();
         }
         if (!Validate::required($account['password'])) {
-            $account['password'] = Identifier::token(16);
+            $account['password'] = Generate::token(16);
         }
         foreach ($account as $value) {
             if (!Validate::required($value)) {
@@ -163,9 +163,10 @@ class Data
 {
     public function index(): void
     {
-        Routing::get();
+        Request::get();
         $account = Query::fetch(
             "SELECT
+                id,
                 username,
                 name,
                 surname,
@@ -177,7 +178,7 @@ class Data
             FROM accounts
             WHERE id = ?
             LIMIT 1",
-            [Session::userId()]
+            [Identity::id()]
         );
         if (!$account) {
             Response::notFound('Account not found');
@@ -232,7 +233,7 @@ class Update
     ];
     public function index(): void
     {
-        Routing::patch();
+        Request::patch();
         $input = Request::body();
         if (!$input) {
             Response::badRequest('No data provided');
@@ -241,7 +242,7 @@ class Update
             "SELECT *
         FROM accounts
         WHERE id = ?",
-            [Session::userId()]
+            [Identity::id()]
         );
         $update = [];
         $params = [];
@@ -261,7 +262,7 @@ class Update
                 $update[] = "email_verified_at = NULL";
             }
             Activity::log(
-                Session::userId(),
+                Identity::id(),
                 $config['activity'] ?? 'profile_update',
                 "{$config['log']}: {$account[$config['column']]} -> {$value}"
             );
@@ -269,7 +270,7 @@ class Update
         if (!$update) {
             Response::success('Nothing changed');
         }
-        $params[] = Session::userId();
+        $params[] = Identity::id();
         Query::execute(
             "UPDATE accounts
         SET " . implode(', ', $update) . "
@@ -334,7 +335,7 @@ class Update
             AND id <> ?",
                 [
                     $value,
-                    Session::userId()
+                    Identity::id()
                 ]
             )
         ) {
@@ -348,34 +349,34 @@ class Delete
 {
     public function index(): void
     {
-        Routing::patch();
+        Request::delete();
         Query::execute(
             "UPDATE accounts
             SET deletion_scheduled_at = DATE_ADD(NOW(), INTERVAL 30 DAY)
             WHERE id = ?",
-            [Session::userId()]
+            [Identity::id()]
         );
         Activity::log(
-            Session::userId(),
+            Identity::id(),
             'profile_update',
             'Account scheduled for deletion.'
         );
-        AuthSession::destroy();
+        Session::destroy();
         Response::success(
             'Your account will be permanently deleted in 30 days.'
         );
     }
     public function cancel(): void
     {
-        Routing::patch();
+        Request::patch();
         Query::execute(
             "UPDATE accounts
             SET deletion_scheduled_at = NULL
             WHERE id = ?",
-            [Session::userId()]
+            [Identity::id()]
         );
         Activity::log(
-            Session::userId(),
+            Identity::id(),
             'profile_update',
             'Scheduled account deletion cancelled.'
         );

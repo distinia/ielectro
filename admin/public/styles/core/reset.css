@@ -1,0 +1,22 @@
+body {
+    font-family:
+        "Inter",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        "Helvetica Neue",
+        Arial,
+        sans-serif;
+    margin: 0;
+    background:
+        radial-gradient(1200px 520px at 20% -240px,
+            rgba(37, 99, 235, 0.18),
+            transparent),
+        radial-gradient(900px 420px at 90% -220px,
+            rgba(14, 165, 233, 0.12),
+            transparent),
+        #f8fafc;
+    color: #0c1929;
+    -webkit-font-smoothing: antialiased;
+}

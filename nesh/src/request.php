@@ -7,11 +7,33 @@ class Request
         if (PHP_SAPI === 'cli') {
             return;
         }
+        Security::ensure();
         self::cors(
             $_SERVER['REQUEST_METHOD'] === 'GET'
                 ? ['GET', 'OPTIONS']
                 : ['POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
         );
+    }
+    public static function csrf(): ?string
+    {
+        $header = trim((string) ($_SERVER['HTTP_X_CSRF_TOKEN'] ?? ''));
+        if ($header !== '') {
+            return $header;
+        }
+        $token = self::value('csrf_token');
+        return is_string($token) && $token !== '' ? $token : null;
+    }
+    public static function requireCsrf(): void
+    {
+        if (!Security::validate(self::csrf() ?? '')) {
+            Response::forbidden('Invalid CSRF token');
+        }
+    }
+    public static function mutate(): void
+    {
+        $method = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
+        self::cors([$method, 'OPTIONS']);
+        self::requireCsrf();
     }
     public static function cors(array $methods): void
     {
@@ -145,5 +167,25 @@ class Request
             return 'Linux';
         }
         return 'Unknown';
+    }
+    public static function get(): void
+    {
+        self::cors(['GET', 'OPTIONS']);
+    }
+    public static function post(): void
+    {
+        self::cors(['POST', 'OPTIONS']);
+    }
+    public static function put(): void
+    {
+        self::cors(['PUT', 'OPTIONS']);
+    }
+    public static function delete(): void
+    {
+        self::cors(['DELETE', 'OPTIONS']);
+    }   
+    public static function patch(): void
+    {
+        self::cors(['PATCH', 'OPTIONS']);
     }
 }

@@ -1,0 +1,85 @@
+button,
+.fileInput {
+    padding: 0.55rem 1.15rem;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition:
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast),
+        filter var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    background: var(--primary-gradient);
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(21, 101, 192, 0.35);
+}
+button:focus-visible,
+.fileInput:focus-visible {
+    outline: none;
+    box-shadow:
+        0 0 0 3px rgba(30, 136, 229, 0.35),
+        0 4px 14px rgba(21, 101, 192, 0.4);
+}
+button:active,
+.fileInput:active {
+    transform: translateY(1px) scale(0.99);
+    box-shadow: 0 1px 4px rgba(21, 101, 192, 0.3);
+}
+button:hover,
+.fileInput:hover {
+    filter: brightness(1.05);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(21, 101, 192, 0.38);
+}
+@media (prefers-reduced-motion: reduce) {
+    button:hover,
+    .fileInput:hover,
+    button:active,
+    .fileInput:active {
+        transform: none;
+    }
+}
+.btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    transition:
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast),
+        background var(--transition-fast),
+        color var(--transition-fast);
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+.btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(67, 160, 71, 0.45);
+}
+.btn:hover {
+    transform: translateY(-2px);
+    background: var(--secondary-gradient);
+    box-shadow: 0 8px 18px rgba(46, 125, 50, 0.28);
+    color: white;
+}
+@media only screen and (max-width: 600px) {
+    main {
+        padding: 0rem;
+        padding-top: 4rem;
+    }
+    .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+    .btn:hover {
+        transform: none;
+        box-shadow: none;
+    }
+}

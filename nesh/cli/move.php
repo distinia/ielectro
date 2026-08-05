@@ -1,7 +1,5 @@
 <?php
-
 new Move();
-
 class Move
 {
     public function __construct()
@@ -66,7 +64,7 @@ class Move
             );
            $this->move(
                 "{$directory}/{$page}.css",
-                ROOT_PATH . "/{$application}/public/styles/pages/{$page}.css"
+                ROOT_PATH . "/{$application}/public/styles/{$page}/index.css"
             );
            $this->move(
                 "{$directory}/{$page}.html",

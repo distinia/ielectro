@@ -1,0 +1,98 @@
+.conversations {
+    width: 33.333%;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+.conversations-header {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.conversations-header h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+.new-conversation-btn {
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.45rem 0.75rem;
+    border-radius: var(--radius-sm);
+    background: var(--surface-elevated);
+    color: var(--blue-mid);
+    border: 1px solid var(--border-subtle);
+    box-shadow: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+.new-conversation-btn:hover {
+    background: rgba(30, 136, 229, 0.1);
+}
+.conversations-list {
+    flex: 1;
+    overflow-y: auto;
+}
+.conversation-card {
+    padding: 1rem;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.conversation-card:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+.conversation-card.active {
+    background: var(--primary-gradient);
+    color: white;
+}
+.conversation-info {
+    display: flex;
+    align-items: center;
+}
+.conversation-details p:first-child {
+    font-weight: 600;
+}
+.conversation-details p:last-child {
+    font-size: 0.875rem;
+    color: #666;
+}
+.conversation-details p:last-child {
+    color: var(--text-muted);
+}
+.conversation-card.active .conversation-details p:last-child {
+    color: rgba(255, 255, 255, 0.9);
+}
+.conversation-card .delete-btn {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0.35rem;
+    border-radius: 8px;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.7;
+    transition: opacity var(--transition-fast), background var(--transition-fast);
+}
+.conversation-card .delete-btn:hover {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.08);
+}
+.conversation-card.active .delete-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+.conversation-card.has-unread {
+    border-left: 4px solid #7dd3fc;
+    background: linear-gradient(90deg,
+            rgba(186, 230, 253, 0.65),
+            rgba(224, 242, 254, 0.4) 42%,
+            transparent 70%);
+}
+.conversation-card.has-unread .conversation-details p:first-child {
+    font-weight: 700;
+    color: #0369a1;
+}

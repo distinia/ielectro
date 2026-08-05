@@ -1,0 +1,119 @@
+.post-preview {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    min-height: 220px;
+    padding: 0;
+    border: none;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    background: #111;
+    box-shadow: var(--card-shadow);
+    transition:
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast),
+        opacity var(--transition-fast);
+}
+.post-preview:hover {
+    transform: scale(1.02);
+    box-shadow: var(--card-shadow-hover);
+    opacity: 0.95;
+}
+.post-preview-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.post-preview-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    background: linear-gradient(rgba(0, 0, 0, 0.72), transparent);
+    z-index: 2;
+    width: 100%;
+}
+.post-preview-user {
+    display: flex;
+    align-items: center;
+    color: #fff;
+}
+.post-preview-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    margin: 10px;
+}
+.post-preview-username {
+    display: flex;
+    align-items: center;
+    font-size: 0.82rem;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.post-preview-type {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    z-index: 2;
+    width: 100%;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.72));
+    color: #fff;
+}
+.post-preview-icon i,
+.post-preview-icon svg {
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px;
+}
+.post-preview-title {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.post-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 0.5rem;
+}
+.post-preview-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(145deg, #1a237e, #0d47a1);
+    color: #fff;
+}
+.post-preview-placeholder i {
+    width: 2.5rem;
+    height: 2.5rem;
+}
+@media (max-width: 768px) {
+    .post-preview-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 0.35rem;
+    }
+    .post-preview {
+        min-height: 140px;
+    }
+}

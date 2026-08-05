@@ -1,186 +1,327 @@
 <?php
 namespace Admin;
+use Nesh\File;
+use Nesh\Generate;
+use Nesh\Identity;
 use Nesh\Image;
 use Nesh\Query;
 use Nesh\Request;
 use Nesh\Response;
-use Nesh\Session;
+use Nesh\Routing;
+use Nesh\Validate;
 class News
 {
-    public static function list() {
-        Request::allow(['GET']);
-        Data::ensureNewsCodes();
-        $page = max(1, (int) ($_GET['page'] ?? 1));
-        $perPage = 25;
-        $offset = ($page - 1) * $perPage;
-        $rows = Query::fetchAll("SELECT code AS news_code,title,body,image,published_at,created_at FROM news WHERE status = 1 AND code IS NOT NULL ORDER BY id DESC LIMIT $perPage OFFSET $offset");
-        foreach ($rows as &$row) {
-            $row['image'] = Data::newsImagePublicUrl($row['image']);
-        }
-        unset($row);
-        $total = Query::count("SELECT COUNT(*) FROM news WHERE status = 1");
-        Response::success('News loaded', ['page' => $page, 'per_page' => $perPage, 'total' => $total, 'items' => $rows]);
+    private Create $create;
+    private Data $data;
+    private Update $update;
+    private Delete $delete;
+    public function __construct()
+    {
+        $this->create = new Create();
+        $this->data = new Data();
+        $this->update = new Update();
+        $this->delete = new Delete();
     }
-    public static function latest() {
-        Request::allow(['GET']);
-        Data::ensureNewsCodes();
-        $limit = (int) ($_GET['limit'] ?? 5);
-        if ($limit <= 0) {
-            $limit = 5;
-        }
-        if ($limit > 12) {
-            $limit = 12;
-        }
-        $rows = Query::fetchAll("SELECT code AS news_code,title,body,image,published_at,created_at FROM news WHERE status = 1 AND code IS NOT NULL ORDER BY id DESC LIMIT $limit");
-        foreach ($rows as &$row) {
-            $row['image'] = Data::newsImagePublicUrl($row['image']);
-        }
-        unset($row);
-        Response::success('Latest news loaded', ['items' => $rows]);
+    public function index(): void
+    {
+        Routing::method([
+            'GET'    => fn() => Routing::id()
+                ? $this->data->one()
+                : $this->data->list(),
+            'POST'   => fn() => $this->create->index(),
+            'PATCH'  => fn() => $this->update->index(),
+            'DELETE' => fn() => $this->delete->index(),
+        ]);
     }
-    public static function byCode() {
-        Request::allow(['GET']);
-        Data::ensureNewsCodes();
-        $code = Data::clean($_GET['code'] ?? '');
-        if (!preg_match('/^[a-zA-Z0-9]{16}$/', $code)) {
-            Response::badRequest('Invalid news code');
+}
+class Create
+{
+    public function index(): void
+    {
+        Request::post();
+        $input = Request::body();
+        $title = trim((string) ($input['title'] ?? ''));
+        $body = trim((string) ($input['body'] ?? ''));
+        $status = NewsFields::status($input['status'] ?? 'published');
+        $imageInput = NewsFields::filename($input['image'] ?? '');
+        if (!Validate::required($title)) {
+            Response::badRequest('Title is required');
         }
-        $row = Query::fetch("SELECT code AS news_code,title,body,image,published_at,created_at FROM news WHERE status = 1 AND code = ? LIMIT 1", [$code]);
+        if (!Validate::required($body)) {
+            Response::badRequest('Body is required');
+        }
+        $image = preg_match('#^https?://#i', $imageInput) ? $imageInput : '';
+        $uuid = Generate::uuid();
+        Query::begin();
+        try {
+            Query::execute(
+                "INSERT INTO news(
+                    author_id,
+                    uuid,
+                    title,
+                    body,
+                    image,
+                    status
+                )
+                VALUES (?, ?, ?, ?, ?, ?)",
+                [
+                    Identity::id(),
+                    $uuid,
+                    $title,
+                    $body,
+                    $image !== '' ? $image : null,
+                    $status
+                ]
+            );
+            $id = Query::lastId();
+            $uploaded = NewsFields::storeImage(
+                $uuid,
+                Request::file('image')
+            );
+            if ($uploaded !== null) {
+                Query::execute(
+                    "UPDATE news SET image = ? WHERE id = ?",
+                    [$uploaded, $id]
+                );
+            }
+            Query::commit();
+        } catch (\Throwable $e) {
+            Query::rollback();
+            NewsFields::removeImages($uuid);
+            Response::error('Unable to create news');
+        }
+        Response::created(['id' => $id]);
+    }
+}
+class Data
+{
+    public function list(): void
+    {
+        Request::get();
+        $rows = Query::fetchAll(
+            "SELECT
+                id,
+                title,
+                body,
+                status,
+                image,
+                published_at,
+                created_at,
+                updated_at
+            FROM news
+            ORDER BY published_at DESC, id DESC"
+        );
+        Response::success(NewsFields::rows($rows));
+    }
+    public function one(): void
+    {
+        Request::get();
+        $id = NewsFields::id();
+        $row = Query::fetch(
+            "SELECT
+                id,
+                title,
+                body,
+                status,
+                image,
+                published_at,
+                created_at,
+                updated_at
+            FROM news
+            WHERE id = ?
+            LIMIT 1",
+            [$id]
+        );
         if (!$row) {
             Response::notFound('News not found');
         }
-        $row['image'] = Data::newsImagePublicUrl($row['image']);
-        Response::success('News loaded', $row);
+        Response::success(NewsFields::row($row, true));
     }
-    public static function uploadCover() {
-        Auth::requirePrivileged();
-        Request::allow(['POST']);
-        $code = Data::clean($_POST['code'] ?? '');
-        if (!preg_match('/^[a-zA-Z0-9]{16}$/', $code)) {
-            Response::badRequest('Invalid code');
-        }
-        if (!Query::fetch("SELECT id FROM news WHERE code = ? LIMIT 1", [$code])) {
-            Response::badRequest('Unknown news code');
-        }
-        $file = Request::file('image');
-        if (!$file || (int) ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
-            Response::badRequest('Image required');
-        }
-        $ext = Media::imageExt($file['name']);
-        Media::assertUploadedImage((string) $file['tmp_name']);
-        $dir = Media::mediaDir('news');
-        $filename = $code.'.'.$ext;
-        foreach (glob($dir.'/'.$code.'.*') ?: [] as $old) {
-            @unlink($old);
-        }
-        $dest = $dir.'/'.$filename;
-        if (!move_uploaded_file((string) $file['tmp_name'], $dest)) {
-            Response::error('Upload failed');
-        }
-        Query::execute("UPDATE news SET image = ? WHERE code = ?", [$filename, $code]);
-        Response::success('Uploaded', ['file' => $filename, 'url' => Data::newsImagePublicUrl($filename)]);
-    }
-    public static function adminList() {
-        Auth::requirePrivileged();
-        Request::allow(['GET']);
-        $rows = Query::fetchAll("SELECT id,title,body,status,image,published_at,code AS news_code,created_at FROM news ORDER BY id DESC");
-        foreach ($rows as &$row) {
-            $row['image'] = Data::newsImagePublicUrl($row['image']);
-        }
-        unset($row);
-        return $rows;
-    }
-    public static function adminItem() {
-        Auth::requirePrivileged();
-        Request::allow(['GET']);
-        $id = (int) ($_GET['id'] ?? 0);
-        if ($id <= 0) {
-            Response::badRequest('Invalid id');
-        }
-        $row = Query::fetch("SELECT id,title,body,status,image,published_at,code AS news_code,created_at FROM news WHERE id = ? LIMIT 1", [(string) $id]);
+}
+class Update
+{
+    public function index(): void
+    {
+        Request::patch();
+        $id = NewsFields::id();
+        $row = Query::fetch(
+            "SELECT uuid
+            FROM news
+            WHERE id = ?
+            LIMIT 1",
+            [$id]
+        );
         if (!$row) {
-            Response::notFound('Not found');
+            Response::notFound('News not found');
         }
-        $raw = $row['image'];
-        $row['image_filename'] = Data::filenameOnly($raw);
-        $row['image'] = Data::newsImagePublicUrl($raw);
-        return $row;
-    }
-    public static function save() {
-        Auth::requirePrivileged();
-        Request::allow(['POST']);
         $input = Request::body();
-        $id = (int) ($input['id'] ?? 0);
-        $title = Data::clean($input['title'] ?? '');
-        $body = Data::clean($input['body'] ?? '');
-        $imageInput = Data::clean($input['image'] ?? '');
-        $isActive = in_array($input['status'] ?? '1', ['1', 'true'], true) ? 1 : 0;
-        $image = preg_match('#^https?://#i', $imageInput) ? $imageInput : Data::filenameOnly($imageInput);
-        if ($title === '') {
-            Response::badRequest('Title is required');
+        if (!$input) {
+            Response::badRequest('No data provided');
         }
-        if ($body === '') {
-            Response::badRequest('Body is required');
-        }
-        if ($id > 0) {
-            // handle uploaded image on update
-            $file = Request::file('image');
-            if ($file && (int) ($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
-                $ext = Media::imageExt($file['name']);
-                Media::assertUploadedImage((string) $file['tmp_name']);
-                $dir = Media::mediaDir('news');
-                $filename = (string) $id.'.'.$ext;
-                foreach (glob($dir.'/'.$id.'.*') ?: [] as $old) {
-                    @unlink($old);
-                }
-                $dest = $dir.'/'.$filename;
-                if (!move_uploaded_file((string) $file['tmp_name'], $dest)) {
-                    Response::error('Upload failed');
-                }
-                $image = $filename;
+        $fields = [];
+        $params = [];
+        if (array_key_exists('title', $input)) {
+            $title = trim((string) $input['title']);
+            if (!Validate::required($title)) {
+                Response::badRequest('Title is required');
             }
-            Query::execute("UPDATE news SET title = ?, body = ?, image = ?, status = ? WHERE id = ?", [$title, $body, $image, (string) $isActive, (string) $id]);
-            Response::success('News updated');
+            $fields[] = 'title = ?';
+            $params[] = $title;
         }
-        do {
-            $code = Data::randomCode();
-        } while (Query::count("SELECT COUNT(*) FROM news WHERE code = ?", [$code]) > 0);
-        $authorId = Session::id();
-        $file = Request::file('image');
-        if ($file && (int) ($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK) {
-            $ext = Media::imageExt($file['name']);
-            Media::assertUploadedImage((string) $file['tmp_name']);
-            $dir = Media::mediaDir('news');
-            $filename = $code.'.'.$ext;
-            foreach (glob($dir.'/'.$code.'.*') ?: [] as $old) {
-                @unlink($old);
+        if (array_key_exists('body', $input)) {
+            $body = trim((string) $input['body']);
+            if (!Validate::required($body)) {
+                Response::badRequest('Body is required');
             }
-            $dest = $dir.'/'.$filename;
-            if (!move_uploaded_file((string) $file['tmp_name'], $dest)) {
-                Response::error('Upload failed');
-            }
-            $image = $filename;
+            $fields[] = 'body = ?';
+            $params[] = $body;
         }
-        Query::execute("INSERT INTO news(author_id,title,body,image,status,code) VALUES(?,?,?,?,?,?)", [$authorId !== null ? (string) $authorId : null, $title, $body, $image, (string) $isActive, $code]);
-        Response::created('News created', ['id' => (string) Query::lastId(), 'news_code' => $code]);
+        if (array_key_exists('status', $input)) {
+            $fields[] = 'status = ?';
+            $params[] = NewsFields::status($input['status']);
+        }
+        if (array_key_exists('image', $input)) {
+            $imageInput = NewsFields::filename($input['image']);
+            $image = preg_match('#^https?://#i', $imageInput)
+                ? $imageInput
+                : ($imageInput !== '' ? $imageInput : null);
+            $fields[] = 'image = ?';
+            $params[] = $image;
+        }
+        $uploaded = NewsFields::storeImage(
+            $row['uuid'],
+            Request::file('image')
+        );
+        if ($uploaded !== null) {
+            $fields[] = 'image = ?';
+            $params[] = $uploaded;
+        }
+        if (!$fields) {
+            Response::success('Nothing changed');
+        }
+        $params[] = $id;
+        Query::execute(
+            "UPDATE news
+            SET " . implode(', ', $fields) . "
+            WHERE id = ?",
+            $params
+        );
+        Response::success('News updated');
     }
-    public static function delete() {
-        Auth::requirePrivileged();
-        Request::allow(['POST']);
-        $id = (int) ($_POST['id'] ?? 0);
-        if ($id <= 0) {
+}
+class Delete
+{
+    public function index(): void
+    {
+        Request::delete();
+        $id = NewsFields::id();
+        $row = Query::fetch(
+            "SELECT uuid
+            FROM news
+            WHERE id = ?
+            LIMIT 1",
+            [$id]
+        );
+        if (!$row) {
+            Response::notFound('News not found');
+        }
+        NewsFields::removeImages($row['uuid']);
+        Query::execute("DELETE FROM news WHERE id = ?", [$id]);
+        Response::success('News deleted');
+    }
+}
+class NewsFields
+{
+    private const SECTION = 'news';
+    public static function id(): int
+    {
+        $id = Routing::id();
+        if ($id === null || $id <= 0) {
             Response::badRequest('Invalid id');
         }
-        $row = Query::fetch("SELECT code, image FROM news WHERE id = ? LIMIT 1", [(string) $id]);
-        if ($row) {
-            $fn = Data::filenameOnly($row['image'] ?? '');
-            if ($fn !== '') {
-                @unlink(Data::projectRoot().'/content/news/'.$fn);
-            } elseif (!empty($row['code'])) {
-                Media::unlinkGlob(Data::projectRoot().'/content/news/'.$row['code'].'.*');
-            }
+        return $id;
+    }
+    public static function status(mixed $value): string
+    {
+        $value = strtolower(trim((string) $value));
+        if (in_array($value, ['published', 'hidden', 'draft'], true)) {
+            return $value;
         }
-        Query::execute("DELETE FROM news WHERE id = ?", [(string) $id]);
-        Response::success('News deleted');
+        if (in_array($value, ['1', 'true', 'active'], true)) {
+            return 'published';
+        }
+        if (in_array($value, ['0', 'false'], true)) {
+            return 'hidden';
+        }
+        return 'published';
+    }
+    public static function filename(?string $value): string
+    {
+        if ($value === null || $value === '') {
+            return '';
+        }
+        if (preg_match('#^https?://#i', $value)) {
+            return $value;
+        }
+        return basename($value);
+    }
+    public static function contentDir(): string
+    {
+        $path = APP_PUBLIC . '/content/' . self::SECTION;
+        File::makeDirectory($path);
+        return $path;
+    }
+    public static function imageUrl(?string $filename): ?string
+    {
+        if ($filename === null || $filename === '') {
+            return null;
+        }
+        if (preg_match('#^https?://#i', $filename)) {
+            return $filename;
+        }
+        return APP_URL . '/content/' . self::SECTION . '/' . rawurlencode(basename($filename));
+    }
+    public static function storeImage(string $basename, ?array $file): ?string
+    {
+        if (
+            !$file
+            || (int) ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK
+        ) {
+            return null;
+        }
+        self::removeImages($basename);
+        $image = Image::upload($file, $basename, true);
+        $image->save(self::contentDir());
+        return $image->basename() . '.' . $image->extension();
+    }
+    public static function removeImages(string $basename): void
+    {
+        foreach (glob(self::contentDir() . '/' . $basename . '.*') ?: [] as $path) {
+            @unlink($path);
+        }
+    }
+    public static function rows(array $rows): array
+    {
+        return array_map(
+            fn(array $row): array => self::row($row),
+            $rows
+        );
+    }
+    public static function row(array $row, bool $detailed = false): array
+    {
+        $item = [
+            'id' => (int) $row['id'],
+            'title' => $row['title'],
+            'body' => $row['body'],
+            'status' => $row['status'],
+            'image' => self::imageUrl($row['image'] ?? null),
+            'published_at' => $row['published_at'],
+            'created_at' => $row['created_at'],
+            'updated_at' => $row['updated_at'] ?? null,
+        ];
+        if ($detailed) {
+            $item['image_filename'] = self::filename($row['image'] ?? '');
+        }
+        return $item;
     }
 }

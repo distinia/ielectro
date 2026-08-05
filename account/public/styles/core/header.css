@@ -1,0 +1,46 @@
+.account-hero {
+    --account-hero-image: url("https://account.ielectro.com/assets/header/home.png");
+    color: #fff;
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-align: center;
+    user-select: none;
+    background-image:
+        linear-gradient(135deg, rgba(15, 23, 42, 0.62), rgba(37, 99, 235, 0.5)),
+        var(--account-hero-image);
+    background-position: center;
+    background-size: cover;
+    min-height: 96px;
+    height: clamp(96px, 12vw, 132px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 8px 28px rgba(15, 23, 42, 0.14);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+.account-hero--home {
+    --account-hero-image: url("https://account.ielectro.com/assets/header/home.png");
+}
+.account-hero--profile {
+    --account-hero-image: url("https://account.ielectro.com/assets/header/profile.png");
+}
+.account-hero--activity {
+    --account-hero-image: url("https://account.ielectro.com/assets/header/activity.png");
+}
+.account-hero--security {
+    --account-hero-image: url("https://account.ielectro.com/assets/header/security.png");
+}
+.account-hero h1 {
+    margin: 0;
+    padding: 0 20px;
+    font-size: clamp(1.4rem, 3.5vw, 2.05rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.35);
+}

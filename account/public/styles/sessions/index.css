@@ -1,0 +1,272 @@
+body.session-page {
+    min-height: 100vh;
+    background:
+        radial-gradient(ellipse 100% 80% at 50% -30%, rgb(49 67 105 / 35%), transparent),
+        linear-gradient(180deg, #0f172a 0%, #3a85ff 100%);
+    color: #0f172a;
+    user-select: none;
+}
+.create-shell {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px 48px;
+}
+.create-brand {
+    text-align: center;
+    margin-bottom: 22px;
+}
+.create-logo {
+    width: 72px;
+    height: auto;
+    margin: 0 auto 12px;
+    filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.25));
+}
+.create-card {
+    width: 100%;
+    max-width: 440px;
+    background: var(--session-surface);
+    border-radius: var(--session-radius);
+    box-shadow: var(--session-shadow);
+    padding: 28px 26px 22px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.create-card .create-tagline {
+    margin: 0 0 20px;
+    padding: 0;
+    font-size: clamp(1.35rem, 4vw, 1.65rem);
+    letter-spacing: -0.04em;
+    line-height: 1.2;
+    text-align: center;
+    background: linear-gradient(120deg, #0f172a 0%, #1d4ed8 42%, #3b82f6 78%, #60a5fa 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 2px 14px rgba(37, 99, 235, 0.12));
+}
+.create-field-group {
+    margin-bottom: 16px;
+}
+.create-field-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--session-muted);
+    margin-bottom: 8px;
+}
+.input-field,
+.select-field,
+.birthday-select,
+.login-form .input-field,
+.recovery-form .input-field {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid var(--session-border);
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: inherit;
+    background: #fafbfc;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.input-field:focus,
+.select-field:focus,
+.birthday-select:focus,
+.login-form .input-field:focus,
+.recovery-form .input-field:focus {
+    outline: none;
+    border-color: var(--session-accent);
+    box-shadow: 0 0 0 3px var(--session-accent-soft);
+    background: #fff;
+}
+.input-field {
+    margin-top: 0;
+    margin-bottom: 12px;
+}
+.input-field:last-of-type {
+    margin-bottom: 0;
+}
+.login-form .input-field,
+.recovery-form .input-field {
+    margin-top: 0;
+    margin-bottom: 12px;
+}
+.recovery-form .input-field:last-of-type {
+    margin-bottom: 0;
+}
+.birthday-selects {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr 1fr;
+    gap: 10px;
+    align-items: stretch;
+}
+.birthday-selects .birthday-select {
+    margin: 0;
+}
+.select-field.gender {
+    margin-top: 4px;
+}
+.create-terms-card {
+    padding: 18px 16px;
+    border-radius: 12px;
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 1px solid var(--session-border);
+    margin-bottom: 4px;
+}
+.create-terms-title {
+    margin: 0 0 8px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #0f172a;
+}
+.create-terms-lead {
+    margin: 0 0 14px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--session-muted);
+}
+.terms-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid var(--session-border);
+}
+.terms-wrapper input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    flex-shrink: 0;
+    cursor: pointer;
+    accent-color: var(--session-accent);
+}
+.terms-wrapper label {
+    font-size: 13px;
+    line-height: 1.5;
+    color: #334155;
+    cursor: pointer;
+    margin: 0;
+}
+.terms-wrapper label a {
+    color: var(--session-accent);
+    font-weight: 600;
+    text-decoration: none;
+}
+.terms-wrapper label a:hover {
+    text-decoration: underline;
+}
+.input-field.field-available {
+    border-color: #059669 !important;
+    box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.12) !important;
+}
+.input-field.field-taken {
+    border-color: #dc2626 !important;
+    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.1) !important;
+}
+.field-auth-error,
+.input-field.field-auth-error,
+select.field-auth-error,
+.birthday-select.field-auth-error,
+input[type="checkbox"].field-auth-error {
+    border-color: #dc2626 !important;
+    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.12) !important;
+    cursor: help;
+}
+.auth-card .auth-lead {
+    margin: 0 0 16px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--session-muted);
+}
+.auth-card .auth-submit-btn {
+    width: 100%;
+    margin-top: 6px;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 10px;
+    background: var(--session-accent);
+    color: #fff;
+    font-weight: 600;
+    font-size: 15px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.auth-card .auth-submit-btn:hover {
+    background: #1d4ed8;
+}
+.auth-card .auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0 14px;
+    color: var(--session-muted);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+.auth-card .auth-divider::before,
+.auth-card .auth-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--session-border);
+}
+.auth-card .auth-google-wrap {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+.auth-card .auth-google-wrap .g_id_signin {
+    width: 100% !important;
+    max-width: 100%;
+}
+.auth-card .auth-google-wrap > div {
+    width: 100%;
+}
+.auth-card .auth-links {
+    margin-top: 22px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.auth-card .auth-links-single {
+    justify-content: center;
+}
+.auth-card .auth-links a {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--session-accent);
+    text-decoration: none;
+}
+.auth-card .auth-links a:hover {
+    text-decoration: underline;
+}
+.fade-in {
+    animation: sessionFadeIn 0.28s ease-out;
+}
+@keyframes sessionFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+@media (max-width: 480px) {
+    .birthday-selects {
+        grid-template-columns: 1fr;
+    }
+    .create-card {
+        padding: 22px 18px 18px;
+    }
+}

@@ -4,24 +4,24 @@ use Nesh\Mail;
 use Nesh\Query;
 use Nesh\Request;
 use Nesh\Response;
-use Nesh\Session;
+use Nesh\Identity;
 class Verification
 {
-    public function email(): void
+    public function send(): void
     {
-        Routing::post();
-        EmailVerification::send(Session::userId());
+        Request::post();
+        EmailVerification::send(Identity::id());
         Response::success('Verification email sent');
     }
     public function confirm(): void
     {
-        Routing::post();
+        Request::post();
         $otp = trim((string) Request::value('otp'));
         if ($otp === '') {
             Response::badRequest('OTP is required');
         }
         if (!EmailVerification::verify(
-            Session::userId(),
+            Identity::id(),
             $otp
         )) {
             Response::badRequest('Invalid or expired OTP');

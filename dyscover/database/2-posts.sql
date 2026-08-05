@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS `dyscover_posts` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` BIGINT UNSIGNED NOT NULL,
-  `slug` CHAR(16) NOT NULL,
+  `uuid` CHAR(16) NOT NULL,
   `type` ENUM('article','image','video','audio','document','template') NOT NULL,
   `title` VARCHAR(255) DEFAULT NULL,
   `description` TEXT DEFAULT NULL,
@@ -14,8 +14,8 @@ CREATE TABLE IF NOT EXISTS `dyscover_posts` (
   `published_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_posts_slug` (`slug`),
-  KEY `idx_posts_slug` (`slug`),
+  UNIQUE KEY `uq_posts_uuid` (`uuid`),
+  KEY `idx_posts_uuid` (`uuid`),
   KEY `idx_posts_user` (`user_id`),
   KEY `idx_posts_type` (`type`),
   KEY `idx_posts_visibility` (`visibility`),
@@ -86,18 +86,18 @@ CREATE TABLE IF NOT EXISTS `dyscover_post_shares` (
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `dyscover_post_saves` (
+CREATE TABLE IF NOT EXISTS `dyscover_post_bookmarks` (
   `post_id` BIGINT UNSIGNED NOT NULL,
   `user_id` BIGINT UNSIGNED NOT NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`post_id`, `user_id`),
-  KEY `idx_post_saves_user` (`user_id`),
-  CONSTRAINT `dyscover_post_saves_ibfk_1`
+  KEY `idx_post_bookmarks_user` (`user_id`),
+  CONSTRAINT `dyscover_post_bookmarks_ibfk_1`
     FOREIGN KEY (`post_id`)
     REFERENCES `dyscover_posts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `dyscover_post_saves_ibfk_2`
+  CONSTRAINT `dyscover_post_bookmarks_ibfk_2`
     FOREIGN KEY (`user_id`)
     REFERENCES `dyscover_users` (`id`)
     ON DELETE CASCADE
@@ -156,18 +156,35 @@ CREATE TABLE IF NOT EXISTS `dyscover_post_tags` (
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `dyscover_post_analytics` (
+CREATE TABLE IF NOT EXISTS `dyscover_post_reposts` (
+  `post_id` BIGINT UNSIGNED NOT NULL,
+  `user_id` BIGINT UNSIGNED NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`post_id`, `user_id`),
+  KEY `idx_post_reposts_user` (`user_id`),
+  CONSTRAINT `dyscover_post_reposts_ibfk_1`
+    FOREIGN KEY (`post_id`)
+    REFERENCES `dyscover_posts` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `dyscover_post_reposts_ibfk_2`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `dyscover_users` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+);
+CREATE TABLE IF NOT EXISTS `dyscover_post_statistics` (
   `post_id` BIGINT UNSIGNED NOT NULL,
   `views` BIGINT UNSIGNED NOT NULL DEFAULT 0,
   `likes` BIGINT UNSIGNED NOT NULL DEFAULT 0,
   `comments` BIGINT UNSIGNED NOT NULL DEFAULT 0,
   `mentions` BIGINT UNSIGNED NOT NULL DEFAULT 0,
   `shares` BIGINT UNSIGNED NOT NULL DEFAULT 0,
-  `saves` BIGINT UNSIGNED NOT NULL DEFAULT 0,
+  `bookmarks` BIGINT UNSIGNED NOT NULL DEFAULT 0,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`post_id`),
-  CONSTRAINT `dyscover_post_analytics_ibfk_1`
+  CONSTRAINT `dyscover_post_statistics_ibfk_1`
     FOREIGN KEY (`post_id`)
     REFERENCES `dyscover_posts` (`id`)
     ON DELETE CASCADE

@@ -1,0 +1,242 @@
+@import "../core/index.css";
+.header {
+    background:
+        linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+        url("https://www.ielectro.com/media/about-us.png");
+    background-position: center center;
+    background-size: cover;
+}
+.mission-card {
+    background: linear-gradient(135deg,
+            rgba(131, 210, 255, 0.1),
+            rgba(0, 59, 255, 0.1));
+    border-radius: 1rem;
+    padding: 2.5rem;
+    border: 1px solid rgba(131, 210, 255, 0.2);
+    box-shadow: 0 8px 24px rgba(0, 59, 255, 0.08);
+}
+.mission-card .section-title {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+}
+.mission-card .section-subtitle {
+    font-size: 1.15rem;
+    line-height: 1.8;
+}
+.team-grid {
+    display: grid;
+    gap: 2.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+.team-member {
+    text-align: center;
+    padding: 2.5rem;
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+.team-member:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+.avatar-wrapper {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 1.5rem;
+}
+.avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center center;
+    box-shadow: 0 6px 20px rgba(253, 186, 116, 0.3);
+    border: 4px solid var(--primary-color);
+    transition: transform 0.3s ease;
+}
+.team-member:hover .avatar {
+    transform: scale(1.05);
+}
+.avatar-badge {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: 42px;
+    height: 42px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    box-shadow: 0 4px 12px rgba(253, 186, 116, 0.4);
+    border: 3px solid white;
+    animation: pulse 2s infinite;
+}
+.avatar-badge svg {
+    width: 22px;
+    height: 22px;
+    color: white;
+}
+@keyframes pulse {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+.team-social {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+.social-link {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(131, 210, 255, 0.1);
+    display: grid;
+    place-items: center;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+.social-link:hover {
+    background: var(--secondary-color);
+    transform: translateY(-3px);
+}
+.social-link svg {
+    width: 20px;
+    height: 20px;
+    color: var(--secondary-color);
+    transition: color 0.3s ease;
+}
+.social-link:hover svg {
+    color: white;
+}
+.timeline {
+    position: relative;
+    padding: 2rem 0;
+}
+.timeline::before {
+    content: "";
+    position: absolute;
+    left: 30px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom,
+            var(--secondary-color),
+            var(--primary-color));
+}
+.timeline-item {
+    position: relative;
+    padding-left: 80px;
+    margin-bottom: 3rem;
+    animation: slideInLeft 0.6s ease-out;
+}
+.timeline-item:nth-child(even) {
+    animation-delay: 0.2s;
+}
+.timeline-item:nth-child(odd) {
+    animation-delay: 0.4s;
+}
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+.timeline-icon {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 60px;
+    height: 60px;
+    background: white;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 3px solid var(--secondary-color);
+}
+.timeline-icon svg {
+    width: 28px;
+    height: 28px;
+    color: var(--secondary-color);
+}
+.timeline-content {
+    background: white;
+    padding: 1.5rem 2rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+    border-left: 4px solid var(--secondary-color);
+}
+.timeline-item:hover .timeline-content {
+    transform: translateX(8px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+.timeline-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+.timeline-year {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--secondary-color);
+    margin-bottom: 0.75rem;
+}
+.timeline-description {
+    font-size: 1rem;
+    color: #6b7280;
+    line-height: 1.6;
+}
+@media (max-width: 768px) {
+    .mission-card {
+        padding: 1.5rem;
+    }
+    .mission-card .section-title {
+        font-size: 1.5rem;
+    }
+    .mission-card .section-subtitle {
+        font-size: 1rem;
+    }
+    .avatar-wrapper {
+        width: 120px;
+        height: 120px;
+    }
+    .avatar-badge {
+        width: 36px;
+        height: 36px;
+    }
+    .timeline::before {
+        left: 20px;
+    }
+    .timeline-item {
+        padding-left: 60px;
+    }
+    .timeline-icon {
+        width: 40px;
+        height: 40px;
+    }
+    .timeline-icon svg {
+        width: 20px;
+        height: 20px;
+    }
+    .timeline-content {
+        padding: 1.25rem 1.5rem;
+    }
+}

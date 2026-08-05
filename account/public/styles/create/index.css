@@ -1,0 +1,82 @@
+@import "../core/index.css";
+@import "../sessions/index.css";
+.create-progress {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 22px;
+}
+.create-progress-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--session-border);
+    transition: background 0.25s ease, transform 0.25s ease;
+}
+.create-progress-dot.is-active {
+    background: var(--session-accent);
+    transform: scale(1.15);
+}
+.create-step-label {
+    margin: 0 0 16px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #0f172a;
+}
+p.create-step-label {
+    margin-top: 0;
+}
+.create-card .buttons {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    margin-top: 20px;
+}
+.create-card .prev-button,
+.create-card .next-button {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f5f9;
+    border: 1px solid var(--session-border);
+    color: #475569;
+    transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+.create-card .prev-button:hover,
+.create-card .next-button:hover {
+    background: var(--session-accent-soft);
+    border-color: var(--session-accent);
+    color: var(--session-accent);
+    transform: scale(1.05);
+}
+.create-card .create-button {
+    flex: 1;
+    min-height: 46px;
+    background: var(--session-accent);
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    border: none;
+    border-radius: 10px;
+    padding: 14px 20px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+.create-card .create-button:hover {
+    background: #1d4ed8;
+}

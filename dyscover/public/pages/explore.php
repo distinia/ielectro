@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Explore</title>
+    <meta name="keywords" content="dyscover explore, discover, trending content">
+    <meta name="description" content="Discover trending topics and new content on Dyscover">
+</head>
+<body>
+<div class="search-page">
+    <div class="search-sticky">
+        <div class="search-bar-wrap">
+            <input type="search" class="search-input" placeholder="Search in Dyscover" id="searchInput">
+        </div>
+        <div class="tabs-list">
+            <div class="tab-trigger active" data-tab="articles">Articles</div>
+            <div class="tab-trigger" data-tab="users">Users</div>
+            <div class="tab-trigger" data-tab="images">Images</div>
+            <div class="tab-trigger" data-tab="videos">Videos</div>
+            <div class="tab-trigger" data-tab="audios">Audios</div>
+            <div class="tab-trigger" data-tab="documents">Documents</div>
+            <div class="tab-trigger" data-tab="templates">Templates</div>
+        </div>
+    </div>
+    <div class="tabs">
+        <div class="tab-content active post-preview-grid" id="articles" data-type="article"></div>
+        <div class="tab-content" id="users" data-type="user"></div>
+        <div class="tab-content post-preview-grid" id="images" data-type="image"></div>
+        <div class="tab-content post-preview-grid" id="videos" data-type="video"></div>
+        <div class="tab-content post-preview-grid" id="audios" data-type="audio"></div>
+        <div class="tab-content post-preview-grid" id="documents" data-type="document"></div>
+        <div class="tab-content post-preview-grid" id="templates" data-type="template"></div>
+    </div>
+</div>
+</body>
+</html>

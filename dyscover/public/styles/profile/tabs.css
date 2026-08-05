@@ -1,0 +1,67 @@
+.profile-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.profile-tab {
+  border: none;
+  background: transparent;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 12px;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    transform var(--transition-fast);
+}
+.profile-tab i {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+.profile-tab:hover {
+  background: rgba(30, 136, 229, 0.08);
+  color: var(--text-color);
+}
+.profile-tab.active {
+  background: rgba(30, 136, 229, 0.12);
+  color: var(--blue-mid);
+  transform: translateY(-1px);
+}
+.profile-type-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+.profile-type-tab {
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-elevated);
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+.profile-type-tab:hover {
+  color: var(--text-color);
+  border-color: rgba(30, 136, 229, 0.35);
+}
+.profile-type-tab.active {
+  background: rgba(30, 136, 229, 0.1);
+  color: var(--blue-mid);
+  border-color: rgba(30, 136, 229, 0.35);
+}

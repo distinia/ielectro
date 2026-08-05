@@ -1,0 +1,26 @@
+.user-stats {
+  display: flex;
+  gap: 1.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+.user-stats span {
+  font-size: 0.95rem;
+  cursor: default;
+}
+.user-stats .followers-number,
+.user-stats .followings-number {
+  cursor: pointer;
+}
+.user-stats .followers-number:hover,
+.user-stats .followings-number:hover {
+  color: var(--blue-mid);
+}
+.articles-number {
+  font-weight: 700;
+}
+@media (max-width: 768px) {
+  .user-stats {
+    justify-content: center;
+  }
+}

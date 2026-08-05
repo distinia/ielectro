@@ -1,0 +1,5 @@
+.feed-empty {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 3rem 1rem;
+}

@@ -1,0 +1,30 @@
+.file-preview {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+}
+.file-preview img,
+.file-preview video {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+}
+.file-preview span {
+    font-size: 0.9em;
+    color: #666;
+    text-align: center;
+}
+@media (max-width: 768px) {
+    .file-preview {
+        width: 100%;
+        height: auto;
+    }
+}

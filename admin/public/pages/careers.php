@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Careers management</title>
+    <meta name="keywords" content="admin careers, job listings, ielectro admin">
+    <meta name="description" content="Manage career listings and job postings">
+</head>
+<body>
+<div class="admin-layout">
+    <div class="admin-sidebar-mount"></div>
+    <div class="admin-main">
+        <div class="admin-shell">
+            <div class="overview-wrap">
+                <div class="admin-toolbar toolbar-list">
+                    <button type="button" class="primary admin-action-new">New job listing</button>
+                </div>
+                <div class="admin-toolbar panel-hidden toolbar-form">
+                    <button type="button" class="secondary admin-action-back-list">Back to overview</button>
+                </div>
+                <div class="admin-toolbar panel-hidden toolbar-view">
+                    <button type="button" class="secondary admin-action-back-list">Back to overview</button>
+                    <button type="button" class="primary link-edit-from-view">Edit</button>
+                </div>
+                <div class="admin-grid panel-overview">
+                    <section class="admin-card">
+                        <h1>Open positions</h1>
+                        <div class="admin-list-filters">
+                            <input type="search" class="admin-filter-search jobs-filter-q" placeholder="Search jobs…" autocomplete="off" aria-label="Search jobs">
+                            <select class="admin-filter-sort jobs-filter-sort" aria-label="Sort jobs">
+                                <option value="newest">Newest first</option>
+                                <option value="oldest">Oldest first</option>
+                                <option value="az">Title A–Z</option>
+                                <option value="za">Title Z–A</option>
+                            </select>
+                        </div>
+                        <div class="jobs-list"></div>
+                    </section>
+                    <section class="admin-card">
+                        <h1>Applications</h1>
+                        <p class="hint">
+                            CV files are stored in <code>/content/job-application/</code>
+                        </p>
+                        <div class="admin-list-filters">
+                            <input type="search" class="admin-filter-search apps-filter-q" placeholder="Search applications…" autocomplete="off" aria-label="Search applications">
+                            <select class="admin-filter-sort apps-filter-sort" aria-label="Sort applications">
+                                <option value="newest">Newest first</option>
+                                <option value="oldest">Oldest first</option>
+                                <option value="az">Name A–Z</option>
+                                <option value="za">Name Z–A</option>
+                            </select>
+                        </div>
+                        <div class="applications-list"></div>
+                    </section>
+                </div>
+            </div>
+            <section class="admin-card panel-hidden panel-form">
+                <h1 class="form-heading">Job listing</h1>
+                <form class="job-form">
+                    <input type="hidden" name="id" value="">
+                    <input type="text" name="title" placeholder="Job title" required>
+                    <textarea name="requirements" rows="8" placeholder="One requirement per line" required></textarea>
+                    <select name="status">
+                        <option value="1">Active</option>
+                        <option value="0">Hidden</option>
+                    </select>
+                    <button type="submit" class="btn-primary">Save</button>
+                </form>
+                <p class="hint form-msg"></p>
+                <button type="button" class="btn-danger panel-hidden job-delete">Delete listing</button>
+            </section>
+            <section class="admin-card panel-hidden panel-view">
+                <div class="job-view"></div>
+            </section>
+        </div>
+    </div>
+</div>
+</body>
+</html>

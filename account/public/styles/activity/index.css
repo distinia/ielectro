@@ -1,0 +1,114 @@
+@import "../core/index.css";
+@import "../core/sidebar.css";
+.activity-page {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+.activity-page section.activity-section {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 24px;
+    display: grid;
+    gap: 24px;
+}
+.activity-card {
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 22px 24px;
+    transition: box-shadow var(--transition-smooth);
+}
+.activity-card:hover {
+    box-shadow: var(--shadow-lg);
+}
+.activity-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 16px;
+    margin-bottom: 18px;
+}
+.activity-section-title {
+    margin: 0;
+    flex: 1 1 auto;
+    min-width: 140px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+}
+.activity-filter-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin: 0;
+}
+.activity-type-filter {
+    margin: 0;
+    max-width: 220px;
+    min-width: 180px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition:
+        border-color var(--transition-fast),
+        box-shadow var(--transition-fast);
+}
+.activity-type-filter:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-soft);
+}
+.activity-list {
+    display: grid;
+    gap: 14px;
+}
+.activity-item {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 16px 18px;
+    background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
+    transition:
+        border-color var(--transition-fast),
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast);
+}
+.activity-item.activity-item-new {
+    background: linear-gradient(180deg, #eff6ff 0%, #e8f1ff 100%);
+    border-color: rgba(59, 130, 246, 0.34);
+}
+.activity-item:hover,
+.activity-item:focus-within {
+    border-color: rgba(37, 99, 235, 0.25);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+.activity-summary {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.55;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+.activity-summary strong {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+.activity-item h4 {
+    margin: 0 0 6px 0;
+}
+.activity-meta {
+    color: var(--text-secondary);
+    font-size: 13px;
+    margin: 8px 0 0 0;
+    line-height: 1.45;
+}
+.activity-device {
+    opacity: 0.85;
+    font-size: 12px;
+}

@@ -119,7 +119,7 @@ class Image extends File
     public function convert(string $format): static
     {
         $this->targetExtension = strtolower($format);
-        $basename = $this->basename() ?? Identifier::token();
+        $basename = $this->basename() ?? Generate::token();
         $this->path = self::joinPath(
             dirname($this->path),
             $basename . '.' . $this->targetExtension

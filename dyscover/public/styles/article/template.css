@@ -1,0 +1,95 @@
+.template {
+    line-height: 1.45;
+    border-collapse: separate;
+    border-spacing: 0;
+    max-width: 40%;
+    float: right;
+    background: var(--surface-elevated);
+    overflow: hidden;
+    margin-left: 2.5em;
+    margin-bottom: 2.5em;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--border-subtle);
+    transition:
+        box-shadow var(--transition),
+        transform var(--transition);
+}
+.template:hover {
+    box-shadow: var(--card-shadow-hover);
+}
+.template tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.98);
+}
+.template tr:nth-child(odd) {
+    background-color: #f4f7fb;
+}
+.template td,
+.template th {
+    vertical-align: top;
+    padding: 14px;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+.template td {
+    width: 50%;
+}
+.template-cell-info {
+    line-height: inherit;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.template-cell-info li {
+    margin-bottom: 8px;
+}
+.template-cell-info li:last-child {
+    margin-bottom: 0;
+}
+.template td[colspan="2"],
+.template th[colspan="2"] {
+    text-align: center;
+}
+.template thead tr {
+    font-size: 1.2em;
+    background: var(--primary-gradient);
+    color: white;
+}
+.template-cell-label,
+.template b {
+    text-align: left;
+    font-weight: bold;
+}
+.template-large-image {
+    margin: 0 auto;
+    cursor: pointer;
+    padding: 0;
+    max-width: 100%;
+    height: auto;
+}
+.template-first-image,
+.template-second-image {
+    width: auto;
+    max-height: 80px;
+    margin: 10px;
+    vertical-align: middle;
+    display: inline-block;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition:
+        transform var(--transition),
+        box-shadow var(--transition);
+}
+.template-first-image:hover,
+.template-second-image:hover {
+    transform: scale(1.05);
+}
+@media only screen and (max-width: 768px) {
+    .template {
+        max-width: 100%;
+        width: 100%;
+        margin-left: 0;
+        font-size: 13px;
+        float: none;
+    }
+}

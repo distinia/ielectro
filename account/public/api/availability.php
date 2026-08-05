@@ -6,10 +6,21 @@ use Nesh\Response;
 use Nesh\Validate;
 class Availability
 {
-    public function username(): void
+    public function index(): void
     {
-        Routing::get();
-        $username = trim((string) Routing::segment(3));
+        Request::post();
+        $input = Request::body();
+        $field = strtolower(trim((string) ($input['field'] ?? '')));
+        $value = trim((string) ($input['value'] ?? ''));
+        match ($field) {
+            'username' => $this->username($value),
+            'email'    => $this->email($value),
+            'phone'    => $this->phone($value),
+            default    => Response::badRequest('Invalid field'),
+        };
+    }
+    private function username(string $username): void
+    {
         if (!Validate::username($username)) {
             Response::badRequest('Invalid username');
         }
@@ -20,10 +31,8 @@ class Availability
             )
         ]);
     }
-    public function email(): void
+    private function email(string $email): void
     {
-        Routing::get();
-        $email = trim((string) Routing::segment(3));
         if (!Validate::email($email)) {
             Response::badRequest('Invalid email');
         }
@@ -34,10 +43,8 @@ class Availability
             )
         ]);
     }
-    public function phone(): void
+    private function phone(string $phone): void
     {
-        Routing::get();
-        $phone = trim((string) Routing::segment(3));
         if (!Validate::phone($phone)) {
             Response::badRequest('Invalid phone number');
         }

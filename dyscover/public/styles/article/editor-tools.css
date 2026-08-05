@@ -1,0 +1,34 @@
+.find-replace {
+    background-color: var(--card-background);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    position: fixed;
+    top: 18%;
+    right: 20%;
+    z-index: 1000;
+    padding: 15px;
+}
+.article-box {
+    position: absolute;
+    background: white;
+    box-shadow: 0 0 20px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    display: flex;
+    overflow: hidden;
+    opacity: 0;
+    color: var(--text-color);
+    transition: var(--transition);
+    z-index: 9999;
+}
+.article-text {
+    padding: 15px;
+    width: 100%;
+}
+.article-text p {
+    margin: 0;
+    overflow: hidden;
+    line-height: 1.4;
+    color: var(--text-color, #333);
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+}

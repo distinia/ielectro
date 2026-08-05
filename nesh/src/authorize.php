@@ -9,7 +9,7 @@ class Authorize
              FROM {$table}
              WHERE {$column} = ?
              LIMIT 1",
-            [Request::id()]
+            [Routing::id()]
         )) {
             Response::notFound();
         }
@@ -21,12 +21,12 @@ class Authorize
              FROM {$table}
              WHERE {$column} = ?
              LIMIT 1",
-            [Request::id()]
+            [Routing::id()]
         );
         if ($record === null) {
             Response::notFound();
         }
-        if ((int) $record[$owner] !== Session::id()) {
+        if ((int) $record[$owner] !== Identity::id()) {
             Response::forbidden();
         }
     }

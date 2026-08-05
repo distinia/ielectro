@@ -1,0 +1,16 @@
+.tab-content {
+    display: none;
+}
+.tab-content.active {
+    display: grid;
+}
+.tab-content.post-preview-grid {
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.5rem;
+}
+.search-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--text-muted);
+  padding: 2rem 1rem;
+}

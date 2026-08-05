@@ -1,0 +1,19 @@
+:root {
+    --primary-color: linear-gradient(135deg, #c2410c, #9a3412);
+    --secondary-color: linear-gradient(135deg, #85d2ff, #003bff);
+    --text-color: #1f2937;
+    --bg-color: #f9fafb;
+    --card-shadow:
+        0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --primary-solid: #ff8c42;
+    --secondary-solid: #0066ff;
+    --primary-light: #fff4ec;
+    --secondary-light: #e6f4ff;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --error: #ef4444;
+    --border-radius: 0.75rem;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.12);
+}

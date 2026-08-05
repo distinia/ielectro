@@ -105,7 +105,7 @@ class Audio extends File
     }
     protected function runOutput(string $command, string $extension): void
     {
-        $destination = self::joinPath(TEMP_PATH, Identifier::token() . '.' . ltrim($extension, '.'));
+        $destination = self::joinPath(TEMP_PATH, Generate::token() . '.' . ltrim($extension, '.'));
         self::makeDirectory(TEMP_PATH);
         if (!self::runFfmpeg($command . ' ' . escapeshellarg($destination))) {
             Response::error('Audio processing failed');

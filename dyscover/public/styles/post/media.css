@@ -1,0 +1,27 @@
+.post-media {
+    width: 100%;
+    height: 100%;
+    background: #0a0a0a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.post-media img,
+.post-media video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    background: #000;
+}
+.post-media-audio {
+    padding: 2rem 1.5rem;
+}
+.post-media-audio audio {
+    width: 100%;
+}
+.post-media-doc iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}

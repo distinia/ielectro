@@ -8,7 +8,7 @@ use Nesh\Client;
 class Oauth {
     public function google(): void
     {
-        Routing::post();
+        Request::post();
         $credential = trim((string) Request::value('credential'));
         if ($credential === '') {
             Response::badRequest('Google credential is required');
@@ -33,7 +33,7 @@ class Oauth {
             ]);
         }
         Pending::delete();
-        AuthSession::create((int) $account['id']);
+        Session::create((int) $account['id']);
         Response::success('Signed in successfully');
     }
 }

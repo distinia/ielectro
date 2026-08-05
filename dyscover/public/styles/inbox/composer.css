@@ -1,0 +1,29 @@
+.chat-area-composer {
+    padding: 1rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.chat-area-composer .message-input {
+    flex: 1;
+    display: inline-flex;
+}
+.chat-area-composer .attach-file {
+    opacity: 0.85;
+    cursor: pointer;
+}
+.chat-area-composer.is-chat-composer-hidden {
+    display: none !important;
+}
+.send-message-btn {
+    min-width: 2.75rem;
+    padding: 0.5rem 0.75rem;
+}
+.hidden-file-input {
+    position: absolute;
+    width: 0;
+    height: 0;
+    opacity: 0;
+    pointer-events: none;
+}

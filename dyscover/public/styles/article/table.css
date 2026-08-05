@@ -1,0 +1,26 @@
+@media only screen and (max-width: 600px) {
+    table:not(.template),
+    table:not(.template) thead,
+    table:not(.template) tbody,
+    table:not(.template) th,
+    table:not(.template) td,
+    table:not(.template) tr {
+        display: block;
+        font-size: 13px;
+    }
+    table:not(.template) tr {
+        margin-bottom: 15px;
+    }
+    table:not(.template) th::before,
+    table:not(.template) td::before {
+        position: absolute;
+        left: 0;
+        width: 45%;
+        white-space: nowrap;
+        text-align: left !important;
+        font-weight: bold;
+    }
+    table:not(.template) td::before {
+        content: attr(data-label);
+    }
+}

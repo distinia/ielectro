@@ -20,8 +20,8 @@ class API {
             "https://dyscover.ielectro.com/data/Destenia.json",
         );
     }
-    static async getTemplate(slug) {
-        let file = String(slug || "").trim();
+    static async getTemplate(uuid) {
+        let file = String(uuid || "").trim();
         if (!file.toLowerCase().endsWith(".json")) {
             file = `${file}.json`;
         }

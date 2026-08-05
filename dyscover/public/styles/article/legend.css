@@ -1,0 +1,23 @@
+.legend {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+.legend-box {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    border: 2px solid var(--legend-border, #333);
+    border-radius: 4px;
+    transition: transform 0.3s ease;
+}
+.legend:hover .legend-box {
+    transform: scale(1.1);
+}
+.legend-text {
+    font-size: 14px;
+    color: var(--text-color, #333);
+    line-height: 1.4;
+    font-weight: 500;
+}

@@ -1,0 +1,16 @@
+a {
+    color: var(--secondary-solid);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+.cta-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: auto;
+}
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }

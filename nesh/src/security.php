@@ -9,7 +9,7 @@ class Security
         }
         Cookie::set(
             'csrf_token',
-            Identifier::token(CSRF_TOKEN_LENGTH),
+            Generate::token(CSRF_TOKEN_LENGTH),
             time() + (86400 * 30),
             false
         );
@@ -26,13 +26,17 @@ class Security
             && $token !== ''
             && self::equals($cookie, $token);
     }
+    public static function require(): void
+    {
+        Request::requireCsrf();
+    }
     public static function equals(string $first, string $second): bool
     {
         return hash_equals($first, $second);
     }
     public static function random(int $length = 32): string
     {
-        return Identifier::token($length);
+        return Generate::token($length);
     }
     public static function encrypt(string $value, string $key): string
     {

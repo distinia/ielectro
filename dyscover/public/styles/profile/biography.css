@@ -1,0 +1,26 @@
+.biography {
+  color: var(--text-color);
+  font-size: 0.96rem;
+  line-height: 1.55;
+  max-width: 40rem;
+  white-space: pre-wrap;
+}
+.bio-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.bio-input {
+  width: 100%;
+  min-height: 140px;
+  resize: vertical;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1rem;
+  font: inherit;
+  line-height: 1.5;
+}
+.bio-actions {
+  display: flex;
+  justify-content: flex-end;
+}

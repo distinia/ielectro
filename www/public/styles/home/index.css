@@ -1,0 +1,217 @@
+@import "../core/index.css";
+.header {
+    background:
+        linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+        url("https://www.ielectro.com/media/home.png");
+    background-position: center center;
+    background-size: cover;
+}
+.ie-carousel {
+    position: relative;
+    overflow: hidden;
+    max-width: 100vw;
+    min-height: 330px;
+    background: #f7fbfe;
+    border-radius: 1.2em;
+}
+.carousel-slide {
+    display: none;
+    align-items: center;
+    min-height: 320px;
+    padding: 14px;
+    gap: 20px;
+}
+.carousel-slide.active {
+    display: flex;
+}
+.news-media-col {
+    flex: 1 1 320px;
+    min-width: 230px;
+    padding-right: 2rem;
+}
+.news-text-col {
+    flex: 2 1 380px;
+    min-width: 270px;
+}
+.news-slide-image {
+    width: 100%;
+    max-width: 320px;
+    border-radius: 1em;
+    box-shadow: 0 5px 32px #b6d5fe44;
+}
+.news-slide-date {
+    color: #64748b;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+}
+.news-slide-title {
+    font-size: 2rem;
+    color: #2563eb;
+    margin-bottom: 0.9em;
+}
+.news-slide-text {
+    font-size: 1.16em;
+    color: #273057;
+}
+.cta-left {
+    justify-content: flex-start;
+    margin-top: 1rem;
+}
+.carousel-arrow {
+    position: absolute;
+    top: 47%;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.8);
+    border: none;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    font-size: 1.19rem;
+    box-shadow: 0 2px 8px #aaccff27;
+    cursor: pointer;
+}
+.carousel-arrow.prev {
+    left: 16px;
+}
+.carousel-arrow.next {
+    right: 16px;
+}
+.news-grid {
+    display: grid;
+    gap: 2.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+.updates-list {
+    background-color: white;
+    border-radius: 1rem;
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+}
+.update-item {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    transition: background-color 0.3s ease;
+}
+.update-item:hover {
+    background-color: #f3f4f6;
+}
+.update-item:last-child {
+    border-bottom: none;
+}
+.update-version {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+.hero-vision {
+    padding: 5.5rem 0 4rem;
+    background: linear-gradient(105deg, #eaefff 70%, #d6ecfc 100%);
+}
+.hero-flex {
+    display: flex;
+    align-items: center;
+    gap: 4vw;
+    flex-wrap: wrap;
+}
+.hero-text {
+    flex: 1 1 340px;
+    max-width: 540px;
+}
+.hero-text h2 {
+    font-size: 2.9rem;
+    font-weight: 800;
+    color: #283f6c;
+    margin-bottom: 1.7rem;
+}
+.hero-text p {
+    font-size: 1.3rem;
+    color: #4a5670;
+    line-height: 1.6;
+}
+.hero-image {
+    flex: 1 1 300px;
+    display: flex;
+    justify-content: center;
+}
+.hero-image img {
+    max-width: 370px;
+    width: 100%;
+    border-radius: 1.5em;
+    box-shadow: 0 8px 32px #b7dfff44;
+}
+.platform-timeline {
+    background: #fcfdff;
+}
+.timeline-updates {
+    margin: 2.8em 0;
+    padding-left: 1.2em;
+    border-left: 3px solid #98b4e3;
+}
+.timeline-step {
+    position: relative;
+    padding-left: 2.2em;
+    margin-bottom: 2em;
+}
+.timeline-dot {
+    position: absolute;
+    left: -23px;
+    top: 2px;
+    width: 17px;
+    height: 17px;
+    background: #2563eb;
+    border-radius: 50%;
+    border: 2px solid #fff;
+}
+.timeline-title {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #21325b;
+}
+.timeline-desc {
+    color: #354360;
+}
+.stats {
+    background: linear-gradient(95deg, #e7f3ff 50%, #ccedfd 100%);
+}
+.stats-flex {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2.6vw;
+    flex-wrap: wrap;
+    text-align: center;
+}
+.stat {
+    padding: 1.4em 0;
+    min-width: 160px;
+}
+.stat-number {
+    font-size: 2.3rem;
+    font-weight: 800;
+    color: #2563eb;
+}
+.stat-label {
+    color: #444c7a;
+}
+.divider {
+    width: 1px;
+    height: 49px;
+    background: #b3cafa;
+}
+.why {
+    background: #f8fafb;
+}
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+@media (max-width: 860px) {
+    .carousel-slide {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .news-media-col {
+        padding-right: 0;
+    }
+}

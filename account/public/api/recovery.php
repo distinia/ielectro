@@ -1,19 +1,19 @@
 <?php
 namespace Account;
-use Nesh\Identifier;
+use Nesh\Generate;
 use Nesh\Password;
 use Nesh\Query;
-use Nesh\Session;
+use Nesh\Identity;
 use Nesh\RateLimit;
 use Nesh\Request;
 use Nesh\Response;
 use Nesh\Validate;
 use Nesh\Mail;
-class PasswordRecovery
+class Recovery
 {
     public function index(): void
     {
-        Routing::post();
+        Request::post();
         RateLimit::check('password_recovery', 6, 900);
         $identifier = trim((string) Request::value('identifier'));
         if (!Validate::required($identifier)) {
@@ -37,7 +37,7 @@ class PasswordRecovery
             WHERE account_id = ?",
             [$account['id']]
         );
-        $token = Identifier::token();
+        $token = Generate::token();
         $otp = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
         Query::execute(
             "INSERT INTO account_password_resets(
@@ -49,7 +49,7 @@ class PasswordRecovery
             VALUES(?, ?, ?, DATE_ADD(NOW(), INTERVAL 20 MINUTE))",
             [
                 $account['id'],
-                Identifier::hash($token),
+                Generate::hash($token),
                 $otp
             ]
         );
@@ -63,13 +63,13 @@ class PasswordRecovery
         Activity::log(
             $account['id'],
             'password_recovery_requested',
-            Session::username() . ' has requested a password recovery'
+            Identity::username() . ' has requested a password recovery'
         );
         Response::success('Recovery email sent');
     }
     public function reset(): void
     {
-        Routing::post();
+        Request::post();
         RateLimit::check('password_reset', 8, 900);
         $token = trim((string) Request::value('token'));
         $otp = trim((string) Request::value('otp'));

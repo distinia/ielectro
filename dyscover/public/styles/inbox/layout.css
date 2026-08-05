@@ -1,0 +1,9 @@
+main {
+    padding: 0;
+    display: flex;
+    overflow: hidden;
+    height: 100vh;
+}
+.hidden {
+    display: none !important;
+}

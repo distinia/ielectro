@@ -1,0 +1,49 @@
+.activity-container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0 1rem 2rem;
+}
+.activity-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+.activity-header h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0;
+    background: var(--primary-gradient);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.activity-mark-read {
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.45rem 0.9rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-subtle);
+    background: var(--surface-elevated);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition:
+        background var(--transition-fast),
+        color var(--transition-fast);
+}
+.activity-mark-read:hover {
+    background: rgba(30, 136, 229, 0.08);
+    color: var(--blue-mid);
+}
+.activity-list {
+    background: var(--card-background);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--border-subtle);
+    overflow: hidden;
+    max-height: 520px;
+    overflow-y: auto;
+    padding: 1rem;
+}

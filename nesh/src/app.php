@@ -23,8 +23,6 @@ class App
         File::makeDirectory(APP_ASSETS);
         define('APP_PAGES', APP_PUBLIC . '/pages');
         File::makeDirectory(APP_PAGES);
-        define('APP_COMPONENTS', APP_PUBLIC . '/components');
-        File::makeDirectory(APP_COMPONENTS);
         define('APP_DATA', APP_PUBLIC . '/data');
         File::makeDirectory(APP_DATA);
         define('APP_DATABASE', APP_PATH . '/database');

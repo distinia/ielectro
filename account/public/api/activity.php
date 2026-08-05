@@ -3,10 +3,10 @@ namespace Account;
 use Nesh\Query;
 use Nesh\Request;
 use Nesh\Response;
-use Nesh\Session;
+use Nesh\Identity;
 class Activity
 {
-    public static function log(int $accountId, string $action, string $details): void 
+    public static function log(?int $accountId, string $action, string $details): void 
     {
         Query::execute(
             "INSERT INTO account_activity(account_id, action, details, ip_address, device_info)
@@ -22,8 +22,8 @@ class Activity
     }
     public function index(): void
     {
-        Routing::get();
-        $accountId = Session::userId();
+        Request::get();
+        $accountId = Identity::id();
         Response::success([
             'active_sessions' => Query::count(
                 "SELECT COUNT(*)

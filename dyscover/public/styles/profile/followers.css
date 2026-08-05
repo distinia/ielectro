@@ -1,0 +1,33 @@
+.users-box {
+  background: white;
+  border-radius: 10px;
+  padding: 1.5em;
+  width: 500px;
+}
+.search-bar input {
+  width: 100%;
+  padding: 8px;
+}
+.user-list {
+  height: 60vh;
+  overflow-y: auto;
+  margin-top: 10px;
+}
+.user-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.user-card a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-grow: 1;
+}
+.user-card img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}

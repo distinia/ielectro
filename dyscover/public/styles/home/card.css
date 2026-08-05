@@ -1,0 +1,55 @@
+.home-card {
+    background: var(--card-background);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    box-shadow: var(--card-shadow);
+    transition:
+        transform var(--transition),
+        box-shadow var(--transition),
+        border-color var(--transition);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-subtle);
+    position: relative;
+}
+.home-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--card-shadow-hover);
+    border-color: rgba(30, 136, 229, 0.28);
+}
+.home-card-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    background: var(--secondary-gradient);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: transform var(--ease-spring) 0.45s;
+}
+.home-card:hover .home-card-icon {
+    transform: scale(1.08);
+}
+.home-card h3 {
+    margin-bottom: 1rem;
+    font-size: 1.45rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-color);
+}
+@media (prefers-reduced-motion: reduce) {
+    .home-card:hover .home-card-icon {
+        transform: none;
+    }
+    .home-card:hover {
+        transform: none;
+    }
+}
+@media (max-width: 768px) {
+    .home-card {
+        padding: 1.5rem;
+    }
+    .home-card-icon {
+        font-size: 2.25rem;
+    }
+    .home-card h3 {
+        font-size: 1.2rem;
+    }
+}
