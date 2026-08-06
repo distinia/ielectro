@@ -163,13 +163,14 @@ class Routing
     {
         Security::ensure();
         [$page, $assets] = $this->resolvePage();
-        $path = APP_PAGES . '/' . $page . '.php';
+        $path = APP_PAGES . '/' . $page . '.html';
         if (!is_file($path)) {
             Response::notFound();
         }
-        ob_start();
-        require $path;
-        $html = ob_get_clean();
+        $html = file_get_contents($path);
+        if ($html === false) {
+            Response::notFound();
+        }
         echo $this->injectPageHead($html, $assets);
     }
     private function resolvePage(): array
@@ -178,8 +179,14 @@ class Routing
         if ($segment0 === 'article' && self::segment(1)) {
             return ['article', 'article'];
         }
+        if ($segment0 === 'users' && self::segment(1)) {
+            return ['user', 'profile'];
+        }
         if ($segment0 === 'u' && self::segment(1)) {
-            return ['profile', 'profile'];
+            return ['user', 'profile'];
+        }
+        if ($segment0 === 'explore' && self::segment(1)) {
+            return ['explore', 'explore'];
         }
         if ($segment0 === null || $segment0 === '') {
             return ['home', 'home'];
