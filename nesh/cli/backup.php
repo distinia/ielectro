@@ -39,19 +39,20 @@ class Backup
         }
         $this->addDirectory($zip, $application.'/src', 'src');
         $this->addDirectory($zip, $application.'/public', 'public');
-        $database = $application.'/storage/database.sql';
+        $dumpFile = $application . '/storage/database.sql';
+        $databaseName = 'ielectro_' . basename($application);
         $command = sprintf(
             'mysqldump -h%s -u%s -p%s %s > %s',
             DB_HOST,
             DB_USER,
             DB_PASS,
-            DB_NAME,
-            escapeshellarg($database)
+            $databaseName,
+            escapeshellarg($dumpFile)
         );
         exec($command);
-        if (file_exists($database)) {
-            $zip->addFile($database, 'database.sql');
-            unlink($database);
+        if (file_exists($dumpFile)) {
+            $zip->addFile($dumpFile, 'database.sql');
+            unlink($dumpFile);
         }
         $zip->close();
         echo "Backup '{$name}.zip' created.".PHP_EOL;

@@ -208,7 +208,7 @@ class Routing
         $html = str_replace('<head>', "<head>\n" . $head, $html);
         $html = preg_replace(
             '/<title>(.*?)<\/title>/is',
-            '<title>$1 - iElectro ' . APP_NAME . '</title>',
+            '<title>$1 - ' . APP_NAME . '</title>',
             $html,
             1
         );

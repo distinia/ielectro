@@ -40,7 +40,15 @@ class Request
         $origin = trim((string) ($_SERVER['HTTP_ORIGIN'] ?? ''));
         $method = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
         if ($origin !== '') {
-            if (!in_array($origin, CORS_ALLOWED_ORIGINS, true)) {
+            $host = parse_url($origin, PHP_URL_HOST);
+            $allowed = false;
+            foreach (CORS_ALLOWED_DOMAINS as $domain) {
+                if ($host === $domain || str_ends_with($host, '.' . $domain)) {
+                    $allowed = true;
+                    break;
+                }
+            }
+            if (!$allowed) {
                 Response::forbidden('Origin not allowed');
             }
             header('Access-Control-Allow-Origin: ' . $origin);

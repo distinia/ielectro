@@ -45,12 +45,13 @@ class Restore
         $zip->extractTo($application);
         $database = $application.'/database.sql';
         if (file_exists($database)) {
+            $databaseName = 'ielectro_' . basename($application);
             $command = sprintf(
                 'mysql -h%s -u%s -p%s %s < %s',
                 DB_HOST,
                 DB_USER,
                 DB_PASS,
-                DB_NAME,
+                $databaseName,
                 escapeshellarg($database)
             );
             exec($command);

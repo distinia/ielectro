@@ -33,6 +33,5 @@ class Build
             echo "No database directory found.".PHP_EOL;
             return;
         }
-        new \Nesh\Schema($database);
     }
 }

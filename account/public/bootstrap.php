@@ -1,4 +1,10 @@
 ﻿<?php
 require_once __DIR__ . '/../../nesh/src/autoload.php';
 use Nesh\App;
-$app = new App('account');
+$app = new App(
+    'iElectro Account',
+    'account',
+    'account',
+    'ielectro_account',
+    '1.0.0'
+);
