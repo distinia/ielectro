@@ -48,7 +48,7 @@ class Reparecss
             ) {
                 continue;
             }
-            $public = $directory->getPathname() . '/public';
+            $public = $directory->getPathname() . '';
             if (is_dir($public)) {
                 $applications[] = $public;
             }

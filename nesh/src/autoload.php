@@ -68,7 +68,7 @@ spl_autoload_register(function (string $class): void {
     }
     $directory = ROOT_PATH . '/'
         . strtolower($namespace)
-        . '/public/api';
+        . '/api';
     if (!is_dir($directory)) {
         return;
     }

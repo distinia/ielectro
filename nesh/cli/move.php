@@ -24,7 +24,7 @@ class Move
             ) {
                 continue;
             }
-           if (!is_dir($directory->getPathname() . '/public')) {
+           if (!is_dir($directory->getPathname() . '')) {
                 continue;
             }
            $applications[] = $directory->getFilename();
@@ -34,7 +34,7 @@ class Move
     }
    private function components(string $application): void
     {
-        $components = ROOT_PATH . "/{$application}/public/components";
+        $components = ROOT_PATH . "/{$application}/components";
        if (!is_dir($components)) {
             return;
         }
@@ -42,17 +42,17 @@ class Move
            $name = basename($directory);
            $this->move(
                 "{$directory}/{$name}.js",
-                ROOT_PATH . "/{$application}/public/scripts/layouts/{$name}.js"
+                ROOT_PATH . "/{$application}/scripts/layouts/{$name}.js"
             );
            $this->move(
                 "{$directory}/{$name}.css",
-                ROOT_PATH . "/{$application}/public/styles/layouts/{$name}.css"
+                ROOT_PATH . "/{$application}/styles/layouts/{$name}.css"
             );
         }
     }
    private function pages(string $application): void
     {
-        $pages = ROOT_PATH . "/{$application}/public/pages";
+        $pages = ROOT_PATH . "/{$application}/pages";
        if (!is_dir($pages)) {
             return;
         }
@@ -60,11 +60,11 @@ class Move
            $page = basename($directory);
            $this->move(
                 "{$directory}/{$page}.js",
-                ROOT_PATH . "/{$application}/public/scripts/pages/{$page}.js"
+                ROOT_PATH . "/{$application}/scripts/pages/{$page}.js"
             );
            $this->move(
                 "{$directory}/{$page}.css",
-                ROOT_PATH . "/{$application}/public/styles/{$page}/index.css"
+                ROOT_PATH . "/{$application}/styles/{$page}/index.css"
             );
            $this->move(
                 "{$directory}/{$page}.html",

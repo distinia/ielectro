@@ -65,8 +65,8 @@ class Rename
     }
     private function page(string $application, string $old, string $new): void
     {
-        $oldDir = $application."/public/pages/$old";
-        $newDir = $application."/public/pages/$new";
+        $oldDir = $application."/pages/$old";
+        $newDir = $application."/pages/$new";
         if (!is_dir($oldDir)) {
             echo "Page '{$old}' not found.".PHP_EOL;
             exit(1);
@@ -109,8 +109,8 @@ class Rename
     }
     private function api(string $application, string $old, string $new): void
     {
-        $oldFile = $application."/public/api/$old.php";
-        $newFile = $application."/public/api/$new.php";
+        $oldFile = $application."/api/$old.php";
+        $newFile = $application."/api/$new.php";
         if (!file_exists($oldFile)) {
             echo "API '{$old}' not found.".PHP_EOL;
             exit(1);

@@ -29,11 +29,11 @@ class App
         $this->url = 'https://' . $subdomain . '.' . DOMAIN;
         $this->paths = [
             'root'      => ROOT_PATH . '/' . $folder,
-            'public'    => ROOT_PATH . '/' . $folder . '/public',
-            'api'       => ROOT_PATH . '/' . $folder . '/public/api',
-            'assets'    => ROOT_PATH . '/' . $folder . '/public/assets',
-            'pages'     => ROOT_PATH . '/' . $folder . '/public/pages',
-            'data'      => ROOT_PATH . '/' . $folder . '/public/data',
+            'public'    => ROOT_PATH . '/' . $folder . '',
+            'api'       => ROOT_PATH . '/' . $folder . '/api',
+            'assets'    => ROOT_PATH . '/' . $folder . '/assets',
+            'pages'     => ROOT_PATH . '/' . $folder . '/pages',
+            'data'      => ROOT_PATH . '/' . $folder . '/data',
             'storage'   => ROOT_PATH . '/' . $folder . '/storage',
             'cache'     => ROOT_PATH . '/' . $folder . '/storage/cache',
             'logs'      => ROOT_PATH . '/' . $folder . '/storage/logs',

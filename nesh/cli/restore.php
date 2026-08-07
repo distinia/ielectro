@@ -41,7 +41,7 @@ class Restore
             exit(1);
         }
         $this->deleteDirectory($application.'/src');
-        $this->deleteDirectory($application.'/public');
+        $this->deleteDirectory($application.'');
         $zip->extractTo($application);
         $database = $application.'/database.sql';
         if (file_exists($database)) {

@@ -38,7 +38,7 @@ class Backup
             exit(1);
         }
         $this->addDirectory($zip, $application.'/src', 'src');
-        $this->addDirectory($zip, $application.'/public', 'public');
+        $this->addDirectory($zip, $application.'', 'public');
         $dumpFile = $application . '/storage/database.sql';
         $databaseName = 'ielectro_' . basename($application);
         $command = sprintf(

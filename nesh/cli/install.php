@@ -32,7 +32,7 @@ class Install
             }
             $folder = $directory->getFilename();
             $appPath = $directory->getPathname();
-            if (!is_dir($appPath . '/public')) {
+            if (!is_dir($appPath . '')) {
                 continue;
             }
             $database = new Database('ielectro_' . $folder);
@@ -46,7 +46,7 @@ class Install
     }
     private function javascript(): int
     {
-        $base = NESH_PATH . '/public/scripts';
+        $base = NESH_PATH . '/scripts';
         $iterator = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator(
                 $base,

@@ -26,8 +26,8 @@ class Dyscover
             [$accountId]
         );
         File::copyDirectory(
-            ROOT_PATH . '/dyscover/public/assets/default-user',
-            ROOT_PATH . '/dyscover/public/assets/users/' . $accountId
+            ROOT_PATH . '/dyscover/assets/default-user',
+            ROOT_PATH . '/dyscover/assets/users/' . $accountId
         );
     }
    public static function delete(int $accountId): void
@@ -40,7 +40,7 @@ class Dyscover
             [$accountId]
         );
        File::deleteDirectory(
-            ROOT_PATH . '/dyscover/public/assets/users/' . $accountId
+            ROOT_PATH . '/dyscover/assets/users/' . $accountId
         );
     }
 }

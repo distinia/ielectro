@@ -41,7 +41,7 @@ class Create
     }
     private function page(string $application, string $name): void
     {
-        $directory = $application.'/public/pages/'.$name;
+        $directory = $application.'/pages/'.$name;
        if (is_dir($directory)) {
             echo "Error: Page '{$name}' already exists.".PHP_EOL;
             exit(1);
@@ -93,7 +93,7 @@ class Create
     }
     private function api(string $application, string $name): void
     {
-        $file = $application.'/public/api/'.$name.'.php';
+        $file = $application.'/api/'.$name.'.php';
         if (file_exists($file)) {
             echo "Error: API '{$name}' already exists.".PHP_EOL;
             exit(1);
