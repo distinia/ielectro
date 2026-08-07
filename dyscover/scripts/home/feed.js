@@ -1,6 +1,6 @@
 import { App } from "../core/app.js";
 import { Api } from "../core/api.js";
-import { Card, EmptyState, Icons, Request } from "../core/index.js";
+import { Card, EmptyState, Icons, Request, Spinner } from "../core/index.js";
 
 export class Feed {
     constructor() {
@@ -11,7 +11,6 @@ export class Feed {
         this.index = 0;
         if (!this.stage) return;
         this.bindNav();
-        this.init();
     }
 
     bindNav() {
@@ -37,6 +36,7 @@ export class Feed {
     }
 
     async init() {
+        Spinner.mount(this.stage);
         try {
             const res = await Request.get(Api.feed(50));
             this.posts = Api.list(res).map(

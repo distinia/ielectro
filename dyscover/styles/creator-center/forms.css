@@ -1,0 +1,207 @@
+.creator-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.creator-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.creator-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.creator-field label,
+.creator-field b {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.creator-field .hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.creator-upload-zone {
+    border: 2px dashed rgba(30, 136, 229, 0.28);
+    border-radius: 14px;
+    padding: 1.25rem 1rem;
+    text-align: center;
+    background: rgba(30, 136, 229, 0.04);
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.creator-upload-zone:hover {
+    border-color: rgba(30, 136, 229, 0.45);
+    background: rgba(30, 136, 229, 0.07);
+}
+
+.creator-upload-zone p {
+    margin: 0.35rem 0 0;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+.creator-upload-zone strong {
+    color: var(--blue-mid);
+}
+
+.tags-input-wrap {
+    position: relative;
+}
+
+.tags-suggestions {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 4px);
+    margin: 0;
+    padding: 0.35rem;
+    list-style: none;
+    background: #fff;
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    max-height: 180px;
+    overflow-y: auto;
+    z-index: 20;
+}
+
+.tags-suggestions li {
+    padding: 0.45rem 0.65rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.84rem;
+    color: var(--blue-mid);
+}
+
+.tags-suggestions li:hover {
+    background: rgba(30, 136, 229, 0.08);
+}
+
+.template-layout {
+    display: grid;
+    grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+    gap: 1rem;
+    align-items: start;
+}
+
+.template-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.template-sidebar-card {
+    padding: 1rem;
+    border-radius: 16px;
+    border: 1px solid var(--border-subtle);
+    background: rgba(248, 250, 252, 0.85);
+}
+
+.template-sidebar-card h3,
+.template-builder-head h3 {
+    margin: 0 0 0.75rem;
+    font-size: 0.95rem;
+}
+
+.template-builder {
+    padding: 1rem;
+    border-radius: 16px;
+    border: 1px solid var(--border-subtle);
+    background: rgba(255, 255, 255, 0.92);
+}
+
+.template-builder-head p {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+.template-field-add {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(140px, 180px) auto;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.template-field-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.template-field-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.75rem 0.85rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-subtle);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.template-field-card-main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+.template-field-card-main span {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+.template-preview-box {
+    min-height: 120px;
+}
+
+@media (max-width: 900px) {
+    .template-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .template-field-add {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .creator-form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.button.is-loading {
+    pointer-events: none;
+    opacity: 0.88;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+}
+
+.creator-btn-spinner {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: creator-spin 0.65s linear infinite;
+    flex-shrink: 0;
+}
+
+@keyframes creator-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

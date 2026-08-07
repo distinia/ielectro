@@ -5,29 +5,57 @@
     <meta name="keywords" content="dyscover creator, content creation, analytics">
     <meta name="description" content="Manage your content and creator tools on Dyscover">
 </head>
-<body>
+<body class="creator-page">
 <div class="manager-container">
+    <header class="creator-hero">
+        <div class="creator-hero-text">
+            <h1>Creator Center</h1>
+            <p>Publish articles, media, and templates from one place.</p>
+        </div>
+        <div class="creator-stats number-elements"></div>
+    </header>
     <div class="manager-actions">
         <div class="action-buttons">
-            <button class="button create"><i data-icon="circle-plus"></i> Create</button>
-            <button class="button edit"><i data-icon="pencil"></i> Edit</button>
-            <button class="button delete"><i data-icon="trash"></i> Delete</button>
+            <button type="button" class="button create"><i data-icon="circle-plus"></i> Create</button>
+            <button type="button" class="button edit"><i data-icon="pencil"></i> Edit</button>
+            <button type="button" class="button delete"><i data-icon="trash"></i> Delete</button>
         </div>
-        <div class="number-elements"></div>
-        <input type="search" class="input search-item" placeholder="Search">
+        <input type="search" class="input search-item" placeholder="Search your content…">
     </div>
-    <div class="tabs">
-        <div class="tab-list">
-            <center>
-                <div class="tab article-tab active-tab">Articles</div>
-                <div class="tab image-tab">Images</div>
-                <div class="tab video-tab">Videos</div>
-                <div class="tab audio-tab">Audios</div>
-                <div class="tab document-tab">Documents</div>
-                <div class="tab template-tab">Templates</div>
-            </center>
+    <div class="creator-upload-hints">
+        <div class="upload-hint is-active" data-type="article">
+            <i data-icon="globe"></i>
+            <strong>Articles</strong>
+            <span>Title, description, and tags</span>
         </div>
-        <div class="section article-section">
+        <div class="upload-hint" data-type="image">
+            <i data-icon="image"></i>
+            <strong>Images</strong>
+            <span>Upload JPG, PNG, WebP</span>
+        </div>
+        <div class="upload-hint" data-type="video">
+            <i data-icon="video"></i>
+            <strong>Videos</strong>
+            <span>Upload MP4 and other video files</span>
+        </div>
+        <div class="upload-hint" data-type="audio">
+            <i data-icon="music"></i>
+            <strong>Audio</strong>
+            <span>Upload MP3 and audio tracks</span>
+        </div>
+        <div class="upload-hint" data-type="document">
+            <i data-icon="file-text"></i>
+            <strong>Documents</strong>
+            <span>Upload PDF documents</span>
+        </div>
+        <div class="upload-hint" data-type="template">
+            <i data-icon="layout-template"></i>
+            <strong>Templates</strong>
+            <span>Structured fields + preview image</span>
+        </div>
+    </div>
+    <div class="tabs creator-table">
+        <div class="section article-section active-section">
             <div class="table-wrapper">
                 <table class="table article-table">
                     <thead class="sticky-head">

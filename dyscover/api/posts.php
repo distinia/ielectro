@@ -68,26 +68,44 @@ class Posts
             Response::badRequest('Missing title');
         }
         $uuid = PostAssets::requireUuid($input['uuid'] ?? '');
-        if (Query::exists(
-            'SELECT 1 FROM posts WHERE uuid = ? LIMIT 1',
+        $userId = User::id();
+        $GLOBALS['dyscover']->database->use();
+        $existing = Query::fetch(
+            'SELECT id, uuid, user_id FROM posts WHERE uuid = ? LIMIT 1',
             [$uuid]
-        )) {
+        );
+        if ($existing) {
+            if ((int) $existing['user_id'] === $userId) {
+                Response::created([
+                    'id' => (int) $existing['id'],
+                    'uuid' => (string) $existing['uuid'],
+                ]);
+                return;
+            }
             Response::conflict('Uuid already exists');
         }
-        $userId = User::id();
         $description = trim((string) ($input['description'] ?? ''));
         $visibility = trim((string) ($input['visibility'] ?? 'public'));
         $extension = '';
         $previewImage = '';
         $html = null;
         $mediaFile = null;
-        if ($type === 'article') {
-            $html = (string) ($input['html'] ?? '');
-            if (!Validate::required($html)) {
-                Response::badRequest('Missing html');
+        if ($type === 'template') {
+            $previewFile = Request::file('preview');
+            if ($previewFile) {
+                $previewImage = PostAssets::storeTemplatePreview(
+                    $previewFile,
+                    $userId,
+                    $uuid,
+                    false
+                );
             }
+        }
+        if ($type === 'article') {
+            $html = '<p class="paragraph">Start here...</p>';
         } elseif ($type === 'template') {
-            if (!array_key_exists('fields', $input)) {
+            $input['fields'] = self::parseTemplateFields($input['fields'] ?? null);
+            if (!is_array($input['fields'])) {
                 Response::badRequest('Missing fields');
             }
         } elseif (PostAssets::isMediaType($type)) {
@@ -98,6 +116,9 @@ class Posts
             $processed = PostAssets::storeMedia($type, $mediaFile, $userId, $uuid, false);
             $extension = $processed['extension'];
             $previewImage = $processed['preview_image'];
+        }
+        if ($previewImage === '') {
+            $previewImage = PostAssets::defaultPreview();
         }
         Query::execute(
             "INSERT INTO posts(
@@ -126,7 +147,18 @@ class Posts
         } elseif ($type === 'template') {
             TemplateFields::sync($id, $input['fields']);
         }
+        if (array_key_exists('tags', $input)) {
+            PostTags::sync($id, $input['tags']);
+        }
         Response::created(['id' => $id, 'uuid' => $uuid]);
+    }
+    private static function parseTemplateFields(mixed $fields): ?array
+    {
+        if (is_string($fields)) {
+            $decoded = json_decode($fields, true);
+            return is_array($decoded) ? $decoded : null;
+        }
+        return is_array($fields) ? $fields : null;
     }
     private function update(): void
     {
@@ -178,7 +210,32 @@ class Posts
             if ($type !== 'template') {
                 Response::badRequest('Fields are only valid for templates');
             }
-            TemplateFields::sync($postId, $input['fields']);
+            $fields = self::parseTemplateFields($input['fields']);
+            if (!is_array($fields)) {
+                Response::badRequest('Invalid fields');
+            }
+            TemplateFields::sync($postId, $fields);
+            $updated = true;
+        }
+        $previewFile = Request::file('preview');
+        if ($previewFile) {
+            if ($type !== 'template') {
+                Response::badRequest('Preview is only valid for templates');
+            }
+            $previewImage = PostAssets::storeTemplatePreview(
+                $previewFile,
+                $userId,
+                $uuid,
+                true
+            );
+            Query::execute(
+                'UPDATE posts SET preview_image = ? WHERE id = ?',
+                [$previewImage, $postId]
+            );
+            $updated = true;
+        }
+        if (array_key_exists('tags', $input)) {
+            PostTags::sync($postId, $input['tags']);
             $updated = true;
         }
         if (!$updated) {
@@ -190,6 +247,7 @@ class Posts
     {
         Request::delete();
         $post = PostData::requireOwned(Routing::id());
+        $GLOBALS['dyscover']->database->use();
         Query::execute(
             "UPDATE posts SET status = 'hidden' WHERE id = ?",
             [(int) $post['id']]
@@ -215,6 +273,7 @@ class PostData
         if ($id === null || $id <= 0) {
             Response::badRequest('Missing post id');
         }
+        $GLOBALS['dyscover']->database->use();
         $row = Query::fetch(
             'SELECT * FROM posts WHERE id = ? LIMIT 1',
             [$id]
@@ -229,6 +288,7 @@ class PostData
     }
     public static function listByUser(int $userId): array
     {
+        $GLOBALS['dyscover']->database->use();
         $rows = Query::fetchAll(
             self::selectSql() . "
             WHERE p.user_id = ?
@@ -252,30 +312,59 @@ class PostData
     }
     public static function mapRows(array $rows): array
     {
-        return array_map(fn(array $row): array => self::map($row), $rows);
-    }
-    public static function map(array $row): array
-    {
-        $id = (int) $row['id'];
+        if (!$rows) {
+            return [];
+        }
+        $GLOBALS['dyscover']->database->use();
+        $rows = Accounts::attachUsernames($rows);
         $viewerId = User::id();
+        $tagMap = PostTags::mapForPosts(array_map(
+            static fn(array $row): int => (int) $row['id'],
+            $rows
+        ));
+        return array_map(
+            static fn(array $row): array => self::map(
+                $row,
+                $viewerId,
+                $tagMap[(int) $row['id']] ?? []
+            ),
+            $rows
+        );
+    }
+    public static function map(
+        array $row,
+        ?int $viewerId = null,
+        ?array $tags = null
+    ): array {
+        $id = (int) $row['id'];
+        if ($viewerId === null) {
+            $viewerId = User::id();
+        }
+        if ($tags === null) {
+            $tags = PostTags::names($id);
+        }
         $userId = (int) $row['user_id'];
         $uuid = (string) $row['uuid'];
         $type = (string) $row['type'];
         $extension = (string) ($row['extension'] ?? '');
         $media = self::mediaUrl($row);
         $url = $type === 'article' && $uuid !== ''
-            ? APP_URL . '/article/' . $uuid
+            ? \APP_URL . '/article/' . $uuid
             : '';
         return [
             'id' => $id,
             'user_id' => $userId,
             'username' => $row['username'] ?? '',
+            'avatar' => Avatar::url($userId),
             'uuid' => $uuid,
             'type' => $type,
             'title' => $row['title'] ?? '',
             'description' => $row['description'] ?? '',
+            'tags' => $tags,
             'extension' => $extension,
-            'preview_image' => $row['preview_image'] ?? '',
+            'preview_image' => ($row['preview_image'] ?? '') !== ''
+                ? (string) $row['preview_image']
+                : PostAssets::defaultPreview(),
             'media' => $media,
             'url' => $url,
             'visibility' => $row['visibility'],
@@ -300,9 +389,7 @@ class PostData
             return (string) ($row['preview_image'] ?? '');
         }
         if ($type === 'article') {
-            return APP_URL
-                . '/assets/users/' . $userId
-                . '/articles/' . $uuid . '.html';
+            return PostAssets::mediaUrl($userId, 'article', $uuid, 'html');
         }
         if ($type === 'template') {
             return (string) ($row['preview_image'] ?? '');
@@ -321,7 +408,7 @@ class PostData
     {
         return "SELECT
                 p.*,
-                a.username,
+                du.account_id,
                 s.views,
                 s.likes,
                 s.comments,
@@ -329,7 +416,6 @@ class PostData
                 s.bookmarks
             FROM posts p
             INNER JOIN users du ON du.id = p.user_id
-            " . Db::joinAccounts() . "
             LEFT JOIN post_statistics s ON s.post_id = p.id";
     }
 }
@@ -337,19 +423,24 @@ class PostEngagement
 {
     public static function exists(string $table, int $postId, int $userId): bool
     {
+        $GLOBALS['dyscover']->database->use();
         return Query::exists(
             "SELECT 1 FROM {$table} WHERE post_id = ? AND user_id = ? LIMIT 1",
             [$postId, $userId]
         );
     }
-    public static function add(string $table, string $stat, int $postId): void
+    public static function add(string $table, string $stat, int $postId): bool
     {
         $userId = User::id();
-        Query::execute(
+        $affected = Query::execute(
             "INSERT IGNORE INTO {$table}(post_id, user_id) VALUES(?, ?)",
             [$postId, $userId]
         );
-        self::adjustStat($stat, $postId, 1);
+        if ($affected > 0) {
+            self::adjustStat($stat, $postId, 1);
+            return true;
+        }
+        return false;
     }
     public static function remove(string $table, string $stat, int $postId): void
     {
@@ -392,14 +483,14 @@ class PostComments
             Response::badRequest('Missing post id');
         }
         $rows = Query::fetchAll(
-            "SELECT c.id, c.user_id, c.body, c.created_at, a.username
+            "SELECT c.id, c.user_id, c.body, c.created_at, du.account_id
             FROM post_comments c
             INNER JOIN users du ON du.id = c.user_id
-            " . Db::joinAccounts() . "
             WHERE c.post_id = ? AND c.status = 'active'
             ORDER BY c.id ASC",
             [$postId]
         );
+        $rows = Accounts::attachUsernames($rows);
         Response::success(array_map(fn(array $row): array => [
             'id' => (int) $row['id'],
             'user_id' => (int) $row['user_id'],
@@ -426,7 +517,9 @@ class PostComments
             [$postId, User::id(), $body]
         );
         PostEngagement::adjustStatDirect('comments', $postId, 1);
-        Response::created(['id' => Query::lastId()]);
+        $commentId = (int) Query::lastId();
+        ActivityNotify::onComment($postId, User::id());
+        Response::created(['id' => $commentId]);
     }
     private function update(): void
     {
@@ -476,7 +569,10 @@ class PostLikes
     private function add(): void
     {
         Request::post();
-        PostEngagement::add('post_likes', 'likes', (int) Routing::id());
+        $postId = (int) Routing::id();
+        if (PostEngagement::add('post_likes', 'likes', $postId)) {
+            ActivityNotify::onLike($postId, User::id());
+        }
         Response::created('Liked');
     }
     private function remove(): void
@@ -520,7 +616,10 @@ class PostReposts
     private function add(): void
     {
         Request::post();
-        PostEngagement::add('post_reposts', 'shares', (int) Routing::id());
+        $postId = (int) Routing::id();
+        if (PostEngagement::add('post_reposts', 'shares', $postId)) {
+            ActivityNotify::onShare($postId, User::id());
+        }
         Response::created('Reposted');
     }
     private function remove(): void
@@ -541,7 +640,10 @@ class PostShares
     private function add(): void
     {
         Request::post();
-        PostEngagement::add('post_shares', 'shares', (int) Routing::id());
+        $postId = (int) Routing::id();
+        if (PostEngagement::add('post_shares', 'shares', $postId)) {
+            ActivityNotify::onShare($postId, User::id());
+        }
         Response::created('Shared');
     }
 }
@@ -584,7 +686,12 @@ class PostAssets
         'video' => 'videos',
         'audio' => 'audios',
         'document' => 'documents',
+        'template' => 'templates',
     ];
+    public static function defaultPreview(): string
+    {
+        return \APP_URL . '/assets/brand/default-post.jpg';
+    }
     public static function isMediaType(string $type): bool
     {
         return in_array($type, self::MEDIA_TYPES, true);
@@ -603,14 +710,14 @@ class PostAssets
     }
     public static function articlePath(int $userId, string $uuid): string
     {
-        return APP_ASSETS
+        return \APP_ASSETS
             . '/users/' . $userId
             . '/' . self::assetFolder('article')
             . '/' . $uuid . '.html';
     }
     public static function mediaDir(int $userId, string $type): string
     {
-        return APP_ASSETS
+        return \APP_ASSETS
             . '/users/' . $userId
             . '/' . self::assetFolder($type);
     }
@@ -620,7 +727,7 @@ class PostAssets
         string $uuid,
         string $extension
     ): string {
-        return APP_URL
+        return \APP_URL
             . '/assets/users/' . $userId
             . '/' . self::assetFolder($type)
             . '/' . $uuid . '.' . ltrim($extension, '.');
@@ -632,6 +739,20 @@ class PostAssets
         if (file_put_contents($path, $html) === false) {
             Response::error('Unable to save article');
         }
+    }
+    public static function storeTemplatePreview(
+        array $file,
+        int $userId,
+        string $uuid,
+        bool $overwrite
+    ): string {
+        $dir = self::mediaDir($userId, 'template');
+        File::makeDirectory($dir);
+        if ($overwrite) {
+            self::clearMediaAssets($dir, $uuid);
+        }
+        $stored = self::storeImage($file, $uuid, $dir, $userId);
+        return self::mediaUrl($userId, 'template', $uuid, $stored['extension']);
     }
     public static function storeMedia(
         string $type,
@@ -731,8 +852,136 @@ class PostAssets
         if (is_file($thumbPath)) {
             unlink($thumbPath);
         }
-        return APP_URL
+        return \APP_URL
             . '/assets/users/' . $userId
             . '/videos/' . $uuid . '_preview.jpg';
+    }
+}
+class PostTags
+{
+    public static function names(int $postId): array
+    {
+        $GLOBALS['dyscover']->database->use();
+        $rows = Query::fetchAll(
+            'SELECT t.name
+            FROM post_tags pt
+            INNER JOIN tags t ON t.id = pt.tag_id
+            WHERE pt.post_id = ?
+            ORDER BY t.name',
+            [$postId]
+        );
+        return array_column($rows, 'name');
+    }
+    public static function mapForPosts(array $postIds): array
+    {
+        $postIds = array_values(array_filter(array_map('intval', $postIds)));
+        if (!$postIds) {
+            return [];
+        }
+        $GLOBALS['dyscover']->database->use();
+        $placeholders = implode(',', array_fill(0, count($postIds), '?'));
+        $rows = Query::fetchAll(
+            "SELECT pt.post_id, t.name
+            FROM post_tags pt
+            INNER JOIN tags t ON t.id = pt.tag_id
+            WHERE pt.post_id IN ({$placeholders})
+            ORDER BY t.name",
+            $postIds
+        );
+        $map = [];
+        foreach ($rows as $row) {
+            $map[(int) $row['post_id']][] = (string) $row['name'];
+        }
+        return $map;
+    }
+    public static function sync(int $postId, mixed $input): void
+    {
+        $GLOBALS['dyscover']->database->use();
+        $names = self::parse($input);
+        Query::execute('DELETE FROM post_tags WHERE post_id = ?', [$postId]);
+        foreach ($names as $name) {
+            $tagId = self::ensure($name);
+            Query::execute(
+                'INSERT IGNORE INTO post_tags(post_id, tag_id) VALUES(?, ?)',
+                [$postId, $tagId]
+            );
+        }
+    }
+    public static function parse(mixed $input): array
+    {
+        if (is_string($input)) {
+            $trimmed = trim($input);
+            if ($trimmed !== '' && str_starts_with($trimmed, '[')) {
+                $decoded = json_decode($trimmed, true);
+                if (is_array($decoded)) {
+                    $input = $decoded;
+                }
+            }
+        }
+        if (is_array($input)) {
+            $names = [];
+            foreach ($input as $value) {
+                $name = self::normalize((string) $value);
+                if ($name !== '') {
+                    $names[] = $name;
+                }
+            }
+            return array_values(array_unique($names));
+        }
+        $text = trim((string) $input);
+        if ($text === '') {
+            return [];
+        }
+        if (preg_match_all('/#([\p{L}\p{N}_-]+)/u', $text, $matches)) {
+            $names = array_map(
+                static fn(string $name): string => self::normalize($name),
+                $matches[1]
+            );
+            return array_values(array_unique(array_filter($names)));
+        }
+        $parts = preg_split('/[\s,]+/', $text) ?: [];
+        $names = [];
+        foreach ($parts as $part) {
+            $name = self::normalize($part);
+            if ($name !== '') {
+                $names[] = $name;
+            }
+        }
+        return array_values(array_unique($names));
+    }
+    public static function suggest(string $term, int $limit = 8): array
+    {
+        $term = self::normalize($term);
+        if ($term === '') {
+            return [];
+        }
+        $GLOBALS['dyscover']->database->use();
+        $rows = Query::fetchAll(
+            'SELECT name
+            FROM tags
+            WHERE name LIKE ?
+            ORDER BY name
+            LIMIT ' . (int) $limit,
+            [$term . '%']
+        );
+        return array_column($rows, 'name');
+    }
+    private static function normalize(string $name): string
+    {
+        $name = trim($name);
+        $name = ltrim($name, '#');
+        return mb_strtolower($name);
+    }
+    private static function ensure(string $name): int
+    {
+        $row = Query::fetch(
+            'SELECT id FROM tags WHERE name = ? LIMIT 1',
+            [$name]
+        );
+        if ($row) {
+            return (int) $row['id'];
+        }
+        Query::execute('INSERT INTO tags(name) VALUES(?)', [$name]);
+        return Query::lastId();
     }
 }

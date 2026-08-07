@@ -20,14 +20,32 @@ export class Api {
 
     static user = (idOrUsername) =>
         `${Api.base}/users/${encodeURIComponent(idOrUsername)}`;
-    static userFollowers = (id) => `${Api.base}/users/${id}/followers`;
-    static userFollowing = (id) => `${Api.base}/users/${id}/following`;
-    static userPosts = (id) => `${Api.base}/users/${id}/posts`;
-    static userLikes = (id) => `${Api.base}/users/${id}/likes`;
-    static userBookmarks = (id) => `${Api.base}/users/${id}/bookmarks`;
-    static userReposts = (id) => `${Api.base}/users/${id}/reposts`;
+    static userId(id) {
+        const value = Number(id);
+        if (!Number.isFinite(value) || value <= 0) {
+            return null;
+        }
+        return value;
+    }
+    static userResource(id, suffix) {
+        const userId = Api.userId(id);
+        if (!userId) {
+            throw new Error("Missing user id");
+        }
+        return `${Api.base}/users/${userId}/${suffix}`;
+    }
+    static userFollowers = (id) => Api.userResource(id, "followers");
+    static userFollowing = (id) => Api.userResource(id, "following");
+    static userPosts = (id) => Api.userResource(id, "posts");
+    static userLikes = (id) => Api.userResource(id, "likes");
+    static userBookmarks = (id) => Api.userResource(id, "bookmarks");
+    static userReposts = (id) => Api.userResource(id, "reposts");
+    static userMentions = (id) => Api.userResource(id, "mentions");
+    static userFollowerOne = (userId, followerId) =>
+        `${Api.base}/users/${Api.userId(userId)}/followers/${Api.userId(followerId)}`;
 
     static inbox = `${Api.base}/inbox`;
+    static inboxUpload = `${Api.base}/inbox/upload`;
     static inboxOne = (id) => `${Api.base}/inbox/${id}`;
     static inboxMessages = (id) => `${Api.base}/inbox/${id}/messages`;
     static inboxMessage = (inboxId, messageId) =>
@@ -35,8 +53,12 @@ export class Api {
 
     static activity = `${Api.base}/activity`;
     static activityOne = (id) => `${Api.base}/activity/${id}`;
+    static activityMarkRead = (id) => `${Api.base}/activity/${id}/read`;
+    static activityMarkAllRead = `${Api.base}/activity/read-all`;
 
     static creatorCenter = `${Api.base}/creator-center`;
+    static tagsSuggest = (term) =>
+        `${Api.base}/tags?term=${encodeURIComponent(String(term).replace(/^#+/, ""))}`;
     static templateFields = (id) => `${Api.base}/templates/${id}/fields`;
     static avatar = `${Api.base}/avatar`;
 

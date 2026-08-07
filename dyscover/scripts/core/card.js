@@ -11,6 +11,7 @@ export class Card {
         this._loading = null;
         this._comments = new Comments(this);
         this._share = new Share(this);
+        this.canEdit = false;
     }
     static normalize(item = {}) {
         return App.enrichPost(item);
@@ -38,18 +39,31 @@ export class Card {
             year: "numeric",
         });
     }
+    previewImageUrl() {
+        const type = String(this.item?.type || "article");
+        const preview = this.item?.preview_image || this.item?.preview || "";
+        if (preview && !/\.html(\?|$)/i.test(preview)) {
+            return this.mediaUrl(preview);
+        }
+        if (type === "video") {
+            const media = this.mediaUrl(this.item?.media);
+            if (media && !/\.html(\?|$)/i.test(media)) return media;
+        }
+        return App.defaultPostPreview();
+    }
+    avatarUrl(item = this.item) {
+        return App.userAvatarUrl(item?.user_id, item?.username, item?.avatar);
+    }
     previewVisual() {
         const type = String(this.item?.type || "article");
-        const src = this.mediaUrl(this.item?.preview || this.item?.media);
-        if (type === "video" && src) {
-            return `<video class="post-preview-video" src="${src}" muted playsinline preload="metadata"></video>`;
+        const src = this.previewImageUrl();
+        if (type === "video" && this.item?.media) {
+            const videoSrc = this.mediaUrl(this.item.media);
+            if (videoSrc && !/\.html(\?|$)/i.test(videoSrc)) {
+                return `<video class="post-preview-video" src="${videoSrc}" muted playsinline preload="metadata"></video>`;
+            }
         }
-        const hasImage =
-            type === "article" ||
-            type === "image" ||
-            type === "template" ||
-            /\.(jpe?g|png|gif|webp|svg)(\?|$)/i.test(src || "");
-        if (hasImage && src) {
+        if (src) {
             return `<img class="post-preview-image" src="${src}" alt="${this.item.title || ""}">`;
         }
         const icon =
@@ -92,32 +106,66 @@ export class Card {
         return this.mediaUrl(this.item?.media);
     }
     tags() {
-        const list = String(this.item?.tags || "").split(",").map((c) => c.trim()).filter(Boolean);
-        return list.map((tag) => `<a class="post-tag" href="https://dyscover.ielectro.com/explore?term=${encodeURIComponent(tag)}">#${tag}</a>`,).join("");
+        const raw = this.item?.tags;
+        const list = Array.isArray(raw)
+            ? raw
+            : String(raw || "")
+                  .split(",")
+                  .map((c) => c.trim())
+                  .filter(Boolean);
+        return list
+            .map(
+                (tag) =>
+                    `<a class="post-tag" href="https://dyscover.ielectro.com/explore?term=${encodeURIComponent(tag)}">#${tag}</a>`,
+            )
+            .join("");
+    }
+    overlayMediaVisual() {
+        const type = String(this.item?.type || "article").toLowerCase();
+        const src = this.previewImageUrl();
+        if (src) {
+            return `<img class="post-preview-image" src="${src}" alt="${this.item?.title || ""}">`;
+        }
+        const icon =
+            type === "article"
+                ? "globe"
+                : type === "audio"
+                  ? "music"
+                  : type === "document"
+                    ? "file-text"
+                    : "image";
+        const label =
+            type === "article" ? this.item?.title || "Article" : this.item?.title || "";
+        return `<span class="post-preview-placeholder post-preview-placeholder--overlay"><i data-icon="${icon}"></i>${label ? `<span class="post-preview-placeholder-label">${label}</span>` : ""}</span>`;
     }
     mediaBlock() {
         const type = String(this.item?.type || "article");
-        const url = this.media();
         if (type === "video") {
-            return `<div class="post-media post-media-video"><video autoplay loop preload="metadata" src="${url}"></video></div>`;
+            const url = this.media();
+            return `<div class="post-media post-media-video"><video autoplay loop muted playsinline preload="metadata" src="${url}"></video></div>`;
         }
         if (type === "audio") {
-            return `<div class="post-media post-media-audio"><audio controls preload="metadata" src="${url}"></audio></div>`;
+            return `<div class="post-media post-media-audio"><audio controls preload="metadata" src="${this.media()}"></audio></div>`;
         }
         if (type === "document") {
-            return `<div class="post-media post-media-doc"><iframe src="${url}" title="${this.item?.title}"></iframe></div>`;
+            return `<div class="post-media post-media-doc"><iframe src="${this.media()}" title="${this.item?.title}"></iframe></div>`;
         }
-        return `<div class="post-media post-media-image"><img src="${url}" alt="${this.item?.title}"></div>`;
+        const visual = this.overlayMediaVisual();
+        const articleClass = type === "article" ? " post-media-article" : "";
+        return `<div class="post-media post-media-image${articleClass}">${visual}</div>`;
     }
     buildBoxHtml() {
         const d = this.item;
         const type = String(d.type || "article").toLowerCase();
         const isArticle = type === "article";
-        const avatar = `https://account.ielectro.com/u/${encodeURIComponent(d.username || "")}/avatar.png`;
+        const avatar = this.avatarUrl(d);
         const profile = `https://dyscover.ielectro.com/users/${encodeURIComponent(d.username || "")}`;
         const articleUrl = d.url || "#";
         const likes = Number(d.likes) || 0;
         const comments = Number(d.comments) || 0;
+        const editLink = this.canEdit
+            ? `<a href="${articleUrl}" class="post-header-edit" aria-label="Edit article"><i data-icon="pencil"></i></a>`
+            : "";
         return `
       <article class="post-box post-box-horizontal">
         <div class="post-box-media">${this.mediaBlock()}</div>
@@ -128,6 +176,7 @@ export class Card {
               <a class="post-username" href="${profile}">${d.username || "unknown"}</a>
               <span class="post-title-link">${d.title || "unknown"}</span>
             </div>
+            ${editLink}
           </header>
             <div class="post-scroll">
             <div class="post-caption">
@@ -161,12 +210,20 @@ export class Card {
     }
     async create(mount) {
         await this.ensureData();
+        const selfId = await App.resolveSelfUserId();
+        this.canEdit =
+            String(this.item?.type || "").toLowerCase() === "article" &&
+            !!selfId &&
+            Number(selfId) === Number(this.item?.user_id);
         if (!mount) return null;
         mount.innerHTML = this.buildBoxHtml();
         this.syncActionState(mount);
         this.bindActions(mount);
         await this._comments.bindInline(mount);
         await Icons.load(mount);
+        mount.querySelectorAll(".post-avatar img, .post-preview-avatar").forEach(
+            (img) => App.wireAvatarImg(img),
+        );
         this.recordView();
         return mount.querySelector(".post-box");
     }
@@ -179,7 +236,7 @@ export class Card {
         await this.ensureData();
         const d = this.item;
         const type = String(d.type || "article").toLowerCase();
-        const avatar = `https://account.ielectro.com/u/${encodeURIComponent(d.username || "")}/avatar.png`;
+        const avatar = this.avatarUrl(d);
         const profile = `https://dyscover.ielectro.com/users/${encodeURIComponent(d.username || "")}`;
         const panel = document.createElement("div");
         panel.className = "post-preview";
@@ -201,6 +258,8 @@ export class Card {
         });
         mount?.appendChild(panel);
         await Icons.load(panel);
+        panel.querySelector(".post-preview-avatar") &&
+            App.wireAvatarImg(panel.querySelector(".post-preview-avatar"));
         return panel;
     }
     async openOverlay() {

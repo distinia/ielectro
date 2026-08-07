@@ -1,5 +1,5 @@
 import { App } from "../core/app.js";
-import { Auth, Card, EmptyState, Icons, Request } from "../core/index.js";
+import { Auth, Card, EmptyState, Icons } from "../core/index.js";
 
 export class ProfilePage {
     static instance = null;
@@ -11,6 +11,8 @@ export class ProfilePage {
         this.posts = [];
         this.saved = [];
         this.liked = [];
+        this.reposts = [];
+        this.mentioned = [];
         this.bio = "";
         this.mainFilter = "posts";
         this.typeFilter = "article";
@@ -31,8 +33,16 @@ export class ProfilePage {
 
     async init() {
         this.loggedUsername = await Auth.username();
-        if (!this.username || this.username === "null") {
-            return this.showError("User not found.");
+        if (
+            !this.username ||
+            this.username === "null" ||
+            this.username === "users"
+        ) {
+            if (this.loggedUsername) {
+                this.username = this.loggedUsername;
+            } else {
+                return this.showError("User not found.");
+            }
         }
         this.userId = await App.resolveUserId(this.username);
         if (!this.userId) {
@@ -46,6 +56,8 @@ export class ProfilePage {
         let source = this.posts;
         if (this.mainFilter === "saved") source = this.saved;
         if (this.mainFilter === "liked") source = this.liked;
+        if (this.mainFilter === "reposts") source = this.reposts;
+        if (this.mainFilter === "mentioned") source = this.mentioned;
         return source.filter(
             (item) => String(item.type || "article") === this.typeFilter,
         );

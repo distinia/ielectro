@@ -4,10 +4,6 @@ import { Card, EmptyState, Icons, Request } from "../core/index.js";
 import { ExploreHelpers } from "./helpers.js";
 
 export class Recents {
-    constructor() {
-        this.load();
-    }
-
     async load() {
         let items = [];
         try {

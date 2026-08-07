@@ -1,9 +1,49 @@
-main {
-    padding: 0;
-    display: flex;
+body.inbox-page {
     overflow: hidden;
-    height: 100vh;
 }
+
+.inbox-shell {
+    display: flex;
+    width: min(1280px, 100%);
+    height: calc(100vh - 0px);
+    margin: 0 auto;
+    background: var(--surface-elevated, #fff);
+    border-radius: 0;
+    overflow: hidden;
+    box-shadow: inset 0 0 0 1px var(--border-subtle);
+}
+
 .hidden {
     display: none !important;
+}
+
+@media (max-width: 900px) {
+    .inbox-shell {
+        height: calc(100dvh - 56px);
+    }
+
+    body.inbox-page .inbox-shell.chat-open .conversations {
+        display: none;
+    }
+
+    body.inbox-page .inbox-shell:not(.chat-open) .chat-area {
+        display: none;
+    }
+
+    body.inbox-page .chat-back-btn {
+        display: inline-flex !important;
+    }
+}
+
+@media (min-width: 901px) {
+    .inbox-shell {
+        margin-top: 0;
+        border-radius: var(--radius-lg, 16px);
+        height: calc(100vh - 2rem);
+        margin-block: 1rem;
+    }
+
+    .chat-back-btn {
+        display: none !important;
+    }
 }

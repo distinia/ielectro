@@ -80,9 +80,9 @@ export class FormatText {
                 return Heading.create("h2", match[1]);
             case "subheading":
                 return Heading.create("h3", match[1]);
-            case "pointedList":
+            case "pointList":
                 return List.create("ul", match[1]);
-            case "numberedList":
+            case "numberList":
                 return List.create("ol", match[1]);
         }
         return null;

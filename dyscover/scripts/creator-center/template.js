@@ -1,194 +1,222 @@
-import { App, Alert, Box, Request, FormValidator } from "../core/index.js";
+import { Api } from "../core/api.js";
+import { Alert, Box, Request } from "../core/index.js";
+import { CreatorMeta } from "./creator-meta.js";
 import { Post } from "./post.js";
-import { Image } from "./image.js";
+
+const FIELD_TYPES = [
+    ["text", "Text"],
+    ["definition", "Definition"],
+    ["image", "Image"],
+    ["large-image", "Large image"],
+    ["double-image", "Double image"],
+    ["double-column", "Double column"],
+    ["double-column-extended", "Double column extended"],
+];
+
 export class Template extends Post {
     static type = "template";
     static table = ".template-table";
-    static tab = ".template-tab";
-    static loadApi = "https://dyscover.ielectro.com/api/template/user";
-    static createApi = "https://dyscover.ielectro.com/api/template/create";
-    static editApi = "https://dyscover.ielectro.com/api/template/edit";
-    static deleteApi = "https://dyscover.ielectro.com/api/template/delete";
+
     static create() {
         new this(null, {}).box("POST");
     }
+
     box(method) {
         this.method = method;
-        this.box = new Box(
-            method === "POST" ? "Create Template" : "Edit Template"
+        const modal = new Box(
+            method === "POST" ? "Create Template" : "Edit Template",
         );
-        this.box.create();
-        this.box.body(body => {
-            body.innerHTML = `
-            <form id="template-form">
-                <div class="select-item-column">
-                    <b>Title</b>
-                    <input class="input" name="title" value="${this.item.title || ""}">
-                    <b>Image</b>
-                    <input class="input" name="image" value="${this.item.media || ""}">
-                    <b>Description</b>
-                    <textarea class="textarea" name="description">${this.item.description || ""}</textarea>
-                    <b>Categories</b>
-                    <textarea class="textarea" name="tags">${this.item.tags || ""}</textarea>
-                </div>
-                <div class="select-item-column">
-                    <b>Fields</b>
-                    <div class="field-inputs">
-                        <input class="input field-input" placeholder="Field name">
-                        <select class="select field-type">
-                            <option value="Text">Text</option>
-                            <option value="Definition">Definition</option>
-                            <option value="Image">Small image</option>
-                            <option value="LargeImage">Large image</option>
-                            <option value="DoubleImage">Double image</option>
-                            <option value="DoubleColumn">Double column</option>
-                            <option value="DoubleColumnExtended">Double column extension</option>
-                        </select>
-                        <button class="button field-add">+</button>
-                    </div>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Type</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody class="field-list"></tbody>
-                    </table>
+        this.modal = modal;
+        modal.create().then(async () => {
+            modal.body((body) => {
+                body.innerHTML = `
+            <form id="template-form" class="creator-form template-form" enctype="multipart/form-data">
+                <div class="template-layout">
+                    <aside class="template-sidebar">
+                        <div class="template-sidebar-card">
+                            <h3>Template details</h3>
+                            ${CreatorMeta.fieldHtml({
+                                title: this.item.title,
+                                description: this.item.description,
+                                tags: this.item.tags,
+                            })}
+                        </div>
+                        <div class="template-sidebar-card">
+                            <h3>Preview image</h3>
+                            <label class="creator-upload-zone template-preview-zone" for="template-preview">
+                                <strong>Choose preview image</strong>
+                                <p>JPG, PNG, or WebP</p>
+                            </label>
+                            <input type="file" id="template-preview" name="preview" accept="image/*" hidden>
+                            <div class="file-preview template-preview-box"></div>
+                        </div>
+                    </aside>
+                    <section class="template-builder">
+                        <div class="template-builder-head">
+                            <div>
+                                <h3>Fields</h3>
+                                <p>Define the structured blocks used when someone fills this template.</p>
+                            </div>
+                        </div>
+                        <div class="template-field-add">
+                            <input class="input field-input" placeholder="Field name">
+                            <select class="select field-type">
+                                ${FIELD_TYPES.map(
+                                    ([value, label]) =>
+                                        `<option value="${value}">${label}</option>`,
+                                ).join("")}
+                            </select>
+                            <button type="button" class="button field-add">Add field</button>
+                        </div>
+                        <div class="template-field-list field-list"></div>
+                    </section>
                 </div>
             </form>`;
+            });
+            modal.footer((f) => {
+                f.innerHTML = `<button type="submit" class="button" form="template-form">${method === "POST" ? "Create template" : "Save template"}</button>`;
+            });
+            this.form = document.querySelector("#template-form");
+            CreatorMeta.bindTags(this.form);
+            this.bindPreview();
+            this.bindFields();
+            if (method === "PUT" && this.id) {
+                await this.loadFields();
+                this.showExistingPreview();
+            }
+            this.form.onsubmit = (e) => this.submitForm(e, modal);
         });
-        this.box.footer(f => {
-            f.innerHTML = `
-            <button class="button" form="template-form">
-                ${method === "POST" ? "Create" : "Update"}
-            </button>`;
-        });
-        this.form = document.querySelector("#template-form");
-        this.fields();
-        if (method === "PUT" && this.item.url) {
-            this.loadFields();
-        }
-        this.submit();
     }
-    fields() {
+
+    bindPreview() {
+        const input = this.form?.querySelector("#template-preview");
+        const preview = this.form?.querySelector(".template-preview-box");
+        const zone = this.form?.querySelector(".template-preview-zone");
+        if (!input || !preview) return;
+        input.addEventListener("change", () => {
+            preview.innerHTML = "";
+            const file = input.files?.[0];
+            if (!file) return;
+            const url = URL.createObjectURL(file);
+            preview.innerHTML = `<img src="${url}" alt="">`;
+            if (zone) zone.querySelector("strong").textContent = file.name;
+        });
+        zone?.addEventListener("click", (event) => {
+            if (event.target !== input) input.click();
+        });
+    }
+
+    showExistingPreview() {
+        const preview = this.form?.querySelector(".template-preview-box");
+        if (!preview || !this.item.preview_image) return;
+        preview.innerHTML = `<img src="${this.item.preview_image}" alt="">`;
+    }
+
+    bindFields() {
         const button = this.form.querySelector(".field-add");
         const input = this.form.querySelector(".field-input");
         const select = this.form.querySelector(".field-type");
         const list = this.form.querySelector(".field-list");
-        button.onclick = e => {
-            e.preventDefault();
+        button.onclick = (event) => {
+            event.preventDefault();
             const name = input.value.trim();
             if (!name) return;
-            const row = document.createElement("tr");
-            row.innerHTML = `
-                <td data-name="${name}">
-                    ${name}
-                </td>
-                <td data-type="${select.value}">
-                    ${select.options[select.selectedIndex].text}
-                </td>
-                <td>
-                    <button class="button field-remove">X</button>
-                    <button class="button field-up">↑</button>
-                    <button class="button field-down">↓</button>
-                </td>
-            `;
-            list.appendChild(row);
-            row.querySelector(".field-remove").onclick = () => {
-                row.remove();
-            };
-            row.querySelector(".field-up").onclick = () => {
-                const prev = row.previousElementSibling;
-                if (prev) {
-                    row.parentNode.insertBefore(row, prev);
-                }
-            };
-            row.querySelector(".field-down").onclick = () => {
-                const next = row.nextElementSibling;
-                if (next) {
-                    row.parentNode.insertBefore(next, row);
-                }
-            };
+            list.appendChild(this.createFieldCard(name, select.value));
             input.value = "";
             select.selectedIndex = 0;
         };
     }
+
+    createFieldCard(name, type, id) {
+        const card = document.createElement("article");
+        card.className = "template-field-card";
+        const typeLabel =
+            FIELD_TYPES.find(([value]) => value === type)?.[1] || type;
+        card.innerHTML = `
+            <div class="template-field-card-main">
+                <strong data-name="${name}">${name}</strong>
+                <span data-type="${type}">${typeLabel}</span>
+            </div>
+            <button type="button" class="button field-remove">Remove</button>`;
+        if (id) {
+            card.dataset.id = String(id);
+        }
+        card.querySelector(".field-remove").onclick = () => card.remove();
+        return card;
+    }
+
     async loadFields() {
         try {
-            const data = await Request.get(
-                this.item.url + "?t=" + Date.now()
-            );
+            const res = await Request.get(Api.templateFields(this.id));
+            const fields = Api.list(res);
             const list = this.form.querySelector(".field-list");
             list.innerHTML = "";
-            data.forEach(field => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td data-name="${field.name}">
-                        ${field.name}
-                    </td>
-                    <td data-type="${field.type}">
-                        ${field.type}
-                    </td>
-                    <td>
-                        <button class="button field-remove">X</button>
-                        <button class="button field-up">↑</button>
-                        <button class="button field-down">↓</button>
-                    </td>
-                `;
-                list.appendChild(row);
-                row.querySelector(".field-remove").onclick = () => row.remove();
-                row.querySelector(".field-up").onclick = () => {
-                    const prev = row.previousElementSibling;
-                    if (prev) {
-                        row.parentNode.insertBefore(row, prev);
-                    }
-                };
-                row.querySelector(".field-down").onclick = () => {
-                    const next = row.nextElementSibling;
-                    if (next) {
-                        row.parentNode.insertBefore(next, row);
-                    }
-                };
+            fields.forEach((field) => {
+                list.appendChild(
+                    this.createFieldCard(field.name, field.type, field.id),
+                );
             });
-        } catch(e) {
-            Alert.error(e.text);
+        } catch {
+            /* optional */
         }
     }
+
     getFields() {
         return Array.from(
-            this.form.querySelectorAll(".field-list tr")
-        ).map(row => ({
-            name: row.querySelector("[data-name]").dataset.name,
-            type: row.querySelector("[data-type]").dataset.type
+            this.form.querySelectorAll(".template-field-card"),
+        ).map((card, index) => ({
+            id: card.dataset.id ? Number(card.dataset.id) : undefined,
+            name: card.querySelector("[data-name]")?.dataset.name || "",
+            type: card.querySelector("[data-type]")?.dataset.type || "text",
+            position: index,
         }));
     }
-    submit() {
-        this.form.onsubmit = async e => {
-            e.preventDefault();
-            const validator = new FormValidator("template-form");
-            if (!(await validator.validate())) {
-                return Alert.error(validator.message);
+
+    async submitForm(event, modal) {
+        event.preventDefault();
+        const title = String(this.form.title.value || "").trim();
+        if (!title) return Alert.error("Title is required");
+        const fields = this.getFields();
+        const tags = CreatorMeta.readTags(this.form);
+        const data = new FormData(this.form);
+        data.set("type", "template");
+        data.set("title", title);
+        data.set("description", String(this.form.description.value || "").trim());
+        data.set("tags", JSON.stringify(tags));
+        data.set("fields", JSON.stringify(fields.map(({ name, type }) => ({ name, type }))));
+        const submitBtn = document.querySelector('button[form="template-form"]');
+        const done = await CreatorMeta.withSubmitLock(submitBtn, async () => {
+            if (this.method === "POST") {
+                data.set(
+                    "uuid",
+                    crypto.randomUUID().replace(/-/g, "").slice(0, 16),
+                );
+                await Request.post(Api.posts, data);
+                Alert.success("Template created");
+            } else {
+                const patchFields = fields.map(({ id, name, type }, position) => ({
+                    id,
+                    name,
+                    type,
+                    position,
+                }));
+                data.set("fields", JSON.stringify(patchFields));
+                if (data.get("preview")?.size) {
+                    await Request.patch(Api.post(this.id), data);
+                } else {
+                    await Request.patch(Api.post(this.id), {
+                        title,
+                        description: String(this.form.description.value || "").trim(),
+                        tags,
+                        fields: patchFields,
+                    });
+                }
+                Alert.success("Template updated");
             }
-            const data = new FormData(this.form);
-            data.append(
-                "fields",
-                JSON.stringify(this.getFields())
-            );
-            let url = this.constructor.createApi;
-            if (this.method === "PUT") {
-                data.append("oldTitle", this.title);
-                url = this.constructor.editApi;
-            }
-            try {
-                const res = await Request.post(url, data);
-                Alert.success(res.text);
-                this.box.close();
-                this.constructor.loadTable();
-            } catch(e) {
-                Alert.error(e.text);
-            }
-        };
+            modal.close();
+            Template.loadTable();
+            return true;
+        });
+        if (done === null) return;
     }
 }

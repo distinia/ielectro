@@ -5,30 +5,43 @@
     <meta name="keywords" content="dyscover inbox, messages, direct messages">
     <meta name="description" content="Read and send messages in your Dyscover inbox">
 </head>
-<body>
-<div class="conversations">
-    <div class="conversations-header">
-        <h2>Inbox</h2>
-        <button class="new-conversation-btn">
-            <i data-icon="circle-plus"></i> New
-        </button>
-    </div>
-    <div class="conversations-list"></div>
-</div>
-<div class="chat-area">
-    <div class="chat-header"></div>
-    <div class="chat-typing-line hidden" aria-live="polite"></div>
-    <div class="chat-messages"></div>
-    <div class="chat-area-composer is-chat-composer-hidden">
-        <input type="file" class="attach-chat-input hidden-file-input" accept="image/*,video/*,audio/*,.pdf" hidden>
-        <button class="btn attach-file attach-chat-btn" title="Attach image, video, audio, or PDF">
-            <i data-icon="plus"></i>
-        </button>
-        <input type="text" class="input message-input" placeholder="Type a message..." autocomplete="off">
-        <button class="send-message-btn" title="Send">
-            <i data-icon="send"></i>
-        </button>
-    </div>
-</div>
+<body class="inbox-page">
+<main class="inbox-shell">
+    <aside class="conversations" id="inbox-sidebar">
+        <div class="conversations-header">
+            <div class="conversations-title-wrap">
+                <h2>Messages</h2>
+                <p class="conversations-subtitle">Direct conversations</p>
+            </div>
+            <button type="button" class="new-conversation-btn" title="New conversation">
+                <i data-icon="circle-plus"></i>
+                <span>New</span>
+            </button>
+        </div>
+        <div class="conversations-search-wrap">
+            <input type="search" class="input conversations-search" placeholder="Search conversations…" autocomplete="off">
+        </div>
+        <div class="conversations-list"></div>
+    </aside>
+    <section class="chat-area" id="inbox-chat">
+        <div class="chat-toolbar">
+            <button type="button" class="chat-back-btn hidden" aria-label="Back to conversations">
+                <i data-icon="arrow-left"></i>
+            </button>
+            <div class="chat-header"></div>
+        </div>
+        <div class="chat-messages"></div>
+        <div class="chat-area-composer is-chat-composer-hidden">
+            <input type="file" class="attach-chat-input hidden-file-input" accept="image/*,video/*,audio/*,.pdf" hidden>
+            <button type="button" class="btn attach-file attach-chat-btn" title="Attach file">
+                <i data-icon="paperclip"></i>
+            </button>
+            <input type="text" class="input message-input" placeholder="Write a message…" autocomplete="off">
+            <button type="button" class="send-message-btn" title="Send">
+                <i data-icon="send"></i>
+            </button>
+        </div>
+    </section>
+</main>
 </body>
 </html>

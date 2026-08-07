@@ -185,6 +185,24 @@ export class EmptyState {
                     : null,
             };
         }
+        if (filter === "reposts") {
+            return {
+                icon: "repeat",
+                title: "No reposts yet",
+                message: isOwn
+                    ? "Posts you repost will appear in this tab."
+                    : "This user hasn't reposted anything yet.",
+            };
+        }
+        if (filter === "mentioned") {
+            return {
+                icon: "at-sign",
+                title: "No mentions yet",
+                message: isOwn
+                    ? "When someone mentions you in a post, it shows up here."
+                    : "This user hasn't been mentioned in any posts yet.",
+            };
+        }
         const typeLabels = {
             article: "articles",
             image: "images",

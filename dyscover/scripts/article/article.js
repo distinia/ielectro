@@ -1,13 +1,9 @@
 import { Alert, Auth } from "../core/index.js";
 import { API } from "./api.js";
 import { Editor } from "./editor.js";
-import { state } from "./state.js";
+import { setArticleState } from "./state.js";
 
 export class Article {
-    constructor() {
-        this.load();
-    }
-
     async load() {
         try {
             const res = await API.getArticleInfo();
@@ -16,26 +12,32 @@ export class Article {
                 return;
             }
             document.title = `${res.title} - iElectro Dyscover`;
-            document.querySelector(".title").textContent = res.title;
-            document.querySelector(".content").innerHTML = res.content;
+            const title = document.querySelector(".title");
+            const content = document.querySelector(".content");
+            if (title) title.textContent = res.title;
+            if (content) content.innerHTML = res.content;
             document.body.dataset.uuid = res.uuid;
             new Editor();
-            await this.editAuthorization();
+            await this.editAuthorization(res);
         } catch {
             Alert.error("Article not found");
         }
     }
 
-    async editAuthorization() {
+    async editAuthorization(res) {
+        if (!Editor.current) return;
         try {
             if (await Auth.logged()) {
-                state = "user";
+                setArticleState("user");
             }
-            if (await API.getArticleAuth()) {
-                state = "editor";
+            if (res?.can_edit) {
+                setArticleState("editor");
                 await Editor.current.init();
-                await Editor.current.index.startEditing();
             }
-        } catch {}
+        } catch {
+            /* guest or unauthorized */
+        } finally {
+            await Editor.current.index.refresh();
+        }
     }
 }

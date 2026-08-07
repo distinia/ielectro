@@ -17,18 +17,41 @@
                 <div class="actions"></div>
             </div>
             <div class="user-stats">
-                <span class="articles-number"></span>
-                <span class="followers-number"></span>
-                <span class="followings-number"></span>
+                <button type="button" class="stat-pill posts-stat">
+                    <strong class="articles-number">0</strong>
+                    <span>posts</span>
+                </button>
+                <button type="button" class="stat-pill followers-stat">
+                    <strong class="followers-number">0</strong>
+                    <span>followers</span>
+                </button>
+                <button type="button" class="stat-pill followings-stat">
+                    <strong class="followings-number">0</strong>
+                    <span>following</span>
+                </button>
             </div>
-            <p class="biography"></p>
+            <div class="biography-wrap">
+                <p class="biography"></p>
+            </div>
         </div>
     </section>
     <section class="profile-content">
-        <div class="profile-tabs">
-            <div class="profile-tab active" data-filter="posts" title="Posts"><i data-icon="grid"></i></div>
-            <div class="profile-tab" data-filter="saved" title="Saved"><i data-icon="bookmark"></i></div>
-            <div class="profile-tab" data-filter="liked" title="Liked"><i data-icon="heart"></i></div>
+        <div class="profile-tabs" role="tablist">
+            <button type="button" class="profile-tab active" data-filter="posts" title="Posts">
+                <i data-icon="grid"></i><span>Posts</span>
+            </button>
+            <button type="button" class="profile-tab" data-filter="saved" title="Saved">
+                <i data-icon="bookmark"></i><span>Saved</span>
+            </button>
+            <button type="button" class="profile-tab" data-filter="liked" title="Liked">
+                <i data-icon="heart"></i><span>Liked</span>
+            </button>
+            <button type="button" class="profile-tab" data-filter="reposts" title="Reposts">
+                <i data-icon="repeat"></i><span>Reposts</span>
+            </button>
+            <button type="button" class="profile-tab" data-filter="mentioned" title="Mentioned">
+                <i data-icon="at-sign"></i><span>Mentioned</span>
+            </button>
         </div>
         <div class="profile-type-tabs">
             <button type="button" class="profile-type-tab active" data-type="article">Articles</button>

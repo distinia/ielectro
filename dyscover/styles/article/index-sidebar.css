@@ -1,79 +1,143 @@
 .article-index-sidebar {
+    flex: 0 0 clamp(260px, 22vw, 320px);
+    width: clamp(260px, 22vw, 320px);
+    height: 100vh;
     position: sticky;
     top: 0;
     align-self: flex-start;
-    width: 20%;
-    max-width: 20%;
-    max-height: 100vh;
     display: flex;
     flex-direction: column;
-    z-index: 10;
-    background: rgba(248, 249, 250, 0.95);
-    backdrop-filter: blur(18px);
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    z-index: 15;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.96) 100%);
+    border-left: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: -12px 0 40px rgba(15, 23, 42, 0.04);
     overflow: hidden;
-    height: 100vh;
-    list-style: none;
 }
+
 .article-index-sidebar .index-sidebar-header {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 1rem 1rem 0.85rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 1.1rem 1.15rem 0.95rem;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+    background: rgba(255, 255, 255, 0.85);
 }
+
 .article-index-sidebar .index-sidebar-header h4 {
     margin: 0;
-    font-size: 1rem;
+    font-size: 0.78rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #202630;
+    letter-spacing: 0.12em;
+    color: #64748b;
 }
+
+.article-index-sidebar .index-edit-button {
+    border: none;
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    color: #0d47a1;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+    box-shadow: inset 0 0 0 1px rgba(13, 71, 161, 0.12);
+}
+
+.article-index-sidebar .index-edit-button.is-visible {
+    display: inline-flex;
+}
+
+.article-index-sidebar .index-edit-button:hover {
+    transform: translateY(-1px);
+    background: linear-gradient(135deg, #42a5f5, #1565c0);
+    color: #fff;
+    box-shadow: 0 8px 20px rgba(21, 101, 192, 0.28);
+}
+
+.article-index-sidebar .index-edit-button.is-active {
+    background: linear-gradient(135deg, #ef5350, #c62828);
+    color: #fff;
+    box-shadow: 0 8px 20px rgba(198, 40, 40, 0.25);
+}
+
+.article-index-sidebar .index-edit-button i {
+    font-size: 1rem;
+}
+
+.article-index-sidebar .index-edit-hint {
+    margin: 0;
+    padding: 0 1.15rem 0.85rem;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: #64748b;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+    background: rgba(227, 242, 253, 0.35);
+}
+
+.article-index-sidebar .index-sidebar-content {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    padding: 0.85rem 0.95rem 1.25rem;
+}
+
 .article-index-sidebar .list {
     display: block;
     margin: 0;
     padding: 0;
+    list-style: none;
     border: none;
     background: transparent;
     box-shadow: none;
 }
-.article-index-sidebar .index-edit-button {
-    border: none;
-    background: transparent;
-    color: #1a202c;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 34px;
-    height: 34px;
-    border-radius: 12px;
-    transition: background 0.2s ease;
+
+.article-index-sidebar .list > li {
+    margin-bottom: 0.45rem;
 }
-.article-index-sidebar .index-edit-button:hover {
-    background: rgba(30, 136, 229, 0.12);
+
+.article-index-sidebar .list span:first-child {
+    display: inline-block;
+    min-width: 2rem;
+    margin-right: 0.35rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #94a3b8;
+    font-variant-numeric: tabular-nums;
 }
-.article-index-sidebar .index-edit-button i {
-    font-size: 1rem;
+
+.article-index-sidebar .list .link {
+    display: inline;
+    font-size: 0.92rem;
+    line-height: 1.45;
+    color: #334155;
+    font-weight: 500;
+    transition: color 0.2s ease;
 }
-.article-index-sidebar .index-sidebar-content {
-    overflow: auto;
-    padding: 1rem;
-    list-style: none;
+
+.article-index-sidebar .list .link:hover {
+    color: #1565c0;
 }
-.article-index-sidebar .list h4 {
-    text-align: left;
-    margin: 0 0 0.75rem;
-}
+
 .article-index-sidebar .list ul {
     list-style: none;
-    padding-left: 1.5em;
-    padding-right: 0;
+    margin: 0.35rem 0 0.5rem;
+    padding-left: 1.35rem;
+    border-left: 2px solid rgba(21, 101, 192, 0.12);
 }
-.list li {
-    margin-bottom: 0.6em;
-}
-.list span:first-child {
-    color: #000;
-    font-weight: lighter;
+
+.article-index-sidebar .list-empty {
+    margin: 0;
+    padding: 0.75rem 0.35rem;
+    font-size: 0.88rem;
+    color: #94a3b8;
+    font-style: italic;
+    list-style: none;
 }

@@ -39,7 +39,7 @@ export class Paragraph {
     }
     isEmpty() {
         const html = this.element.innerHTML
-            .replace(/<br \s*/?>/gi, "")
+            .replace(/<br\s*\/?>/gi, "")
             .replace(/&nbsp;/gi, "")
             .trim();
         return !html;

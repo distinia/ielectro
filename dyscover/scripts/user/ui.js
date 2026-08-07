@@ -46,8 +46,8 @@ export class UI {
         if (!container) return;
         if (logged === this.page.username) {
             container.innerHTML = `
-                <button type="button" class="profile-btn profile-btn-edit">Edit biography</button>
-                <a href="https://account.ielectro.com/profile" class="profile-btn profile-btn-primary">View my profile</a>`;
+                <button type="button" class="profile-btn profile-btn-edit">Edit profile</button>
+                <a href="https://account.ielectro.com/profile" class="profile-btn profile-btn-primary">Account settings</a>`;
             container
                 .querySelector(".profile-btn-edit")
                 ?.addEventListener("click", () =>
@@ -56,19 +56,17 @@ export class UI {
             return;
         }
         const following = await App.isFollowing(this.page.userId);
-        if (following) {
-            container.innerHTML = `<button type="button" class="profile-btn profile-btn-muted">Following</button>`;
-            container.querySelector("button").onclick = () =>
-                new Actions(this.page).unfollow();
-        } else {
-            container.innerHTML = `<button type="button" class="profile-btn profile-btn-primary">Follow</button>`;
-            container.querySelector("button").onclick = () =>
-                new Actions(this.page).follow();
-        }
+        container.innerHTML = following
+            ? `<button type="button" class="profile-btn profile-btn-muted">Following</button>`
+            : `<button type="button" class="profile-btn profile-btn-primary">Follow</button>`;
+        container.querySelector("button").onclick = () =>
+            following
+                ? new Actions(this.page).unfollow(() => this.initActions())
+                : new Actions(this.page).follow(() => this.initActions());
     }
 
     bindStats() {
-        document.querySelector(".followers-number")?.addEventListener("click", async () => {
+        document.querySelector(".followers-stat")?.addEventListener("click", async () => {
             const data = await Request.get(Api.userFollowers(this.page.userId));
             new List(
                 "followers",
@@ -77,7 +75,7 @@ export class UI {
                 this.page,
             );
         });
-        document.querySelector(".followings-number")?.addEventListener("click", async () => {
+        document.querySelector(".followings-stat")?.addEventListener("click", async () => {
             const data = await Request.get(Api.userFollowing(this.page.userId));
             new List(
                 "followings",

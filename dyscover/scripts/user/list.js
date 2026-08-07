@@ -1,5 +1,6 @@
 import { Alert, Auth, UsersList } from "../core/index.js";
 import { Actions } from "./actions.js";
+import { Informations } from "./informations.js";
 
 export class List {
     constructor(type, data, canManage = false, page = null) {
@@ -13,11 +14,11 @@ export class List {
     open() {
         const actionLabel = this.canManage
             ? this.type === "followers"
-                ? "Remove Follower"
+                ? "Remove"
                 : "Unfollow"
             : null;
         const list = new UsersList({
-            title: this.type === "followers" ? "Followers" : "Followings",
+            title: this.type === "followers" ? "Followers" : "Following",
             searchable: true,
             actionLabel,
             loadUsers: async (term) => {
@@ -37,14 +38,22 @@ export class List {
                       const actions = new Actions(this.page);
                       const me = await Auth.username();
                       if (this.type === "followers" && me === this.page?.username) {
-                          const ok = await Alert.confirm("Remove follower?");
-                          if (ok) {
-                              await actions.removeFollower();
+                          await actions.removeFollower(user.id, () => {
                               row.remove();
-                          }
-                      } else {
-                          actions.unfollow();
-                          row.remove();
+                              this.data = this.data.filter(
+                                  (entry) => Number(entry.id) !== Number(user.id),
+                              );
+                          });
+                          return;
+                      }
+                      if (this.type === "followings" && me === this.page?.username) {
+                          await actions.unfollowUser(user.id, () => {
+                              row.remove();
+                              this.data = this.data.filter(
+                                  (entry) => Number(entry.id) !== Number(user.id),
+                              );
+                              Informations.refresh(this.page);
+                          });
                       }
                   }
                 : null,

@@ -22,7 +22,7 @@ export class Alert {
             info: { title: "Info", icon: "info", bg: "#2b6cb0" },
         }[type];
         const root = document.createElement("div");
-        root.className = "prompt-container";
+        root.className = "prompt-container alert-toast";
         root.innerHTML = `
         <div class="modal-box">
             <div class="modal-header">

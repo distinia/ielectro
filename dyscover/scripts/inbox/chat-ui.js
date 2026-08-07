@@ -1,5 +1,5 @@
 import { Api } from "../core/api.js";
-import { App, Alert, EmptyState, Icons, Auth, Card, Request, Navbar, Mention, UsersList } from "../core/index.js";
+import { App, Alert, EmptyState, Icons, Auth, Card, Request, Navbar, Mention, UsersList, Spinner } from "../core/index.js";
 import { decodePostMessage } from "../core/post-message.js";
 export class ChatUI {
     constructor() {
@@ -12,8 +12,10 @@ export class ChatUI {
         this.conversationsList = this.root?.querySelector(".conversations-list");
         this.chatHeader = this.root?.querySelector(".chat-header");
         this.chatMessages = this.root?.querySelector(".chat-messages");
-        this.chatTypingLine = this.root?.querySelector(".chat-typing-line");
         this.composer = this.root?.querySelector(".chat-area-composer");
+        this.inboxShell = this.root?.querySelector(".inbox-shell");
+        this.backBtn = this.root?.querySelector(".chat-back-btn");
+        this.conversationsSearch = this.root?.querySelector(".conversations-search");
         this.messageInput = this.root?.querySelector(".message-input");
         this.sendMessageBtn = this.root?.querySelector(".send-message-btn");
         this.newConversationBtn = this.root?.querySelector(".new-conversation-btn");
@@ -28,6 +30,10 @@ export class ChatUI {
         this.typingPulseTimer = null;
         this.pendingAttachment = null;
         this._threadsListSig = "";
+        this._allThreads = [];
+    }
+    setChatOpen(open) {
+        this.inboxShell?.classList.toggle("chat-open", open);
     }
     setComposerVisible(on) {
         this.composer?.classList.toggle("is-chat-composer-hidden", !on);
@@ -36,16 +42,18 @@ export class ChatUI {
         if (this.chatHeader) this.chatHeader.innerHTML = "";
         if (this.chatMessages) {
             this.chatMessages.innerHTML =
-                '<p class="chat-placeholder">Select a conversation or start a new one.</p>';
+                '<p class="chat-placeholder">Select a conversation or tap <strong>New</strong> to start messaging.</p>';
         }
-        this.chatTypingLine?.classList.add("hidden");
-        if (this.chatTypingLine) this.chatTypingLine.textContent = "";
         this.setComposerVisible(false);
+        this.setChatOpen(false);
     }
     async init() {
         this.selfUsername = await Auth.username();
         this.resetEmptyChatShell();
         this.bindEvents();
+        if (this.conversationsList) {
+            Spinner.mount(this.conversationsList, true);
+        }
         await this.loadThreads();
         await Icons.load(document.body);
         this.startPolling();
@@ -88,6 +96,14 @@ export class ChatUI {
         this.attachInput?.addEventListener("change", () =>
             this.handleAttachSelected(),
         );
+        this.backBtn?.addEventListener("click", () => {
+            this.selectedThreadId = null;
+            this.peerUsername = null;
+            this.resetEmptyChatShell();
+        });
+        this.conversationsSearch?.addEventListener("input", () => {
+            this.renderConversations(this._allThreads, this.conversationsSearch.value);
+        });
     }
     scheduleTypingPulse() {
         if (!this.selectedThreadId) return;
@@ -95,9 +111,7 @@ export class ChatUI {
         this.typingPulseTimer = window.setTimeout(() => this.pulseTyping(), 400);
     }
     async pulseTyping() {}
-    async refreshTyping() {
-        this.chatTypingLine?.classList.add("hidden");
-    }
+    async refreshTyping() {}
     suggestUsername(entry) {
         if (!entry) return "";
         if (typeof entry === "string") return entry;
@@ -191,6 +205,7 @@ export class ChatUI {
         try {
             const res = await Request.get(Api.inbox);
             const threads = Api.list(res).map(App.normalizeInboxThread);
+            this._allThreads = threads;
             this.lastThreads = threads;
             const listSig = `${threads
                 .map(
@@ -201,7 +216,10 @@ export class ChatUI {
             const skipListRedraw = opts.silent && listSig === this._threadsListSig;
             if (!skipListRedraw) {
                 this._threadsListSig = listSig;
-                this.renderConversations(threads);
+                this.renderConversations(
+                    threads,
+                    this.conversationsSearch?.value || "",
+                );
                 await Icons.load(this.conversationsList);
             }
             Navbar.refresh().catch(() => { });
@@ -216,18 +234,33 @@ export class ChatUI {
             }
         }
     }
-    renderConversations(threads) {
+    renderConversations(threads, searchTerm = "") {
         if (!this.conversationsList) return;
+        const term = String(searchTerm || "").trim().toLowerCase();
+        const filtered = term
+            ? threads.filter((t) =>
+                  String(t.peer || "")
+                      .toLowerCase()
+                      .includes(term),
+              )
+            : threads;
         this.conversationsList.innerHTML = "";
-        if (!threads.length) {
+        if (!filtered.length) {
             EmptyState.mount(
                 this.conversationsList,
-                EmptyState.inbox(),
+                term
+                    ? {
+                          icon: "search",
+                          title: "No conversations found",
+                          message: "Try another name or start a new chat.",
+                          compact: true,
+                      }
+                    : EmptyState.inbox(),
             );
             Icons.load(this.conversationsList).catch(() => {});
             return;
         }
-        threads.forEach((t) => {
+        filtered.forEach((t) => {
             const card = document.createElement("div");
             const unread = Boolean(t.has_unread);
             card.className = `conversation-card ${this.selectedThreadId === t.id ? "active" : ""}${unread ? " has-unread" : ""}`;
@@ -266,13 +299,16 @@ export class ChatUI {
         this.lastMessageIds = "";
         this.renderChatHeader();
         this.setComposerVisible(true);
+        this.setChatOpen(true);
         if (!opts.skipReloadThreads) {
             await this.loadThreads({ silent: true });
         } else {
-            this.renderConversations(this.lastThreads);
+            this.renderConversations(
+                this._allThreads,
+                this.conversationsSearch?.value || "",
+            );
         }
         await this.loadMessages();
-        this.chatTypingLine?.classList.add("hidden");
     }
     async loadMessages(opts = {}) {
         if (!this.chatMessages) return;
@@ -314,24 +350,6 @@ export class ChatUI {
         const post = decodePostMessage(m.body);
         const kind = m.msg_kind || "text";
         const url = m.attachment_url || "";
-        let media = "";
-        let bodyText = "";
-        if (post) {
-            media = `<div class="chat-msg-post" data-post="${App.escapeAttr(JSON.stringify(post))}"></div>`;
-        } else {
-            bodyText = Mention.linkify(m.body || "").replace(/\n/g, "<br>");
-            if (url) {
-                if (kind === "image") {
-                    media = `<div class="chat-msg-media"><a href="${App.escapeAttr(url)}" target="_blank" rel="noopener"><img src="${App.escapeAttr(url)}" alt=""></a></div>`;
-                } else if (kind === "video") {
-                    media = `<div class="chat-msg-media"><video controls preload="metadata"><source src="${App.escapeAttr(url)}"></video></div>`;
-                } else if (kind === "audio") {
-                    media = `<div class="chat-msg-media"><audio controls preload="metadata"><source src="${App.escapeAttr(url)}"></audio></div>`;
-                } else {
-                    media = `<div class="chat-msg-media"><a class="chat-msg-file" href="${App.escapeAttr(url)}" target="_blank" rel="noopener">Download attachment</a></div>`;
-                }
-            }
-        }
         const av = App.escapeAttr(
             App.peerAvatarUrl(m.sender, m.sender_avatar || null),
         );
@@ -340,8 +358,33 @@ export class ChatUI {
         const avatarBlock = mine
             ? `<span class="chat-msg-avatar chat-msg-avatar-mine"><img class="avatar-img" src="${av}" alt="" loading="lazy" /><span class="avatar-fallback">${ph}</span></span>`
             : `<span class="chat-msg-avatar"><img class="avatar-img" src="${av}" alt="" loading="lazy" /><span class="avatar-fallback">${ph}</span></span>`;
-        const bubble = `<div class="chat-msg-inner">${media}<div class="chat-msg-text">${bodyText}</div></div>`;
+        if (post) {
+            const time = this.formatMessageTime(m.created_at);
+            return `<div class="chat-msg ${side} chat-msg--post">${mine ? "" : avatarBlock}<div class="chat-msg-post-shell"><div class="chat-msg-post" data-post="${App.escapeAttr(JSON.stringify(post))}"></div>${time}</div>${mine ? avatarBlock : ""}</div>`;
+        }
+        let media = "";
+        const bodyText = Mention.linkify(m.body || "").replace(/\n/g, "<br>");
+        if (url) {
+            if (kind === "image") {
+                media = `<div class="chat-msg-media"><a href="${App.escapeAttr(url)}" target="_blank" rel="noopener"><img src="${App.escapeAttr(url)}" alt=""></a></div>`;
+            } else if (kind === "video") {
+                media = `<div class="chat-msg-media"><video controls preload="metadata"><source src="${App.escapeAttr(url)}"></video></div>`;
+            } else if (kind === "audio") {
+                media = `<div class="chat-msg-media"><audio controls preload="metadata"><source src="${App.escapeAttr(url)}"></audio></div>`;
+            } else {
+                media = `<div class="chat-msg-media"><a class="chat-msg-file" href="${App.escapeAttr(url)}" target="_blank" rel="noopener">Download attachment</a></div>`;
+            }
+        }
+        const bubble = `<div class="chat-msg-inner">${media}<div class="chat-msg-text">${bodyText}</div>${this.formatMessageTime(m.created_at)}</div>`;
         return `<div class="chat-msg ${side}">${mine ? "" : avatarBlock}${bubble}${mine ? avatarBlock : ""}</div>`;
+    }
+    formatMessageTime(value) {
+        if (!value) return "";
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return "";
+        return `<span class="chat-msg-time">${App.escapeHtml(
+            date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        )}</span>`;
     }
     async hydratePostCards(root) {
         const nodes = root?.querySelectorAll(".chat-msg-post[data-post]") || [];
@@ -376,8 +419,49 @@ export class ChatUI {
         }
     }
     async handleAttachSelected() {
-        Alert.info("Attachments are not available yet.");
+        const file = this.attachInput?.files?.[0];
         if (this.attachInput) this.attachInput.value = "";
+        if (!file) return;
+        if (!this.peerUsername) {
+            Alert.error("Select a conversation first");
+            return;
+        }
+        const data = new FormData();
+        data.append("file", file);
+        try {
+            this.attachBtn?.setAttribute("disabled", "disabled");
+            const res = await Request.post(Api.inboxUpload, data);
+            const payload = Api.record(res);
+            if (!payload?.url) {
+                throw new Error("Upload failed");
+            }
+            this.pendingAttachment = {
+                url: payload.url,
+                msg_kind: payload.msg_kind || payload.type || "file",
+                name: file.name,
+            };
+            this.renderAttachHint();
+        } catch {
+            Alert.error("Could not upload attachment");
+        } finally {
+            this.attachBtn?.removeAttribute("disabled");
+        }
+    }
+    renderAttachHint() {
+        const chatArea = this.composer?.parentElement;
+        chatArea?.querySelectorAll(".chat-attach-hint").forEach((n) => n.remove());
+        if (!this.pendingAttachment) return;
+        const att = this.pendingAttachment;
+        const hint = document.createElement("div");
+        hint.className = "chat-attach-hint";
+        hint.innerHTML = `
+      <span class="chat-attach-hint-label">${App.escapeHtml(att.name || "Attachment ready")}</span>
+      <button type="button" class="chat-attach-hint-remove" aria-label="Remove attachment">×</button>`;
+        hint.querySelector(".chat-attach-hint-remove")?.addEventListener("click", () => {
+            this.pendingAttachment = null;
+            hint.remove();
+        });
+        this.composer?.before(hint);
     }
     async handleSendMessage() {
         if (this._sending) return;
@@ -406,7 +490,7 @@ export class ChatUI {
             await Request.post(Api.inboxMessages(this.selectedThreadId), payload);
             if (this.messageInput) this.messageInput.value = "";
             this.pendingAttachment = null;
-            this.chatMessages
+            this.composer?.parentElement
                 ?.querySelectorAll(".chat-attach-hint")
                 .forEach((n) => n.remove());
             await this.loadThreads({ silent: true });

@@ -9,14 +9,6 @@ import { Template } from "./template.js";
 export class CreatorRegistry {
     static classes = [Article, Image, Video, Audio, Document, Template];
 
-    static tabSelector(tab) {
-        if (!tab) return null;
-        const name = [...tab.classList].find(
-            (className) => className.endsWith("-tab") && className !== "tab",
-        );
-        return name ? `.${name}` : null;
-    }
-
     static async loadAll() {
         for (const Class of CreatorRegistry.classes) {
             await Class.loadTable();
@@ -24,10 +16,10 @@ export class CreatorRegistry {
     }
 
     static activeClass() {
-        const tab = document.querySelector(".tab.active-tab");
-        const selector = CreatorRegistry.tabSelector(tab);
-        if (!selector) return null;
-        return CreatorRegistry.classes.find((Class) => Class.tab === selector);
+        const hint = document.querySelector(".upload-hint.is-active");
+        const type = hint?.dataset.type;
+        if (!type) return null;
+        return CreatorRegistry.classes.find((Class) => Class.type === type);
     }
 }
 

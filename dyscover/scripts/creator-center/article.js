@@ -1,11 +1,11 @@
 import { Api } from "../core/api.js";
-import { Alert, Box, Request, FormValidator } from "../core/index.js";
+import { Alert, Box, Request } from "../core/index.js";
+import { CreatorMeta } from "./creator-meta.js";
 import { Post } from "./post.js";
 
 export class Article extends Post {
     static type = "article";
     static table = ".article-table";
-    static tab = ".article-tab";
 
     static create() {
         new this(null, {}).box("POST");
@@ -20,46 +20,53 @@ export class Article extends Post {
         modal.create().then(() => {
             modal.body((body) => {
                 body.innerHTML = `
-            <form id="article-form">
-                <input class="input" name="title" placeholder="Enter title" value="${this.item.title || ""}">
-                <textarea class="textarea" name="description">${this.item.description || ""}</textarea>
+            <form id="article-form" class="creator-form">
+                ${CreatorMeta.fieldHtml({
+                    title: this.item.title,
+                    description: this.item.description,
+                    tags: this.item.tags,
+                })}
+                <span class="hint">The server creates a blank HTML article file automatically. You can edit the full article in the editor after creating.</span>
             </form>`;
+                CreatorMeta.bindTags(body);
             });
             modal.footer((f) => {
                 f.innerHTML = `
-            <button class="button" form="article-form">
-                ${method === "POST" ? "Create" : "Update"}
+            <button type="submit" class="button" form="article-form">
+                ${method === "POST" ? "Create article" : "Save changes"}
             </button>`;
             });
             const form = document.querySelector("#article-form");
+            const submitBtn = document.querySelector('button[form="article-form"]');
             form.onsubmit = async (e) => {
                 e.preventDefault();
-                const validator = new FormValidator("article-form");
-                if (!(await validator.validate())) {
-                    return Alert.error(validator.message);
-                }
-                const data = new FormData(form);
-                try {
+                const title = String(form.title.value || "").trim();
+                if (!title) return Alert.error("Title is required");
+                const tags = CreatorMeta.readTags(form);
+                const done = await CreatorMeta.withSubmitLock(submitBtn, async () => {
                     if (method === "POST") {
                         await Request.post(Api.posts, {
                             type: "article",
-                            title: data.get("title"),
-                            description: data.get("description"),
-                            html: "<p></p>",
+                            title,
+                            description: String(form.description.value || "").trim(),
+                            tags,
                             uuid: crypto.randomUUID().replace(/-/g, "").slice(0, 16),
                         });
                     } else {
                         await Request.patch(Api.post(this.id), {
-                            title: data.get("title"),
-                            description: data.get("description"),
+                            title,
+                            description: String(form.description.value || "").trim(),
+                            tags,
                         });
                     }
-                    Alert.success(method === "POST" ? "Created" : "Updated");
+                    Alert.success(
+                        method === "POST" ? "Article created" : "Article updated",
+                    );
                     modal.close();
                     Article.loadTable();
-                } catch (e) {
-                    Alert.error(typeof e === "object" && e?.text ? e.text : "Save failed");
-                }
+                    return true;
+                });
+                if (done === null) return;
             };
         });
     }

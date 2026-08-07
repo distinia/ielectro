@@ -23,9 +23,9 @@ export class UI {
     handleSearch() {
         const value = this.searchInput.value;
         clearTimeout(this._debounce);
-        this._debounce = setTimeout(() => {
+        this._debounce = setTimeout(async () => {
             window.history.pushState(null, "", `?term=${encodeURIComponent(value)}`);
-            new Load();
+            await new Load().init();
         }, 300);
     }
 }

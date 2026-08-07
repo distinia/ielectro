@@ -29,7 +29,7 @@ export class Editor {
         Editor.hydrateLegacyContent(Select.container());
         this.loadElements();
         this.index = new Index();
-        this.index.closeEditing();
+        void this.index.refresh();
         this.activateElements();
         Editor.current = this;
     }
@@ -97,7 +97,9 @@ export class Editor {
     create() {
         const container = document.createElement("div");
         container.className = "instruments";
-        this.instruments.forEach((item) => {
+        this.instruments
+            .filter((item) => item?.action && item?.title)
+            .forEach((item) => {
             const btn = document.createElement("div");
             btn.className = "btn instrument";
             btn.dataset.action = item.action;
@@ -160,22 +162,26 @@ export class Editor {
         const editButton = document.querySelector(".index-edit-button");
         if (!Editor.current) return;
         if (Editor.current.isEditing) {
-            editButton.innerHTML = `<i data-icon="pencil"></i>`;
+            editButton?.classList.remove("is-active");
+            if (editButton) editButton.innerHTML = `<i data-icon="pencil"></i>`;
             Editor.current.closeEditing();
         } else {
-            editButton.innerHTML = `<i data-icon="x"></i>`;
+            editButton?.classList.add("is-active");
+            if (editButton) editButton.innerHTML = `<i data-icon="x"></i>`;
             Editor.current.startEditing();
         }
-        await Icons.load(editButton);
+        if (editButton) await Icons.load(editButton);
     }
     startEditing() {
         if (this.isEditing) return;
         this.isEditing = true;
         if (this.box) {
-            this.box.style.display = "flex";
+            this.box.classList.add("is-visible");
         }
-        this.title.style.display = 'none';
-        document.querySelector('.post-overlay')?.remove();
+        if (this.title) {
+            this.title.style.display = "none";
+        }
+        document.querySelector(".post-overlay")?.remove();
         this.activateElements();
         this.index.startEditing();
     }
@@ -183,9 +189,11 @@ export class Editor {
         if (!this.isEditing) return;
         this.isEditing = false;
         if (this.box) {
-            this.box.style.display = "none";
+            this.box.classList.remove("is-visible");
         }
-        this.title.style.display = 'block';
+        if (this.title) {
+            this.title.style.display = "";
+        }
         ReplaceText.list.forEach((instance) => instance.closeEditing());
         this.activateElements();
         this.index.closeEditing();

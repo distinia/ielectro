@@ -1,61 +1,98 @@
-@media only screen and (max-width: 600px) {
-    .actions {
-        margin: 10px;
+@media (max-width: 960px) {
+    body.article-page.has-navbar {
+        padding-left: 0;
+        padding-bottom: 72px;
     }
+
+    .article-stage {
+        flex-direction: column;
+        min-height: auto;
+    }
+
+    .article-main-content {
+        max-width: none;
+        height: auto;
+        min-height: 0;
+    }
+
+    .article-index-sidebar {
+        position: relative;
+        top: auto;
+        width: 100%;
+        max-width: none;
+        flex: none;
+        height: auto;
+        max-height: none;
+        border-left: none;
+        border-top: 1px solid rgba(15, 23, 42, 0.08);
+        box-shadow: none;
+    }
+
+    .article-index-sidebar .index-sidebar-content {
+        max-height: 40vh;
+    }
+}
+
+@media only screen and (max-width: 600px) {
     .content {
         margin: 0;
-        padding: 20px;
-        max-height: min(65vh, calc(100dvh - 12rem));
+        padding: 1.15rem 1rem 1.75rem;
     }
+
     .title {
-        font-size: 1.5em;
+        font-size: 1.65rem;
     }
+
     .instruments {
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         overflow-x: auto;
-        width: 100%;
+        justify-content: flex-start;
+        padding-inline: 0.5rem;
     }
-    .instruments .btn i {
-        font-size: 16px;
+
+    .instruments .btn.instrument {
+        flex-shrink: 0;
     }
-    .list {
-        width: 100%;
-        font-size: 13px;
-    }
+
     .heading {
-        font-size: 1.5em;
+        font-size: 1.35rem;
     }
+
     .sub-heading {
-        font-size: 1.2em;
+        font-size: 1.08rem;
     }
+
     .paragraph,
     .number-list li,
     .point-list li {
-        font-size: 15px;
+        font-size: 0.98rem;
     }
+
     .caption {
-        font-size: 0.85em;
+        font-size: 0.88rem;
     }
+
     .percentage {
         width: 100px;
         height: 10px;
     }
+
     .percentage::after {
         font-size: 12px;
         right: -35px;
     }
+
     .legend {
         margin: 0.3em;
     }
+
     .legend-box {
         width: 14px;
         height: 14px;
         margin-right: 6px;
     }
+
     .legend-text {
         font-size: 12px;
-    }
-    .table {
-        background: var(--primary-gradient);
     }
 }

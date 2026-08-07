@@ -51,7 +51,7 @@ export class Link {
         if (!option) return;
         let url = await WebSelector.init(option.toLowerCase(), "article");
         if (!url) return;
-        if (!/^https?:///i.test(url)) {
+        if (!/^https?:\/\//i.test(url)) {
             url = "https://" + url;
         }
         try {

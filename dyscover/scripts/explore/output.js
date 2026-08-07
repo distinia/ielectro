@@ -20,7 +20,6 @@ export class Output {
         this.value = value;
         this.types = ["user", ...ExploreHelpers.types];
         this._last = null;
-        this.load();
     }
 
     async load() {

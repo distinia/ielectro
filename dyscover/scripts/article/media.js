@@ -4,6 +4,7 @@ import { Select } from "./select.js";
 import { Menu } from "./menu.js";
 import { WebSelector } from "./web-selector.js";
 import { Editor } from "./editor.js";
+import { getArticleState } from "./state.js";
 import { GenerateArticle } from "./generate-article.js";
 import { Paragraph } from "./paragraph.js";
 export class Media {
@@ -83,13 +84,14 @@ export class Media {
         if (this.variant === Media.classMap.image) {
             this.element.querySelector("figcaption")?.setAttribute("contenteditable", "false");
         }
-        if(state === "user" || state === "editor") {
+        const role = getArticleState();
+        if (role === "user" || role === "editor") {
             this.element.addEventListener("click", this.previewHandler);
         }
         this.menu?.closeEditing();
     }
     async openPreview() {
-        if (Editor.editing) return;
+        if (Editor.current?.isEditing) return;
         try {
             const url = new URL(this.url);
             if (url.hostname !== "dyscover.ielectro.com") {

@@ -1,14 +1,23 @@
 <?php
 namespace Dyscover;
+use Nesh\Audio;
+use Nesh\File;
+use Nesh\Generate;
+use Nesh\Image;
 use Nesh\Query;
 use Nesh\Request;
 use Nesh\Response;
 use Nesh\Routing;
 use Nesh\Validate;
+use Nesh\Video;
 class Inbox
 {
     public function index(): void
     {
+        if (Routing::segment(2) === 'upload') {
+            (new InboxUpload())->index();
+            return;
+        }
         if (Routing::segment(3) === 'messages') {
             (new InboxMessages())->index();
             return;
@@ -23,6 +32,7 @@ class Inbox
     private function list(): void
     {
         Request::get();
+        $GLOBALS['dyscover']->database->use();
         Response::success(InboxData::threads(User::id()));
     }
     private function show(): void
@@ -140,12 +150,12 @@ class InboxData
 {
     public static function threads(int $userId): array
     {
+        $GLOBALS['dyscover']->database->use();
         $rows = Query::fetchAll(
             "SELECT
                 c.id,
                 c.updated_at,
                 peer.id AS peer_id,
-                peer_a.username AS peer_username,
                 lm.body AS last_body,
                 lm.type AS last_type,
                 (
@@ -162,7 +172,6 @@ class InboxData
             INNER JOIN inbox_members peer_mem
                 ON peer_mem.chat_id = c.id AND peer_mem.user_id != mem.user_id
             INNER JOIN users peer ON peer.id = peer_mem.user_id
-            " . Db::joinAccounts('peer_a', 'peer.account_id') . "
             LEFT JOIN inbox_messages lm ON lm.id = (
                 SELECT m2.id FROM inbox_messages m2
                 WHERE m2.chat_id = c.id
@@ -200,15 +209,16 @@ class InboxData
     }
     public static function messages(int $chatId): array
     {
+        $GLOBALS['dyscover']->database->use();
         $rows = Query::fetchAll(
-            "SELECT m.id, m.sender_id, m.type, m.body, m.attachment, m.created_at, a.username
+            "SELECT m.id, m.sender_id, m.type, m.body, m.attachment, m.created_at, du.account_id
             FROM inbox_messages m
             INNER JOIN users du ON du.id = m.sender_id
-            " . Db::joinAccounts() . "
             WHERE m.chat_id = ?
             ORDER BY m.created_at ASC, m.id ASC",
             [$chatId]
         );
+        $rows = Accounts::attachUsernames($rows);
         return array_map(fn(array $row): array => [
             'id' => (int) $row['id'],
             'sender_id' => (int) $row['sender_id'],
@@ -306,5 +316,57 @@ class InboxReads
                 [(int) $row['id'], $userId]
             );
         }
+    }
+}
+class InboxUpload
+{
+    public function index(): void
+    {
+        Routing::method([
+            'POST' => fn() => $this->store(),
+        ]);
+    }
+    private function store(): void
+    {
+        Request::post();
+        $userId = User::id();
+        $file = Request::file('file')
+            ?? Request::file('attachment')
+            ?? Request::file('media');
+        if (!$file) {
+            Response::badRequest('Missing file');
+        }
+        $mime = mime_content_type($file['tmp_name']) ?: (string) ($file['type'] ?? '');
+        $kind = match (true) {
+            str_starts_with($mime, 'image/') => 'image',
+            str_starts_with($mime, 'video/') => 'video',
+            str_starts_with($mime, 'audio/') => 'audio',
+            default => 'file',
+        };
+        $dir = \APP_ASSETS . '/users/' . $userId . '/inbox';
+        File::makeDirectory($dir);
+        $name = substr(Generate::token(8), 0, 16);
+        if ($kind === 'image') {
+            $asset = Image::upload($file, $name, true);
+            $asset->fit(1920, 1920)->save($dir);
+        } elseif ($kind === 'video') {
+            $asset = Video::upload($file, $name, true);
+            $asset->save($dir);
+        } elseif ($kind === 'audio') {
+            $asset = Audio::upload($file, $name, true);
+            $asset->save($dir);
+        } else {
+            $asset = File::upload($file, $name, true);
+            $asset->save($dir);
+        }
+        $filename = $asset->filename();
+        if ($filename === null || $filename === '') {
+            Response::error('Unable to save attachment');
+        }
+        Response::success([
+            'url' => \APP_URL . '/assets/users/' . $userId . '/inbox/' . $filename,
+            'type' => $kind,
+            'msg_kind' => $kind,
+        ]);
     }
 }

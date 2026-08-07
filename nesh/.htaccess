@@ -21,7 +21,7 @@ RewriteRule ^cli(?:/.*)?$ - [F,L,NC]
 RewriteRule ^skeleton(?:/.*)?$ - [F,L,NC]
 RewriteRule ^src(?:/.*)?$ - [F,L,NC]
 RewriteRule ^vendor(?:/.*)?$ - [F,L,NC]
-RewriteRule ^data(?:/.*)?$ - [F,L,NC]
+
 
 # Block sensitive files
 RewriteRule ^composer\.json$ - [F,L,NC]

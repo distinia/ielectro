@@ -1,39 +1,50 @@
 import { CreatorRegistry } from "./registry.js";
 
+const TYPES = [
+    "article",
+    "image",
+    "video",
+    "audio",
+    "document",
+    "template",
+];
+
 export class Table {
     constructor() {
-        this.tabs();
+        this.sections();
         this.sort();
     }
-    tabs() {
-        document.querySelectorAll(".tab").forEach(tab => {
-            tab.onclick = () => {
-                document.querySelectorAll(".tab").forEach(t => t.classList.remove("active-tab"));
-                document.querySelectorAll(".section").forEach(section => {
-                    section.style.display = "none";
-                    section.classList.remove("active-section");
-                });
-                tab.classList.add("active-tab");
-                const tabName = [...tab.classList].find(
-                    (className) =>
-                        className.endsWith("-tab") && className !== "tab",
-                );
-                const section = tabName
-                    ? document.querySelector(
-                          `.${tabName.replace("-tab", "-section")}`,
-                      )
-                    : null;
-                if (!section) return;
-                section.style.display = "block";
-                requestAnimationFrame(() => {
-                    section.classList.add("active-section");
-                });
-            };
+
+    sections() {
+        const switchTo = (type) => {
+            if (!TYPES.includes(type)) return;
+            CreatorRegistry.classes.forEach((Class) => {
+                Class.list.forEach((post) => post.setChecked(false));
+                const table = document.querySelector(Class.table);
+                Class.syncCheckAll?.(table);
+            });
+            document.querySelectorAll(".section").forEach((section) => {
+                section.classList.remove("active-section");
+            });
+            document
+                .querySelector(`.${type}-section`)
+                ?.classList.add("active-section");
+            document.querySelectorAll(".upload-hint").forEach((hint) => {
+                hint.classList.toggle("is-active", hint.dataset.type === type);
+            });
+        };
+
+        document.querySelectorAll(".upload-hint").forEach((hint) => {
+            hint.addEventListener("click", () => {
+                switchTo(hint.dataset.type);
+            });
         });
-        document.querySelector(".article-tab")?.click();
+
+        switchTo("article");
     }
+
     sort() {
-        document.querySelectorAll(".table").forEach(table => {
+        document.querySelectorAll(".table").forEach((table) => {
             table.querySelectorAll("thead th").forEach((th, index) => {
                 if (index === 0) return;
                 const button = document.createElement("div");
@@ -44,6 +55,7 @@ export class Table {
             });
         });
     }
+
     static sort(table, index) {
         const tbody = table.querySelector("tbody");
         const rows = Array.from(tbody.children);
@@ -52,11 +64,6 @@ export class Table {
             const B = b.children[index].innerText;
             return A.localeCompare(B);
         });
-        rows.forEach(row => tbody.appendChild(row));
-    }
-    static getActiveClass() {
-        const tab = document.querySelector(".active-tab");
-        if (!tab) return null;
-        return CreatorRegistry.activeClass();
+        rows.forEach((row) => tbody.appendChild(row));
     }
 }

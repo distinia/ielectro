@@ -4,7 +4,12 @@
   padding: 1.75rem 1.25rem 3rem;
 }
 .profile-content {
-  padding-top: 1.25rem;
+  padding-top: 0.5rem;
+  padding: 1rem;
+  border-radius: var(--radius-lg, 16px);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--card-shadow);
 }
 .profile-posts {
   min-height: 240px;

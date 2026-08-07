@@ -1,7 +1,6 @@
 import { App } from "../core/app.js";
 import { UserPageBoot } from "./boot.js";
 
-document.addEventListener("DOMContentLoaded", async () => {
-    if (!(await App.boot())) return;
-    await UserPageBoot.start();
+document.addEventListener("DOMContentLoaded", () => {
+    App.runPage(() => UserPageBoot.start());
 });

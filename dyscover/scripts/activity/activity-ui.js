@@ -1,9 +1,11 @@
 import { Api } from "../core/api.js";
-import { App, EmptyState, Icons, Request, Navbar } from "../core/index.js";
+import { App, EmptyState, Icons, Request, Navbar, Card } from "../core/index.js";
 import {
     resolveNotificationType,
     notificationArticle,
     notificationPostType,
+    notificationTypeIcon,
+    formatRelativeTime,
 } from "../core/post-message.js";
 
 export class ActivityUI {
@@ -13,16 +15,19 @@ export class ActivityUI {
 
     constructor() {
         this.list = null;
+        this.isOverlay = false;
         this.seen = new Set();
         this.observer = null;
         this.pollTimer = null;
-        this.mount(document.querySelector(".activity-list"));
+        this.ready = this.mount(document.querySelector(".activity-list"));
     }
 
     static async openOverlay() {
         if (ActivityUI.overlay) {
             ActivityUI.overlay.classList.add("activity-overlay--open");
-            ActivityUI.instance?.load();
+            await ActivityUI.instance?.markAllRead();
+            await ActivityUI.instance?.load();
+            App.setScrollEnabled(false);
             return;
         }
         const shell = document.createElement("div");
@@ -46,7 +51,8 @@ export class ActivityUI {
         document.body.appendChild(shell);
         ActivityUI.overlay = shell;
         ActivityUI.instance = new ActivityUI();
-        ActivityUI.instance.mount(shell.querySelector(".activity-list"));
+        ActivityUI.instance.isOverlay = true;
+        await ActivityUI.instance.mount(shell.querySelector(".activity-list"));
         await Icons.load(shell);
         App.setScrollEnabled(false);
     }
@@ -56,14 +62,23 @@ export class ActivityUI {
         App.setScrollEnabled(true);
     }
 
+    static async openNotification(notification) {
+        await ActivityUI.openOverlay();
+        if (notification?.id) {
+            await ActivityUI.instance?.openItem(notification);
+        }
+    }
+
     mount(list) {
         this.list = list;
-        if (!this.list) return;
-        document.querySelector(".activity-mark-read")?.addEventListener("click", () => {
-            this.load();
-            Navbar.refresh().catch(() => {});
-        });
-        this.load();
+        if (!this.list) return Promise.resolve();
+        this.isOverlay = this.isOverlay || !!this.list.closest(".activity-overlay");
+        document
+            .querySelector(".activity-container .activity-mark-read")
+            ?.addEventListener("click", async () => {
+                await this.markAllRead();
+                await this.load();
+            });
         this.pollTimer = window.setInterval(() => {
             if (document.visibilityState === "visible") this.load({ silent: true });
         }, 14000);
@@ -75,10 +90,21 @@ export class ActivityUI {
                 }
             });
         }
+        if (this.isOverlay) {
+            return this.markAllRead().then(() => this.load());
+        }
+        return this.load();
+    }
+
+    async markAllRead() {
+        try {
+            await Request.patch(Api.activityMarkAllRead);
+            Navbar.refresh().catch(() => {});
+        } catch {}
     }
 
     setupObserver() {
-        if (!this.list) return;
+        if (!this.list || this.isOverlay) return;
         if (this.observer) {
             this.observer.disconnect();
             this.observer = null;
@@ -94,6 +120,7 @@ export class ActivityUI {
                     this.seen.add(id);
                     el.dataset.read = "1";
                     el.classList.remove("notification-unread");
+                    Request.patch(Api.activityMarkRead(id)).catch(() => {});
                     Navbar.refresh().catch(() => {});
                 });
             },
@@ -110,7 +137,7 @@ export class ActivityUI {
             if (!ActivityUI.templates) {
                 try {
                     ActivityUI.templates = await Request.get(
-                        "https://dyscover.ielectro.com/data/activity-messages.json",
+                        `${Api.origin}/data/activity-messages.json`,
                     );
                 } catch {
                     ActivityUI.templates = {};
@@ -132,6 +159,64 @@ export class ActivityUI {
                 }
                 this.setupObserver();
             }
+        }
+    }
+
+    buildMessage(notification) {
+        const user =
+            notification.actor_username ||
+            notification.user ||
+            notification.username ||
+            "User";
+        const type = resolveNotificationType(notification);
+        const template =
+            ActivityUI.templates?.[type] ||
+            ActivityUI.templates?.default ||
+            "{user} sent you a notification";
+        const text = template
+            .replaceAll("{user}", user)
+            .replaceAll("{article}", notificationArticle(notification))
+            .replaceAll("{post_type}", notificationPostType(notification))
+            .replaceAll("{message}", notification.message || "")
+            .replaceAll("{details}", notification.message || "");
+        const safe = App.escapeHtml(text);
+        return safe.replace(
+            App.escapeHtml(user),
+            `<strong class="notification-user">${App.escapeHtml(user)}</strong>`,
+        );
+    }
+
+    thumbUrl(notification) {
+        const post = notification.post;
+        if (!post?.id) return "";
+        const enriched = App.enrichPost({
+            id: post.id,
+            type: post.type,
+            uuid: post.uuid,
+            user_id: post.user_id,
+            preview_image: post.preview_image,
+        });
+        return enriched.preview_image || enriched.preview || "";
+    }
+
+    async openItem(notification) {
+        const type = resolveNotificationType(notification);
+        const user =
+            notification.actor_username ||
+            notification.user ||
+            notification.username ||
+            "";
+        if (type === "follow" || type === "unfollow") {
+            if (user) {
+                window.location.href = `${Api.origin}/users/${encodeURIComponent(user)}`;
+            }
+            return;
+        }
+        const postId = Number(notification.post_id || notification.post?.id);
+        if (postId > 0) {
+            ActivityUI.closeOverlay();
+            const card = new Card({ id: postId });
+            await card.openOverlay();
         }
     }
 
@@ -157,52 +242,76 @@ export class ActivityUI {
                     "User";
                 const av = App.escapeAttr(
                     notification.actor_avatar ||
-                        `https://account.ielectro.com/u/${encodeURIComponent(user)}/avatar.png`,
+                        App.userAvatarUrl(notification.actor_id, user),
                 );
                 const ph = App.escapeHtml(App.initialsOf(user));
                 const type = resolveNotificationType(notification);
-                const template =
-                    ActivityUI.templates?.[type] ||
-                    ActivityUI.templates?.default ||
-                    "{user} sent you a notification";
-                const message = template
-                    .replaceAll("{user}", user)
-                    .replaceAll(
-                        "{article}",
-                        notificationArticle(notification),
-                    )
-                    .replaceAll(
-                        "{post_type}",
-                        notificationPostType(notification),
-                    )
-                    .replaceAll("{message}", notification.message || "")
-                    .replaceAll("{details}", notification.message || "");
+                const icon = notificationTypeIcon(type);
+                const badgeClass = `notification-type-badge--${String(type || "default").replace(/[^a-z0-9_-]/gi, "") || "default"}`;
+                const message = this.buildMessage(notification);
+                const time = formatRelativeTime(notification.created_at);
+                const thumb = this.thumbUrl(notification);
+                const thumbHtml = thumb
+                    ? `<div class="notification-thumb"><img src="${App.escapeAttr(thumb)}" alt="" loading="lazy"></div>`
+                    : "";
                 return `
-            <div class="notification-item ${unread ? "notification-unread" : ""}" data-id="${id}" data-read="${unread ? "0" : "1"}">
-                <div class="notification-avatar-wrap">
-                    <img class="notification-avatar-img" src="${av}" alt="" loading="lazy" />
-                    <span class="notification-avatar-ph">${ph}</span>
-                </div>
-                <div class="notification-content">
-                    <p class="notification-message">${App.escapeHtml(message)}</p>
-                    <button type="button" class="notification-delete" data-id="${id}" aria-label="Dismiss">
-                        <i data-icon="trash"></i>
-                    </button>
-                </div>
-            </div>`;
+            <article class="notification-item ${unread ? "notification-unread" : ""}" data-id="${id}" data-read="${unread ? "0" : "1"}">
+                <button type="button" class="notification-main" data-notification-id="${id}">
+                    <span class="notification-avatar-wrap">
+                        <img class="notification-avatar-img" src="${av}" alt="" loading="lazy" />
+                        <span class="notification-avatar-ph">${ph}</span>
+                        <span class="notification-type-badge ${badgeClass}">
+                            <i data-icon="${icon}"></i>
+                        </span>
+                    </span>
+                    <span class="notification-content">
+                        <span class="notification-message">${message}</span>
+                        <span class="notification-time">${App.escapeHtml(time || "now")}</span>
+                    </span>
+                    ${thumbHtml}
+                </button>
+                <button type="button" class="notification-delete" data-id="${id}" aria-label="Delete notification">
+                    <i data-icon="x"></i>
+                </button>
+            </article>`;
             })
             .join("");
+
+        this.list.querySelectorAll(".notification-main").forEach((btn) => {
+            btn.addEventListener("click", () => {
+                const id = Number(btn.dataset.notificationId);
+                const notification = activity.find(
+                    (row) => Number(row.id) === id,
+                );
+                if (notification) {
+                    this.openItem(notification).catch(() => {});
+                }
+            });
+        });
+
+        this.list.querySelectorAll(".notification-avatar-img").forEach((img) => {
+            App.wireAvatarImg(img);
+        });
+
         this.list.querySelectorAll(".notification-delete").forEach((btn) => {
             btn.addEventListener("click", async (e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 const id = Number(btn.dataset.id);
                 if (!id) return;
+                const row = btn.closest(".notification-item");
+                row?.classList.add("notification-item--removing");
                 try {
                     await Request.delete(Api.activityOne(id));
-                    btn.closest(".notification-item")?.remove();
+                    row?.remove();
+                    if (!this.list.querySelector(".notification-item")) {
+                        EmptyState.mount(this.list, EmptyState.activity());
+                        await Icons.load(this.list);
+                    }
                     Navbar.refresh().catch(() => {});
-                } catch {}
+                } catch {
+                    row?.classList.remove("notification-item--removing");
+                }
             });
         });
     }

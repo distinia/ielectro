@@ -3,7 +3,7 @@ RewriteEngine On
 
 RewriteRule ^database(?:/.*)?$ - [F,L,NC]
 RewriteRule ^storage(?:/.*)?$ - [F,L,NC]
-RewriteRule ^data(?:/.*)?$ - [F,L,NC]
+
 
 RewriteCond %{REQUEST_FILENAME} -f
 RewriteRule ^ - [L]

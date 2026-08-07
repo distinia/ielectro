@@ -91,7 +91,7 @@ export class WebSelector {
                 Alert.error("URL cannot be empty");
                 continue;
             }
-            const valid = /^(ftp|http|https)://[^ "]+$/.test(trimmed);
+            const valid = /^(ftp|http|https):\/\/[^ "]+$/.test(trimmed);
             if (valid) return trimmed;
             Alert.error("Invalid URL");
         }

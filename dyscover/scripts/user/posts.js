@@ -1,5 +1,5 @@
 import { Api } from "../core/api.js";
-import { App, EmptyState, Icons, Request } from "../core/index.js";
+import { App, EmptyState, Icons, Request, Spinner } from "../core/index.js";
 
 export class Posts {
     constructor(page) {
@@ -9,14 +9,17 @@ export class Posts {
     }
 
     async init() {
-        if (!this.container) return;
-        this.container.innerHTML = `<p class="profile-loading">Loading posts…</p>`;
+        if (!this.container || !this.page?.userId) {
+            return;
+        }
+        Spinner.mount(this.container);
         const isOwn = this.page.loggedUsername === this.page.username;
-        document
-            .querySelectorAll('.profile-tab[data-filter="liked"]')
-            .forEach((tab) => {
-                tab.style.display = isOwn ? "" : "none";
-            });
+        document.querySelectorAll('.profile-tab[data-filter="liked"]').forEach((tab) => {
+            tab.style.display = isOwn ? "" : "none";
+        });
+        document.querySelectorAll('.profile-tab[data-filter="saved"]').forEach((tab) => {
+            tab.style.display = isOwn ? "" : "none";
+        });
         try {
             const res = await Request.get(Api.userPosts(this.page.userId));
             this.page.posts = Api.list(res)
@@ -27,35 +30,21 @@ export class Posts {
                         new Date(a.created_at || a.updated_at || 0),
                 );
             if (isOwn) {
-                try {
-                    const savedRes = await Request.get(
-                        Api.userBookmarks(this.page.userId),
-                    );
-                    this.page.saved = Api.list(savedRes).map((item) =>
-                        App.enrichPost(item),
-                    );
-                } catch {
-                    this.page.saved = [];
-                }
-                try {
-                    const likedRes = await Request.get(
-                        Api.userLikes(this.page.userId),
-                    );
-                    this.page.liked = Api.list(likedRes).map((item) =>
-                        App.enrichPost(item),
-                    );
-                } catch {
-                    this.page.liked = [];
-                }
+                this.page.saved = await this.fetchList(Api.userBookmarks);
+                this.page.liked = await this.fetchList(Api.userLikes);
             } else {
                 this.page.saved = [];
                 this.page.liked = [];
             }
+            this.page.reposts = await this.fetchList(Api.userReposts);
+            this.page.mentioned = await this.fetchList(Api.userMentions);
             await this.page.renderGrid();
         } catch {
             this.page.posts = [];
             this.page.saved = [];
             this.page.liked = [];
+            this.page.reposts = [];
+            this.page.mentioned = [];
             EmptyState.mount(
                 this.container,
                 EmptyState.profilePosts({
@@ -64,6 +53,15 @@ export class Posts {
                 }),
             );
             await Icons.load(this.container);
+        }
+    }
+
+    async fetchList(apiFn) {
+        try {
+            const res = await Request.get(apiFn(this.page.userId));
+            return Api.list(res).map((item) => App.enrichPost(item));
+        } catch {
+            return [];
         }
     }
 }

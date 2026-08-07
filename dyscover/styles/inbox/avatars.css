@@ -95,13 +95,16 @@
     object-fit: cover;
     display: block;
 }
-.chat-suggest-avatar-ph {
-    position: absolute;
-    inset: 0;
+.avatar--fallback .avatar-fallback,
+.chat-avatar-wrap.avatar--fallback .avatar-fallback,
+.chat-msg-avatar.avatar--fallback .avatar-fallback,
+.chat-header-avatar-wrap.avatar--fallback .chat-header-avatar-ph {
+    display: flex;
+}
+
+.avatar--fallback .avatar-img,
+.chat-avatar-wrap.avatar--fallback .avatar-img,
+.chat-msg-avatar.avatar--fallback .avatar-img,
+.chat-header-avatar-wrap.avatar--fallback .chat-header-avatar {
     display: none;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-weight: 700;
-    font-size: 0.6rem;
 }

@@ -43,7 +43,7 @@ class File
         self::makeDirectory($directory);
         $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         $filename = $name ?? Generate::token();
-        if ($extension !== '') {
+        if ($extension !== '' && !str_ends_with(strtolower($filename), '.' . $extension)) {
             $filename .= '.' . $extension;
         }
         $path = self::joinPath($directory, $filename);

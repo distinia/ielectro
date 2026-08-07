@@ -88,10 +88,11 @@ class ExploreSearch
     }
     public static function recents(): array
     {
+        $GLOBALS['dyscover']->database->use();
         $rows = Query::fetchAll(
             "SELECT
                 p.*,
-                a.username,
+                du.account_id,
                 s.views,
                 s.likes,
                 s.comments,
@@ -99,7 +100,6 @@ class ExploreSearch
                 s.bookmarks
             FROM posts p
             INNER JOIN users du ON du.id = p.user_id
-            " . Db::joinAccounts() . "
             LEFT JOIN post_statistics s ON s.post_id = p.id
             WHERE p.status = 'active'
             AND p.visibility = 'public'
@@ -111,10 +111,11 @@ class ExploreSearch
     public static function posts(string $type, string $term): array
     {
         $like = '%' . $term . '%';
+        $GLOBALS['dyscover']->database->use();
         $rows = Query::fetchAll(
             "SELECT
                 p.*,
-                a.username,
+                du.account_id,
                 s.views,
                 s.likes,
                 s.comments,
@@ -122,7 +123,6 @@ class ExploreSearch
                 s.bookmarks
             FROM posts p
             INNER JOIN users du ON du.id = p.user_id
-            " . Db::joinAccounts() . "
             LEFT JOIN post_statistics s ON s.post_id = p.id
             WHERE p.type = ?
             AND p.status = 'active'
@@ -136,14 +136,23 @@ class ExploreSearch
     }
     public static function users(string $term): array
     {
-        $rows = Query::fetchAll(
-            "SELECT du.id
-            FROM users du
-            " . Db::joinAccounts() . "
-            WHERE a.username LIKE ?
-            ORDER BY a.username ASC
-            LIMIT 20",
+        $GLOBALS['account']->database->use();
+        $accounts = Query::fetchAll(
+            'SELECT id FROM accounts WHERE username LIKE ? ORDER BY username ASC LIMIT 20',
             ['%' . $term . '%']
+        );
+        $GLOBALS['dyscover']->database->use();
+        if (!$accounts) {
+            return [];
+        }
+        $placeholders = implode(',', array_fill(0, count($accounts), '?'));
+        $accountIds = array_map(
+            static fn(array $row): int => (int) $row['id'],
+            $accounts
+        );
+        $rows = Query::fetchAll(
+            "SELECT id FROM users WHERE account_id IN ({$placeholders})",
+            $accountIds
         );
         return array_map(
             fn(array $row): array => UserCard::one((int) $row['id']),

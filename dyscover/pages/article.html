@@ -6,20 +6,28 @@
     <meta name="description" content="Read articles and posts on Dyscover">
 </head>
 <body>
-    <aside class="article-main-content">
-        <h1 class="title"></h1>
-        <section class="content"></section>
-    </aside>
-    <aside class="article-index-sidebar">
-        <div class="index-sidebar-header">
-            <div class="index-edit-button">
-                <i data-icon="pencil"></i>
-            </div>
-            <h4>Index</h4>
+    <main class="article-shell">
+        <div class="article-stage">
+            <article class="article-main-content">
+                <header class="article-header">
+                    <h1 class="title"></h1>
+                </header>
+                <div class="article-scroll">
+                    <section class="content"></section>
+                </div>
+            </article>
+            <aside class="article-index-sidebar" aria-label="Article index">
+                <div class="index-sidebar-header">
+                    <button type="button" class="index-edit-button" aria-label="Edit article">
+                        <i data-icon="pencil"></i>
+                    </button>
+                    <h4>Index</h4>
+                </div>
+                <div class="index-sidebar-content">
+                    <ul class="list" aria-label="Table of contents"></ul>
+                </div>
+            </aside>
         </div>
-        <div class="index-sidebar-content">
-            <section class="list"></section>
-        </div>
-    </aside>
+    </main>
 </body>
 </html>

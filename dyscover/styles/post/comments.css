@@ -58,12 +58,20 @@
 .post-comment-input:focus {
     outline: none;
 }
-.post-comment-send {
-    border: none;
-    background: transparent;
-    color: var(--blue-mid);
-    font-weight: 700;
-    font-size: 0.88rem;
-    cursor: pointer;
-    padding: 0.35rem 0.25rem;
+.post-comment-compose {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    border-top: 1px solid var(--border-subtle);
+    padding-top: 0.65rem;
+    margin-top: 0.5rem;
+}
+
+.post-comment-compose .post-comment-input {
+    border-top: none;
+    padding: 0.55rem 0;
+}
+
+.post-comment-compose .post-comment-send-btn {
+    margin-right: 0.15rem;
 }

@@ -42,10 +42,11 @@ class Feed
         }
         $params[] = $userId;
         $params[] = $userId;
+        $GLOBALS['dyscover']->database->use();
         $rows = Query::fetchAll(
             "SELECT
                 p.*,
-                a.username,
+                du.account_id,
                 s.views,
                 s.likes,
                 s.comments,
@@ -53,7 +54,6 @@ class Feed
                 s.bookmarks
             FROM posts p
             INNER JOIN users du ON du.id = p.user_id
-            " . Db::joinAccounts() . "
             LEFT JOIN post_statistics s ON s.post_id = p.id
             WHERE p.type IN ({$placeholders})
             AND p.status = 'active'
@@ -114,10 +114,10 @@ class Feed
     }
     private static function interestsPath(int $userId): string
     {
-        return APP_ASSETS . '/users/' . $userId . '/settings/interests.json';
+        return \APP_ASSETS . '/users/' . $userId . '/settings/interests.json';
     }
     private static function metaPath(int $userId): string
     {
-        return APP_ASSETS . '/users/' . $userId . '/settings/interests.meta.json';
+        return \APP_ASSETS . '/users/' . $userId . '/settings/interests.meta.json';
     }
 }

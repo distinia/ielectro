@@ -55,6 +55,7 @@ class App
     }
     public function run(): void
     {
+        $this->bindEnvironment();
         if ($this->database !== null) {
             $this->database->use();
         }
@@ -62,6 +63,24 @@ class App
             'api' => $this->api->handle(),
             default => $this->pages->render(),
         };
+    }
+    private function bindEnvironment(): void
+    {
+        if (!defined('APP_URL')) {
+            define('APP_URL', $this->url);
+        }
+        if (!defined('APP_ASSETS')) {
+            define('APP_ASSETS', $this->paths['assets']);
+        }
+        if (!defined('APP_CACHE')) {
+            define('APP_CACHE', $this->paths['cache']);
+        }
+        if (!defined('APP_LOGS')) {
+            define('APP_LOGS', $this->paths['logs']);
+        }
+        if (!defined('APP_TEMP')) {
+            define('APP_TEMP', $this->paths['temp']);
+        }
     }
     private function boot(): void
     {

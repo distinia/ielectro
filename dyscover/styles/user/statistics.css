@@ -1,26 +1,46 @@
 .user-stats {
-  display: flex;
-  gap: 1.75rem;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
+    display: flex;
+    gap: 0.65rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
 }
-.user-stats span {
-  font-size: 0.95rem;
-  cursor: default;
+
+.stat-pill {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    border: 1px solid var(--border-subtle);
+    background: rgba(255, 255, 255, 0.88);
+    border-radius: 999px;
+    padding: 0.45rem 0.85rem;
+    cursor: default;
+    transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
 }
-.user-stats .followers-number,
-.user-stats .followings-number {
-  cursor: pointer;
+
+.stat-pill strong {
+    font-size: 0.95rem;
+    color: var(--text-color);
 }
-.user-stats .followers-number:hover,
-.user-stats .followings-number:hover {
-  color: var(--blue-mid);
+
+.stat-pill span {
+    font-size: 0.82rem;
+    color: var(--text-muted);
 }
-.articles-number {
-  font-weight: 700;
+
+.followers-stat,
+.followings-stat {
+    cursor: pointer;
 }
+
+.followers-stat:hover,
+.followings-stat:hover {
+    border-color: rgba(30, 136, 229, 0.35);
+    background: rgba(30, 136, 229, 0.06);
+    transform: translateY(-1px);
+}
+
 @media (max-width: 768px) {
-  .user-stats {
-    justify-content: center;
-  }
+    .user-stats {
+        justify-content: center;
+    }
 }

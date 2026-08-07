@@ -34,6 +34,10 @@ class Users
             (new UserEngagement('post_reposts'))->index();
             return;
         }
+        if ($resource === 'mentions') {
+            (new UserEngagement('post_mentions'))->index();
+            return;
+        }
         Routing::method([
             'GET'   => fn() => $this->show(),
             'PATCH' => fn() => $this->update(),
@@ -42,6 +46,7 @@ class Users
     private function show(): void
     {
         Request::get();
+        $GLOBALS['dyscover']->database->use();
         $key = Routing::segment(2);
         if ($key === null || $key === '') {
             Response::badRequest('Missing user id');
@@ -84,7 +89,10 @@ class User
     public static function id(): int
     {
         $accountId = Identity::id();
-        Db::useDyscover();
+        if ($accountId === null) {
+            Response::unauthorized();
+        }
+        $GLOBALS['dyscover']->database->use();
         $row = Query::fetch(
             'SELECT id FROM users WHERE account_id = ? LIMIT 1',
             [$accountId]
@@ -99,10 +107,78 @@ class User
         return (int) $row['id'];
     }
 }
+class Accounts
+{
+    public static function find(int $id): ?array
+    {
+        if ($id <= 0) {
+            return null;
+        }
+        $GLOBALS['account']->database->use();
+        $row = Query::fetch(
+            'SELECT id, username FROM accounts WHERE id = ? LIMIT 1',
+            [$id]
+        );
+        $GLOBALS['dyscover']->database->use();
+        return $row;
+    }
+    public static function findByUsername(string $username): ?array
+    {
+        $username = trim($username);
+        if ($username === '') {
+            return null;
+        }
+        $GLOBALS['account']->database->use();
+        $row = Query::fetch(
+            'SELECT id, username FROM accounts WHERE username = ? LIMIT 1',
+            [$username]
+        );
+        $GLOBALS['dyscover']->database->use();
+        return $row;
+    }
+    public static function usernamesByAccountIds(array $accountIds): array
+    {
+        $accountIds = array_values(array_unique(array_filter(
+            array_map('intval', $accountIds),
+            static fn(int $id): bool => $id > 0
+        )));
+        if (!$accountIds) {
+            return [];
+        }
+        $GLOBALS['account']->database->use();
+        $placeholders = implode(',', array_fill(0, count($accountIds), '?'));
+        $rows = Query::fetchAll(
+            "SELECT id, username FROM accounts WHERE id IN ({$placeholders})",
+            $accountIds
+        );
+        $GLOBALS['dyscover']->database->use();
+        $map = [];
+        foreach ($rows as $row) {
+            $map[(int) $row['id']] = (string) $row['username'];
+        }
+        return $map;
+    }
+    public static function attachUsernames(array $rows, string $key = 'account_id'): array
+    {
+        $usernames = self::usernamesByAccountIds(
+            array_map(
+                static fn(array $row): int => (int) ($row[$key] ?? 0),
+                $rows
+            )
+        );
+        foreach ($rows as &$row) {
+            $accountId = (int) ($row[$key] ?? 0);
+            $row['username'] = $usernames[$accountId] ?? '';
+        }
+        unset($row);
+        return $rows;
+    }
+}
 class UserProfile
 {
     public static function one(int $id): array
     {
+        $GLOBALS['dyscover']->database->use();
         $row = Query::fetch(
             "SELECT
                 du.id,
@@ -111,9 +187,8 @@ class UserProfile
                 du.role,
                 du.status,
                 du.created_at,
-                a.username
+                du.account_id
             FROM users du
-            " . Db::joinAccounts() . "
             WHERE du.id = ?
             LIMIT 1",
             [$id]
@@ -121,9 +196,11 @@ class UserProfile
         if (!$row) {
             Response::notFound('User not found');
         }
+        $account = Accounts::find((int) $row['account_id']);
+        $GLOBALS['dyscover']->database->use();
         return [
             'id' => (int) $row['id'],
-            'username' => $row['username'],
+            'username' => is_array($account) ? (string) ($account['username'] ?? '') : '',
             'biography' => $row['biography'] ?? '',
             'website' => $row['website'] ?? '',
             'role' => $row['role'],
@@ -142,43 +219,21 @@ class UserProfile
     }
     public static function byUsername(string $username): array
     {
+        $account = Accounts::findByUsername($username);
+        if (!$account) {
+            Response::notFound('User not found');
+        }
+        $GLOBALS['dyscover']->database->use();
         $row = Query::fetch(
-            "SELECT
-                du.id,
-                du.biography,
-                du.website,
-                du.role,
-                du.status,
-                du.created_at,
-                a.username
-            FROM users du
-            " . Db::joinAccounts() . "
-            WHERE a.username = ?
-            LIMIT 1",
-            [$username]
+            'SELECT id FROM users WHERE account_id = ? LIMIT 1',
+            [(int) $account['id']]
         );
         if (!$row) {
-            Db::useAccount();
-            $account = Query::fetch(
-                'SELECT id FROM accounts WHERE username = ? LIMIT 1',
-                [$username]
-            );
-            Db::useDyscover();
-            if (!$account) {
-                Response::notFound('User not found');
-            }
-            $userRow = Query::fetch(
-                'SELECT id FROM users WHERE account_id = ? LIMIT 1',
+            Query::execute(
+                'INSERT INTO users(account_id) VALUES(?)',
                 [(int) $account['id']]
             );
-            if (!$userRow) {
-                Query::execute(
-                    'INSERT INTO users(account_id) VALUES(?)',
-                    [(int) $account['id']]
-                );
-                return self::one(Query::lastId());
-            }
-            return self::one((int) $userRow['id']);
+            return self::one(Query::lastId());
         }
         return self::one((int) $row['id']);
     }
@@ -187,10 +242,10 @@ class UserCard
 {
     public static function one(int $id): array
     {
+        $GLOBALS['dyscover']->database->use();
         $row = Query::fetch(
-            "SELECT du.id, du.biography, a.username
+            "SELECT du.id, du.biography, du.account_id
             FROM users du
-            " . Db::joinAccounts() . "
             WHERE du.id = ?
             LIMIT 1",
             [$id]
@@ -198,9 +253,11 @@ class UserCard
         if (!$row) {
             Response::notFound('User not found');
         }
+        $account = Accounts::find((int) $row['account_id']);
+        $GLOBALS['dyscover']->database->use();
         return [
             'id' => (int) $row['id'],
-            'username' => $row['username'],
+            'username' => is_array($account) ? (string) ($account['username'] ?? '') : '',
             'biography' => $row['biography'] ?? '',
             'avatar' => Avatar::url((int) $row['id']),
         ];
@@ -247,23 +304,41 @@ class UserFollowers
         if ($followerId === $followedId) {
             Response::badRequest('Invalid follow target');
         }
-        Query::execute(
+        $GLOBALS['dyscover']->database->use();
+        $affected = Query::execute(
             'INSERT IGNORE INTO follows(follower_id, followed_id) VALUES(?, ?)',
             [$followerId, $followedId]
         );
+        if ($affected > 0) {
+            ActivityNotify::onFollow($followedId, $followerId);
+        }
         Response::created('Followed');
     }
     private function remove(): void
     {
         Request::delete();
-        $followedId = Routing::id();
-        if ($followedId === null) {
+        $profileId = Routing::id();
+        if ($profileId === null) {
             Response::badRequest('Missing user id');
         }
+        $followerId = Routing::segment(4);
+        if (is_string($followerId) && ctype_digit($followerId)) {
+            if ($profileId !== User::id()) {
+                Response::forbidden();
+            }
+            $GLOBALS['dyscover']->database->use();
+            Query::execute(
+                'DELETE FROM follows
+                WHERE followed_id = ? AND follower_id = ?',
+                [$profileId, (int) $followerId]
+            );
+            Response::success('Follower removed');
+        }
+        $GLOBALS['dyscover']->database->use();
         Query::execute(
             'DELETE FROM follows
             WHERE follower_id = ? AND followed_id = ?',
-            [User::id(), $followedId]
+            [User::id(), $profileId]
         );
         Response::success('Unfollowed');
     }

@@ -1,80 +1,122 @@
-table {
+.creator-table .table-wrapper {
+    max-height: 68vh;
+    overflow: auto;
+    border-radius: 18px;
+    border: 1px solid var(--border-subtle);
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+.creator-table table,
+.tabs table {
     width: 100%;
     border-collapse: separate;
-    border-spacing: 0 2px;
-    background: var(--background-color);
+    border-spacing: 0 0.45rem;
+    background: transparent;
 }
-th,
-td {
+
+.creator-table th,
+.tabs th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding: 0.85rem 1rem;
     text-align: left;
-    padding: 0.25rem 1rem;
-    background-color: white;
-}
-th {
-    font-weight: 600;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    font-size: 0.8rem;
-    letter-spacing: 0.05em;
-    transition: var(--transition);
-    color: white;
-    background: var(--blue-color);
-    border-style: none;
-    text-align: center;
-    position: relative;
-    line-height: 3;
+    color: rgba(255, 255, 255, 0.95);
+    background: var(--primary-gradient);
+    border: none;
 }
-.sort {
+
+.creator-table th:first-child,
+.tabs th:first-child {
+    border-radius: 12px 0 0 12px;
+    text-align: center;
+    width: 3rem;
+}
+
+.creator-table th:last-child,
+.tabs th:last-child {
+    border-radius: 0 12px 12px 0;
+}
+
+.creator-table td,
+.tabs td {
+    padding: 0.9rem 1rem;
+    background: rgba(255, 255, 255, 0.96);
+    border-top: 1px solid rgba(15, 23, 42, 0.04);
+    border-bottom: 1px solid rgba(15, 23, 42, 0.04);
+    font-size: 0.88rem;
+    color: var(--text-color);
+    transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.creator-table td:first-child,
+.tabs td:first-child {
+    border-left: 1px solid rgba(15, 23, 42, 0.04);
+    border-radius: 14px 0 0 14px;
+    text-align: center;
+}
+
+.creator-table td:last-child,
+.tabs td:last-child {
+    border-right: 1px solid rgba(15, 23, 42, 0.04);
+    border-radius: 0 14px 14px 0;
+}
+
+.creator-table .item-row,
+.tabs .item-row {
+    cursor: pointer;
+}
+
+.creator-table .item-row:hover td,
+.tabs .item-row:hover td,
+.creator-table .item-row.row-selected td,
+.tabs .item-row.row-selected td {
+    background: rgba(30, 136, 229, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(30, 136, 229, 0.12);
+}
+
+.creator-table .item-name,
+.tabs .item-name {
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.creator-table .item-created,
+.creator-table .item-updated,
+.tabs .item-created,
+.tabs .item-updated {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    white-space: nowrap;
+}
+
+.creator-table .sort,
+.tabs .sort {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    margin-left: 0.5rem;
+    margin-left: 0.35rem;
     cursor: pointer;
-    position: relative;
-    top: 0.5rem;
+    opacity: 0.85;
 }
-td {
-    background-color: rgba(255, 255, 255, 0.8);
-    transition: var(--transition);
-    font-size: 0.9em;
-    text-align: center;
+
+.creator-table .table-empty-row td,
+.tabs .table-empty-row td {
+    border-radius: 16px;
+    padding: 2rem 1rem;
 }
-tr td:nth-child(2) {
-    text-align: left;
-    font-weight: 600;
-    cursor: pointer;
-}
-.table-actions {
-    display: flex;
-    gap: 1rem;
-}
-.table-actions .button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--text-color);
-    transition: var(--transition);
-    padding: 0.5rem;
-    border-radius: 4px;
-    box-shadow: none;
-}
-.table-actions .button:hover {
-    color: var(--primary-gradient);
-    background-color: rgba(0, 86, 179, 0.1);
-    transform: none;
-    filter: none;
-}
-.table-wrapper {
-    max-height: 65vh;
-    overflow-y: auto;
-}
-.sticky-head {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-}
+
 @media (max-width: 768px) {
-    th {
-        font-size: 0.9rem;
-        line-height: 1.5;
+    .creator-table td,
+    .tabs td,
+    .creator-table th,
+    .tabs th {
+        padding: 0.7rem 0.65rem;
+        font-size: 0.8rem;
     }
 }

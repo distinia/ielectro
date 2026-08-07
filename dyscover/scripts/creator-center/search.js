@@ -1,3 +1,5 @@
+import { CreatorRegistry } from "./registry.js";
+
 export class Search {
     constructor() {
         this.input = document.querySelector(".search-item");
@@ -10,14 +12,15 @@ export class Search {
             }, 300);
         };
     }
+
     search(value) {
         const term = value.toLowerCase();
-        classes.forEach(Class => {
-            Class.list.forEach(post => {
+        CreatorRegistry.classes.forEach((Class) => {
+            Class.list.forEach((post) => {
                 const title = String(post.title || "").toLowerCase();
-                const tags = String(post.item.tags || "").toLowerCase();
+                const description = String(post.item?.description || "").toLowerCase();
                 post.element.style.display =
-                    !term || title.includes(term) || tags.includes(term)
+                    !term || title.includes(term) || description.includes(term)
                         ? ""
                         : "none";
             });

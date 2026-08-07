@@ -1,24 +1,12 @@
-.tab-list {
+.tabs .section {
+    display: none;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg, 16px);
+    padding: 0.5rem;
+    box-shadow: var(--card-shadow);
+}
+
+.tabs .section.active-section {
     display: block;
-    gap: 1rem;
-    border-bottom: 2px solid rgba(0, 0, 0, 0.1);
-    padding-bottom: 1rem;
-}
-.tab {
-    display: inline-block;
-    padding: 0.75rem 1.5rem;
-    background: none;
-    border: none;
-    border-bottom: 3px solid transparent;
-    cursor: pointer;
-    transition: var(--transition);
-    font-weight: 600;
-    color: var(--text-color);
-}
-.tab.active-tab {
-    border-bottom-color: var(--primary-gradient);
-    color: var(--primary-gradient);
-}
-.tab:hover {
-    color: var(--primary-gradient);
 }
