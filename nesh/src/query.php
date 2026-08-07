@@ -2,16 +2,13 @@
 namespace Nesh;
 class Query
 {
-    public static function execute(
-        string $sql,
-        array $params = [],
-        ?string $database = null
-    ): \mysqli_result|int {
-        $stmt = mysqli_prepare(Connection::start($database), $sql);
+    public static function execute(string $sql, array $params = []): \mysqli_result|int
+    {
+        $stmt = mysqli_prepare(Database::start(), $sql);
         if (!$stmt) {
             Response::error('Database query error');
         }
-        if (!empty($params)) {
+        if ($params) {
             $types = '';
             foreach ($params as $param) {
                 if (is_int($param)) {
@@ -38,102 +35,83 @@ class Query
         mysqli_stmt_close($stmt);
         return $affected;
     }
-    public static function multi(string $sql, ?string $database = null): void
+    public static function multi(string $sql): void
     {
-        $conn = Connection::start($database);
-        if (!mysqli_multi_query($conn, $sql)) {
+        $connection = Database::start();
+        if (!mysqli_multi_query($connection, $sql)) {
             Response::error('Database execution error');
         }
         do {
-            if ($result = mysqli_store_result($conn)) {
+            if ($result = mysqli_store_result($connection)) {
                 mysqli_free_result($result);
             }
-        } while (mysqli_more_results($conn) && mysqli_next_result($conn));
+        } while (
+            mysqli_more_results($connection)
+            && mysqli_next_result($connection)
+        );
     }
-    public static function fetchAll(
-        string $sql,
-        array $params = [],
-        ?string $database = null
-    ): array {
-        $result = self::execute($sql, $params, $database);
-        $rows = [];
-        if ($result) {
-            while ($row = mysqli_fetch_assoc($result)) {
-                $rows[] = $row;
-            }
+    public static function fetchAll(string $sql, array $params = []): array
+    {
+        $result = self::execute($sql, $params);
+        if (!$result instanceof \mysqli_result) {
+            return [];
         }
-        return $rows;
+        return mysqli_fetch_all($result, MYSQLI_ASSOC);
     }
-    public static function fetch(
-        string $sql,
-        array $params = [],
-        ?string $database = null
-    ): ?array {
-        $result = self::execute($sql, $params, $database);
-        if (!$result) {
+    public static function fetch(string $sql, array $params = []): ?array
+    {
+        $result = self::execute($sql, $params);
+        if (!$result instanceof \mysqli_result) {
             return null;
         }
         $row = mysqli_fetch_assoc($result);
         return $row ?: null;
     }
-    public static function value(
-        string $sql,
-        array $params = [],
-        ?string $database = null
-    ): mixed {
-        $row = self::fetch($sql, $params, $database);
-        if (!$row) {
-            return null;
-        }
-        return reset($row);
-    }
-    public static function rows(
-        string $sql,
-        array $params = [],
-        ?string $database = null
-    ): \mysqli_result|int {
-        return self::execute($sql, $params, $database);
-    }
-    public static function count(
-        string $sql,
-        array $params = [],
-        ?string $database = null
-    ): int {
-        return (int) self::value($sql, $params, $database);
-    }
-    public static function exists(
-        string $sql,
-        array $params = [],
-        ?string $database = null
-    ): bool {
-        return self::fetch($sql, $params, $database) !== null;
-    }
-    public static function escape(mixed $value, ?string $database = null): string
+    public static function value(string $sql, array $params = []): mixed
     {
-        return mysqli_real_escape_string(Connection::start($database), (string) $value);
+        $row = self::fetch($sql, $params);
+        return $row ? reset($row) : null;
     }
-    public static function begin(?string $database = null): bool
+    public static function rows(string $sql, array $params = []): \mysqli_result|int
     {
-        return mysqli_begin_transaction(Connection::start($database));
+        return self::execute($sql, $params);
     }
-    public static function commit(?string $database = null): bool
+    public static function count(string $sql, array $params = []): int
     {
-        return mysqli_commit(Connection::start($database));
+        return (int) self::value($sql, $params);
     }
-    public static function rollback(?string $database = null): bool
+    public static function exists(string $sql, array $params = []): bool
     {
-        return mysqli_rollback(Connection::start($database));
+        return self::fetch($sql, $params) !== null;
     }
-    public static function lastId(?string $database = null): int|string
+    public static function escape(mixed $value): string
     {
-        return mysqli_insert_id(Connection::start($database));
+        return mysqli_real_escape_string(
+            Database::start(),
+            (string) $value
+        );
     }
-    public static function hasTable(string $table, ?string $database = null): bool
+    public static function begin(): bool
+    {
+        return mysqli_begin_transaction(Database::start());
+    }
+    public static function commit(): bool
+    {
+        return mysqli_commit(Database::start());
+    }
+    public static function rollback(): bool
+    {
+        return mysqli_rollback(Database::start());
+    }
+    public static function lastId(): int|string
+    {
+        return mysqli_insert_id(Database::start());
+    }
+    public static function hasTable(string $table): bool
     {
         return self::exists(
             'SHOW TABLES LIKE ?',
-            [$table],
-            $database
+            [$table]
         );
     }
 }

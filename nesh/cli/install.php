@@ -39,7 +39,7 @@ class Install
             App::bootstrapDatabase($appPath, $database);
             $count++;
         }
-        Connection::close();
+        Database::close();
         return $count;
     }
     private function javascript(): int

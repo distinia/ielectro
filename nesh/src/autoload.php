@@ -11,7 +11,7 @@ define('CHARSET', 'UTF-8');
 define('DB_HOST', 'database.ielectro.com');
 define('DB_USER', 'root');
 define('DB_PASS', '');
-define('DB_PORT', 3306);
+define('DB_PORT', 3310);
 define('DB_CHARSET', 'utf8mb4');
 # Session
 define('SESSION_NAME', 'ielectro_session');
@@ -76,3 +76,4 @@ spl_autoload_register(function (string $class): void {
         require_once $file;
     }
 });
+\Nesh\Request::start();
