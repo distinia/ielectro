@@ -1,7 +1,6 @@
 <?php
 require_once __DIR__ . '/../../nesh/src/autoload.php';
-$iElectroAccount = $GLOBALS['account'];
-$iElectroAccount->api->publicApi = [
+$GLOBALS['account']->api->publicApi = [
     'user',
     'auth/login',
     'oauth/google',
@@ -9,4 +8,4 @@ $iElectroAccount->api->publicApi = [
     'availability',
     'recovery/reset',
 ];
-$iElectroAccount->run();
+$GLOBALS['account']->run();

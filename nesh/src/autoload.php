@@ -78,38 +78,8 @@ spl_autoload_register(function (string $class): void {
 });
 \Nesh\Request::start();
 use Nesh\App;
-$GLOBALS['account'] = new App(
-    'iElectro Account',
-    'account',
-    'account',
-    'ielectro_account',
-    '1.0.0'
-);
-$GLOBALS['admin'] = new App(
-    'iElectro Admin',
-    'admin',
-    'admin',
-    'ielectro_admin',
-    '1.0.0'
-);
-$GLOBALS['dyscover'] = new App(
-    'Dyscover',
-    'dyscover',
-    'dyscover',
-    'ielectro_dyscover',
-    '1.0.0'
-);
-$GLOBALS['dominions'] = new App(
-    'Dominions',
-    'dominions',
-    'dominions',
-    'ielectro_dominions',
-    '1.0.0'
-);
-$GLOBALS['ielectro'] = new App(
-    'iElectro',
-    'www',
-    'www',
-    null,
-    '1.0.0'
-);
+$GLOBALS['account'] = new App('iElectro Account', 'account', 'account', 'ielectro_account', '1.0.0');
+$GLOBALS['admin'] = new App('iElectro Admin', 'admin', 'admin', 'ielectro_admin', '1.0.0');
+$GLOBALS['dyscover'] = new App('Dyscover', 'dyscover', 'dyscover', 'ielectro_dyscover', '1.0.0');
+$GLOBALS['dominions'] = new App('Dominions', 'dominions', 'dominions', 'ielectro_dominions', '1.0.0');
+$GLOBALS['ielectro'] = new App('iElectro', 'www', 'www', null, '1.0.0');

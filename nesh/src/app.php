@@ -2,6 +2,7 @@
 namespace Nesh;
 class App
 {
+    private static array $apps = [];
     public string $version;
     public string $name;
     public string $subdomain;
@@ -51,6 +52,7 @@ class App
         }
         $this->api = new Api($this);
         $this->pages = new Pages($this);
+        self::$apps[$this->folder] = $this;
     }
     public function run(): void
     {
@@ -73,5 +75,9 @@ class App
             $this->database->tables($this->paths['database']);
         }
         $this->booted = true;
+    }
+    public static function get(string $name): ?App
+    {
+        return self::$apps[$name] ?? null;
     }
 }

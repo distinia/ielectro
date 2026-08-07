@@ -44,6 +44,7 @@ class Create
         $account = $this->validate();
         $accountId = $this->insert($account);
         Services::create($accountId);
+        $GLOBALS['account']->database->use();
         Session::create($accountId);
         Activity::log(
             $accountId,
