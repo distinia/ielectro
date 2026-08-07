@@ -49,7 +49,7 @@ class App
         $this->database->create();
         $this->database->start();
         $this->database->tables($this->paths['database']);
-        Database::$current = $this->database;
+        $this->database->use();
         $this->api = new Api($this);
         $this->pages = new Pages($this);
     }
