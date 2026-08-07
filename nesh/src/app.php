@@ -48,7 +48,6 @@ class App
         if($databaseName !== null){
             $this->database = new Database($databaseName);
         }
-        $this->server = new Server($this);
         $this->boot();
         $this->api = new Api($this);
         $this->pages = new Pages($this);
@@ -78,7 +77,6 @@ class App
             $this->database->create();
             $this->database->tables($this->paths['database']);
         }
-        $this->server->save();
         if (!touch($boot)) {
             Response::error('Unable to create boot file.');
         }    
