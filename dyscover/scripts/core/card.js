@@ -1,5 +1,6 @@
 import { Request, Icons } from "./nesh.js";
 import { App } from "./app.js";
+import { Api } from "./api.js";
 import { Alert } from "./alert.js";
 import { Mention } from "./mention.js";
 import { Comments } from "./comments.js";
@@ -12,18 +13,7 @@ export class Card {
         this._share = new Share(this);
     }
     static normalize(item = {}) {
-        if (!item || typeof item !== "object") return {};
-        const preview =
-            item.preview ||
-            item.preview_image ||
-            item.image ||
-            item.media ||
-            "";
-        return {
-            ...item,
-            preview,
-            media: item.media || item.image || preview,
-        };
+        return App.enrichPost(item);
     }
     static supportsComments() {
         return true;
@@ -74,20 +64,19 @@ export class Card {
         return this.previewVisual();
     }
     async ensureData() {
-        const hasPreview = !!(this.item?.media || this.item?.preview || this.item?.url);
         const hasMeta =
+            !!this.item?.id &&
             !!this.item?.username &&
-            Object.prototype.hasOwnProperty.call(this.item, "tags");
-        if (this.item?.file && hasPreview && hasMeta) {
+            (!!this.item?.media || !!this.item?.preview || this.item?.type === "template");
+        if (hasMeta) {
+            this.item = Card.normalize(this.item);
             return this.item;
         }
-        if (!this.item?.file) throw new Error("Missing file");
+        if (!this.item?.id) throw new Error("Missing post id");
         if (!this._loading) {
-            this._loading = Request.get(App.api("post/data"), {
-                file: this.item.file,
-            }).then((res) => {
-                this.item = Card.normalize(res?.data || {});
-                if (!this.item.file) throw new Error("Post not found");
+            this._loading = Request.get(Api.post(this.item.id)).then((res) => {
+                this.item = Card.normalize(Api.record(res) || {});
+                if (!this.item.id) throw new Error("Post not found");
                 return this.item;
             });
         }
@@ -125,7 +114,7 @@ export class Card {
         const type = String(d.type || "article").toLowerCase();
         const isArticle = type === "article";
         const avatar = `https://account.ielectro.com/u/${encodeURIComponent(d.username || "")}/avatar.png`;
-        const profile = `https://dyscover.ielectro.com/u/${encodeURIComponent(d.username || "")}`;
+        const profile = `https://dyscover.ielectro.com/users/${encodeURIComponent(d.username || "")}`;
         const articleUrl = d.url || "#";
         const likes = Number(d.likes) || 0;
         const comments = Number(d.comments) || 0;
@@ -178,14 +167,20 @@ export class Card {
         this.bindActions(mount);
         await this._comments.bindInline(mount);
         await Icons.load(mount);
+        this.recordView();
         return mount.querySelector(".post-box");
+    }
+    recordView() {
+        if (!this.item?.id || this._viewRecorded) return;
+        this._viewRecorded = true;
+        Request.post(Api.postViews(this.item.id)).catch(() => {});
     }
     async preview(mount) {
         await this.ensureData();
         const d = this.item;
         const type = String(d.type || "article").toLowerCase();
         const avatar = `https://account.ielectro.com/u/${encodeURIComponent(d.username || "")}/avatar.png`;
-        const profile = `https://dyscover.ielectro.com/u/${encodeURIComponent(d.username || "")}`;
+        const profile = `https://dyscover.ielectro.com/users/${encodeURIComponent(d.username || "")}`;
         const panel = document.createElement("div");
         panel.className = "post-preview";
         panel.innerHTML = `
@@ -235,7 +230,7 @@ export class Card {
     syncActionState(root) {
         if (!root || !this.item) return;
         root.querySelector('[data-action="like"]')?.classList.toggle("is-active", !!this.item.liked);
-        root.querySelector('[data-action="save"]')?.classList.toggle("is-active", !!this.item.saved);
+        root.querySelector('[data-action="save"]')?.classList.toggle("is-active", !!this.item.bookmarked);
     }
     bindActions(root) {
         if (!root) return;
@@ -251,11 +246,15 @@ export class Card {
     async likes(root) {
         await this.ensureData();
         try {
-            const res = await Request.post(App.api("post/like"), {
-                file: this.item.file,
-            });
-            this.item.liked = !!res.data?.liked;
-            this.item.likes = Number(res.data?.likes) || 0;
+            const url = this.item.liked
+                ? Api.postLikes(this.item.id)
+                : Api.postLikes(this.item.id);
+            const res = this.item.liked
+                ? await Request.delete(url)
+                : await Request.post(url);
+            this.item.liked = !this.item.liked;
+            this.item.likes =
+                Number(Api.record(res)?.likes ?? this.item.likes + (this.item.liked ? 1 : -1)) || 0;
             root?.querySelector('[data-action="like"]')?.classList.toggle("is-active", this.item.liked);
             const line = root?.querySelector(".post-likes-line");
             if (line) {
@@ -272,11 +271,16 @@ export class Card {
     async saved(root) {
         await this.ensureData();
         try {
-            const res = await Request.post(App.api("post/saved"), {
-                file: this.item.file,
-            });
-            this.item.saved = !!res.data?.saved;
-            root?.querySelector('[data-action="save"]')?.classList.toggle("is-active", this.item.saved);
+            const url = Api.postBookmarks(this.item.id);
+            if (this.item.bookmarked) {
+                await Request.delete(url);
+                this.item.bookmarked = false;
+            } else {
+                await Request.post(url);
+                this.item.bookmarked = true;
+            }
+            this.item.saved = this.item.bookmarked;
+            root?.querySelector('[data-action="save"]')?.classList.toggle("is-active", this.item.bookmarked);
         } catch (e) {
             Alert.error(typeof e === "object" && e?.text ? e.text : "Save failed");
         }

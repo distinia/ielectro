@@ -1,125 +1,118 @@
 @import "../core/index.css";
 .header {
     background-image:
-        linear-gradient(rgba(0, 0, 0, 0.58), rgba(0, 106, 255, 0.11)),
-        url("https://www.ielectro.com/media/contact-us.png");
+        linear-gradient(rgba(11, 31, 58, 0.62), rgba(11, 31, 58, 0.78)),
+        url("https://www.ielectro.com/assets/headers/contact-us.png");
+    background-position: center;
+    background-size: cover;
 }
-ul,
-ol {
-    list-style: none;
-    padding-left: 0;
+.contact-main {
+    padding-bottom: clamp(3rem, 6vw, 4rem);
 }
-.icon {
-    color: #006eff;
+.contact-cards {
+    gap: clamp(1.5rem, 3vw, 2rem);
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+.contact-cards .card {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    padding: clamp(2rem, 4vw, 2.75rem);
+}
+.contact-cards .card-description {
+    flex: 1;
+    margin-bottom: 1.5rem;
+}
+.contact-other {
+    padding: clamp(2rem, 4vw, 3rem);
+    border-radius: var(--radius-xl);
+    background:
+        radial-gradient(circle at top right, rgba(29, 78, 216, 0.08), transparent 28%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(238, 244, 251, 0.94));
 }
 .contact-list {
     list-style: none;
     padding: 0;
-    margin: 0;
+    margin: 0 0 1.75rem;
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 1.35rem;
 }
 .contact-list li {
     display: flex;
     align-items: center;
     gap: 1rem;
     color: var(--text-color);
-    font-size: 1.1rem;
+    font-size: 1.05rem;
 }
-.contact-list i {
+.contact-list i,
+.contact-list .icon-image {
     width: 24px;
     height: 24px;
-    color: #006eff;
+    color: var(--brand-blue-light);
     flex-shrink: 0;
+}
+.contact-list a {
+    color: var(--brand-blue);
+    font-weight: 600;
 }
 .social-links {
     display: flex;
-    gap: 1rem;
-    margin-top: 1.5rem;
+    gap: 0.85rem;
+    margin: 0 0 1.75rem;
 }
 .social-icon {
-    width: 42px;
-    height: 42px;
+    width: 46px;
+    height: 46px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
+    background: var(--secondary-light);
+    transition:
+        transform var(--transition-base),
+        background-color var(--transition-base),
+        box-shadow var(--transition-base);
 }
-.social-icon i {
+.social-icon:hover {
+    transform: translateY(-3px);
+    background: var(--brand-blue);
+    box-shadow: var(--shadow-md);
+}
+.social-icon i,
+.social-icon .icon-image {
     width: 20px;
     height: 20px;
+    color: var(--brand-blue-light);
 }
-.contact-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+.social-icon:hover i,
+.social-icon:hover .icon-image,
+.social-icon:hover svg {
+    color: var(--brand-white);
 }
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+.contact-response {
+    color: var(--text-secondary);
+    line-height: 1.75;
+    font-size: 1.02rem;
 }
-.form-group label {
-    font-weight: 500;
-    color: var(--text-color);
-    font-size: 0.95rem;
+.careers-hero {
+    padding-top: 0;
 }
-.form-group input,
-.form-group textarea {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.5rem;
-    font-size: 1rem;
-    color: var(--text-color);
-    background-color: #f9fafb;
-    transition: all 0.3s ease;
-    font-family: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+.careers-hero .card {
+    padding: clamp(2.5rem, 5vw, 3.5rem);
+    border-radius: var(--radius-xl);
+    text-align: center;
 }
-.form-group input:focus,
-.form-group textarea:focus {
-    outline: none;
-    border-color: #006eff;
-    background-color: white;
-    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
-}
-.form-group textarea {
-    height: 150px;
-    resize: none;
-    min-height: 100px;
-    max-height: 300px;
+.careers-hero .section-subtitle {
+    margin-bottom: 1.75rem;
 }
 @media (max-width: 768px) {
     .contact-list li {
         font-size: 1rem;
     }
-    .social-icon {
-        width: 38px;
-        height: 38px;
-    }
-    .social-icon i {
-        width: 18px;
-        height: 18px;
-    }
-    .form-group input,
-    .form-group textarea {
-        padding: 0.6rem 0.8rem;
-    }
 }
 @media (max-width: 990px) {
     .contact-cards {
         grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
-}
-@media (max-width: 600px) {
-    .contact-cards .card {
-        padding: 1.5rem 0.8rem 1.4rem;
-        min-height: unset;
-    }
-    .card-title {
-        font-size: 1.17rem;
     }
 }

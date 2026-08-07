@@ -9,7 +9,7 @@
     overflow-y: auto;
     padding-right: 4px;
 }
-.article-comments-compose textarea {
+.article-comments-compose .textarea {
     width: 100%;
     margin: 0 0 8px;
     min-width: 0;

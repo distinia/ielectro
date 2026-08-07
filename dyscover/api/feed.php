@@ -19,7 +19,12 @@ class Feed
         Request::get();
         $userId = User::id();
         $interests = self::readInterests($userId);
-        $limit = max(1, min(100, (int) Request::value('limit', 50)));
+        $segmentLimit = Routing::segment(2);
+        $limit = 50;
+        if (is_string($segmentLimit) && ctype_digit($segmentLimit)) {
+            $limit = (int) $segmentLimit;
+        }
+        $limit = max(1, min(100, $limit));
         $types = $interests['types'] ?? ['article'];
         $tags = $interests['tags'] ?? [];
         $placeholders = implode(',', array_fill(0, count($types), '?'));
@@ -48,7 +53,7 @@ class Feed
                 s.bookmarks
             FROM posts p
             INNER JOIN users du ON du.id = p.user_id
-            INNER JOIN accounts a ON a.id = du.account_id
+            " . Db::joinAccounts() . "
             LEFT JOIN post_statistics s ON s.post_id = p.id
             WHERE p.type IN ({$placeholders})
             AND p.status = 'active'

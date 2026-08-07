@@ -1,25 +1,8 @@
-export { API } from "./api.js";
-export { Article } from "./article.js";
-export { Select } from "./select.js";
-export { Menu } from "./menu.js";
-export { WebSelector } from "./web-selector.js";
-export { Editor } from "./editor.js";
-export { Index } from "./index.js";
-export { GenerateArticle } from "./generate-article.js";
-export { Save } from "./save.js";
-export { FormatText } from "./format-text.js";
-export { ReplaceText } from "./replace-text.js";
-export { Paragraph } from "./paragraph.js";
-export { Heading } from "./heading.js";
-export { Center } from "./center.js";
-export { Bold } from "./bold.js";
-export { Italic } from "./italic.js";
-export { Caption } from "./caption.js";
-export { List } from "./list.js";
-export { Link } from "./link.js";
-export { ArticlePreview } from "./article-preview.js";
-export { Table } from "./table.js";
-export { Legend } from "./legend.js";
-export { Percentage } from "./percentage.js";
-export { Media } from "./media.js";
-export { Template } from "./template.js";
+import { App } from "../core/app.js";
+import { Article } from "./article.js";
+
+document.addEventListener("DOMContentLoaded", async () => {
+    await App.boot();
+    if (App.blocked) return;
+    new Article();
+});

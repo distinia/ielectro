@@ -8,7 +8,7 @@ export class UserCard {
         if (!mount) return;
         const card = document.createElement("a");
         card.className = "user-card";
-        card.href = `https://dyscover.ielectro.com/u/${this.user.username}`;
+        card.href = `https://dyscover.ielectro.com/users/${this.user.username}`;
         card.innerHTML = `
         <div class="user-avatar"><img src="${this.user.avatar}" alt="User avatar"></div>
         <div class="user-info"><h3 class="user-name">${this.user.username}</h3></div>`;

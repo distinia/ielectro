@@ -12,6 +12,7 @@ export class Session {
     static async logout() {
         try {
             await Nesh.Request.delete("https://account.ielectro.com/api/sessions");
+            Nesh.Auth.clear();
             window.location.href = "https://account.ielectro.com/login?service=account";
         } catch (error) {
             Alert.error(Api.errorMessage(error));

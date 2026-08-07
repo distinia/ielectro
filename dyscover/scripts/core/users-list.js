@@ -1,4 +1,6 @@
+import { EmptyState } from "./empty-state.js";
 import { Overlay } from "./overlay.js";
+import { Icons } from "./nesh.js";
 export class UsersList {
     static active = null;
     constructor(options = {}) {
@@ -21,7 +23,7 @@ export class UsersList {
         const body = this.overlay.panel;
         body.innerHTML = `
             ${this.hint ? `<p class="users-list-hint">${this.hint}</p>` : ""}
-            ${this.searchable ? `<input type="search" class="users-list-search" placeholder="Search username…" autocomplete="off">` : ""}
+            ${this.searchable ? `<input type="search" class="input users-list-search" placeholder="Search username…" autocomplete="off">` : ""}
             <ul class="users-list-items"></ul>`;
         this.listEl = body.querySelector(".users-list-items");
         this.searchEl = body.querySelector(".users-list-search");
@@ -52,7 +54,8 @@ export class UsersList {
         }
         users = (Array.isArray(users) ? users : []).filter((u) => u?.username);
         if (!users.length) {
-            this.listEl.innerHTML = `<li class="users-list-empty">${term ? "No users found." : "No users yet."}</li>`;
+            this.listEl.innerHTML = `<li class="users-list-empty">${EmptyState.html(EmptyState.usersList(term))}</li>`;
+            await Icons.load(this.listEl);
             return;
         }
         this.listEl.innerHTML = "";

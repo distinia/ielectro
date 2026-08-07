@@ -29,7 +29,7 @@ class Activity
                 a.username AS actor_username
             FROM activity n
             INNER JOIN users du ON du.id = n.actor_id
-            INNER JOIN accounts a ON a.id = du.account_id
+            " . Db::joinAccounts() . "
             WHERE n.recipient_id = ?
             ORDER BY n.id DESC
             LIMIT {$limit}",

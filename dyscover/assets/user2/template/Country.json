@@ -1,0 +1,94 @@
+[
+    {
+        "name": "Flag and emblem",
+        "type": "double image"
+    },
+    {
+        "name": "Motto",
+        "type": "definition"
+    },
+    {
+        "name": "Anthem",
+        "type": "definition"
+    },
+    {
+        "name": "Map",
+        "type": "large image"
+    },
+    {
+        "name": "Capital city",
+        "type": "text"
+    },
+    {
+        "name": "Part of",
+        "type": "text"
+    },
+    {
+        "name": "Official languages",
+        "type": "text"
+    },
+    {
+        "name": "Ethnic groups",
+        "type": "text"
+    },
+    {
+        "name": "Religion",
+        "type": "text"
+    },
+    {
+        "name": "Demonym",
+        "type": "text"
+    },
+    {
+        "name": "Type",
+        "type": "text"
+    },
+    {
+        "name": "Government",
+        "type": "text"
+    },
+    {
+        "name": "Leadership",
+        "type": "double column extended"
+    },
+    {
+        "name": "Legislature",
+        "type": "text"
+    },
+    {
+        "name": "Legislature chambers",
+        "type": "double column extended"
+    },
+    {
+        "name": "Constituencies",
+        "type": "text"
+    },
+    {
+        "name": "Formation",
+        "type": "double column"
+    },
+    {
+        "name": "Area",
+        "type": "text"
+    },
+    {
+        "name": "Population",
+        "type": "text"
+    },
+    {
+        "name": "Currency",
+        "type": "text"
+    },
+    {
+        "name": "GDP",
+        "type": "text"
+    },
+    {
+        "name": "Preceded by",
+        "type": "text"
+    },
+    {
+        "name": "Succeeded by",
+        "type": "text"
+    }
+]

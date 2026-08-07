@@ -258,15 +258,26 @@ class PostData
     {
         $id = (int) $row['id'];
         $viewerId = User::id();
+        $userId = (int) $row['user_id'];
+        $uuid = (string) $row['uuid'];
+        $type = (string) $row['type'];
+        $extension = (string) ($row['extension'] ?? '');
+        $media = self::mediaUrl($row);
+        $url = $type === 'article' && $uuid !== ''
+            ? APP_URL . '/article/' . $uuid
+            : '';
         return [
             'id' => $id,
-            'user_id' => (int) $row['user_id'],
+            'user_id' => $userId,
             'username' => $row['username'] ?? '',
-            'uuid' => $row['uuid'],
-            'type' => $row['type'],
+            'uuid' => $uuid,
+            'type' => $type,
             'title' => $row['title'] ?? '',
             'description' => $row['description'] ?? '',
+            'extension' => $extension,
             'preview_image' => $row['preview_image'] ?? '',
+            'media' => $media,
+            'url' => $url,
             'visibility' => $row['visibility'],
             'likes' => (int) ($row['likes'] ?? 0),
             'comments' => (int) ($row['comments'] ?? 0),
@@ -274,10 +285,33 @@ class PostData
             'bookmarks' => (int) ($row['bookmarks'] ?? 0),
             'views' => (int) ($row['views'] ?? 0),
             'published_at' => $row['published_at'] ?? null,
+            'created_at' => $row['published_at'] ?? $row['created_at'] ?? null,
             'updated_at' => $row['updated_at'] ?? null,
             'liked' => PostEngagement::exists('post_likes', $id, $viewerId),
             'bookmarked' => PostEngagement::exists('post_bookmarks', $id, $viewerId),
         ];
+    }
+    private static function mediaUrl(array $row): string
+    {
+        $userId = (int) $row['user_id'];
+        $uuid = (string) $row['uuid'];
+        $type = (string) $row['type'];
+        if ($uuid === '' || $userId <= 0) {
+            return (string) ($row['preview_image'] ?? '');
+        }
+        if ($type === 'article') {
+            return APP_URL
+                . '/assets/users/' . $userId
+                . '/articles/' . $uuid . '.html';
+        }
+        if ($type === 'template') {
+            return (string) ($row['preview_image'] ?? '');
+        }
+        $extension = (string) ($row['extension'] ?? '');
+        if ($extension === '') {
+            return (string) ($row['preview_image'] ?? '');
+        }
+        return PostAssets::mediaUrl($userId, $type, $uuid, $extension);
     }
     private static function fetchRow(string $where, array $params): ?array
     {
@@ -295,7 +329,7 @@ class PostData
                 s.bookmarks
             FROM posts p
             INNER JOIN users du ON du.id = p.user_id
-            INNER JOIN accounts a ON a.id = du.account_id
+            " . Db::joinAccounts() . "
             LEFT JOIN post_statistics s ON s.post_id = p.id";
     }
 }
@@ -361,7 +395,7 @@ class PostComments
             "SELECT c.id, c.user_id, c.body, c.created_at, a.username
             FROM post_comments c
             INNER JOIN users du ON du.id = c.user_id
-            INNER JOIN accounts a ON a.id = du.account_id
+            " . Db::joinAccounts() . "
             WHERE c.post_id = ? AND c.status = 'active'
             ORDER BY c.id ASC",
             [$postId]

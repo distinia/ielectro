@@ -10,9 +10,9 @@ export class GenerateArticle {
         await box.create();
         box.footer((footer)=>{
             footer.innerHTML = `
-                <button class="download-btn">Download</button>
-                <input class="generate-prompt" type="text" placeholder="Enter your prompt here...">
-                <button class="generate-btn">Generate</button>
+                <button class="button download-btn">Download</button>
+                <input class="input generate-prompt" type="text" placeholder="Enter your prompt here...">
+                <button class="button generate-btn">Generate</button>
             `;
             footer.querySelector(".generate-btn").onclick = async ()=>{
                 Wait.show();

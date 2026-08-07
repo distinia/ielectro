@@ -1,16 +1,20 @@
 .card-grid {
     display: grid;
-    gap: 2rem;
+    gap: clamp(1.5rem, 3vw, 2rem);
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    margin: 3rem 0;
+    margin: 1.5rem 0 0;
 }
 .card {
-    background: white;
-    border-radius: var(--border-radius);
+    background: var(--surface);
+    border-radius: var(--radius-lg);
     box-shadow: var(--shadow-md);
-    padding: 2.5rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid rgba(0, 0, 0, 0.04);
+    padding: clamp(2rem, 4vw, 2.5rem);
+    transition:
+        transform var(--transition-base),
+        box-shadow var(--transition-base),
+        border-color var(--transition-base),
+        background-color var(--transition-base);
+    border: 1px solid var(--border-color);
     position: relative;
     overflow: hidden;
 }
@@ -21,40 +25,37 @@
     left: 0;
     width: 100%;
     height: 4px;
-    background: var(--secondary-color);
+    background: var(--primary-color);
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity var(--transition-fast);
 }
 .card:hover {
-    box-shadow:
-        0 20px 44px 0 rgba(0, 106, 255, 0.14),
-        0 2px 12px rgba(0, 0, 0, 0.1);
-    border: 1.5px solid #b7dcff;
-    background: linear-gradient(120deg, #f8faff 88%, #e8f1ff 100%);
-    transform: translateY(-7px) scale(1.021);
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(29, 78, 216, 0.18);
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    transform: translateY(-6px);
 }
 .card:hover::before {
     opacity: 1;
 }
-.card-icon {
-    font-size: 2.75rem;
-    margin-bottom: 1.5rem;
-    background: var(--secondary-color);
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    width: fit-content;
-}
-.icon {
-    color: #006eff;
-}
 .card-title {
-    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.35rem;
     margin-bottom: 1rem;
-    font-weight: 600;
-    color: var(--text-color);
+    font-weight: 700;
+    color: var(--brand-blue);
+    letter-spacing: -0.02em;
 }
 .card-description {
-    color: #6b7280;
+    color: var(--text-secondary);
     font-size: 1rem;
-    line-height: 1.7;
+    line-height: 1.75;
+}
+.cta-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: auto;
 }

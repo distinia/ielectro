@@ -103,6 +103,31 @@
 .nav-icon:hover i {
     transform: scale(1.08);
 }
+.nav-icon-button {
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    padding: 0;
+    background: transparent;
+    color: var(--text-color);
+    font-weight: inherit;
+    font-size: inherit;
+    box-shadow: none;
+    gap: 0;
+    appearance: none;
+    -webkit-appearance: none;
+}
+.nav-icon-button:hover {
+    background-color: rgba(30, 136, 229, 0.1);
+    color: var(--blue-mid);
+    transform: translateX(3px);
+    filter: none;
+    box-shadow: none;
+}
+.nav-icon-button:active {
+    transform: translateX(3px);
+    box-shadow: none;
+}
 .nav-icon[data-tooltip]::after {
     content: attr(data-tooltip);
     position: absolute;

@@ -8,6 +8,8 @@
 .chat-area-composer .message-input {
     flex: 1;
     display: inline-flex;
+    margin: 0;
+    min-width: 0;
 }
 .chat-area-composer .attach-file {
     opacity: 0.85;

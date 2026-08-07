@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Laocitia - iElectro Dyscover</title>
+    <link rel="icon" href="https://dyscover.ielectro.com/style/media/favicon.ico" type="image/x-icon">
+    <meta name="author" content="iElectro">
+    <meta name="keywords" content="iElectro, Dyscover">
+    <meta name="description" content="View or personalize an article, share ideas and information freely and without censorship">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="https://dyscover.ielectro.com/style/css/article.css?v=1.0.7">
+    <script type="module" src="https://dyscover.ielectro.com/script/article.js?v=1.0.5"></script>
+</head>
+<body>
+    <aside class="article-main-content">
+        <section class="content">
+            <h1 class="title">Laocitia</h1>
+            <table class="template" data-title="country">
+                <thead>
+                    <tr>
+                        <th colspan="2">
+                            <ul class="template-cell-info">Republic of Laocitia</ul>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr data-field="flag-and-emblem">
+                        <td colspan="2">
+                            <img src="https://dyscover.ielectro.com/content/image/Flag_of_Laocitia.png?t=1705960800" class="template-image template-first-image article-image"><img src="https://dyscover.ielectro.com/content/image/Emblem_of_Laocitia.png?t=1705960800" class="template-image template-second-image">
+                        </td>
+                    </tr>
+                    <tr data-field="motto">
+                        <td colspan="2">
+                            <b>Motto</b>
+                            <ul class="template-cell-info">
+                                <li>The Republic and the Laocitian Nation<br>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr data-field="anthem">
+                        <td colspan="2">
+                            <b>Anthem</b>
+                            <ul class="template-cell-info">
+                                <li>Our Lake shall defend us<br>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr data-field="map">
+                        <td colspan="2" style="padding: 0px;"><img src="https://dyscover.ielectro.com/content/image/Map_of_Laocitia.png?t=1738417088" style="width: 100%;" class="template-image template-large-image"></td>
+                    </tr>
+                    <tr data-field="capital-city">
+                        <th class="template-cell-label">Capital city</th>
+                        <td>
+                            <ul class="template-cell-info">
+                                <li>Dior<br>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr data-field="official-languages">
+                        <th class="template-cell-label">Official languages</th>
+                        <td>
+                            <ul class="template-cell-info">
+                                <li>Laocitian<br>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr data-field="ethnic-groups">
+                        <th class="template-cell-label">Ethnic groups</th>
+                        <td>
+                            <ul class="template-cell-info">
+                                <li>87% Laocitians</li>
+                                <li>9% Destenians</li>
+                                <li>4% Others<br>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr data-field="religion">
+                        <th class="template-cell-label">Religion</th>
+                        <td>
+                            <ul class="template-cell-info">
+                                <li>86% Christians</li>
+                                <li>10% Non religious</li>
+                                <li>4% Others<br>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr data-field="demonym">
+                        <th class="template-cell-label">Demonym</th>
+                        <td>
+                            <ul class="template-cell-info">
+                                <li>Laocitians<br>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr data-field="government">
+                        <th class="template-cell-label">Government</th>
+                        <td>
+                            <ul class="template-cell-info">
+                                <li><span style="color: var(--text-color);">Unitary parliamentary republic under a
+                                        liberal
+                                        democracy</span></li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr data-field="leadership" style="border-top: medium;">
+                        <td>
+                            <ul class="template-cell-info">
+                                <li>President</li>
+                                <li>Prime Minister<br>
+                                </li>
+                            </ul>
+                        </td>
+                        <td>
+                            <ul class="template-cell-info">
+                                <li>Borys Hellands</li>
+                                <li>Oliwia Brownosky<br>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr data-field="legislature">
+                        <th class="template-cell-label">Legislature</th>
+                        <td>
+                            <ul class="template-cell-info">
+                                <li>National Assembly<br>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr data-field="formation">
+                        <th colspan="2" style="text-align: left;">Formation</th>
+                    </tr>
+                    <tr data-field="formation" style="border-top: medium;">
+                        <td>
+                            <ul class="template-cell-info">
+                                <li>Constitution</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <ul class="template-cell-info">
+                                <li>1 October 2020</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr data-field="area">
+                        <th class="template-cell-label">Area</th>
+                        <td>
+                            <ul class="template-cell-info">
+                                <li>97.324 km2<br>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr data-field="population">
+                        <th class="template-cell-label">Population</th>
+                        <td>
+                            <ul class="template-cell-info">
+                                <li>8.321.735<br>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr data-field="currency">
+                        <th class="template-cell-label">Currency</th>
+                        <td>
+                            <ul class="template-cell-info">
+                                <li>Laocitian Zloty (LTZ)
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr data-field="gdp">
+                        <th class="template-cell-label">GDP</th>
+                        <td>
+                            <ul class="template-cell-info">
+                                <li>1.1 trillion DTR<br>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="paragraph"><b class="bold">Laocitia</b>, officially the <b class="bold">Republic of Laocitia</b>,
+                is a
+                sovereign state located in <b class="bold">western Edrobe</b>, bordered by <b class="bold">Kashiria</b>
+                to
+                the southwest, <b class="bold">Metosia</b> to the northwest, <b class="bold">Alveria</b> to the north,
+                and
+                <b class="bold">Destenia</b> to the east. It also possesses maritime borders along the <b class="bold">Gulf
+                    of Kosher</b> to the south and the <b class="bold">Northern Sea</b> to the north. With an area of <b class="bold">97,324 km&sup2;</b> and a population of <b class="bold">8.3 million</b>, Laocitia is
+                known
+                for its <b class="bold">geographic diversity</b>, ranging from vast <b class="bold">taiga forests</b>
+                and
+                the <b class="bold">Yalmin Plain</b> to the <b class="bold">Laocitian Mountains</b>, home to <b class="bold">Sadut Mountain</b>, and <b class="bold">Labaro Lake</b>, the largest freshwater lake in
+                Edrobe.
+            </p>
+            <p class="paragraph">Laocitia is a <b class="bold">unitary parliamentary republic</b> governed under a
+                constitution
+                adopted following the <b class="bold">National Revolution</b>. The head of state is the <b class="bold">President</b>, currently <b class="bold">Borys Hellands</b>, while executive power
+                rests
+                with the <b class="bold">Prime Minister</b>, <b class="bold">Oliwia Brownosky</b>, and the <b class="bold">National Assembly</b> serves as the unicameral legislature. The country is divided into
+                <b class="bold">four provinces</b>&mdash;Saduckie, Jeziorne, P&oacute;&#322;nocne, and
+                Po&#322;udniowe&mdash;as well as the <b class="bold">Capital District of Dior</b>. Laocitia is
+                considered <b class="bold">the most democratic country in the world</b>, operating a competitive
+                multiparty system
+                with frequent alternation of power, high civic engagement, and full protections for civil liberties and
+                constitutional rights.
+            </p>
+            <p class="paragraph">The population is <b class="bold">87% ethnic Laocitian</b>, with <b class="bold">9%
+                    Destenians</b> and <b class="bold">4% other minorities</b>, largely integrated into a civic-national
+                identity framework. The official and only language is <b class="bold">Laocitian</b>, used exclusively in
+                public life. The state enforces a <b class="bold">strict monolingual policy</b> while promoting high
+                literacy and education standards. The population is largely urban (78%) and aging, with a <b class="bold">median age of 41</b> and a <b class="bold">life expectancy of 81 years</b>. Immigration
+                is
+                minimal due to restrictive naturalization laws, and the country maintains a stable demographic profile
+                through robust healthcare, public services, and family policy.
+            </p>
+            <p class="paragraph">Religiously, Laocitia is predominantly <b class="bold">Catholic (86%)</b>, with <b class="bold">10% identifying as non-religious</b> and <b class="bold">4% adhering to other
+                    beliefs</b>.
+                The Catholic Church plays a prominent cultural and charitable role but holds no political power. The
+                state
+                is strictly secular, guaranteeing religious freedom while maintaining full institutional neutrality.
+            </p>
+            <p class="paragraph">Laocitia's economy is <b class="bold">highly developed and environmentally
+                    conscious</b>,
+                with a
+                GDP of <b class="bold">1.1 trillion DTR</b>, ranking <b class="bold">6th globally</b>. It emphasizes <b class="bold">domestic food self-sufficiency</b>, importing select goods from Destenia. Its
+                industrial
+                sector is powered by <b class="bold">hydroelectric energy from Labaro Lake</b>, making Laocitia a <b class="bold">regional leader in clean energy</b> and energy exports. The country is also a hub of <b class="bold">digital infrastructure, innovation, and high-tech industry</b>, with significant public
+                investment in green technology and automation.
+            </p>
+            <p class="paragraph">In foreign affairs, Laocitia is renowned for its <b class="bold">strict neutrality</b>,
+                rejecting military alliances and foreign bases. It is a founding member of the <b class="bold">World
+                    Union</b> and actively participates in the <b class="bold">Edrobean Community</b>, the <b class="bold">Global Reserve Fund</b>, and other multilateral organizations. While formally
+                non-aligned,
+                its <b class="bold">closest partner is Destenia</b>, with whom it shares deep economic and political
+                ties.
+            </p>
+            <p class="paragraph">Defense is managed by the <b class="bold">Laocitian Defense Forces</b>, composed of the
+                <b class="bold">Army</b>, <b class="bold">Air Force</b>, and <b class="bold">Coast Guard</b>, all
+                organized
+                for purely defensive purposes. Law enforcement is centralized, rights-based, and operates under the
+                authority of the Ministry of Justice and Public Order, with a national police force supported by
+                independent
+                oversight and a strong judiciary.
+            </p>
+            <p class="paragraph">Laocitia is widely viewed as a <b class="bold">model of democratic governance, social
+                    stability,
+                    and environmental leadership</b>, blending a rich cultural heritage with a forward-looking vision
+                grounded in neutrality, republican values, and sustainable development.</p>
+            <h2 class="heading" id="Etymology">Etymology</h2>
+            <p class="paragraph">The name <b class="bold">Laocitia</b> finds its roots in the <b class="bold">ancient
+                    Laocitic
+                    word &ldquo;Lauketz,&rdquo;</b> meaning <i class="italic">&ldquo;people of the lake,&rdquo;</i> a
+                direct
+                reference to the region&rsquo;s long-standing cultural and spiritual connection to <b class="bold">Labaro
+                    Lake</b>, the largest freshwater body in Edrobe and the geographical heart of the nation. Over
+                centuries, <i class="italic">Lauketz</i> evolved linguistically into *Laocitia*, solidifying during the
+                classical period as a term for both the land and its people. The lake, seen not only as a source of
+                water
+                but as a symbol of endurance and national unity, gave birth to the poetic expression &ldquo;Our Lake
+                shall
+                defend us,&rdquo; which would later become the country&rsquo;s national anthem.
+            </p>
+            <p class="paragraph">Etymologically, Laocitia reflects a <b class="bold">fusion of geography and
+                    identity</b>,
+                tying
+                the physical landscape to a collective sense of belonging. The modern use of the name is inseparable
+                from
+                the country&rsquo;s revolutionary history, as the term <i class="italic">Laocitian</i> came to signify
+                those
+                who rose during the <b class="bold">National Revolution</b> to reclaim sovereignty and democratic rule.
+                In
+                both historical and contemporary usage, <i class="italic">&ldquo;Laocitia&rdquo;</i> embodies the ideals
+                of
+                <b class="bold">community, endurance, and territorial pride</b>, grounded in the enduring relationship
+                between the Laocitian people and the natural world that sustains them.
+            </p>
+            <h2 class="heading" id="Geography">Geography</h2>
+            <p class="paragraph">Laocitia is situated in <b class="bold">western Edrobe</b>, and its geography is
+                defined by
+                a <b class="bold">harmonious blend of forests, plains, mountains, and inland waters</b>, offering a
+                landscape
+                of striking diversity within a relatively compact territory of <b class="bold">97,324 square
+                    kilometers</b>.
+                The country is characterized by expansive <b class="bold">taiga forests</b> in the north and northeast,
+                most
+                notably the <b class="bold">Venius Forest</b>, which covers a significant portion of the upland terrain
+                and
+                serves as a vital ecological zone rich in coniferous biodiversity, wildlife, and seasonal snowfall.
+            </p>
+            <p class="paragraph">To the south and central lowlands stretch the wide <b class="bold">Yalmin Plain</b>, a
+                vast
+                area
+                of fertile soil and open grasslands, used extensively for agriculture and grazing. The plain contrasts
+                sharply with the dramatic topography of the <b class="bold">Laocitian Mountains</b>, which rise across
+                the
+                central spine of the country. This mountain range not only divides Laocitia&rsquo;s ecological zones but
+                also holds the nation&rsquo;s highest elevation, the <b class="bold">Sadut Mountain</b>, which ascends
+                to <b class="bold">4,568 meters above sea level</b>. Sadut and its surrounding highlands are known for
+                their
+                alpine terrain, sharp ridges, and glacial features, contributing to Laocitia&rsquo;s water cycle and
+                natural
+                defense.
+            </p>
+            <p class="paragraph">At the heart of the country lies <b class="bold">Labaro Lake</b>, the only lake in
+                Laocitia
+                and
+                the <b class="bold">largest in the Edrobean continent</b>. This freshwater lake is both a geographical
+                and
+                symbolic centerpiece, supplying water for domestic and agricultural use, regulating local climate, and
+                serving as a reference point for regional identity. Its broad surface, deep basin, and surrounding
+                highlands
+                create a unique microclimate and support a delicate aquatic ecosystem.
+            </p>
+            <p class="paragraph">Flowing from the southern flanks of the Laocitian Mountains, the <b class="bold">Fairt
+                    River</b>
+                is the <b class="bold">sole and longest river in the country</b>. It traces a winding path through
+                valleys
+                and plains, eventually draining into the <b class="bold">Northern Sea</b>. The river is essential to <b class="bold">irrigation, ecology, and inland navigation</b>, enabling agricultural production across
+                the
+                Yalmin Plain and connecting inland communities through its historical role as a natural transport
+                corridor.
+            </p>
+            <p class="paragraph">Laocitia is also shaped by its maritime edges. In the <b class="bold">south</b>, it is
+                bounded
+                by the <b class="bold">Gulf of Kosher</b>, a warm coastal sea that influences the region's weather
+                patterns
+                and provides ecological contrast to the colder northern latitudes. To the <b class="bold">north</b>,
+                Laocitia faces the <b class="bold">Northern Sea</b>, a cooler, open sea that frames the country&rsquo;s
+                boreal edge and completes its northern boundary. These coastal features enhance Laocitia&rsquo;s
+                climatic
+                diversity and link its inland landscapes to the broader maritime environment of Edrobe.</p>
+            <h2 class="heading" id="Politics">Politics</h2>
+            <h3 class="sub-heading" id="Government">Government</h3>
+            <figure class="image image-right"><img src="https://dyscover.ielectro.com/content/image/Prime_Minister_of_Laocitia.png?t=1766433968000">
+                <figcaption>Prime Minister of Laocitia</figcaption>
+            </figure>
+            <p class="paragraph">Laocitia is governed as a <b class="bold">unitary parliamentary republic</b>, a system
+                that
+                centralizes authority while maintaining democratic representation through a robust institutional
+                framework.
+                The <b class="bold">Constitution</b>, adopted following the <b class="bold">National Revolution</b>,
+                provides the legal and political foundation of the modern republic, outlining the separation of powers
+                between the executive, legislative, and judicial branches, and reinforcing the state&rsquo;s commitment
+                to
+                <b class="bold">republicanism, rule of law, and civic participation</b>.
+            </p>
+            <p class="paragraph">At the apex of the state structure is the <b class="bold">President</b>, who serves as
+                <b class="bold">head of state</b>. The presidency in Laocitia is largely <b class="bold">ceremonial</b>,
+                with limited executive powers, but it carries symbolic and diplomatic significance. The President is
+                elected
+                by the National Assembly and represents national unity, signs legislation into law, appoints the Prime
+                Minister (subject to parliamentary confirmation), and oversees official state ceremonies.
+            </p>
+            <p class="paragraph">The <b class="bold">executive authority</b> is exercised by the <b class="bold">Prime
+                    Minister</b>, who functions as the <b class="bold">head of government</b> and holds substantial
+                control
+                over national administration and policy implementation. The Prime Minister is typically the leader of
+                the
+                majority party or coalition in the legislature and governs with the support of the <b class="bold">Council
+                    of Ministers</b>, which consists of department heads responsible for the daily operations of
+                government
+                across fields such as finance, defense, education, and infrastructure.
+            </p>
+            <p class="paragraph">Legislative power resides in the <b class="bold">National Assembly</b>,
+                Laocitia&rsquo;s <b class="bold">unicameral parliament</b>, which is directly elected by the people
+                through proportional
+                representation. The Assembly drafts and passes laws, approves the national budget, supervises the
+                government, and ratifies international treaties. It also has the authority to pass motions of confidence
+                or
+                no confidence, making the Prime Minister and their cabinet directly accountable to the legislature. The
+                Speaker of the Assembly presides over parliamentary sessions, ensuring the orderly conduct of
+                legislative
+                work.
+            </p>
+            <p class="paragraph">Laocitia&rsquo;s <b class="bold">judiciary</b> is independent and constitutionally
+                protected.
+                The highest judicial authority is the <b class="bold">Supreme Court</b>, which has the power to
+                interpret
+                the constitution, rule on the legality of laws and executive actions, and resolve disputes involving
+                state
+                institutions. Lower courts handle civil, criminal, and administrative matters, and judicial appointments
+                are
+                made through a merit-based process that involves both legislative oversight and legal expertise.</p>
+            <h3 class="sub-heading" id="Political_parties">Political parties</h3>
+            <p class="paragraph">Laocitia is widely regarded as <b class="bold">the most democratic country in the
+                    world</b>, a
+                status earned through its deep commitment to <b class="bold">pluralism, transparent governance, civil
+                    liberties</b>, and <b class="bold">electoral integrity</b>. The political landscape is vibrant and
+                competitive, characterized by a <b class="bold">multi-party system</b> that encourages ideological
+                diversity, regional representation, and grassroots participation. Elections are held regularly, are
+                monitored by independent institutions, and feature <b class="bold">high voter turnout</b>, reflecting a
+                population that is highly engaged in the civic life of the republic.
+            </p>
+            <p class="paragraph">There is <b class="bold">no dominant ruling party</b>, and power frequently alternates
+                between
+                parties or coalitions through peaceful democratic transitions. The <b class="bold">National
+                    Assembly</b>,
+                Laocitia&rsquo;s unicameral legislature, is composed of representatives elected via a <b class="bold">proportional representation system</b>, which ensures that even smaller parties can
+                gain
+                seats and influence policy. Political parties in Laocitia range across the ideological spectrum&mdash;<b class="bold">liberals, conservatives, environmentalists, socialists, centrists, federalists, and
+                    independents</b> all find space in the democratic arena. The country&rsquo;s <b class="bold">largest
+                    and
+                    most influential parties</b> typically include:</p>
+            <ul class="point-list">
+                <li>The <b class="bold">Laocitian Social Party (LSP)</b> &ndash; a center-left force promoting <b class="bold">social equity, labor rights, public healthcare</b>, and inclusive governance. It
+                    often
+                    forms coalitions with green or progressive parties.</li>
+                <li>The <b class="bold">National Civic Union (NCU)</b> &ndash; a center-right party favoring <b class="bold">economic liberalism, fiscal conservatism</b>, and <b class="bold">constitutional
+                        nationalism</b>, with strong support among rural voters and traditionalist segments.</li>
+                <li>The <b class="bold">Ecological Democratic Front (EDF)</b> &ndash; an environmentally focused party
+                    advocating for <b class="bold">climate policy, green energy transition</b>, and sustainable
+                    agriculture,
+                    particularly strong in mountainous and forested regions.</li>
+                <li>The <b class="bold">Republican Renewal Movement (RRM)</b> &ndash; a centrist party committed to <b class="bold">technocratic governance, administrative reform</b>, and <b class="bold">digital
+                        innovation</b>, often playing a kingmaker role in coalition governments.</li>
+            </ul>
+            <p class="paragraph">In addition to these, <b class="bold">minority and regional parties</b>, such as the <b class="bold">Labaro Civic Forum</b> or the <b class="bold">Sadut Peoples&rsquo; Alliance</b>,
+                occasionally gain local influence and contribute to policy debates, especially in the areas surrounding
+                Labaro Lake and the Laocitian Mountains.</p>
+            <p class="paragraph">Political life is further enriched by a <b class="bold">robust civil society</b>,
+                independent
+                media, public broadcasting, and open debate culture. Party financing is regulated, campaign transparency
+                is
+                enforced, and all parties must adhere to constitutional democratic norms. There are <b class="bold">no
+                    banned political ideologies</b> so long as they operate within the legal framework and uphold the
+                principles of democracy and non-violence. Ultimately, Laocitia&rsquo;s political party system reflects
+                its
+                identity as a <b class="bold">model republic</b>, where <b class="bold">freedom of association, peaceful
+                    competition, and institutional fairness</b> create an environment in which democracy is not only
+                practiced, but deeply embedded in the national consciousness.</p>
+            <h3 class="sub-heading" id="Administrative_subdivisions">Administrative subdivisions</h3>
+            <p class="paragraph">Laocitia is administratively organized as a <b class="bold">unitary state</b> with a <b class="bold">centralized governance structure</b>, divided into <b class="bold">four provinces</b>
+                and a
+                separate <b class="bold">capital district</b>, each functioning as key territorial units for public
+                administration, policy implementation, and local coordination. While all authority ultimately stems from
+                the
+                national government in Dior, these subdivisions serve to <b class="bold">decentralize service
+                    delivery</b>,
+                manage infrastructure, and facilitate civic participation at the regional level.
+            </p>
+            <p class="paragraph">The four provinces are each overseen by a <b class="bold">provincial governor</b>,
+                appointed by
+                the central government but working in close coordination with locally elected <b class="bold">provincial
+                    councils</b>. These councils advise on regional development plans, supervise public utilities, and
+                implement national policies tailored to local needs. The provinces do not possess legislative autonomy,
+                but
+                they operate with administrative competence in areas such as healthcare, education, transport, and
+                environmental management. The <b class="bold">four provinces of Laocitia</b> are: </p>
+            <ul class="point-list">
+                <li>
+                    <b class="bold">Saduckie</b> &ndash; Located in the central mountainous region, named after <b class="bold">Sadut Mountain</b>, and known for its alpine landscapes and strategic water
+                    reserves.
+                </li>
+                <li>
+                    <b class="bold">Jeziorne</b> &ndash; Encompassing <b class="bold">Labaro Lake</b> and its
+                    surrounding
+                    plains, this province holds ecological, cultural, and agricultural importance.
+                </li>
+                <li>
+                    <b class="bold">P&oacute;&#322;nocne</b> &ndash; The <b class="bold">northern province</b>, adjacent
+                    to
+                    the <b class="bold">Northern Sea</b>, characterized by taiga forests, fisheries, and seasonal
+                    tourism.
+                </li>
+                <li>
+                    <b class="bold">Po&#322;udniowe</b> &ndash; The <b class="bold">southern province</b>, stretching to
+                    the
+                    <b class="bold">Gulf of Kosher</b>, with coastal plains, port infrastructure, and a mild maritime
+                    climate.
+                </li>
+            </ul>
+            <p class="paragraph">Separately, the <b class="bold">Capital District of Dior</b> is administered
+                independently
+                from the provinces. It houses all major national institutions, including the National Assembly,
+                Presidential
+                Office, Supreme Court, and Ministry headquarters. The district is governed by a <b class="bold">mayor</b>
+                and a <b class="bold">city council</b>, but also hosts federal agencies that ensure coordination between
+                national and regional levels of government. </p>
+            <p class="paragraph">Together, this <b class="bold">administrative model ensures coherent national
+                    governance</b>,
+                efficient public service delivery, and a high degree of civic accessibility, while preserving <b class="bold">Laocitia&rsquo;s unitary character</b> and reinforcing the responsiveness of the state
+                to
+                local and regional dynamics.</p>
+            <h3 class="sub-heading" id="Foreign_relations">Foreign relations</h3>
+            <p class="paragraph">Laocitia is widely recognized as <b class="bold">the most neutralist country in the
+                    world</b>, a
+                position that defines its foreign policy ethos and underpins its international identity. Rooted in the
+                legacy of its <b class="bold">National Revolution</b> and constitutional founding principles, Laocitia's
+                foreign relations are guided by the values of <b class="bold">non-alignment, sovereignty, peaceful
+                    coexistence, and multilateral cooperation</b>. The country maintains <b class="bold">no military
+                    alliances</b>, <b class="bold">hosts no foreign bases</b>, and strictly avoids entanglement in
+                geopolitical rivalries, regardless of ideological or economic pressure.
+            </p>
+            <p class="paragraph">This firm stance of <b class="bold">principled neutrality</b> does not equate to
+                isolation.
+                On
+                the contrary, Laocitia is an <b class="bold">active diplomatic actor</b> and a <b class="bold">founding
+                    member of the World Union</b>, participating vigorously in global forums such as the <b class="bold">Global Reserve Fund</b>, <b class="bold">International Tribunal for Justice</b>, <b class="bold">World Trade Network</b>, <b class="bold">Global Health Organization</b>, and the <b class="bold">International Energy Agency</b>. It also plays a respected role within the <b class="bold">Edrobean Community (EC)</b>, where it advocates for <b class="bold">diplomatic
+                    resolution
+                    of conflicts, rule-based international order</b>, and equitable economic partnerships across Edrobe.
+            </p>
+            <p class="paragraph">Despite its commitment to neutrality, <b class="bold">Laocitia maintains a deep and
+                    strategic
+                    bilateral relationship with Destenia</b>, which is widely seen as its <b class="bold">closest
+                    ally</b>.
+                This relationship is based not on defense cooperation but on <b class="bold">economic integration,
+                    scientific collaboration, and political dialogue</b>. Laocitia benefits from Destenian investment in
+                infrastructure, energy systems, and digital technology, while also engaging in cultural and academic
+                exchanges that foster mutual respect and interdependence. The two nations frequently coordinate on
+                regional
+                policy within the Edrobean Community and share similar views on climate policy, economic regulation, and
+                institutional reform.
+            </p>
+            <p class="paragraph">Laocitia also maintains <b class="bold">cordial and constructive relations with all
+                    neighboring
+                    countries</b>, including <b class="bold">Kashiria, Metosia, and Alveria</b>, pursuing cross-border
+                cooperation in fields such as water management, environmental protection, and transportation. It has no
+                territorial disputes and is often sought out as a <b class="bold">mediator in regional tensions</b>,
+                particularly within Edrobe and occasionally between Edrobean and Tayanusan actors. The country&rsquo;s
+                diplomatic corps is highly professional and frequently involved in <b class="bold">negotiation, peace
+                    facilitation, and humanitarian coordination</b>. Consistent with its neutrality, Laocitia maintains
+                a <b class="bold">balanced trade policy</b> with partners across all global blocs, avoiding preferential
+                agreements that could compromise its independence. Its embassies are present in all major global
+                capitals,
+                and the country is a strong supporter of <b class="bold">international law, environmental diplomacy</b>,
+                and
+                <b class="bold">humanitarian aid</b>.
+            </p>
+            <h3 class="sub-heading" id="Military">Military</h3>
+            <p class="paragraph">The <b class="bold">Laocitian Defense Forces (LDF)</b> represent a <b class="bold">compact,
+                    professional, and entirely defensive military structure</b>, aligned with Laocitia&rsquo;s
+                constitutional doctrine of <b class="bold">strict neutrality and non-aggression</b>. The LDF exists
+                solely
+                to defend the <b class="bold">territorial integrity</b>, <b class="bold">airspace</b>, and <b class="bold">maritime borders</b> of the Republic of Laocitia, and is legally prohibited from
+                engaging
+                in foreign military operations, hosting foreign troops, or entering alliances that would compromise the
+                country's sovereignty or neutrality. The LDF is composed of <b class="bold">three coordinated
+                    branches</b>:
+            </p>
+            <ul class="point-list">
+                <li>
+                    <b class="bold">Laocitian Army</b> is the ground force component of the LDF, designed primarily for
+                    <b class="bold">territorial defense and domestic emergency response</b>. It is a small but highly
+                    trained force, equipped with light armored vehicles, precision artillery, and mobile anti-air
+                    systems
+                    suited to Laocitia&rsquo;s mountainous and forested geography. The army operates under a doctrine of
+                    <b class="bold">strategic deterrence and civil protection</b>, focusing on rapid mobilization,
+                    disaster
+                    relief, border security, and support to civil authorities in cases of natural calamities or internal
+                    threats. Its personnel are mainly professional soldiers, supplemented by a voluntary civil reserve
+                    corps
+                    trained in defense and logistics.
+                </li>
+                <li>
+                    <b class="bold">Laocitian Air Force</b> is tasked with the <b class="bold">protection of national
+                        airspace</b>, reconnaissance, and air support to ground and naval operations. Its fleet includes
+                    a
+                    modest number of <b class="bold">multi-role interceptors, surveillance drones</b>, and <b class="bold">rotary-wing aircraft</b> optimized for search and rescue and rapid deployment. Due
+                    to
+                    Laocitia&rsquo;s strictly non-offensive military doctrine, the air force emphasizes <b class="bold">defensive air patrols</b>, <b class="bold">air policing missions</b>, and <b class="bold">aerial surveillance</b>, particularly in the vicinity of the Laocitian Mountains
+                    and
+                    national infrastructure zones. All aerial operations are coordinated in strict compliance with
+                    international airspace law.
+                </li>
+                <li>
+                    <b class="bold">Laocitian Navy</b> is responsible for the <b class="bold">defense and regulation of
+                        Laocitia&rsquo;s maritime borders</b>, particularly along the <b class="bold">Gulf of Kosher</b>
+                    and
+                    the <b class="bold">Northern Sea</b>, the Coast Guard is a civilian-military hybrid force under the
+                    joint command of the Ministry of Defense and the Ministry of the Interior. Its duties include <b class="bold">search and rescue, anti-smuggling operations, maritime safety enforcement,
+                        environmental protection</b>, and <b class="bold">coastal monitoring</b>. Equipped with fast
+                    patrol
+                    vessels, maritime drones, and radar stations, the Laocitian Coast Guard is one of the most
+                    technologically modern components of the LDF, ensuring compliance with Laocitia&rsquo;s maritime
+                    neutrality and international obligations.
+                </li>
+            </ul>
+            <p class="paragraph">The entire Laocitian Defense Forces operate under the authority of the <b class="bold">Ministry
+                    of Defense</b>, and are commanded by the <b class="bold">Chief of the General Staff</b>, a
+                non-partisan
+                professional officer appointed by the government. The President, while serving as <b class="bold">civilian
+                    Commander-in-Chief</b>, exercises this role in symbolic and constitutional terms only.
+            </p>
+            <p class="paragraph">The LDF does not maintain offensive weapon systems such as ballistic missiles or
+                long-range
+                bombers, and its budget is proportionally modest, reflecting the country&rsquo;s <b class="bold">security
+                    doctrine of restraint, deterrence, and non-provocation</b>. Defense policy is focused on <b class="bold">readiness, territorial resilience, and civil cooperation</b>, with conscription
+                abolished
+                and replaced by a <b class="bold">volunteer-based recruitment model</b> emphasizing civic service,
+                professionalism, and international humanitarian law training.</p>
+            <h3 class="sub-heading" id="Law_enforcement">Law enforcement</h3>
+            <p class="paragraph">Law enforcement in Laocitia is built on the principles of <b class="bold">professionalism,
+                    transparency, and strict adherence to democratic and constitutional norms</b>. The system is
+                centralized
+                under the <b class="bold">Ministry of Justice</b>, which oversees national coordination, legal
+                compliance,
+                and operational standards across the entire country. Policing in Laocitia is designed not only to ensure
+                public safety and enforce the law, but also to protect <b class="bold">civil liberties and democratic
+                    values</b>, reflecting the country's deeply institutionalized rule of law.
+            </p>
+            <p class="paragraph">The main agency responsible for internal security is the <b class="bold">Laocitian
+                    National
+                    Police</b>, a civilian force tasked with crime prevention, criminal investigations, public order,
+                and
+                emergency response. Officers are trained in de-escalation techniques, human rights law, and community
+                engagement, with a strong emphasis on <b class="bold">non-violence, restraint, and proportionality</b>.
+                The
+                National Police operates across all provinces and the capital district, with local precincts reporting
+                both
+                to regional commanders and the national headquarters in Dior. Within the National Police, specialized
+                units
+                handle distinct tags of law enforcement:</p>
+            <ul class="point-list">
+                <li>The <b class="bold">Criminal Investigations Division</b> is responsible for handling serious crimes,
+                    forensic analysis, and organized crime investigations.</li>
+                <li>The <b class="bold">Cybercrime Division</b> monitors online threats, fraud, and data protection
+                    violations.</li>
+                <li>The <b class="bold">Public Order Division</b> manages large gatherings, demonstrations, and national
+                    events, ensuring peaceful assembly while preventing disorder.</li>
+                <li>The <b class="bold">Internal Affairs Division </b>investigates complaints against police officers
+                    and enforces disciplinary standards.</li>
+            </ul>
+            <p class="paragraph">In addition to the regular police, Laocitia operates a <b class="bold">Judicial
+                    Police</b>,
+                responsible for the execution of court orders, transport of detainees, and protection of court premises.
+                This corps works directly with the judiciary and maintains a distinct chain of command to ensure
+                independence from political interference.
+            </p>
+            <p class="paragraph">Border security and immigration enforcement fall under the jurisdiction of the <b class="bold">Laocitian Border Police</b>, a paramilitary unit that operates at land crossings,
+                seaports,
+                and airports. This force ensures compliance with immigration laws, prevents trafficking and smuggling,
+                and
+                safeguards the national frontier while coordinating closely with customs and civil authorities.
+                Laocitia also has a <b class="bold">National Anti-Corruption Agency</b>, which monitors integrity within
+                the
+                public sector and law enforcement institutions. This agency operates independently of the executive
+                branch
+                and can launch investigations, conduct audits, and refer cases directly to prosecutors.</p>
+            <h2 class="heading" id="Economy">Economy</h2>
+            <p class="paragraph">Laocitia possesses a <b class="bold">balanced and strategically structured economy</b>,
+                shaped
+                by its emphasis on <b class="bold">self-reliance, sustainability, and technological advancement</b>.
+                While
+                relatively modest in population and landmass, the country has emerged as a <b class="bold">regional
+                    economic
+                    powerhouse</b>, with a GDP of <b class="bold">1.1 trillion DTR</b>, ranking <b class="bold">6th
+                    globally</b>. Its economic model is characterized by <b class="bold">state-guided development,
+                    innovation-driven investment</b>, and a strong commitment to <b class="bold">environmental
+                    stewardship
+                    and social equity</b>.
+            </p>
+            <p class="paragraph">The <b class="bold">agricultural sector</b> in Laocitia is primarily oriented toward <b class="bold">national food self-sufficiency</b>, rather than exports. Agricultural policy is focused
+                on
+                securing stable domestic production, reducing reliance on international markets, and ensuring equitable
+                access to food across all regions of the country. Farms are modern, highly mechanized, and often
+                organized
+                as cooperatives. However, due to <b class="bold">climatic and geographic limitations</b>, particularly
+                in
+                mountainous and forested areas, Laocitia <b class="bold">supplements its food supply with targeted
+                    imports
+                    from Destenia</b>, its closest economic partner. This arrangement ensures a <b class="bold">diverse,
+                    balanced, and resilient food system</b> while allowing Laocitia to avoid overproduction and maintain
+                ecological stability.
+            </p>
+            <p class="paragraph">The <b class="bold">industrial sector</b> forms the <b class="bold">backbone of
+                    Laocitia&rsquo;s
+                    economy</b>, with a strong foundation in <b class="bold">engineering, machinery, green technology,
+                    and
+                    energy infrastructure</b>. One of the defining features of Laocitia&rsquo;s industrial success is
+                its <b class="bold">hydroelectric sector</b>, which has been developed around <b class="bold">Labaro
+                    Lake</b>,
+                the largest lake in Edrobe. Massive investment in <b class="bold">hydropower infrastructure</b> has
+                allowed
+                Laocitia to become <b class="bold">self-sufficient in renewable energy</b>, while also serving as a <b class="bold">key energy exporter</b> to neighboring Edrobean countries. The country&rsquo;s energy
+                grid
+                is decentralized, efficient, and digitally monitored, serving as a model of <b class="bold">clean energy
+                    transition</b> and regional energy security.
+            </p>
+            <p class="paragraph">Beyond energy, Laocitia&rsquo;s industries include <b class="bold">precision
+                    manufacturing,
+                    eco-engineering, medical technology</b>, and <b class="bold">sustainable construction materials</b>.
+                High environmental standards are enforced across all sectors, and the country has successfully branded
+                itself as a hub of <b class="bold">green industry</b> and <b class="bold">climate-resilient
+                    innovation</b>.
+                Public-private partnerships are common, with the state playing an active role in funding research,
+                regulating competition, and guiding long-term economic planning.
+            </p>
+            <p class="paragraph">Laocitia is also at the forefront of <b class="bold">digital transformation</b>, with
+                widespread
+                high-speed connectivity, nationwide e-governance, and strong investment in cybersecurity, artificial
+                intelligence, and education technologies. Its <b class="bold">communication infrastructure</b> is among
+                the
+                most advanced in Edrobe, allowing for seamless interaction between public services, private enterprises,
+                and
+                the academic sector. The integration of technology into daily life, education, and administration has
+                made
+                Laocitia one of the most <b class="bold">digitally literate and connected societies in the world</b>.
+            </p>
+            <p class="paragraph">Internationally, Laocitia maintains a <b class="bold">stable and diversified trade
+                    profile</b>,
+                though it remains selective and value-driven in its external economic partnerships. It exports energy,
+                industrial equipment, and technological services while importing high-end components, luxury goods, and
+                certain agricultural products. Trade is conducted through <b class="bold">transparent, regulated
+                    agreements</b>, often with regional neighbors and under the oversight of multilateral organizations
+                such
+                as the <b class="bold">World Trade Network</b> and the <b class="bold">Edrobean Community</b>.</p>
+            <h2 class="heading" id="Demography">Demography</h2>
+            <p class="paragraph">Laocitia has a population of approximately <b class="bold">8,321,735 inhabitants</b>,
+                making it
+                one of the smaller countries in Edrobe by size, but one of the most <b class="bold">socially balanced
+                    and
+                    demographically stable</b>. The country is characterized by a <b class="bold">high level of
+                    urbanization, strong public health indicators, low emigration</b>, and a steadily aging but still
+                productive population. Laocitian society is defined by <b class="bold">social cohesion, widespread
+                    access to
+                    services, and a deeply embedded civic culture</b>, all of which contribute to demographic
+                resilience.
+            </p>
+            <p class="paragraph">The <b class="bold">median age</b> in Laocitia is <b class="bold">41 years</b>,
+                reflecting
+                a
+                mature population with relatively low birth rates and a gradually increasing life expectancy. While the
+                <b class="bold">fertility rate</b> stands at around <b class="bold">1.7 children per woman</b>, below
+                replacement level, the country has compensated with robust healthcare, strong family policies, and
+                productivity-enhancing investments in education and technology. <b class="bold">Life expectancy is among
+                    the
+                    highest in the region</b>, averaging <b class="bold">81 years</b>, with a well-documented gender gap
+                favoring women by about five years. The aging of the population is carefully monitored by state
+                institutions, and policies have been enacted to adapt pension systems, workplace flexibility, and elder
+                care
+                infrastructure to future demographic realities.
+            </p>
+            <p class="paragraph"><b class="bold">Urban areas account for more than 78%</b> of the population, with major
+                population centers clustered around <b class="bold">Labaro Lake</b>, the capital district of <b class="bold">Dior</b>, and the plains of the southern provinces. Urbanization has been managed
+                through
+                strategic planning, ensuring high standards of housing, clean transportation, and access to public
+                services.
+                Rural areas, while less densely populated, benefit from state subsidies aimed at preventing depopulation
+                and
+                maintaining traditional agricultural communities.
+            </p>
+            <p class="paragraph">Laocitia has a <b class="bold">low rate of immigration</b> due to its <b class="bold">restrictive naturalization laws</b> and selective entry policies. Migration is tightly
+                regulated, and the small foreign population consists mainly of professionals or regional migrants with
+                long-term residence permits. Emigration is also rare; Laocitians tend to remain in the country due to
+                its
+                high quality of life, political stability, and strong welfare systems. As a result, Laocitia has
+                maintained
+                <b class="bold">demographic continuity</b> without relying on population inflows.
+            </p>
+            <p class="paragraph">Education is universal, compulsory, and publicly funded, with a <b class="bold">literacy
+                    rate of
+                    over 99%</b>. The country also has one of the <b class="bold">highest university attendance rates
+                    per
+                    capita in Edrobe</b>, with particular emphasis on public service, environmental sciences, and
+                engineering. Gender parity in education and employment is well established, and the state actively
+                promotes
+                youth participation in civic and professional life to counterbalance demographic aging.
+            </p>
+            <p class="paragraph">Demographically, Laocitia exemplifies a <b class="bold">modern, post-industrial
+                    society</b>: <b class="bold">aging but not declining</b>, <b class="bold">urban but socially
+                    rooted</b>,
+                and <b class="bold">nationally unified but globally aware</b>. Its population policies focus on <b class="bold">sustainability, intergenerational equity, and long-term planning</b>, ensuring that
+                demographic trends support&mdash;not threaten&mdash;the republic&rsquo;s social model, political
+                stability,
+                and economic vitality.</p>
+            <h3 class="sub-heading" id="Language">Language</h3>
+            <p class="paragraph">The official and sole language of Laocitia is <b class="bold">Laocitian</b>, a refined
+                and
+                standardized language of the <b class="bold">Edrobean linguistic family</b>, deeply intertwined with the
+                nation&rsquo;s cultural identity, historical continuity, and civic life. It is used exclusively in <b class="bold">government, education, media, judiciary, and public communication</b>, forming a
+                central
+                pillar of the unitary state&rsquo;s policy of <b class="bold">linguistic cohesion and national
+                    unity</b>.
+                The state regards Laocitian not only as a medium of communication, but as a <b class="bold">symbol of
+                    republican values</b>, heritage, and the collective spirit of the Laocitian people.
+            </p>
+            <p class="paragraph">From primary school through higher education, all instruction is conducted in
+                Laocitian,
+                with
+                literacy rates approaching universal levels. The <b class="bold">national curriculum includes classical
+                    literature, modern Laocitian linguistics</b>, and rhetorical education, ensuring that every citizen
+                is
+                proficient in the written and spoken form. Mastery of the language is a prerequisite for holding public
+                office, serving in the judiciary, or gaining employment in state institutions.
+            </p>
+            <p class="paragraph">Laocitia maintains a <b class="bold">strict monolingual policy</b>, and no regional or
+                minority
+                languages are recognized within the constitutional framework. This reflects both the country&rsquo;s <b class="bold">high level of ethnic homogeneity</b>&mdash;with 87% of the population identifying as
+                ethnic
+                Laocitians&mdash;and the political consensus around the role of Laocitian as a unifying civic language.
+                While some bilingual individuals exist, particularly among the Destenian minority, <b class="bold">only
+                    Laocitian is used in public life</b>, and all other languages are restricted to private or informal
+                settings.
+            </p>
+            <p class="paragraph">The preservation and cultivation of Laocitian is managed by the <b class="bold">National
+                    Language Institute</b>, a prestigious body tasked with overseeing linguistic purity, vocabulary
+                modernization, and language policy. The Institute regularly updates official dictionaries, grammar
+                guidelines, and neologisms, especially in scientific and technological fields, ensuring that Laocitian
+                remains a <b class="bold">relevant and evolving language</b> in the digital age.</p>
+            <p class="paragraph">Media, cinema, literature, and public broadcasting are entirely conducted in Laocitian,
+                with
+                foreign works either subtitled or dubbed under strict linguistic guidelines. The state provides
+                subsidies
+                for publishing in Laocitian and encourages cultural production that reinforces <b class="bold">linguistic
+                    pride and national narrative</b>.</p>
+            <h3 class="sub-heading" id="Religion">Religion</h3>
+            <p class="paragraph">Religion in Laocitia is characterized by a <b class="bold">predominantly Christian
+                    population</b>, with the vast majority&mdash;<b class="bold">86% of citizens&mdash;adhering to the
+                    Catholic Church</b>, which plays a significant cultural and historical role in Laocitian society.
+                The
+                country&rsquo;s religious identity is deeply rooted in its national development, with Catholicism having
+                accompanied the people of Laocitia through centuries of political change, including the period of the <b class="bold">National Revolution</b>, where it served as both a moral guide and a symbol of
+                resistance
+                against authoritarianism.
+            </p>
+            <p class="paragraph">Despite its strong Catholic heritage, Laocitia is a <b class="bold">secular state</b>,
+                with
+                the
+                <b class="bold">Constitution firmly separating church and government</b>. The Catholic Church holds no
+                formal political authority, and all public institutions, including schools, courts, and the legislature,
+                operate independently of religious influence. However, the Church remains a <b class="bold">respected
+                    cultural institution</b>, actively engaged in education, healthcare, social services, and community
+                outreach. Many of the country's most prestigious schools and charitable foundations are affiliated with
+                Catholic orders, operating under state supervision but retaining their religious character.
+            </p>
+            <p class="paragraph">Public holidays such as <b class="bold">Christmas, Easter, and All Saints' Day</b> are
+                nationally observed, and Catholic traditions permeate many aspects of public life, from ceremonial
+                events to
+                community festivals. The presence of Catholic symbolism in public architecture, memorials, and national
+                ceremonies is widespread, reflecting the Church&rsquo;s <b class="bold">historic role in shaping
+                    Laocitian
+                    identity</b>. Religious tolerance is also deeply embedded in Laocitian civic culture, and citizens
+                are
+                free to believe, not believe, or change their beliefs without discrimination or coercion.
+            </p>
+            <p class="paragraph">A notable <b class="bold">10% of the population identifies as non-religious</b>, a
+                demographic
+                that has grown slowly in recent decades, particularly in urban areas and among younger generations.
+                Another
+                <b class="bold">4% follow other faiths</b>, including small Protestant, Orthodox, and secular-humanist
+                communities. The state protects the religious freedom of all individuals and ensures that minority
+                religious
+                groups can worship, organize, and register without interference, provided they adhere to national laws
+                and
+                constitutional values.
+            </p>
+            <p class="paragraph">Religious education in public schools is <b class="bold">optional and
+                    non-denominational</b>,
+                focusing on comparative religion and ethical philosophy. Students may also opt out entirely. In private
+                Catholic schools, religious instruction is more prominent, but still subject to oversight to ensure
+                academic
+                neutrality and respect for diversity.
+            </p>
+            <p class="paragraph">The Catholic Church in Laocitia is led by the <b class="bold">National Episcopal
+                    Council</b>,
+                which governs church affairs in coordination with the Vatican but retains a distinctive national
+                character.
+                Laocitian clergy are often seen not only as religious leaders but also as <b class="bold">moral voices
+                    in
+                    public discourse</b>, engaging in debates on social justice, ethical governance, and the protection
+                of
+                the poor.</p>
+            <h3 class="sub-heading" id="Ethnicities">Ethnicities</h3>
+            <p class="paragraph">Laocitia is an <b class="bold">ethnically cohesive country</b>, with <b class="bold">87% of
+                    the
+                    population identifying as ethnic Laocitians</b>, a group unified by shared ancestry, language,
+                culture,
+                and historical memory. Ethnic Laocitians form the foundation of the republic&rsquo;s national identity,
+                and
+                their traditions, customs, and civic values are deeply embedded in the country&rsquo;s institutions,
+                social
+                fabric, and public life. This majority population is spread uniformly across the territory, particularly
+                concentrated in the provinces surrounding Labaro Lake and the central highlands.
+            </p>
+            <p class="paragraph">The second-largest ethnic group in Laocitia are <b class="bold">Destenians</b>, who
+                make up
+                approximately <b class="bold">9% of the population</b>. Their presence dates back to historical
+                migration
+                waves and border realignments, especially during periods of shifting territorial control. Most
+                Destenians
+                are fully integrated into Laocitian society, fluent in Laocitian, and active in both the private sector
+                and
+                public institutions. Although culturally distinct, they are generally well-assimilated and are
+                represented
+                in regional councils, civic organizations, and professional sectors. Destenians are often concentrated
+                in
+                urban areas and southern districts close to the Destenian border.
+            </p>
+            <p class="paragraph">The remaining <b class="bold">4%</b> consists of <b class="bold">miscellaneous
+                    minorities</b>,
+                including small communities of Tayanusan and Litherian migrants, naturalized foreign professionals, and
+                multi-ethnic families. These groups tend to be located in the capital district of Dior and certain
+                port-access regions, where international exchange is more frequent. Their cultural presence is limited
+                to
+                private and community settings, as Laocitia&rsquo;s public institutions operate under a strict policy of
+                <b class="bold">linguistic and cultural uniformity</b>.
+            </p>
+            <p class="paragraph">Laocitia does not pursue multiculturalism as a state policy. Instead, it promotes a
+                model
+                of <b class="bold">civic integration</b>, where all citizens&mdash;regardless of ethnic
+                background&mdash;are
+                expected to adhere to <b class="bold">Laocitian cultural norms, speak the national language, and
+                    participate
+                    in the shared civic culture</b>. Ethnic identity is seen as a private matter, while national
+                identity is
+                framed as a unifying, inclusive concept based on citizenship and constitutional loyalty.
+            </p>
+            <p class="paragraph">Discrimination based on ethnicity is prohibited by law, and ethnic minorities enjoy
+                full
+                civil
+                rights and protections. However, <b class="bold">immigration is tightly restricted</b>, and
+                naturalization
+                processes are rigorous, reflecting the country&rsquo;s emphasis on demographic cohesion and social
+                stability. Public discourse rarely centers on ethnicity, as national unity is considered paramount in
+                Laocitian political and cultural life.
+            </p>
+            <p class="paragraph">In essence, Laocitia&rsquo;s ethnic composition is <b class="bold">stable, homogeneous,
+                    and
+                    tightly bound to its national identity</b>, with small but integrated minority communities
+                contributing
+                to the republic&rsquo;s civic pluralism within a framework of <b class="bold">shared language, law, and
+                    loyalty to the Laocitian state</b>.
+            </p>
+        </section>
+    </aside>
+</body>
+</html>

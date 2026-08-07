@@ -1,3 +1,5 @@
+import { CreatorRegistry } from "./registry.js";
+
 export class Table {
     constructor() {
         this.tabs();
@@ -12,9 +14,15 @@ export class Table {
                     section.classList.remove("active-section");
                 });
                 tab.classList.add("active-tab");
-                const section = document.querySelector(
-                    "." + tab.classList[1].replace("-tab", "-section")
+                const tabName = [...tab.classList].find(
+                    (className) =>
+                        className.endsWith("-tab") && className !== "tab",
                 );
+                const section = tabName
+                    ? document.querySelector(
+                          `.${tabName.replace("-tab", "-section")}`,
+                      )
+                    : null;
                 if (!section) return;
                 section.style.display = "block";
                 requestAnimationFrame(() => {
@@ -49,8 +57,6 @@ export class Table {
     static getActiveClass() {
         const tab = document.querySelector(".active-tab");
         if (!tab) return null;
-        return classes.find(
-            Class => Class.tab === "." + tab.classList[1]
-        );
+        return CreatorRegistry.activeClass();
     }
 }

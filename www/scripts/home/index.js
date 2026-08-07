@@ -1,2 +1,8 @@
-export { default as NewsCarousel } from "./news-carousel.js";
-export { initializeHome } from "./home.js";
+import { App } from "../core/app.js";
+import { Home } from "./home.js";
+
+document.addEventListener("DOMContentLoaded", async () => {
+    new App();
+    const home = new Home();
+    await home.load();
+});

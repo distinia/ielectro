@@ -1,7 +1,7 @@
 import { Alert, Icons } from "../core/index.js";
 import { API } from "./api.js";
 import { Select } from "./select.js";
-import { Index } from "./index.js";
+import { Index } from "./article-index.js";
 import { GenerateArticle } from "./generate-article.js";
 import { Save } from "./save.js";
 import { FormatText } from "./format-text.js";
@@ -26,12 +26,37 @@ export class Editor {
         this.content = Select.container();
         this.box = null;
         this.isEditing = false;
+        Editor.hydrateLegacyContent(Select.container());
         this.loadElements();
         this.index = new Index();
         this.index.closeEditing();
         this.activateElements();
         Editor.current = this;
     }
+
+    static hydrateLegacyContent(container) {
+        if (!container) return;
+        container.querySelectorAll("h2").forEach((el) => {
+            if (!el.classList.contains("heading")) {
+                el.classList.add("heading");
+            }
+        });
+        container.querySelectorAll("h3").forEach((el) => {
+            if (!el.classList.contains("sub-heading")) {
+                el.classList.add("sub-heading");
+            }
+        });
+        container.querySelectorAll("p").forEach((el) => {
+            if (
+                el.classList.contains("paragraph") ||
+                el.closest("figure, table, td, th, li")
+            ) {
+                return;
+            }
+            el.classList.add("paragraph");
+        });
+    }
+
     loadElements() {
         const container = Select.container();
         if (!container) return;

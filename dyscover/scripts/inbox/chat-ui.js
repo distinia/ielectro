@@ -1,7 +1,9 @@
-import { App, Alert, Icons, Auth, Card, Request, Navbar, Mention, UsersList } from "../core/index.js";
+import { Api } from "../core/api.js";
+import { App, Alert, EmptyState, Icons, Auth, Card, Request, Navbar, Mention, UsersList } from "../core/index.js";
+import { decodePostMessage } from "../core/post-message.js";
 export class ChatUI {
     constructor() {
-        this.root = document.querySelector("main");
+        this.root = document.body;
         this.selectedThreadId = null;
         this.peerUsername = null;
         this.peerAvatar = null;
@@ -92,29 +94,9 @@ export class ChatUI {
         clearTimeout(this.typingPulseTimer);
         this.typingPulseTimer = window.setTimeout(() => this.pulseTyping(), 400);
     }
-    async pulseTyping() {
-        if (!this.selectedThreadId) return;
-        try {
-            await Request.post("https://dyscover.ielectro.com/api/chat/typing", {
-                thread_id: String(this.selectedThreadId),
-            });
-        } catch {
-        }
-    }
+    async pulseTyping() {}
     async refreshTyping() {
-        if (!this.chatTypingLine || !this.selectedThreadId) return;
-        try {
-            const res = await Request.get(
-                "https://dyscover.ielectro.com/api/chat/typing",
-                { thread_id: String(this.selectedThreadId) },
-            );
-            const on = Boolean(res.data?.typing);
-            this.chatTypingLine.classList.toggle("hidden", !on);
-            const peer = res.data?.peer || this.peerUsername || "";
-            this.chatTypingLine.textContent = on ? `${peer} is typing…` : "";
-        } catch {
-            this.chatTypingLine?.classList.add("hidden");
-        }
+        this.chatTypingLine?.classList.add("hidden");
     }
     suggestUsername(entry) {
         if (!entry) return "";
@@ -127,7 +109,7 @@ export class ChatUI {
             entry && typeof entry === "object" && entry.avatar
                 ? String(entry.avatar)
                 : null;
-        return cachedPeerAvatarUrl(u, ex);
+        return App.peerAvatarUrl(u, ex);
     }
     async openNewChatBox() {
         this.closeNewChatBoxIfOpen();
@@ -137,13 +119,16 @@ export class ChatUI {
             onSelect: (user) => this.pickPeer(user.username),
             loadUsers: async (term) => {
                 if (term) {
-                    const res = await Request.get(App.api("user/search"), { term });
-                    return (Array.isArray(res?.data) ? res.data : []).filter(
+                    const res = await Request.get(Api.exploreSearchAll(term));
+                    const payload = Api.record(res) || {};
+                    return (Array.isArray(payload.users) ? payload.users : []).filter(
                         (u) => u.username && u.username !== this.selfUsername,
                     );
                 }
-                const res = await Request.get(App.api("chat/suggestions"));
-                return Array.isArray(res.data?.followings) ? res.data.followings : [];
+                const selfId = await App.resolveSelfUserId();
+                if (!selfId) return [];
+                const res = await Request.get(Api.userFollowing(selfId));
+                return Api.list(res);
             },
         });
         await this.userPicker.open();
@@ -155,11 +140,12 @@ export class ChatUI {
         }
     }
     async ensureThread(participant) {
-        const res = await Request.post(
-            "https://dyscover.ielectro.com/api/chat/create-thread",
-            { participant },
-        );
-        const id = res.data?.id;
+        const participantId = await App.resolveUserId(participant);
+        if (!participantId) throw new Error("User not found");
+        const res = await Request.post(Api.inbox, {
+            participant_id: participantId,
+        });
+        const id = Api.record(res)?.id;
         if (!id) {
             throw new Error("Missing thread id");
         }
@@ -187,28 +173,24 @@ export class ChatUI {
     }
     renderChatHeader() {
         if (!this.chatHeader || !this.peerUsername) return;
-        const u = escapeHtml(this.peerUsername);
-        const av = escapeAttr(this.peerAvatar || "");
-        const ph = escapeHtml(initialsOf(this.peerUsername || "?"));
-        const profileUrl = `https://dyscover.ielectro.com/u/${encodeURIComponent(this.peerUsername)}`;
+        const u = App.escapeHtml(this.peerUsername);
+        const av = App.escapeAttr(this.peerAvatar || "");
+        const ph = App.escapeHtml(App.initialsOf(this.peerUsername || "?"));
+        const profileUrl = `https://dyscover.ielectro.com/users/${encodeURIComponent(this.peerUsername)}`;
         this.chatHeader.innerHTML = `
       <div class="chat-header-row">
         <span class="chat-header-avatar-wrap">
           <img class="chat-header-avatar" src="${av}" alt="" loading="lazy" />
           <span class="chat-header-avatar-ph">${ph}</span>
         </span>
-        <a class="chat-header-userlink" href="${escapeAttr(profileUrl)}">${u}</a>
+        <a class="chat-header-userlink" href="${App.escapeAttr(profileUrl)}">${u}</a>
       </div>`;
-        wireAvatarImg(this.chatHeader.querySelector(".chat-header-avatar"));
+        App.wireAvatarImg(this.chatHeader.querySelector(".chat-header-avatar"));
     }
     async loadThreads(opts = {}) {
         try {
-            const res = await Request.get(
-                "https://dyscover.ielectro.com/api/chat/threads",
-            );
-            const threads = (Array.isArray(res.data) ? res.data : []).map(
-                normalizeThread,
-            );
+            const res = await Request.get(Api.inbox);
+            const threads = Api.list(res).map(App.normalizeInboxThread);
             this.lastThreads = threads;
             const listSig = `${threads
                 .map(
@@ -224,15 +206,25 @@ export class ChatUI {
             }
             Navbar.refresh().catch(() => { });
         } catch {
-            if (!opts.silent) Alert.error("Unable to load conversations");
+            if (!opts.silent && this.conversationsList) {
+                EmptyState.mount(
+                    this.conversationsList,
+                    EmptyState.inbox(),
+                    undefined,
+                );
+                Icons.load(this.conversationsList).catch(() => {});
+            }
         }
     }
     renderConversations(threads) {
         if (!this.conversationsList) return;
         this.conversationsList.innerHTML = "";
         if (!threads.length) {
-            this.conversationsList.innerHTML =
-                '<p class="chat-empty">No conversations yet. Tap <strong>New</strong> to start.</p>';
+            EmptyState.mount(
+                this.conversationsList,
+                EmptyState.inbox(),
+            );
+            Icons.load(this.conversationsList).catch(() => {});
             return;
         }
         threads.forEach((t) => {
@@ -240,10 +232,10 @@ export class ChatUI {
             const unread = Boolean(t.has_unread);
             card.className = `conversation-card ${this.selectedThreadId === t.id ? "active" : ""}${unread ? " has-unread" : ""}`;
             card.dataset.threadId = String(t.id);
-            const peer = escapeHtml(t.peer || "");
-            const av = escapeAttr(cachedPeerAvatarUrl(t.peer, t.peer_avatar || null));
-            const ph = escapeHtml(initialsOf(t.peer || "?"));
-            const preview = escapeHtml(t.last_message || "");
+            const peer = App.escapeHtml(t.peer || "");
+            const av = App.escapeAttr(App.peerAvatarUrl(t.peer, t.peer_avatar || null));
+            const ph = App.escapeHtml(App.initialsOf(t.peer || "?"));
+            const preview = App.escapeHtml(t.last_message || "");
             card.innerHTML = `
         <div class="conversation-info">
           <div class="avatar chat-avatar-wrap">
@@ -256,7 +248,7 @@ export class ChatUI {
           </div>
         </div>
         <button  class="btn btn-ghost delete-btn" aria-label="Delete conversation"><i data-icon="trash"></i></button>`;
-            wireAvatarImg(card.querySelector(".avatar-img"));
+            App.wireAvatarImg(card.querySelector(".avatar-img"));
             card.querySelector(".conversation-info")?.addEventListener("click", () =>
                 this.selectThread(t.id, t.peer, t.peer_avatar),
             );
@@ -270,7 +262,7 @@ export class ChatUI {
     async selectThread(threadId, peer, peerAvatar, opts = {}) {
         this.selectedThreadId = threadId;
         this.peerUsername = peer;
-        this.peerAvatar = cachedPeerAvatarUrl(peer, peerAvatar || null);
+        this.peerAvatar = App.peerAvatarUrl(peer, peerAvatar || null);
         this.lastMessageIds = "";
         this.renderChatHeader();
         this.setComposerVisible(true);
@@ -292,19 +284,8 @@ export class ChatUI {
         const nearBottom =
             el && el.scrollHeight - el.scrollTop - el.clientHeight < 96;
         try {
-            const res = await Request.get(
-                "https://dyscover.ielectro.com/api/chat/messages",
-                { thread_id: String(this.selectedThreadId) },
-            );
-            const payload = res.data || {};
-            if (payload.peer_avatar && this.peerUsername) {
-                this.peerAvatar = cachedPeerAvatarUrl(
-                    this.peerUsername,
-                    payload.peer_avatar,
-                );
-                this.renderChatHeader();
-            }
-            const messages = Array.isArray(payload.messages) ? payload.messages : [];
+            const res = await Request.get(Api.inboxMessages(this.selectedThreadId));
+            const messages = Api.list(res).map(App.normalizeInboxMessage);
             const sig = messages.map((m) => m.id).join(",");
             if (opts.silent && sig === this.lastMessageIds) {
                 return;
@@ -312,14 +293,14 @@ export class ChatUI {
             this.lastMessageIds = sig;
             el.innerHTML = messages.length
                 ? messages.map((m) => this.renderMessageBubble(m)).join("")
-                : '<p class="chat-placeholder">No messages yet. Say hello!</p>';
+                : '<p class="chat-placeholder">Say hello — your first message starts the conversation.</p>';
             await this.hydratePostCards(el);
             await Icons.load(el);
             if (!opts.silent || nearBottom) {
                 el.scrollTop = el.scrollHeight;
             }
             el.querySelectorAll(".chat-msg .avatar-img").forEach((img) =>
-                wireAvatarImg(img),
+                App.wireAvatarImg(img),
             );
             if (!opts.silent) {
                 Navbar.refresh().catch(() => { });
@@ -336,25 +317,25 @@ export class ChatUI {
         let media = "";
         let bodyText = "";
         if (post) {
-            media = `<div class="chat-msg-post" data-post="${escapeAttr(JSON.stringify(post))}"></div>`;
+            media = `<div class="chat-msg-post" data-post="${App.escapeAttr(JSON.stringify(post))}"></div>`;
         } else {
             bodyText = Mention.linkify(m.body || "").replace(/\n/g, "<br>");
             if (url) {
                 if (kind === "image") {
-                    media = `<div class="chat-msg-media"><a href="${escapeAttr(url)}" target="_blank" rel="noopener"><img src="${escapeAttr(url)}" alt=""></a></div>`;
+                    media = `<div class="chat-msg-media"><a href="${App.escapeAttr(url)}" target="_blank" rel="noopener"><img src="${App.escapeAttr(url)}" alt=""></a></div>`;
                 } else if (kind === "video") {
-                    media = `<div class="chat-msg-media"><video controls preload="metadata"><source src="${escapeAttr(url)}"></video></div>`;
+                    media = `<div class="chat-msg-media"><video controls preload="metadata"><source src="${App.escapeAttr(url)}"></video></div>`;
                 } else if (kind === "audio") {
-                    media = `<div class="chat-msg-media"><audio controls preload="metadata"><source src="${escapeAttr(url)}"></audio></div>`;
+                    media = `<div class="chat-msg-media"><audio controls preload="metadata"><source src="${App.escapeAttr(url)}"></audio></div>`;
                 } else {
-                    media = `<div class="chat-msg-media"><a class="chat-msg-file" href="${escapeAttr(url)}" target="_blank" rel="noopener">Download attachment</a></div>`;
+                    media = `<div class="chat-msg-media"><a class="chat-msg-file" href="${App.escapeAttr(url)}" target="_blank" rel="noopener">Download attachment</a></div>`;
                 }
             }
         }
-        const av = escapeAttr(
-            cachedPeerAvatarUrl(m.sender, m.sender_avatar || null),
+        const av = App.escapeAttr(
+            App.peerAvatarUrl(m.sender, m.sender_avatar || null),
         );
-        const ph = escapeHtml(initialsOf(m.sender || "?"));
+        const ph = App.escapeHtml(App.initialsOf(m.sender || "?"));
         const side = mine ? "mine" : "";
         const avatarBlock = mine
             ? `<span class="chat-msg-avatar chat-msg-avatar-mine"><img class="avatar-img" src="${av}" alt="" loading="lazy" /><span class="avatar-fallback">${ph}</span></span>`
@@ -367,9 +348,9 @@ export class ChatUI {
         for (const node of nodes) {
             try {
                 const post = JSON.parse(node.dataset.post || "{}");
-                if (!post?.file) continue;
+                if (!post?.id) continue;
                 node.innerHTML = "";
-                const card = new Card(post);
+                const card = new Card(App.enrichPost(post));
                 await card.preview(node);
             } catch {
                 node.innerHTML = "";
@@ -380,10 +361,7 @@ export class ChatUI {
         const ok = await Alert.confirm("Delete this conversation?");
         if (!ok) return;
         try {
-            await Request.post(
-                "https://dyscover.ielectro.com/api/chat/thread-delete",
-                { thread_id: threadId },
-            );
+            await Request.delete(Api.inboxOne(threadId));
             if (this.selectedThreadId === threadId) {
                 this.selectedThreadId = null;
                 this.peerUsername = null;
@@ -398,36 +376,8 @@ export class ChatUI {
         }
     }
     async handleAttachSelected() {
-        const file = this.attachInput?.files?.[0];
-        if (!file || !this.selfUsername) return;
-        this.attachInput.value = "";
-        const fd = new FormData();
-        fd.append("file", file);
-        try {
-            const res = await Request.post(
-                "https://dyscover.ielectro.com/api/chat/upload",
-                fd,
-            );
-            const url = res.data?.url;
-            const kind = res.data?.msg_kind || "file";
-            if (!url) {
-                Alert.error("Upload failed");
-                return;
-            }
-            this.pendingAttachment = { url, msg_kind: kind };
-            const hint = document.createElement("p");
-            hint.className = "chat-attach-hint";
-            hint.textContent =
-                kind === "audio"
-                    ? "Audio ready — add a caption (optional) and send."
-                    : "Attachment ready — add a caption (optional) and send.";
-            this.chatMessages?.appendChild(hint);
-            this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
-        } catch (e) {
-            const msg =
-                typeof e === "object" && e && e.text ? e.text : "Upload failed";
-            Alert.error(msg);
-        }
+        Alert.info("Attachments are not available yet.");
+        if (this.attachInput) this.attachInput.value = "";
     }
     async handleSendMessage() {
         if (this._sending) return;
@@ -445,24 +395,15 @@ export class ChatUI {
             }
         }
         if (!message && !this.pendingAttachment) return;
-        const payload = {
-            thread_id: this.selectedThreadId,
-            message,
-        };
+        const payload = { body: message };
         if (this.pendingAttachment) {
-            payload.msg_kind = this.pendingAttachment.msg_kind;
-            payload.attachment_url = this.pendingAttachment.url;
+            payload.type = this.pendingAttachment.msg_kind || "file";
+            payload.attachment = this.pendingAttachment.url;
         }
         this._sending = true;
         this.sendMessageBtn?.setAttribute("disabled", "disabled");
         try {
-            const res = await Request.post(
-                "https://dyscover.ielectro.com/api/chat/send",
-                payload,
-            );
-            if (res?.status === false) {
-                throw res;
-            }
+            await Request.post(Api.inboxMessages(this.selectedThreadId), payload);
             if (this.messageInput) this.messageInput.value = "";
             this.pendingAttachment = null;
             this.chatMessages
@@ -472,6 +413,7 @@ export class ChatUI {
             await this.loadMessages({ silent: true });
             Navbar.refresh().catch(() => { });
         } catch {
+            Alert.error("Could not send message");
         } finally {
             this._sending = false;
             this.sendMessageBtn?.removeAttribute("disabled");

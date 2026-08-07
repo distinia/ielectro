@@ -162,7 +162,7 @@ class InboxData
             INNER JOIN inbox_members peer_mem
                 ON peer_mem.chat_id = c.id AND peer_mem.user_id != mem.user_id
             INNER JOIN users peer ON peer.id = peer_mem.user_id
-            INNER JOIN accounts peer_a ON peer_a.id = peer.account_id
+            " . Db::joinAccounts('peer_a', 'peer.account_id') . "
             LEFT JOIN inbox_messages lm ON lm.id = (
                 SELECT m2.id FROM inbox_messages m2
                 WHERE m2.chat_id = c.id
@@ -204,7 +204,7 @@ class InboxData
             "SELECT m.id, m.sender_id, m.type, m.body, m.attachment, m.created_at, a.username
             FROM inbox_messages m
             INNER JOIN users du ON du.id = m.sender_id
-            INNER JOIN accounts a ON a.id = du.account_id
+            " . Db::joinAccounts() . "
             WHERE m.chat_id = ?
             ORDER BY m.created_at ASC, m.id ASC",
             [$chatId]

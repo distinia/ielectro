@@ -1,58 +1,65 @@
 import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
-import Alert from "../core/alert.js";
-import JobCard from "./job-card.js";
-export default class Careers {
-    static async initialize() {
-        App.initialize();
+import { Api } from "../core/api.js";
+import { Alert } from "../core/alert.js";
+import { JobCard } from "./job-card.js";
+
+export class Careers {
+    constructor() {
         this.container = document.querySelector(".careers-grid");
         this.select = document.querySelector('select[name="position"]');
+        this.form = document.querySelector(".career-form");
+    }
+    async load() {
         await this.loadJobs();
         this.bindCvUi();
         this.bindForm();
     }
-    static async loadJobs() {
+    async loadJobs() {
+        if (!this.container && !this.select) return;
         try {
-            const payload = await Nesh.Request.get(
-                "https://www.ielectro.com/api/careers/list",
-            );
-            const jobs = payload?.data?.jobs || [];
+            const response = await Nesh.Request.get(`${Api.base}/careers`);
+            const jobs = Api.active(Api.list(response));
             jobs.forEach((job) => {
-                if (this.container)
+                if (this.container) {
                     this.container.appendChild(new JobCard(job).render());
-                if (this.select) this.select.appendChild(this.createOption(job));
+                }
+                if (this.select) {
+                    this.select.appendChild(this.createOption(job));
+                }
             });
-            if (this.container) await Nesh.Icons.load(this.container);
-        } catch (e) {
-            console.error("Jobs load error:", e);
+            if (this.container) {
+                await Nesh.Icons.load(this.container);
+            }
+        } catch (error) {
+            console.error("Jobs load error:", error);
         }
     }
-    static createOption(job) {
+    createOption(job) {
         const option = document.createElement("option");
         option.value = job.title;
         option.textContent = job.title;
         return option;
     }
-    static bindForm() {
-        const form = document.querySelector(".career-form");
-        if (!form) return;
-        form.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const formData = new FormData(form);
+    bindForm() {
+        if (!this.form) return;
+        this.form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const formData = new FormData(this.form);
             try {
-                const res = await Nesh.Request.post(
-                    "https://www.ielectro.com/api/careers/apply",
+                const response = await Nesh.Request.post(
+                    `${Api.base}/careers/apply`,
                     formData,
                 );
-                Alert.success(res?.text || "Application sent successfully");
-                form.reset();
+                Alert.success(Api.message(response) || "Application sent successfully");
+                this.form.reset();
                 const name = document.querySelector(".career-cv-name");
                 if (name) name.textContent = "No file selected";
-            } catch (err) {
-                Alert.error(err?.text || "Unable to submit application");
+            } catch (error) {
+                Alert.error(Api.errorMessage(error));
             }
         });
     }
-    static bindCvUi() {
+    bindCvUi() {
         const input = document.querySelector(".career-cv");
         const name = document.querySelector(".career-cv-name");
         if (!input || !name) return;

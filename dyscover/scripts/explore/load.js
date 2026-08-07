@@ -1,5 +1,6 @@
 import { Recents } from "./recents.js";
 import { Output } from "./output.js";
+
 export class Load {
     constructor() {
         const params = new URLSearchParams(window.location.search);
@@ -10,7 +11,7 @@ export class Load {
             new Output(term);
         } else {
             new Recents();
-            const users = searchMountFor("user");
+            const users = document.querySelector('[data-type="user"]') || document.querySelector("#users");
             if (users) users.innerHTML = "";
         }
     }

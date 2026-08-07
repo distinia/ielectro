@@ -13,42 +13,46 @@
     </div>
 </header>
 <main>
-    <section class="section">
+    <section class="section section--spacious">
         <div class="container">
+            <span class="section-eyebrow">Open Roles</span>
             <h2 class="section-title">Open Positions</h2>
+            <p class="section-subtitle">Explore the opportunities currently available at iElectro and find the role that fits your ambitions.</p>
             <div class="card-grid careers-grid"></div>
         </div>
     </section>
-    <section class="section">
+    <section class="section section--apply section--alt">
         <div class="container">
-            <h2 class="section-title">Apply for a Position</h2>
-            <form class="card contact-form career-form" novalidate>
-                <div class="form-group">
-                    <input class="career-full-name" name="name" placeholder="Full name" required>
+            <div class="apply-panel">
+                <div class="apply-panel__intro">
+                    <span class="section-eyebrow">Join Us</span>
+                    <h2 class="section-title">Apply for a Position</h2>
+                    <p class="section-subtitle">Share your details and CV with us. We review every application carefully and respond to strong matches.</p>
                 </div>
-                <br>
-                <div class="form-group">
-                    <input type="email" class="career-email" name="email" placeholder="you@example.com" required>
-                </div>
-                <br>
-                <div class="form-group">
-                    <select class="career-position" name="position" required>
-                        <option value="" disabled selected>Aspiring position within iElectro</option>
-                    </select>
-                </div>
-                <div class="form-group file-input-group">
-                    <label class="career-cv-trigger">
-                        Upload your CV
-                        <input type="file" class="career-cv" name="cv" accept=".pdf" required>
-                    </label>
-                    <span class="file-name career-cv-name">No file selected</span>
-                </div>
-                <div class="cta-center">
+                <form class="apply-form career-form" novalidate>
+                    <div class="form-group">
+                        <input class="career-full-name" name="name" placeholder="Full name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" class="career-email" name="email" placeholder="you@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <select class="career-position" name="position" required>
+                            <option value="" disabled selected>Aspiring position within iElectro</option>
+                        </select>
+                    </div>
+                    <div class="form-group file-input-group">
+                        <label class="career-cv-trigger">
+                            Upload your CV
+                            <input type="file" class="career-cv" name="cv" accept=".pdf" required>
+                        </label>
+                        <span class="file-name career-cv-name">No file selected</span>
+                    </div>
                     <button type="submit" class="button button-primary">
-                        Apply <i data-icon="arrow-right"></i>
+                        Submit application <i data-icon="arrow-right"></i>
                     </button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </section>
 </main>

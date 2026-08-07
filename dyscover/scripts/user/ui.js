@@ -1,14 +1,19 @@
+import { Api } from "../core/api.js";
 import { App, Auth, Request } from "../core/index.js";
 import { Actions } from "./actions.js";
 import { List } from "./list.js";
 import { BiographyEditor } from "./biography-editor.js";
+import { ProfilePage } from "./profile-page.js";
+
 export class UI {
-    constructor() {
+    constructor(page) {
+        this.page = page;
         this.initActions();
         this.bindStats();
         this.bindTabs();
         this.bindTypeTabs();
     }
+
     bindTabs() {
         document.querySelectorAll(".profile-tab").forEach((tab) => {
             tab.addEventListener("click", () => {
@@ -16,11 +21,12 @@ export class UI {
                     .querySelectorAll(".profile-tab")
                     .forEach((t) => t.classList.remove("active"));
                 tab.classList.add("active");
-                profileMainFilter = tab.dataset.filter || "posts";
-                renderProfileGrid();
+                this.page.mainFilter = tab.dataset.filter || "posts";
+                this.page.renderGrid();
             });
         });
     }
+
     bindTypeTabs() {
         document.querySelectorAll(".profile-type-tab").forEach((tab) => {
             tab.addEventListener("click", () => {
@@ -28,49 +34,57 @@ export class UI {
                     .querySelectorAll(".profile-type-tab")
                     .forEach((t) => t.classList.remove("active"));
                 tab.classList.add("active");
-                profileTypeFilter = tab.dataset.type || "article";
-                renderProfileGrid();
+                this.page.typeFilter = tab.dataset.type || "article";
+                this.page.renderGrid();
             });
         });
     }
+
     async initActions() {
         const logged = await Auth.username();
         const container = document.querySelector(".actions");
         if (!container) return;
-        if (logged === currentUsername) {
+        if (logged === this.page.username) {
             container.innerHTML = `
                 <button type="button" class="profile-btn profile-btn-edit">Edit biography</button>
                 <a href="https://account.ielectro.com/profile" class="profile-btn profile-btn-primary">View my profile</a>`;
             container
                 .querySelector(".profile-btn-edit")
-                ?.addEventListener("click", () => BiographyEditor.open(currentBio));
+                ?.addEventListener("click", () =>
+                    BiographyEditor.open(this.page),
+                );
             return;
         }
-        try {
-            await Request.get(App.api("user/check-follow"), {
-                username: currentUsername,
-            });
+        const following = await App.isFollowing(this.page.userId);
+        if (following) {
             container.innerHTML = `<button type="button" class="profile-btn profile-btn-muted">Following</button>`;
             container.querySelector("button").onclick = () =>
-                new Actions(currentUsername).unfollow();
-        } catch {
+                new Actions(this.page).unfollow();
+        } else {
             container.innerHTML = `<button type="button" class="profile-btn profile-btn-primary">Follow</button>`;
             container.querySelector("button").onclick = () =>
-                new Actions(currentUsername).follow();
+                new Actions(this.page).follow();
         }
     }
+
     bindStats() {
         document.querySelector(".followers-number")?.addEventListener("click", async () => {
-            const data = await Request.get(App.api("user/followers-list"), {
-                username: currentUsername,
-            });
-            new List("followers", data.data, loggedUsername === currentUsername);
+            const data = await Request.get(Api.userFollowers(this.page.userId));
+            new List(
+                "followers",
+                Api.list(data),
+                this.page.loggedUsername === this.page.username,
+                this.page,
+            );
         });
         document.querySelector(".followings-number")?.addEventListener("click", async () => {
-            const data = await Request.get(App.api("user/followings-list"), {
-                username: currentUsername,
-            });
-            new List("followings", data.data, loggedUsername === currentUsername);
+            const data = await Request.get(Api.userFollowing(this.page.userId));
+            new List(
+                "followings",
+                Api.list(data),
+                this.page.loggedUsername === this.page.username,
+                this.page,
+            );
         });
     }
 }

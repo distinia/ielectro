@@ -1,2 +1,8 @@
-export { default as Careers } from "./careers.js";
-export { default as JobCard } from "./job-card.js";
+import { App } from "../core/app.js";
+import { Careers } from "./careers.js";
+
+document.addEventListener("DOMContentLoaded", async () => {
+    new App();
+    const careers = new Careers();
+    await careers.load();
+});

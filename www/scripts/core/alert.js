@@ -1,12 +1,23 @@
 import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
-export default class Alert {
+
+export class Alert {
     static close(container) {
         if (!container) return;
         container.classList.add("alert-closing");
         setTimeout(() => {
             container.remove();
             Nesh.Html.setScrollEnabled(true);
-        }, 300);
+        }, 280);
+    }
+    static iconName(type) {
+        switch (type) {
+            case "success":
+                return "success";
+            case "confirm":
+                return "exclamation";
+            default:
+                return "error";
+        }
     }
     static create(text, type = "error", confirm = false) {
         const existing = document.querySelector(".alert-container");
@@ -14,8 +25,9 @@ export default class Alert {
         Nesh.Html.setScrollEnabled(false);
         const container = document.createElement("div");
         container.className = "alert-container";
-        container.innerHTML = ` <div class="alert alert-${type}"> <div class="alert-icon"> <i class="${this.getIcon(type)}"></i> </div> <div class="alert-message">${Nesh.Html.escape(text)}</div> <div class="alert-actions"> ${confirm ? '<button type="button" class="alert-button alert-confirm-button">Confirm</button>' : ""} <button type="button" class="alert-button alert-close-button">${confirm ? "Cancel" : "Close"}</button> </div> </div> `;
+        container.innerHTML = `<div class="alert alert-${type}"><div class="alert-icon-container"><span class="alert-icon"><i data-icon="${this.iconName(type)}"></i></span></div><div class="alert-message">${Nesh.Html.escape(text)}</div><div class="alert-actions">${confirm ? '<button type="button" class="alert-button alert-confirm-button">Confirm</button>' : ""}<button type="button" class="alert-button alert-close-button">${confirm ? "Cancel" : "Close"}</button></div></div>`;
         document.body.appendChild(container);
+        Nesh.Icons.load(container);
         container.addEventListener("click", (event) => {
             if (event.target === container) {
                 this.close(container);
@@ -30,26 +42,14 @@ export default class Alert {
         document.addEventListener("keydown", escHandler);
         return container;
     }
-    static getIcon(type) {
-        switch (type) {
-            case "success":
-                return "fas fa-check";
-            case "confirm":
-                return "fas fa-exclamation";
-            default:
-                return "fas fa-times";
-        }
-    }
     static success(text) {
         const container = this.create(text, "success");
-        const closeButton = container.querySelector(".alert-close-button");
-        closeButton.addEventListener("click", () => this.close(container));
-        setTimeout(() => this.close(container), 2400);
+        container.querySelector(".alert-close-button").addEventListener("click", () => this.close(container));
+        setTimeout(() => this.close(container), 2600);
     }
     static error(text) {
         const container = this.create(text, "error");
-        const closeButton = container.querySelector(".alert-close-button");
-        closeButton.addEventListener("click", () => this.close(container));
+        container.querySelector(".alert-close-button").addEventListener("click", () => this.close(container));
     }
     static confirm(text) {
         const container = this.create(text, "confirm", true);

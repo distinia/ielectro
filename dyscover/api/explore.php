@@ -9,6 +9,14 @@ class Explore
     public function index(): void
     {
         Request::get();
+        if (Routing::segment(3) === 'all') {
+            $term = trim((string) Routing::segment(2));
+            if ($term === '') {
+                Response::badRequest('Missing search term');
+            }
+            Response::success(ExploreSearch::all($term));
+            return;
+        }
         $term = Routing::slug(2);
         if ($term === null) {
             Response::badRequest('Missing search term');
@@ -91,7 +99,7 @@ class ExploreSearch
                 s.bookmarks
             FROM posts p
             INNER JOIN users du ON du.id = p.user_id
-            INNER JOIN accounts a ON a.id = du.account_id
+            " . Db::joinAccounts() . "
             LEFT JOIN post_statistics s ON s.post_id = p.id
             WHERE p.status = 'active'
             AND p.visibility = 'public'
@@ -114,7 +122,7 @@ class ExploreSearch
                 s.bookmarks
             FROM posts p
             INNER JOIN users du ON du.id = p.user_id
-            INNER JOIN accounts a ON a.id = du.account_id
+            " . Db::joinAccounts() . "
             LEFT JOIN post_statistics s ON s.post_id = p.id
             WHERE p.type = ?
             AND p.status = 'active'
@@ -131,7 +139,7 @@ class ExploreSearch
         $rows = Query::fetchAll(
             "SELECT du.id
             FROM users du
-            INNER JOIN accounts a ON a.id = du.account_id
+            " . Db::joinAccounts() . "
             WHERE a.username LIKE ?
             ORDER BY a.username ASC
             LIMIT 20",

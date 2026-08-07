@@ -1,38 +1,38 @@
 import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
-import TeamCard from "./team-card.js";
-export default class Team {
-    static async initialize() {
-        App.initialize();
+import { Api } from "../core/api.js";
+import { TeamCard } from "./team-card.js";
+
+export class Team {
+    constructor() {
         this.container = document.querySelector(".team-grid");
-        await this.load();
     }
-    static async load() {
+    async load() {
         if (!this.container) return;
         try {
-            const payload = await Nesh.Request.get(
-                "https://www.ielectro.com/api/team/team-list",
-            );
-            const members = Array.isArray(payload?.data) ? payload.data : [];
+            const response = await Nesh.Request.get(`${Api.base}/team`);
+            const members = Api.active(Api.list(response));
             if (!members.length) {
                 this.container.innerHTML =
                     '<div class="card">No team members available.</div>';
                 return;
             }
-            members.forEach((m) => {
-                const member = {
-                    name: m.full_name,
-                    role: m.role_text,
-                    avatar: m.avatar || "",
-                    social: {
-                        instagram: m.instagram || "",
-                        linkedin: m.linkedin || "",
-                        github: m.github || "",
-                    },
-                };
-                this.container.appendChild(new TeamCard(member).render());
+            members.forEach((member) => {
+                this.container.appendChild(
+                    new TeamCard({
+                        name: member.full_name,
+                        role: member.role_text,
+                        avatar: member.avatar || "",
+                        social: {
+                            instagram: member.instagram || "",
+                            linkedin: member.linkedin || "",
+                            github: member.github || "",
+                        },
+                    }).render(),
+                );
             });
         } catch {
-            this.container.innerHTML = '<div class="card">Unable to load team.</div>';
+            this.container.innerHTML =
+                '<div class="card">Unable to load team.</div>';
         }
     }
 }

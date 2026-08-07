@@ -1,69 +1,90 @@
+import { Api } from "../core/api.js";
 import { Alert, Box, Request, FormValidator } from "../core/index.js";
 import { Post } from "./post.js";
+
 export class Image extends Post {
     static type = "image";
     static table = ".image-table";
     static tab = ".image-tab";
-    static loadApi = "https://dyscover.ielectro.com/api/media/user";
-    static createApi = "https://dyscover.ielectro.com/api/media/create";
-    static editApi = "https://dyscover.ielectro.com/api/media/edit";
-    static deleteApi = "https://dyscover.ielectro.com/api/media/delete";
-    static params = {
-        type: "image"
-    };
+
     static create() {
         new this(null, {}).box("POST");
     }
+
     box(method) {
         this.method = method;
-        this.box = new Box(
-            method === "POST" ? "Upload Image" : "Edit Image"
-        );
-        this.box.create();
-        this.box.body(body => {
-            body.innerHTML = `
+        const modal = new Box(method === "POST" ? "Upload Image" : "Edit Image");
+        this.modal = modal;
+        modal.create().then(() => {
+            modal.body((body) => {
+                body.innerHTML = `
             <form id="media-form" enctype="multipart/form-data">
-                <input name="title" value="${this.item.title || ""}">
-                <textarea name="description">${this.item.description || ""}</textarea>
-                <textarea name="tags">${this.item.tags || ""}</textarea>
-                <label>
+                <input class="input" name="title" value="${this.item.title || ""}">
+                <textarea class="textarea" name="description">${this.item.description || ""}</textarea>
+                <label class="label">
                     Select file
                     <input type="file" id="media" name="media" hidden>
                 </label>
                 <div class="file-preview"></div>
             </form>`;
+            });
+            modal.footer((f) => {
+                f.innerHTML = `<button class="button" form="media-form">${method === "POST" ? "Upload" : "Update"}</button>`;
+            });
+            this.mediaPreview();
+            this.submitMedia(method, modal);
         });
-        this.box.footer(f => {
-            f.innerHTML = `
-            <button form="media-form">
-                ${method === "POST" ? "Upload" : "Update"}
-            </button>`;
-        });
-        this.mediaPreview();
-        this.submitMedia();
     }
-    submitMedia() {
+
+    mediaPreview() {
+        const input = document.querySelector("#media-form input[type='file']");
+        const preview = document.querySelector("#media-form .file-preview");
+        if (!input || !preview) return;
+        input.addEventListener("change", () => {
+            preview.innerHTML = "";
+            const file = input.files?.[0];
+            if (!file) return;
+            const url = URL.createObjectURL(file);
+            if (file.type.startsWith("image/")) {
+                preview.innerHTML = `<img src="${url}" alt="">`;
+            } else if (file.type.startsWith("video/")) {
+                preview.innerHTML = `<video controls src="${url}"></video>`;
+            } else if (file.type.startsWith("audio/")) {
+                preview.innerHTML = `<audio controls src="${url}"></audio>`;
+            } else {
+                preview.textContent = file.name;
+            }
+        });
+    }
+
+    submitMedia(method, modal) {
         const form = document.querySelector("#media-form");
-        form.onsubmit = async e => {
+        form.onsubmit = async (e) => {
             e.preventDefault();
             const validator = new FormValidator("media-form");
             if (!(await validator.validate())) {
                 return Alert.error(validator.message);
             }
             const data = new FormData(form);
-            data.append("type", this.constructor.type);
-            let url = this.constructor.createApi;
-            if (this.method === "PUT") {
-                data.append("oldTitle", this.title);
-                url = this.constructor.editApi;
-            }
             try {
-                const res = await Request.post(url, data);
-                Alert.success(res.text);
-                this.box.close();
+                if (method === "POST") {
+                    data.append("type", this.constructor.type);
+                    data.append(
+                        "uuid",
+                        crypto.randomUUID().replace(/-/g, "").slice(0, 16),
+                    );
+                    await Request.post(Api.posts, data);
+                } else {
+                    await Request.patch(Api.post(this.id), {
+                        title: data.get("title"),
+                        description: data.get("description"),
+                    });
+                }
+                Alert.success(method === "POST" ? "Uploaded" : "Updated");
+                modal.close();
                 this.constructor.loadTable();
-            } catch(e) {
-                Alert.error(e.text);
+            } catch (e) {
+                Alert.error(typeof e === "object" && e?.text ? e.text : "Save failed");
             }
         };
     }

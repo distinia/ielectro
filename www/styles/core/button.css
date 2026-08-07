@@ -1,54 +1,63 @@
 .button-group {
     display: flex;
     justify-content: center;
-    gap: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
     position: relative;
     z-index: 1;
+    margin-top: 0.5rem;
 }
 .button {
     font-family: inherit;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.875rem 2rem;
-    border-radius: var(--border-radius);
+    gap: 0.45rem;
+    padding: 0.9rem 1.65rem;
+    border-radius: 999px;
     text-decoration: none;
-    font-weight: 600;
-    font-size: 1rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 700;
+    font-size: 0.92rem;
+    transition:
+        transform var(--transition-base),
+        box-shadow var(--transition-base),
+        background-color var(--transition-base),
+        color var(--transition-base),
+        border-color var(--transition-base);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
     cursor: pointer;
     border: none;
-    margin: 2em 0;
+    margin: 0;
     box-shadow: var(--shadow-sm);
 }
 .button-primary {
     background: var(--primary-color);
-    color: white;
+    color: var(--brand-white);
 }
 .button-primary:hover {
     transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-orange);
 }
 .button-primary:active {
     transform: translateY(0);
 }
 .button-outline {
-    border: 2px solid white;
-    color: white;
-    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.88);
+    color: var(--brand-white);
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(8px);
 }
 .button-outline:hover {
-    background: white;
-    color: var(--text-color);
+    background: var(--brand-white);
+    color: var(--brand-blue);
     transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
-.button svg {
-    margin-left: 0.5rem;
-    width: 20px;
-    height: 20px;
-}
+.button svg,
+.button .icon-image,
 .button i {
-    margin-left: 0.5rem;
+    margin-left: 0;
+    width: 18px;
+    height: 18px;
 }

@@ -1,4 +1,4 @@
-button,
+.button,
 .fileInput {
     padding: 0.55rem 1.15rem;
     border: none;
@@ -18,28 +18,28 @@ button,
     font-weight: 600;
     box-shadow: 0 2px 8px rgba(21, 101, 192, 0.35);
 }
-button:focus-visible,
+.button:focus-visible,
 .fileInput:focus-visible {
     outline: none;
     box-shadow:
         0 0 0 3px rgba(30, 136, 229, 0.35),
         0 4px 14px rgba(21, 101, 192, 0.4);
 }
-button:active,
+.button:active,
 .fileInput:active {
     transform: translateY(1px) scale(0.99);
     box-shadow: 0 1px 4px rgba(21, 101, 192, 0.3);
 }
-button:hover,
+.button:hover,
 .fileInput:hover {
     filter: brightness(1.05);
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(21, 101, 192, 0.38);
 }
 @media (prefers-reduced-motion: reduce) {
-    button:hover,
+    .button:hover,
     .fileInput:hover,
-    button:active,
+    .button:active,
     .fileInput:active {
         transform: none;
     }

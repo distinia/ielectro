@@ -25,8 +25,8 @@ export class WebSelector {
             await this.box.create();
             this.box.footer((footer) => {
                 footer.innerHTML = `
-                    <input placeholder="Name or tag">
-                    <button>Add</button>
+                    <input class="input" placeholder="Name or tag">
+                    <button class="button">Add</button>
                 `;
                 const btn = footer.querySelector("button");
                 btn.onclick = () => {

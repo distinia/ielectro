@@ -1,27 +1,30 @@
-import { App, Alert, Request } from "../core/index.js";
-import { UI } from "./ui.js";
+import { Api } from "../core/api.js";
+import { Alert, Request } from "../core/index.js";
 import { Informations } from "./informations.js";
+import { UI } from "./ui.js";
+
 export class Actions {
-    constructor(username) {
-        this.username = username;
+    constructor(page) {
+        this.page = page;
     }
+
     async follow() {
-        await Request.post(App.api("user/follow"), { username: this.username });
+        await Request.post(Api.userFollowers(this.page.userId));
         Alert.success("Followed");
-        new Informations(currentUsername);
-        new UI();
+        new Informations(this.page);
+        new UI(this.page);
     }
+
     async unfollow() {
         const confirm = await Alert.confirm("Unfollow this user?");
         if (!confirm) return;
-        await Request.post(App.api("user/unfollow"), { username: this.username });
+        await Request.delete(Api.userFollowers(this.page.userId));
         Alert.success("Unfollowed");
-        new Informations(currentUsername);
-        new UI();
+        new Informations(this.page);
+        new UI(this.page);
     }
+
     async removeFollower() {
-        await Request.post(App.api("user/remove-follower"), {
-            username: this.username,
-        });
+        Alert.info("Remove follower is not available yet.");
     }
 }

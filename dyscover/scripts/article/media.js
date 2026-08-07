@@ -1,3 +1,4 @@
+import { Api } from "../core/api.js";
 import { App, Alert, Card, Request } from "../core/index.js";
 import { Select } from "./select.js";
 import { Menu } from "./menu.js";
@@ -94,17 +95,12 @@ export class Media {
             if (url.hostname !== "dyscover.ielectro.com") {
                 return;
             }
-            const file = url.pathname.split("/").pop();
-            if (!file) {
-                return;
-            }
-            const res = await Request.get(App.api("post/data"), {
-                file,
-            });
-            if (!res.data) {
-                return;
-            }
-            const card = new Card(res.data);
+            const parts = url.pathname.split("/").filter(Boolean);
+            const id = Number(parts[parts.length - 1]);
+            if (!id) return;
+            const res = await Request.get(Api.post(id));
+            if (!res) return;
+            const card = new Card(App.enrichPost(Api.record(res) || {}));
             await card.openOverlay();
         } catch {}
     }

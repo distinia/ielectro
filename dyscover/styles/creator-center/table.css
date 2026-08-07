@@ -47,7 +47,7 @@ tr td:nth-child(2) {
     display: flex;
     gap: 1rem;
 }
-.table-actions button {
+.table-actions .button {
     background: none;
     border: none;
     cursor: pointer;
@@ -55,10 +55,13 @@ tr td:nth-child(2) {
     transition: var(--transition);
     padding: 0.5rem;
     border-radius: 4px;
+    box-shadow: none;
 }
-.table-actions button:hover {
+.table-actions .button:hover {
     color: var(--primary-gradient);
     background-color: rgba(0, 86, 179, 0.1);
+    transform: none;
+    filter: none;
 }
 .table-wrapper {
     max-height: 65vh;

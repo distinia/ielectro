@@ -1,6 +1,7 @@
-export { Actions } from "./actions.js";
-export { UI } from "./ui.js";
-export { List } from "./list.js";
-export { BiographyEditor } from "./biography-editor.js";
-export { Informations } from "./informations.js";
-export { Posts } from "./posts.js";
+import { App } from "../core/app.js";
+import { UserPageBoot } from "./boot.js";
+
+document.addEventListener("DOMContentLoaded", async () => {
+    if (!(await App.boot())) return;
+    await UserPageBoot.start();
+});

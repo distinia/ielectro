@@ -1,102 +1,90 @@
 import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
-import { App } from "../core/index.js";
+import { Api } from "../core/api.js";
 
-export async function initializeNews() {
-
-    App.initialize();
-    const list = document.querySelector('.news-list');
-    const next = document.querySelector('.news-next');
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get('code') || '';
-    let page = Number(params.get('page') || '1');
-    const escText = (v) => Nesh.Html.escape(v).replace(/\r\n|\r|\n/g, '\n');
-    const asParagraphs = (text) => {
-        const raw = String(text || '');
-        const parts = raw.split(/\n{2,}/g).map((p) => p.trim()).filter(Boolean);
-        if (!parts.length) {
-            return '<p></p>';
+export class News {
+    constructor() {
+        this.list = document.querySelector(".news-list");
+        this.next = document.querySelector(".news-next");
+        this.articleId = this.resolveArticleId();
+    }
+    resolveArticleId() {
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get("code");
+        if (code && /^\d+$/.test(code)) {
+            return Number(code);
         }
-        return parts.map((p) => `<p>${Nesh.Html.escape(p).replace(/\n/g, '<br>')}</p>`).join('');
-    };
-    const renderSingle = async () => {
-        const data = await Nesh.Request.get(`https://www.ielectro.com/api/news/item?code=${encodeURIComponent(code)}`);
-        const item = data?.data;
-        if (!item) {
-            list.innerHTML = '<div class="card">News not found.</div>';
-            next.style.display = 'none';
-            return;
+        const parts = window.location.pathname.split("/").filter(Boolean);
+        if (parts[0] === "news" && parts[1] && /^\d+$/.test(parts[1])) {
+            return Number(parts[1]);
         }
-        const when = Nesh.Html.escape(item.published_at || item.created_at || '');
-        list.innerHTML = `
-            <article class="news-article">
-                <header class="news-article-header">
-                    <a class="news-back" href="/news?page=1">← Back to all news</a>
-                    <h1 class="news-article-title">${Nesh.Html.escape(item.title)}</h1>
-                    <div class="news-article-meta">
-                        <span>${when}</span>
-                        ${item.news_code ? `<span>·</span><span>${Nesh.Html.escape(item.news_code)}</span>` : ''}
-                    </div>
-                </header>
-                ${item.image ? `
-                    <div class="news-article-cover">
-                        <img src="${Nesh.Html.escape(item.image)}" alt="${Nesh.Html.escape(item.title)}">
-                    </div>
-                ` : ''}
-                <div class="news-article-body">
-                    ${asParagraphs(item.body)}
-                </div>
-            </article>
-        `;
-        next.style.display = 'none';
-    };
-    const renderList = async () => {
-        const all = [];
-        let cur = Math.max(1, page);
-        let total = 0;
-        let perPage = 25;
-        while (true) {
-            const data = await Nesh.Request.get(`https://www.ielectro.com/api/news/list?page=${cur}`);
-            const items = data?.data?.items || [];
-            total = Number(data?.data?.total || 0);
-            perPage = Number(data?.data?.per_page || 25);
-            all.push(...items);
-            if (!items.length || all.length >= total || cur > 40) {
-                break;
+        return null;
+    }
+    async load() {
+        if (!this.list) return;
+        try {
+            if (this.articleId) {
+                await this.renderArticle(this.articleId);
+                return;
             }
-            cur++;
+            await this.renderList();
+        } catch {
+            this.list.innerHTML = '<div class="card">Unable to load news.</div>';
+            this.hideNext();
         }
-        if (!all.length) {
-            list.innerHTML = '<div class="card">No news available.</div>';
-            next.style.display = 'none';
+    }
+    async renderArticle(id) {
+        const response = await Nesh.Request.get(`${Api.base}/news/${id}`);
+        const item = Api.record(response);
+        if (!item || item.status !== "published") {
+            this.list.innerHTML = '<div class="card">News not found.</div>';
+            this.hideNext();
             return;
         }
-        list.innerHTML = all.map((item) => {
-            const when = Nesh.Html.escape(item.published_at || item.created_at || '');
-            return `
-                <article class="card news-summary-card">
-                    ${item.image ? `<img class="news-summary-image" src="${Nesh.Html.escape(item.image)}" alt="${Nesh.Html.escape(item.title)}">` : ''}
-                    <div>
-                        <h3 class="card-title">${Nesh.Html.escape(item.title)}</h3>
-                        <p class="card-description">
-                            ${escText(item.body || '').slice(0, 220)}
-                            ${(item.body || '').length > 220 ? '…' : ''}
-                        </p>
-                        <div class="news-meta">${when}</div>
-                        <a class="button button-primary" href="/news/${Nesh.Html.escape(item.news_code)}">
-                            Open
-                        </a>
-                    </div>
-                </article>
-            `;
-        }).join('');
-        next.style.display = 'none';
-    };
-    const render = code ? renderSingle : renderList;
-    render().catch(() => {
-        list.innerHTML = '<div class="card">Unable to load news.</div>';
-        if (next) {
-            next.style.display = 'none';
+        const when = Nesh.Html.escape(item.published_at || item.created_at || "");
+        this.list.innerHTML = `<article class="news-article"><header class="news-article-header"><a class="news-back" href="/news">← Back to all news</a><h1 class="news-article-title">${Nesh.Html.escape(item.title)}</h1><div class="news-article-meta"><span>${when}</span></div></header>${item.image ? `<div class="news-article-cover"><img src="${Nesh.Html.escape(item.image)}" alt="${Nesh.Html.escape(item.title)}"></div>` : ""}<div class="news-article-body">${this.asParagraphs(item.body)}</div></article>`;
+        this.hideNext();
+    }
+    async renderList() {
+        const response = await Nesh.Request.get(`${Api.base}/news`);
+        const items = Api.published(Api.list(response));
+        if (!items.length) {
+            this.list.innerHTML = '<div class="card">No news available.</div>';
+            this.hideNext();
+            return;
         }
-    });
-
+        this.list.innerHTML = items.map((item) => this.summaryHtml(item)).join("");
+        this.hideNext();
+    }
+    summaryHtml(item) {
+        const when = Nesh.Html.escape(item.published_at || item.created_at || "");
+        const preview = this.previewText(item.body || "");
+        const image = item.image
+            ? `<img class="news-summary-image" src="${Nesh.Html.escape(item.image)}" alt="${Nesh.Html.escape(item.title)}">`
+            : "";
+        return `<article class="card news-summary-card">${image}<div><h3 class="card-title">${Nesh.Html.escape(item.title)}</h3><p class="card-description">${preview}</p><div class="news-meta">${when}</div><a class="button button-primary" href="/news/${item.id}">Open</a></div></article>`;
+    }
+    previewText(text) {
+        const escaped = Nesh.Html.escape(String(text)).replace(/\r\n|\r|\n/g, "\n");
+        return escaped.length > 220 ? `${escaped.slice(0, 220)}…` : escaped;
+    }
+    asParagraphs(text) {
+        const parts = String(text || "")
+            .split(/\n{2,}/g)
+            .map((part) => part.trim())
+            .filter(Boolean);
+        if (!parts.length) {
+            return "<p></p>";
+        }
+        return parts
+            .map(
+                (part) =>
+                    `<p>${Nesh.Html.escape(part).replace(/\n/g, "<br>")}</p>`,
+            )
+            .join("");
+    }
+    hideNext() {
+        if (this.next) {
+            this.next.style.display = "none";
+        }
+    }
 }

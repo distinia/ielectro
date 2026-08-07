@@ -1,19 +1,68 @@
-import { App, Icons, Request, Navbar } from "../core/index.js";
+import { Api } from "../core/api.js";
+import { App, EmptyState, Icons, Request, Navbar } from "../core/index.js";
+import {
+    resolveNotificationType,
+    notificationArticle,
+    notificationPostType,
+} from "../core/post-message.js";
+
 export class ActivityUI {
+    static overlay = null;
+    static templates = null;
     static _visBound = false;
+
     constructor() {
-        this.list =
-            document.querySelector(".activity-list") ||
-            document.querySelector("#activityList");
+        this.list = null;
         this.seen = new Set();
-        document.querySelector(".activity-mark-read")?.addEventListener("click", () => {
-            Request.post(App.api("activity/read"))
-                .then(() => this.load())
-                .then(() => Navbar.refresh().catch(() => { }))
-                .catch(() => { });
-        });
         this.observer = null;
         this.pollTimer = null;
+        this.mount(document.querySelector(".activity-list"));
+    }
+
+    static async openOverlay() {
+        if (ActivityUI.overlay) {
+            ActivityUI.overlay.classList.add("activity-overlay--open");
+            ActivityUI.instance?.load();
+            return;
+        }
+        const shell = document.createElement("div");
+        shell.className = "activity-overlay activity-overlay--open";
+        shell.innerHTML = `
+            <div class="activity-overlay-panel">
+                <header class="activity-overlay-header">
+                    <h2>Activity</h2>
+                    <button type="button" class="activity-overlay-close" aria-label="Close">
+                        <i data-icon="circle-x"></i>
+                    </button>
+                </header>
+                <div class="activity-list"></div>
+            </div>`;
+        shell.addEventListener("click", (e) => {
+            if (e.target === shell) ActivityUI.closeOverlay();
+        });
+        shell.querySelector(".activity-overlay-close")?.addEventListener("click", () => {
+            ActivityUI.closeOverlay();
+        });
+        document.body.appendChild(shell);
+        ActivityUI.overlay = shell;
+        ActivityUI.instance = new ActivityUI();
+        ActivityUI.instance.mount(shell.querySelector(".activity-list"));
+        await Icons.load(shell);
+        App.setScrollEnabled(false);
+    }
+
+    static closeOverlay() {
+        ActivityUI.overlay?.classList.remove("activity-overlay--open");
+        App.setScrollEnabled(true);
+    }
+
+    mount(list) {
+        this.list = list;
+        if (!this.list) return;
+        document.querySelector(".activity-mark-read")?.addEventListener("click", () => {
+            this.load();
+            Navbar.refresh().catch(() => {});
+        });
         this.load();
         this.pollTimer = window.setInterval(() => {
             if (document.visibilityState === "visible") this.load({ silent: true });
@@ -27,6 +76,7 @@ export class ActivityUI {
             });
         }
     }
+
     setupObserver() {
         if (!this.list) return;
         if (this.observer) {
@@ -42,14 +92,9 @@ export class ActivityUI {
                     const read = el.dataset?.read === "1";
                     if (!id || read || this.seen.has(id)) return;
                     this.seen.add(id);
-                    Request.post(App.api("activity/read-item"), {
-                        id: Number(id),
-                    }).catch(() => {
-                        this.seen.delete(id);
-                    });
                     el.dataset.read = "1";
                     el.classList.remove("notification-unread");
-                    Navbar.refresh().catch(() => { });
+                    Navbar.refresh().catch(() => {});
                 });
             },
             { threshold: [0, 0.25, 0.5] },
@@ -58,24 +103,25 @@ export class ActivityUI {
             this.observer.observe(n),
         );
     }
+
     async load(opts = {}) {
+        if (!this.list) return;
         try {
-            if (!activityTemplates) {
+            if (!ActivityUI.templates) {
                 try {
-                    activityTemplates = await Request.get(
+                    ActivityUI.templates = await Request.get(
                         "https://dyscover.ielectro.com/data/activity-messages.json",
                     );
                 } catch {
-                    activityTemplates = {};
+                    ActivityUI.templates = {};
                 }
             }
-            const data = await Request.get(App.api("activity/log"));
-            const items = Array.isArray(data.data) ? data.data : [];
+            const data = await Request.get(Api.activity);
+            const items = Api.list(data);
             this.render(items);
             await Icons.load(this.list);
-            this.wireAvatars();
             this.setupObserver();
-            Navbar.refresh().catch(() => { });
+            Navbar.refresh().catch(() => {});
         } catch {
             if (!opts.silent) {
                 this.render([]);
@@ -84,11 +130,11 @@ export class ActivityUI {
                 } catch {
                     /* ignore */
                 }
-                this.wireAvatars();
                 this.setupObserver();
             }
         }
     }
+
     render(activity) {
         if (!this.list) return;
         if (this.observer) {
@@ -96,98 +142,70 @@ export class ActivityUI {
             this.observer = null;
         }
         if (!activity.length) {
-            this.list.innerHTML =
-                '<div class="notification-item"><p class="notification-message">No activity yet.</p></div>';
+            EmptyState.mount(this.list, EmptyState.activity());
+            Icons.load(this.list).catch(() => {});
             return;
         }
         this.list.innerHTML = activity
-            .map(
-                (notification) => {
-                    const id = Number(notification.id) || 0;
-                    const unread = !notification.read;
-                    const user = notification.actor_username || notification.user || notification.username || "User";
-                    const av = escapeAttr(
-                        notification.actor_avatar ||
+            .map((notification) => {
+                const id = Number(notification.id) || 0;
+                const unread = !notification.read;
+                const user =
+                    notification.actor_username ||
+                    notification.user ||
+                    notification.username ||
+                    "User";
+                const av = App.escapeAttr(
+                    notification.actor_avatar ||
                         `https://account.ielectro.com/u/${encodeURIComponent(user)}/avatar.png`,
-                    );
-                    const ph = escapeHtml(this.initials(user));
-                    return `
+                );
+                const ph = App.escapeHtml(App.initialsOf(user));
+                const type = resolveNotificationType(notification);
+                const template =
+                    ActivityUI.templates?.[type] ||
+                    ActivityUI.templates?.default ||
+                    "{user} sent you a notification";
+                const message = template
+                    .replaceAll("{user}", user)
+                    .replaceAll(
+                        "{article}",
+                        notificationArticle(notification),
+                    )
+                    .replaceAll(
+                        "{post_type}",
+                        notificationPostType(notification),
+                    )
+                    .replaceAll("{message}", notification.message || "")
+                    .replaceAll("{details}", notification.message || "");
+                return `
             <div class="notification-item ${unread ? "notification-unread" : ""}" data-id="${id}" data-read="${unread ? "0" : "1"}">
                 <div class="notification-avatar-wrap">
                     <img class="notification-avatar-img" src="${av}" alt="" loading="lazy" />
                     <span class="notification-avatar-ph">${ph}</span>
                 </div>
                 <div class="notification-content">
-                    <div class="notification-text">
-                        <div class="notification-icon">
-                            <i data-icon="${this.icon(notification)}" class="icon-${notification.type || "info"}"></i>
-                        </div>
-                        <p class="notification-message">${escapeHtml(this.text(notification))}</p>
-                    </div>
-                    <p class="notification-time">${escapeHtml(this.formatTime(notification))}</p>
+                    <p class="notification-message">${App.escapeHtml(message)}</p>
+                    <button type="button" class="notification-delete" data-id="${id}" aria-label="Dismiss">
+                        <i data-icon="trash"></i>
+                    </button>
                 </div>
-            </div>
-        `;
-                },
-            )
+            </div>`;
+            })
             .join("");
-    }
-    wireAvatars() {
-        if (!this.list) return;
-        this.list.querySelectorAll(".notification-avatar-img").forEach((img) => {
-            const wrap = img.closest(".notification-avatar-wrap");
-            const ph = wrap?.querySelector(".notification-avatar-ph");
-            img.addEventListener("error", () => {
-                img.style.display = "none";
-                if (ph) ph.style.display = "flex";
+        this.list.querySelectorAll(".notification-delete").forEach((btn) => {
+            btn.addEventListener("click", async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const id = Number(btn.dataset.id);
+                if (!id) return;
+                try {
+                    await Request.delete(Api.activityOne(id));
+                    btn.closest(".notification-item")?.remove();
+                    Navbar.refresh().catch(() => {});
+                } catch {}
             });
-            img.addEventListener("load", () => {
-                if (ph) ph.style.display = "none";
-            });
-        });
-    }
-    formatTime(n) {
-        const raw = n.created_at || n.created || n.time || "";
-        if (!raw) return "";
-        const d = new Date(String(raw).replace(" ", "T"));
-        if (Number.isNaN(d.getTime())) return String(raw);
-        return d.toLocaleString();
-    }
-    initials(name) {
-        return String(name)
-            .split(/[\s_]+/)
-            .map((n) => n[0])
-            .filter(Boolean)
-            .join("")
-            .slice(0, 2)
-            .toUpperCase();
-    }
-    icon(notification) {
-        const type = resolveNotificationType(notification);
-        if (type === "follow") return "user-plus";
-        if (type === "unfollow") return "user";
-        if (type === "like") return "heart";
-        if (type === "comment") return "message-circle";
-        if (type === "share") return "share-2";
-        if (type === "mention") return "message-circle";
-        return "bell";
-    }
-    template(key, vars = {}) {
-        let text = activityTemplates?.[key] || activityTemplates?.default || "New notification";
-        Object.entries(vars).forEach(([k, v]) => {
-            text = text.replaceAll(`{${k}}`, String(v ?? ""));
-        });
-        return text;
-    }
-    text(notification) {
-        const user = notification.actor_username || notification.user || notification.username || "Someone";
-        const type = resolveNotificationType(notification);
-        return this.template(type, {
-            user,
-            article: notificationArticle(notification),
-            post_type: notificationPostType(notification),
-            message: notification.body || "",
-            details: notification.body || "",
         });
     }
 }
+
+ActivityUI.instance = null;

@@ -1,10 +1,13 @@
 <?php
 namespace Admin;
+use Nesh\File;
+use Nesh\Generate;
 use Nesh\Query;
 use Nesh\Request;
 use Nesh\Response;
 use Nesh\Routing;
 use Nesh\Validate;
+use Nesh\RateLimit;
 class Careers
 {
     private Create $create;
@@ -28,6 +31,10 @@ class Careers
             'PATCH'  => fn() => $this->update->index(),
             'DELETE' => fn() => $this->delete->index(),
         ]);
+    }
+    public function apply(): void
+    {
+        (new Apply())->index();
     }
 }
 class Create
@@ -279,5 +286,63 @@ class CareerFields
             'created_at' => $row['created_at'],
             'updated_at' => $row['updated_at'] ?? null,
         ];
+    }
+}
+class Apply
+{
+    public function index(): void
+    {
+        Request::post();
+        RateLimit::check('career_apply', 6, 900);
+        $name = trim((string) Request::value('name'));
+        $email = trim((string) Request::value('email'));
+        $position = trim((string) Request::value('position'));
+        $cv = Request::file('cv');
+        if (
+            !Validate::required($name)
+            || !Validate::required($email)
+            || !Validate::required($position)
+        ) {
+            Response::badRequest('All fields are required');
+        }
+        if (!Validate::email($email)) {
+            Response::badRequest('Invalid email');
+        }
+        if (
+            !$cv
+            || (int) ($cv['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK
+        ) {
+            Response::badRequest('CV file is required');
+        }
+        $extension = strtolower(pathinfo((string) ($cv['name'] ?? ''), PATHINFO_EXTENSION));
+        if ($extension !== 'pdf') {
+            Response::badRequest('CV must be a PDF file');
+        }
+        $uuid = Generate::uuid();
+        $directory = APP_PUBLIC . '/content/applications';
+        File::makeDirectory($directory);
+        $filename = $uuid . '.pdf';
+        $destination = $directory . '/' . $filename;
+        if (!move_uploaded_file((string) $cv['tmp_name'], $destination)) {
+            Response::error('Unable to upload CV');
+        }
+        Query::execute(
+            "INSERT INTO career_applications(
+                uuid,
+                full_name,
+                email,
+                position,
+                cv_file
+            )
+            VALUES (?, ?, ?, ?, ?)",
+            [
+                $uuid,
+                $name,
+                $email,
+                $position,
+                $filename,
+            ]
+        );
+        Response::success('Application sent successfully');
     }
 }

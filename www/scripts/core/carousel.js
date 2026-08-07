@@ -1,4 +1,4 @@
-export default class Carousel {
+export class Carousel {
     constructor(root) {
         this.root = root;
         this.img = root.querySelector("img");

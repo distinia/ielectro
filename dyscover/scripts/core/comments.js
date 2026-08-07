@@ -1,15 +1,18 @@
+import { Api } from "./api.js";
 import { Request, Icons } from "./nesh.js";
-import { App } from "./app.js";
 import { Alert } from "./alert.js";
 import { Mention } from "./mention.js";
 import { Overlay } from "./overlay.js";
+
 export class Comments {
     constructor(card) {
         this.card = card;
     }
+
     get item() {
         return this.card.item;
     }
+
     formatCommentDate(value) {
         if (!value) return "";
         const date = new Date(value);
@@ -28,14 +31,15 @@ export class Comments {
             month: "short",
         });
     }
+
     commentHtml(c) {
         return `<div class="post-comment">
-            <a href="https://dyscover.ielectro.com/u/${c.username}">
+            <a href="https://dyscover.ielectro.com/users/${c.username}">
                 <img class="post-comment-avatar" src="${c.avatar}" alt="${c.username}">
             </a>
             <div class="post-comment-body">
                 <p class="post-comment-line">
-                    <a href="https://dyscover.ielectro.com/u/${c.username}">
+                    <a href="https://dyscover.ielectro.com/users/${c.username}">
                         <b>${c.username}</b>
                     </a>
                     ${Mention.linkify(c.body)}
@@ -44,12 +48,12 @@ export class Comments {
             </div>
         </div>`;
     }
+
     async fetchRows() {
-        const res = await Request.get(App.api("post/list-comment"), {
-            file: this.item.file,
-        });
-        return Array.isArray(res.data) ? res.data : [];
+        const res = await Request.get(Api.postComments(this.item.id));
+        return Api.list(res);
     }
+
     async renderInline(root) {
         const list = root?.querySelector(".post-comments-list");
         if (!list) return;
@@ -62,6 +66,7 @@ export class Comments {
             list.innerHTML = "";
         }
     }
+
     async bindInline(root) {
         const list = root?.querySelector(".post-comments-list");
         const compose = root?.querySelector(".post-comment-compose-inline");
@@ -73,10 +78,7 @@ export class Comments {
             const text = input.value.trim();
             if (!text) return;
             try {
-                await Request.post(App.api("post/comment"), {
-                    file: this.item.file,
-                    body: text,
-                });
+                await Request.post(Api.postComments(this.item.id), { body: text });
                 input.value = "";
                 await this.renderInline(root);
                 this.item.comments = (Number(this.item.comments) || 0) + 1;
@@ -96,6 +98,7 @@ export class Comments {
             }
         });
     }
+
     async openBox() {
         const overlay = new Overlay("Comments");
         await overlay.open();
@@ -125,10 +128,7 @@ export class Comments {
                 const text = input?.value.trim();
                 if (!text) return;
                 try {
-                    await Request.post(App.api("post/comment"), {
-                        file: this.item.file,
-                        body: text,
-                    });
+                    await Request.post(Api.postComments(this.item.id), { body: text });
                     input.value = "";
                     await renderList();
                     this.item.comments = (Number(this.item.comments) || 0) + 1;

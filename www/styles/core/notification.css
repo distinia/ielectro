@@ -17,13 +17,20 @@
     padding: 18px 16px;
     border: 1px solid rgba(0, 0, 0, 0.06);
 }
+.alert-icon-container {
+    margin-bottom: 10px;
+}
 .alert-icon {
     width: 42px;
     height: 42px;
     display: grid;
     place-items: center;
     border-radius: 999px;
-    margin-bottom: 10px;
+}
+.alert-icon .icon-image,
+.alert-icon svg {
+    width: 20px;
+    height: 20px;
 }
 .alert-success .alert-icon {
     color: #047857;

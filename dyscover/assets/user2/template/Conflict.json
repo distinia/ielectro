@@ -1,0 +1,38 @@
+[
+    {
+        "name": "Image",
+        "type": "large image"
+    },
+    {
+        "name": "Date",
+        "type": "text"
+    },
+    {
+        "name": "Location",
+        "type": "text"
+    },
+    {
+        "name": "Result",
+        "type": "text"
+    },
+    {
+        "name": "Territorial changes",
+        "type": "text"
+    },
+    {
+        "name": "Participants",
+        "type": "double column"
+    },
+    {
+        "name": "Commanders and leaders",
+        "type": "double column"
+    },
+    {
+        "name": "Strength",
+        "type": "double column"
+    },
+    {
+        "name": "Casualties",
+        "type": "double column"
+    }
+]

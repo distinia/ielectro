@@ -4,9 +4,9 @@
   padding: 1.5em;
   width: 500px;
 }
-.search-bar input {
-  width: 100%;
-  padding: 8px;
+.search-bar .input {
+    width: 100%;
+    padding: 8px;
 }
 .user-list {
   height: 60vh;

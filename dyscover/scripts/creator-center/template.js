@@ -23,19 +23,19 @@ export class Template extends Post {
             <form id="template-form">
                 <div class="select-item-column">
                     <b>Title</b>
-                    <input name="title" value="${this.item.title || ""}">
+                    <input class="input" name="title" value="${this.item.title || ""}">
                     <b>Image</b>
-                    <input name="image" value="${this.item.media || ""}">
+                    <input class="input" name="image" value="${this.item.media || ""}">
                     <b>Description</b>
-                    <textarea name="description">${this.item.description || ""}</textarea>
+                    <textarea class="textarea" name="description">${this.item.description || ""}</textarea>
                     <b>Categories</b>
-                    <textarea name="tags">${this.item.tags || ""}</textarea>
+                    <textarea class="textarea" name="tags">${this.item.tags || ""}</textarea>
                 </div>
                 <div class="select-item-column">
                     <b>Fields</b>
                     <div class="field-inputs">
-                        <input class="field-input" placeholder="Field name">
-                        <select class="field-type">
+                        <input class="input field-input" placeholder="Field name">
+                        <select class="select field-type">
                             <option value="Text">Text</option>
                             <option value="Definition">Definition</option>
                             <option value="Image">Small image</option>
@@ -44,7 +44,7 @@ export class Template extends Post {
                             <option value="DoubleColumn">Double column</option>
                             <option value="DoubleColumnExtended">Double column extension</option>
                         </select>
-                        <button class="field-add">+</button>
+                        <button class="button field-add">+</button>
                     </div>
                     <table class="table">
                         <thead>
@@ -61,11 +61,10 @@ export class Template extends Post {
         });
         this.box.footer(f => {
             f.innerHTML = `
-            <button form="template-form">
+            <button class="button" form="template-form">
                 ${method === "POST" ? "Create" : "Update"}
             </button>`;
         });
-        App.disableAutocomplete();
         this.form = document.querySelector("#template-form");
         this.fields();
         if (method === "PUT" && this.item.url) {
@@ -91,9 +90,9 @@ export class Template extends Post {
                     ${select.options[select.selectedIndex].text}
                 </td>
                 <td>
-                    <button class="field-remove">X</button>
-                    <button class="field-up">↑</button>
-                    <button class="field-down">↓</button>
+                    <button class="button field-remove">X</button>
+                    <button class="button field-up">↑</button>
+                    <button class="button field-down">↓</button>
                 </td>
             `;
             list.appendChild(row);
@@ -133,9 +132,9 @@ export class Template extends Post {
                         ${field.type}
                     </td>
                     <td>
-                        <button class="field-remove">X</button>
-                        <button class="field-up">↑</button>
-                        <button class="field-down">↓</button>
+                        <button class="button field-remove">X</button>
+                        <button class="button field-up">↑</button>
+                        <button class="button field-down">↓</button>
                     </td>
                 `;
                 list.appendChild(row);

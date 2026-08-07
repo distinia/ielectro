@@ -12,7 +12,7 @@ export class Mention {
         return escaped.replace(
             /@([a-zA-Z0-9_]{2,32})/g,
             (_, user) =>
-                `<a class="mention-link" href="https://dyscover.ielectro.com/u/${encodeURIComponent(user)}">@${user}</a>`,
+                `<a class="mention-link" href="https://dyscover.ielectro.com/users/${encodeURIComponent(user)}">@${user}</a>`,
         );
     }
     static renderInto(element, text, empty = "") {

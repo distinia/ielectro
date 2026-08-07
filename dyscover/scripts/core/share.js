@@ -1,25 +1,31 @@
+import { Api } from "./api.js";
 import { Request, Icons, Auth } from "./nesh.js";
-import { encodePostMessage } from "./post-message.js";
 import { App } from "./app.js";
+import { encodePostMessage } from "./post-message.js";
 import { Alert } from "./alert.js";
 import { Overlay } from "./overlay.js";
 import { UsersList } from "./users-list.js";
+
 export class Share {
     constructor(card) {
         this.card = card;
     }
+
     get item() {
         return this.card.item;
     }
+
     isArticle() {
         return String(this.item?.type || "").toLowerCase() === "article";
     }
+
     shareLink() {
         if (this.isArticle()) {
             return this.item.url || "";
         }
         return "";
     }
+
     async open() {
         await this.card.ensureData();
         const canCopy = this.isArticle() && !!this.shareLink();
@@ -34,9 +40,7 @@ export class Share {
             body.querySelector('[data-action="copy"]')?.addEventListener("click", async () => {
                 try {
                     await navigator.clipboard.writeText(this.shareLink());
-                    Request.post(App.api("article/share"), {
-                        file: this.item.file,
-                    }).catch(() => { });
+                    Request.post(Api.postShares(this.item.id)).catch(() => {});
                     overlay.close();
                 } catch {
                     Alert.error("Could not copy link");
@@ -49,6 +53,7 @@ export class Share {
             Icons.load(body);
         });
     }
+
     async openInboxPicker() {
         const me = await Auth.username();
         const list = new UsersList({
@@ -57,32 +62,38 @@ export class Share {
             onSelect: (user) => this.sendTo(user.username),
             loadUsers: async (term) => {
                 if (term) {
-                    const res = await Request.get(App.api("user/search"), { term });
-                    return (Array.isArray(res?.data) ? res.data : []).filter(
+                    const res = await Request.get(Api.exploreSearchAll(term));
+                    const payload = Api.record(res) || {};
+                    return (Array.isArray(payload.users) ? payload.users : []).filter(
                         (u) => u.username && u.username !== me,
                     );
                 }
-                const res = await Request.get(App.api("chat/suggestions"));
-                return Array.isArray(res.data?.followings) ? res.data.followings : [];
+                const selfId = await App.resolveSelfUserId();
+                if (!selfId) return [];
+                const res = await Request.get(Api.userFollowing(selfId));
+                return Api.list(res);
             },
         });
         await list.open();
     }
+
     async sendTo(username) {
         if (!username) return;
         try {
-            const threadRes = await Request.post(App.api("chat/create-thread"), {
-                participant: username,
+            const participantId = await App.resolveUserId(username);
+            if (!participantId) throw new Error("User not found");
+            const threadRes = await Request.post(Api.inbox, {
+                participant_id: participantId,
             });
-            const threadId = Number(threadRes.data?.id);
+            const threadId = Number(Api.record(threadRes)?.id);
             if (!threadId) throw new Error("Missing thread");
-            await Request.post(App.api("chat/send"), {
-                thread_id: threadId,
-                message: encodePostMessage(this.item),
+            await Request.post(Api.inboxMessages(threadId), {
+                body: encodePostMessage(this.item),
+                type: "post",
             });
             UsersList.active?.close();
         } catch (e) {
-            Alert.error(typeof e === "object" && e?.text ? e.text : "Send failed");
+            Alert.error(Api.message(e) || "Send failed");
         }
     }
 }

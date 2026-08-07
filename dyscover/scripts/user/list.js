@@ -1,12 +1,15 @@
 import { Alert, Auth, UsersList } from "../core/index.js";
 import { Actions } from "./actions.js";
+
 export class List {
-    constructor(type, data, canManage = false) {
+    constructor(type, data, canManage = false, page = null) {
         this.type = type;
         this.data = Array.isArray(data) ? data : [];
         this.canManage = canManage;
+        this.page = page;
         this.open();
     }
+
     open() {
         const actionLabel = this.canManage
             ? this.type === "followers"
@@ -27,13 +30,13 @@ export class List {
                 );
             },
             onSelect: (user) => {
-                window.location.href = `https://dyscover.ielectro.com/u/${encodeURIComponent(user.username)}`;
+                window.location.href = `https://dyscover.ielectro.com/users/${encodeURIComponent(user.username)}`;
             },
             onAction: this.canManage
                 ? async (user, row) => {
-                      const actions = new Actions(user.username);
+                      const actions = new Actions(this.page);
                       const me = await Auth.username();
-                      if (this.type === "followers" && me === currentUsername) {
+                      if (this.type === "followers" && me === this.page?.username) {
                           const ok = await Alert.confirm("Remove follower?");
                           if (ok) {
                               await actions.removeFollower();

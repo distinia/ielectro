@@ -1,14 +1,21 @@
+import { Api } from "./api.js";
 import { Request } from "./nesh.js";
-import { decodePostMessage, resolveNotificationType, notificationArticle, notificationPostType } from "./post-message.js";
-import { App } from "./app.js";
+import {
+    decodePostMessage,
+    resolveNotificationType,
+    notificationArticle,
+    notificationPostType,
+} from "./post-message.js";
 import { Mention } from "./mention.js";
+
 export class NotificationPopup {
     static stack = null;
     static templates = null;
-    static lastActivityId = 0;
-    static lastChatMsgId = 0;
+    static seenActivity = new Set();
+    static seenMessages = new Set();
     static started = false;
     static bootstrapped = false;
+
     static async start() {
         if (this.started) return;
         this.started = true;
@@ -22,6 +29,7 @@ export class NotificationPopup {
         }
         await this.bootstrap();
     }
+
     static ensureStack() {
         if (this.stack) return;
         this.stack = document.createElement("div");
@@ -29,51 +37,44 @@ export class NotificationPopup {
         const mount = document.querySelector("main") || document.body;
         mount.appendChild(this.stack);
     }
+
     static async bootstrap() {
         try {
-            const res = await Request.get(App.api("activity/since"), { bootstrap: 1 });
-            this.lastActivityId = Number(res.data?.max_id) || 0;
+            const res = await Request.get(Api.activity);
+            Api.list(res).forEach((item) => {
+                if (item?.id) this.seenActivity.add(Number(item.id));
+            });
         } catch {
-            this.lastActivityId = 0;
-        }
-        try {
-            const res = await Request.get(App.api("chat/incoming"), { bootstrap: 1 });
-            this.lastChatMsgId = Number(res.data?.max_id) || 0;
-        } catch {
-            this.lastChatMsgId = 0;
+            this.seenActivity.clear();
         }
         this.bootstrapped = true;
     }
+
     static template(key, vars = {}) {
-        let text = this.templates?.[key] || this.templates?.default || "New notification";
+        let text =
+            this.templates?.[key] ||
+            this.templates?.default ||
+            "New notification";
         Object.entries(vars).forEach(([k, v]) => {
             text = text.replaceAll(`{${k}}`, String(v ?? ""));
         });
         return text;
     }
+
     static async poll() {
         if (!this.bootstrapped) await this.bootstrap();
         try {
-            const res = await Request.get(App.api("activity/since"), {
-                after_id: this.lastActivityId,
-            });
-            const items = Array.isArray(res.data) ? res.data : [];
+            const res = await Request.get(Api.activity);
+            const items = Api.list(res);
             items.forEach((item) => {
-                this.lastActivityId = Math.max(this.lastActivityId, Number(item.id) || 0);
-                this.showActivity(item);
+                const id = Number(item.id) || 0;
+                if (!id || this.seenActivity.has(id)) return;
+                this.seenActivity.add(id);
+                if (!item.read) this.showActivity(item);
             });
-        } catch { }
-        try {
-            const res = await Request.get(App.api("chat/incoming"), {
-                after_id: this.lastChatMsgId,
-            });
-            const items = Array.isArray(res.data) ? res.data : [];
-            items.forEach((item) => {
-                this.lastChatMsgId = Math.max(this.lastChatMsgId, Number(item.id) || 0);
-                this.showChat(item);
-            });
-        } catch { }
+        } catch {}
     }
+
     static showActivity(item) {
         const user = item.actor_username || "Someone";
         const type = resolveNotificationType(item);
@@ -81,8 +82,8 @@ export class NotificationPopup {
             user,
             article: notificationArticle(item),
             post_type: notificationPostType(item),
-            message: item.body || "",
-            details: item.body || "",
+            message: item.message || item.body || "",
+            details: item.message || item.body || "",
         });
         this.show({
             username: user,
@@ -90,53 +91,45 @@ export class NotificationPopup {
                 item.actor_avatar ||
                 `https://account.ielectro.com/u/${encodeURIComponent(user)}/avatar.png`,
             message,
-            href: "https://dyscover.ielectro.com/activity",
+            href: "#",
         });
     }
+
     static showChat(item) {
-        const user = item.sender || "Someone";
+        const user = item.sender || item.username || "Someone";
         const post = decodePostMessage(item.body);
         let message;
         if (post) {
-            const postType = String(post.type || "post").toLowerCase();
-            message = this.template("chat_post", {
-                user,
-                post_type: postType === "article" ? "article" : postType,
-                post_author: post.username || "unknown",
-            });
+            message = `Shared a ${post.type || "post"}: ${post.title || ""}`.trim();
         } else {
-            message = this.template("chat_message", {
-                user,
-                message: Mention.linkify(String(item.body || "").trim()),
-            });
+            message = item.body || "New message";
         }
         this.show({
             username: user,
             avatar:
-                item.sender_avatar ||
+                item.avatar ||
                 `https://account.ielectro.com/u/${encodeURIComponent(user)}/avatar.png`,
-            message,
+            message: Mention.linkify(message),
             href: "https://dyscover.ielectro.com/inbox",
         });
     }
+
     static show({ username, avatar, message, href }) {
         this.ensureStack();
-        const el = document.createElement("a");
-        el.className = "notify-popup";
-        el.href = href || "#";
-        if (!href) {
-            el.addEventListener("click", (e) => e.preventDefault());
-        }
-        el.innerHTML = `
+        const node = document.createElement("a");
+        node.className = "notify-popup";
+        node.href = href || "#";
+        node.innerHTML = `
             <img class="notify-popup-avatar" src="${avatar}" alt="">
             <div class="notify-popup-body">
-                <strong class="notify-popup-user">${username}</strong>
-                <p class="notify-popup-msg">${message}</p>
+                <strong>${username}</strong>
+                <p>${message}</p>
             </div>`;
-        this.stack.appendChild(el);
-        window.setTimeout(() => {
-            el.classList.add("is-leaving");
-            window.setTimeout(() => el.remove(), 320);
+        this.stack.appendChild(node);
+        requestAnimationFrame(() => node.classList.add("notify-popup--show"));
+        setTimeout(() => {
+            node.classList.remove("notify-popup--show");
+            setTimeout(() => node.remove(), 300);
         }, 5000);
     }
 }

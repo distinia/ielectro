@@ -1,0 +1,74 @@
+[
+    {
+        "name": "Logo",
+        "type": "double image"
+    },
+    {
+        "name": "Anthem",
+        "type": "definition"
+    },
+    {
+        "name": "Motto",
+        "type": "definition"
+    },
+    {
+        "name": "Map",
+        "type": "large image"
+    },
+    {
+        "name": "Headquarters",
+        "type": "text"
+    },
+    {
+        "name": "Official languages",
+        "type": "text"
+    },
+    {
+        "name": "Founded",
+        "type": "text"
+    },
+    {
+        "name": "Dissolved",
+        "type": "text"
+    },
+    {
+        "name": "Type",
+        "type": "text"
+    },
+    {
+        "name": "Leadership",
+        "type": "double column"
+    },
+    {
+        "name": "Membership",
+        "type": "text"
+    },
+    {
+        "name": "Formation",
+        "type": "double column"
+    },
+    {
+        "name": "Observers",
+        "type": "text"
+    },
+    {
+        "name": "Parent organization",
+        "type": "text"
+    },
+    {
+        "name": "Child organizations",
+        "type": "text"
+    },
+    {
+        "name": "Affiliations",
+        "type": "text"
+    },
+    {
+        "name": "Predecessor",
+        "type": "text"
+    },
+    {
+        "name": "Successor",
+        "type": "text"
+    }
+]

@@ -1,70 +1,69 @@
-import { App, Alert, Request } from "../core/index.js";
+import { Api } from "../core/api.js";
+import { App, EmptyState, Icons, Request } from "../core/index.js";
+
 export class Posts {
-    constructor(username) {
-        this.username = username;
+    constructor(page) {
+        this.page = page;
         this.container = document.querySelector(".profile-posts");
         this.init();
     }
+
     async init() {
         if (!this.container) return;
         this.container.innerHTML = `<p class="profile-loading">Loading posts…</p>`;
-        const isOwn = loggedUsername === this.username;
+        const isOwn = this.page.loggedUsername === this.page.username;
         document
             .querySelectorAll('.profile-tab[data-filter="liked"]')
             .forEach((tab) => {
                 tab.style.display = isOwn ? "" : "none";
             });
         try {
-            const batches = await Promise.all(
-                PROFILE_SOURCES.map(async (source) => {
-                    try {
-                        const res = await Request.get(source.url, {
-                            username: this.username,
-                            ...(source.params || {}),
-                        });
-                        return (Array.isArray(res?.data) ? res.data : []).map((item) => ({
-                            ...item,
-                            type: item.type || source.type,
-                        }));
-                    } catch {
-                        return [];
-                    }
-                }),
-            );
-            profilePosts = batches
-                .flat()
-                .filter((item) => item?.file)
+            const res = await Request.get(Api.userPosts(this.page.userId));
+            this.page.posts = Api.list(res)
+                .map((item) => App.enrichPost(item))
                 .sort(
                     (a, b) =>
                         new Date(b.created_at || b.updated_at || 0) -
                         new Date(a.created_at || a.updated_at || 0),
                 );
-            try {
-                const savedRes = await Request.get(App.api("post/list-saved"), {
-                    username: this.username,
-                });
-                profileSaved = (Array.isArray(savedRes?.data) ? savedRes.data : []).filter(
-                    (item) => item?.file,
-                );
-            } catch {
-                profileSaved = [];
-            }
             if (isOwn) {
                 try {
-                    const likedRes = await Request.get(App.api("post/list-liked"));
-                    profileLiked = (Array.isArray(likedRes?.data) ? likedRes.data : []).filter(
-                        (item) => item?.file,
+                    const savedRes = await Request.get(
+                        Api.userBookmarks(this.page.userId),
+                    );
+                    this.page.saved = Api.list(savedRes).map((item) =>
+                        App.enrichPost(item),
                     );
                 } catch {
-                    profileLiked = [];
+                    this.page.saved = [];
+                }
+                try {
+                    const likedRes = await Request.get(
+                        Api.userLikes(this.page.userId),
+                    );
+                    this.page.liked = Api.list(likedRes).map((item) =>
+                        App.enrichPost(item),
+                    );
+                } catch {
+                    this.page.liked = [];
                 }
             } else {
-                profileLiked = [];
+                this.page.saved = [];
+                this.page.liked = [];
             }
-            renderProfileGrid();
+            await this.page.renderGrid();
         } catch {
-            this.container.innerHTML = `<p class="profile-empty">Failed to load posts.</p>`;
-            Alert.error("Failed to load posts");
+            this.page.posts = [];
+            this.page.saved = [];
+            this.page.liked = [];
+            EmptyState.mount(
+                this.container,
+                EmptyState.profilePosts({
+                    isOwn: this.page.loggedUsername === this.page.username,
+                    username: this.page.username,
+                }),
+            );
+            await Icons.load(this.container);
         }
     }
 }

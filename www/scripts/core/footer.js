@@ -1,4 +1,4 @@
-export default class Footer {
+export class Footer {
     constructor() {
         this.year = new Date().getFullYear();
     }
@@ -6,9 +6,7 @@ export default class Footer {
         return `
             <footer>
                 <div class="container">
-                    <p>
-                        © ${this.year} iElectro
-                    </p>
+                    <p>© ${this.year} iElectro</p>
                 </div>
             </footer>
         `;

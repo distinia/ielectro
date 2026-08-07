@@ -6,5 +6,7 @@
 @import "footer.css";
 @import "navbar.css";
 @import "notification.css";
+@import "activity-overlay.css";
+@import "empty-state.css";
 @import "user.css";
 @import "../post/index.css";

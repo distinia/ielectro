@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lamberia - iElectro Dyscover</title>
+    <link rel="icon" href="https://dyscover.ielectro.com/style/media/favicon.ico" type="image/x-icon">
+    <meta name="author" content="iElectro">
+    <meta name="keywords" content="iElectro, Dyscover">
+    <meta name="description" content="View or personalize an article, share ideas and information freely and without censorship">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="content-type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="https://dyscover.ielectro.com/style/css/article.css?v=1.0.7">
+    <script type="module" src="https://dyscover.ielectro.com/script/article.js?v=1.0.5"></script>
+</head>
+<body>
+    <aside class="article-main-content">
+        <section class="content">
+            <h1 class="title">Lamberia</h1>
+            <table class="template" data-title="country">
+                <thead>
+                    <tr>
+                        <th colspan="2">
+                            <ul class="template-cell-info">
+                                <li>Islamic Republic of Lamberia<br>
+                                </li>
+                            </ul>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr data-field="flag-and-emblem">
+                        <td colspan="2">
+                            <img src="https://dyscover.ielectro.com/content/image/Flag_of_Lamberia.png?t=1705960800" class="template-image template-first-image article-image"><img src="https://dyscover.ielectro.com/content/image/Emblem_of_Lamberia.png?t=1705960800" class="template-image template-second-image">
+                        </td>
+                    </tr>
+                    <tr data-field="motto">
+                        <td colspan="2">
+                            <b>Motto</b>
+                            <ul class="template-cell-info">
+                                <li>God and Homeland<br>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr data-field="anthem">
+                        <td colspan="2">
+                            <b>Anthem</b>
+                            <ul class="template-cell-info">
+                                <li>Lambir, the new land<br>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr data-field="map">
+                        <td colspan="2" style="padding: 0px;"><img src="https://dyscover.ielectro.com/content/image/Map_of_Lamberia.png?t=1741428114" style="width: 100%;" class="template-image template-large-image"></td>
+                    </tr>
+                    <tr data-field="capital-city">
+                        <th class="template-cell-label">Capital city</th>
+                        <td>
+                            <ul class="template-cell-info">
+                                <li>Tarek<br>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr data-field="official-languages">
+                        <th class="template-cell-label">Official languages</th>
+                        <td>
+                            <ul class="template-cell-info">
+                                <li>Tayanusan<br>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr data-field="ethnic-groups">
+                        <th class="template-cell-label">Ethnic groups</th>
+                        <td>
+                            <ul class="template-cell-info">
+                                <li>87% Lamberians</li>
+                                <li>13% Racabi<br>
+                                </li>
+                                <li>3% Others<br>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr data-field="religion">
+                        <th class="template-cell-label">Religion</th>
+                        <td>
+                            <ul class="template-cell-info">
+                                <li>95% Muslims</li>
+                                <li>5% Christians<br>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr data-field="demonym">
+                        <th class="template-cell-label">Demonym</th>
+                        <td>
+                            <ul class="template-cell-info">
+                                <li>Lamberians<br>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr data-field="government">
+                        <th class="template-cell-label">Government</th>
+                        <td>
+                            <ul class="template-cell-info">
+                                <li>Unitary parliamentary republic under a liberal democracy<br>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr data-field="leadership" style="border-top: medium;">
+                        <td>
+                            <ul class="template-cell-info">
+                                <li>President</li>
+                                <li>Prime Minister<br>
+                                </li>
+                                <li>Speaker</li>
+                                <li>Chief Judge</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <ul class="template-cell-info">
+                                <li>Ahmed Al-Farsi<br>
+                                </li>
+                                <li>Lachen Hassan<br>
+                                </li>
+                                <li>Omar Abdelrahman</li>
+                                <li>Hassan Al-Mutairi</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr data-field="legislature">
+                        <th class="template-cell-label">Legislature</th>
+                        <td>
+                            <ul class="template-cell-info">
+                                <li>Parliament<br>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr data-field="formation">
+                        <th colspan="2" style="text-align: left;">Formation</th>
+                    </tr>
+                    <tr data-field="formation" style="border-top: medium;">
+                        <td>
+                            <ul class="template-cell-info">
+                                <li>Constitution</li>
+                            </ul>
+                        </td>
+                        <td>
+                            <ul class="template-cell-info">
+                                <li>29 March 2020</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr data-field="area">
+                        <th class="template-cell-label">Area</th>
+                        <td>
+                            <ul class="template-cell-info">
+                                <li>721.324 km2<br>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr data-field="population">
+                        <th class="template-cell-label">Population</th>
+                        <td>
+                            <ul class="template-cell-info">
+                                <li>53.047.324<br>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr data-field="currency">
+                        <th class="template-cell-label">Currency</th>
+                        <td>
+                            <ul class="template-cell-info">
+                                <li>Lamberian Riyal (LBR)
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr data-field="gdp">
+                        <th class="template-cell-label">GDP</th>
+                        <td>
+                            <ul class="template-cell-info">
+                                <li>3.4 trillion DTR<br>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="paragraph"><b class="bold">Lamberia</b>, officially the <b class="bold">Islamic Republic of
+                    Lamberia</b>,
+                is a unitary parliamentary republic located in the northern region of Tayanusa. It has a population of
+                <b class="bold">53,047,324</b> and covers an area of <b class="bold">721,324 km&sup2;</b>. The capital
+                and
+                largest city is <b class="bold">Tarek</b>, while other major cities include <b class="bold">Nourat</b>
+                and
+                <b class="bold">Ladhrat</b>. The official and universally spoken language is <b class="bold">Tayanusan</b>,
+                shared by both the majority <b class="bold">Lamberian</b> (87%) and minority <b class="bold">Racabi</b>
+                (13%) ethnic groups. The country is overwhelmingly <b class="bold">Muslim</b> (95%), with a small <b class="bold">Christian</b> minority (5%), and maintains a constitutional system that balances <b class="bold">Islamic identity</b> with <b class="bold">secular governance</b>.
+            </p>
+            <p class="paragraph">Lamberia is widely regarded as the <b class="bold">only true democracy in Tayanusa</b>,
+                featuring a multi-party system, free elections, and robust civil liberties. The government consists of a
+                <b class="bold">President</b>, a <b class="bold">Prime Minister</b> , and a unicameral <b class="bold">Parliament</b>. The judicial system is independent, headed by <b class="bold">Chief
+                    Judge.</b> Administratively, the country is divided into <b class="bold">15 provinces</b> and
+                follows a centralized governance model.
+            </p>
+            <p class="paragraph">Lamberia is the <b class="bold">largest oil exporter in the world</b>, and its
+                economy&mdash;valued at <b class="bold">3.4 trillion DTR</b>&mdash;is driven by the energy sector,
+                industrial manufacturing, and infrastructure development. It maintains strong economic and military ties
+                with <b class="bold">Destenia</b>, its closest ally, and sees itself as the <b class="bold">leader of
+                    the
+                    Tayanusan Community</b>, often competing with <b class="bold">Cusea</b> for regional influence.
+                Relations with <b class="bold">Suklan</b> are tense but cordial, while Lamberia remains skeptical of
+                Edrobean political models despite economic cooperation with the <b class="bold">Edrobean Community</b>.
+            </p>
+            <p class="paragraph">Geographically, Lamberia features a diverse landscape of <b class="bold">deserts</b>,
+                <b class="bold">mountains</b>, <b class="bold">rivers</b>, and <b class="bold">coastlines</b> along the
+                <b class="bold">Grandic Ocean</b>, <b class="bold">Blue Sea</b>, and <b class="bold">Sea of Ricene</b>.
+                It
+                includes strategic territories such as the <b class="bold">Aletian Islands</b>, and its highest point is
+                <b class="bold">Mont Redouzi</b>. The country is largely urbanized, with a <b class="bold">young and
+                    growing population</b>, high literacy rates, and a strong emphasis on education, public health, and
+                national unity.
+            </p>
+            <h2 class="heading" id="Etymology">Etymology</h2>
+            <p class="paragraph">The name <b class="bold">Lamberia</b> is believed to derive from the ancient Tayanusan
+                word
+                <b class="bold">&ldquo;Lambir,&rdquo;</b> which translates roughly to <i class="italic">&ldquo;land of
+                    fortitude&rdquo;</i> or <i class="italic">&ldquo;the resolute land.&rdquo;</i> This term has deep
+                roots
+                in the mountainous northern Tayanusan highlands, where early Lamberian tribes resisted both imperial
+                invasions and harsh climatic conditions. Over time, <i class="italic">&ldquo;Lambir&rdquo;</i> became a
+                symbol of unity and perseverance for the people, especially during the period of national awakening in
+                the
+                late 20th century.
+            </p>
+            <p class="paragraph">The suffix <b class="bold">&ldquo;-ia&rdquo;</b>, common among Tayanusan and Edrobean
+                languages
+                for denoting sovereign territories, was later appended to &ldquo;Lambir&rdquo; during the unification
+                movement to signify a formal national identity. The full name, <b class="bold">Islamic Republic of
+                    Lamberia</b>, reflects both its majority-Muslim population and its republican governance, while
+                &ldquo;Lamberia&rdquo; alone is used in most international and informal contexts to emphasize national
+                distinctiveness.</p>
+            <h2 class="heading" id="Geography">Geography</h2>
+            <p class="paragraph"><b class="bold">Lamberia</b>, located in the <b class="bold">northern part of the
+                    Tayanusa
+                    region</b>, is a country blessed with a <b class="bold">diverse and captivating geography</b> that
+                showcases a stunning variety of landscapes. From <b class="bold">vast deserts</b> and <b class="bold">majestic mountain ranges</b> to <b class="bold">fertile plains</b> and <b class="bold">abundant waterways</b>, the nation&rsquo;s physical terrain reflects striking contrasts
+                and
+                a deep connection to its natural heritage.
+            </p>
+            <p class="paragraph">To the <b class="bold">north</b>, Lamberia extends to the <b class="bold">shores of the
+                    Grandic
+                    Ocean</b>, where it also claims sovereignty over the <b class="bold">Aletian Islands</b>, a
+                scattered
+                archipelago that expands the nation's maritime jurisdiction and contributes to its considerable <b class="bold">coastline</b>. The <b class="bold">southern</b> frontier is defined by the <b class="bold">Blue Sea</b> and the <b class="bold">Sea of Ricene</b>, providing the country with
+                critical
+                access to <b class="bold">coastal trade routes</b> and fostering vibrant port cities along its southern
+                shores. To the <b class="bold">east</b>, Lamberia borders <b class="bold">Stasia</b>, while the <b class="bold">western</b> frontier connects it to the state of <b class="bold">Ricene</b>, with whom
+                it
+                shares historical, cultural, and geographic links.
+            </p>
+            <p class="paragraph">With a total surface area of <b class="bold">721,324 km&sup2;</b>, Lamberia is among
+                the
+                largest
+                countries in the Tayanusan region. The country&rsquo;s <b class="bold">border perimeter stretches over
+                    10,600 kilometers</b>, encompassing both <b class="bold">mainland territory</b> and <b class="bold">island holdings</b>. An impressive <b class="bold">85% of the landmass</b> is dominated
+                by
+                <b class="bold">desert ecosystems</b>, notably the <b class="bold">Lamberian Desert</b>, one of the most
+                arid zones on the continent. Rising from these harsh terrains are the <b class="bold">Sand
+                    Mountains</b>,
+                which characterize much of the <b class="bold">eastern landscape</b>. Within this range lies <b class="bold">Mont Redouzi</b>, the <b class="bold">highest point in Lamberia</b>, whose elevation
+                offers
+                both a symbol of national pride and a challenging frontier for scientific and exploratory missions.
+            </p>
+            <p class="paragraph">Further enriching the country's topography are two primary mountain systems. In the <b class="bold">south</b>, the <b class="bold">Allahzi Mountains</b> form a formidable wall of stone
+                and
+                wind-carved peaks, serving as a <b class="bold">climatic buffer</b> and a <b class="bold">cultural
+                    boundary</b> for the southern tribes. In the <b class="bold">west</b>, the <b class="bold">Ludouzi
+                    Mountains</b> rise gently but dramatically, offering <b class="bold">breathtaking panoramic
+                    vistas</b>
+                and serving as a vital reservoir for <b class="bold">biodiversity and mineral wealth</b>. These mountain
+                regions are revered not only for their physical majesty but also for their <b class="bold">spiritual
+                    significance</b> in Lamberian tradition.
+            </p>
+            <p class="paragraph">Water remains a crucial element in the country's geography despite the arid climate.
+                The
+                most
+                prominent body of water is <b class="bold">Al-Shaimsa Lake</b>, a <b class="bold">vast inland basin</b>
+                surrounded by oases and settlements that depend on its life-giving waters. Although other <b class="bold">lakes and seasonal rivers</b> dot the territory, none rival the size or influence of
+                Al-Shaimsa. Complementing these freshwater sources are the three seas that embrace Lamberia: the <b class="bold">Blue Sea</b>, the <b class="bold">Sea of Ricene</b>, and the <b class="bold">Grandic
+                    Ocean</b>. These maritime domains not only enhance the country&rsquo;s <b class="bold">geostrategic
+                    significance</b> but also support its <b class="bold">fishing industry</b>, <b class="bold">naval
+                    mobility</b>, and <b class="bold">tourism sector</b>.
+            </p>
+            <p class="paragraph">Traversing the desert heartland is the <b class="bold">Setraki River</b>, the <b class="bold">longest river in Lamberia</b>, running <b class="bold">652 kilometers</b> from the
+                western
+                hills to the Sea of Ricene. This river is a vital artery for <b class="bold">agriculture</b>, <b class="bold">trade</b>, and <b class="bold">transportation</b>, and forms the backbone of <b class="bold">irrigation systems</b> that sustain key urban and rural populations. Most rivers in
+                Lamberia are <b class="bold">seasonal</b>, yet they converge into a network that flows toward the
+                northern
+                or southeastern coasts, shaping the <b class="bold">hydrological character</b> of the nation.</p>
+            <h2 class="heading" id="Politics">Politics</h2>
+            <h3 class="sub-heading" id="Government">Government</h3>
+            <figure class="image image-right"><img src="https://dyscover.ielectro.com/content/image/Prime_Minister_of_Lamberia.png?t=1766433059000">
+                <figcaption>Prime Minister of Lamberia</figcaption>
+            </figure>
+            <p class="paragraph">The <b class="bold">Islamic Republic of Lamberia</b> operates under a <b class="bold">unitary
+                    parliamentary republic</b>, blending <b class="bold">Islamic values</b> with a <b class="bold">constitutional secularism</b> that guides its political framework. Despite its formal
+                designation as an "Islamic Republic," the state structure is grounded in <b class="bold">pluralist
+                    governance</b> and <b class="bold">civil law</b>, where <b class="bold">Islam is recognized as the
+                    state
+                    religion</b>, but <b class="bold">freedom of belief</b> and <b class="bold">judicial neutrality</b>
+                are
+                protected under the constitution adopted on <b class="bold">13 January 2021</b>. The Lamberian
+                government is
+                built on the principles of <b class="bold">popular sovereignty</b>, <b class="bold">parliamentary
+                    accountability</b>, and <b class="bold">institutional balance</b>, and is defined by three core
+                branches: the <b class="bold">executive</b>, the <b class="bold">legislative</b>, and the <b class="bold">judiciary</b>.
+            </p>
+            <p class="paragraph">At the apex of the executive branch stands the <b class="bold">President of the
+                    Republic</b>,
+                currently <b class="bold">Ahmed Al-Farsi</b>, who serves as <b class="bold">head of state</b>, <b class="bold">guardian of the constitution</b>, and <b class="bold">symbol of national unity</b>.
+                Though
+                largely ceremonial in peacetime, the President holds critical powers in times of emergency, including
+                the
+                authority to <b class="bold">dissolve Parliament</b>, <b class="bold">declare war</b>, and <b class="bold">veto legislation</b> pending parliamentary review. The President also appoints key
+                national
+                officials, including the Prime Minister, based on parliamentary alignment.
+            </p>
+            <p class="paragraph">The <b class="bold">Prime Minister</b>, presently <b class="bold">Lachen Hassan</b>, is
+                the
+                <b class="bold">head of government</b> and wields substantial executive authority. As the leader of the
+                <b class="bold">Council of Ministers</b>, the Prime Minister is responsible for <b class="bold">formulating
+                    domestic and foreign policy</b>, overseeing national ministries, and ensuring the execution of laws
+                passed by Parliament. The Prime Minister must maintain the <b class="bold">confidence of the
+                    Parliament</b>,
+                and their appointment requires confirmation by a <b class="bold">majority vote in the legislature</b>.
+                The
+                government may be dismissed by a <b class="bold">vote of no confidence</b>, affirming the <b class="bold">parliamentary character</b> of Lamberia&rsquo;s political system.
+            </p>
+            <p class="paragraph">The <b class="bold">Parliament of Lamberia</b> is a <b class="bold">unicameral
+                    legislature</b>,
+                composed of elected representatives from all provinces and constituencies. It functions as the <b class="bold">supreme legislative body</b>, responsible for enacting laws, approving the national
+                budget,
+                ratifying international treaties, and exercising oversight over the executive branch. The <b class="bold">Speaker of Parliament</b>, currently <b class="bold">Omar Abdelrahman</b>, presides
+                over
+                parliamentary sessions and plays a key role in mediating legislative debates and guaranteeing procedural
+                order. Parliamentary elections are held every <b class="bold">four years</b>, and the system is based on
+                <b class="bold">proportional representation</b> to ensure broad political participation across ethnic
+                and
+                regional lines.
+            </p>
+            <p class="paragraph">The <b class="bold">judicial branch</b> is headed by the <b class="bold">Chief Judge of
+                    the
+                    Republic</b>, <b class="bold">Hassan Al-Mutairi</b>, who presides over the <b class="bold">Supreme
+                    Court
+                    of Lamberia</b>, the highest constitutional and appellate authority in the land. The judiciary is
+                independent by law and charged with <b class="bold">upholding the constitution</b>, <b class="bold">interpreting legislation</b>, and <b class="bold">guaranteeing civil liberties</b>.
+                Special
+                religious and customary courts operate in parallel with civil courts for personal status issues,
+                especially
+                in matters involving <b class="bold">marriage</b>, <b class="bold">inheritance</b>, and <b class="bold">family law</b>, but always within the constitutional framework.</p>
+            <h3 class="sub-heading" id="Political_parties">Political parties</h3>
+            <p class="paragraph"><b class="bold">Lamberia</b> is widely regarded as the <b class="bold">only true
+                    democracy
+                    of
+                    Tayanusa</b>, a distinction rooted in its <b class="bold">pluralistic political system</b>, <b class="bold">vibrant electoral culture</b>, and <b class="bold">firm constitutional protections</b>
+                for
+                <b class="bold">freedom of speech</b>, <b class="bold">association</b>, and <b class="bold">press</b>.
+                In
+                contrast to many neighboring states&mdash;often marked by authoritarian tendencies, dynastic rule, or
+                theocratic dominance&mdash;Lamberia has emerged as a beacon of <b class="bold">representative
+                    governance</b>, where <b class="bold">multi-party competition</b>, <b class="bold">peaceful power
+                    transitions</b>, and <b class="bold">institutional accountability</b> are the norm.
+            </p>
+            <p class="paragraph">The country&rsquo;s political landscape is defined by a <b class="bold">diverse party
+                    system</b>, structured around <b class="bold">ideological</b>, <b class="bold">ethnic</b>, and <b class="bold">regional identities</b>, with a legal framework that guarantees the <b class="bold">right
+                    to form political parties</b>, participate in elections, and criticize government actions. All
+                registered parties must adhere to the <b class="bold">Constitution of the Republic</b>, respect <b class="bold">national sovereignty</b>, and operate within a democratic framework. The <b class="bold">Electoral Commission of Lamberia</b>, an independent constitutional body, oversees all
+                elections and ensures their transparency and fairness. Among the <b class="bold">major political
+                    parties</b>
+                in Lamberia:</p>
+            <ul class="point-list">
+                <li>The <b class="bold">Lamberian Democratic Party (LDP)</b> is the <b class="bold">largest and most
+                        influential party</b>, advocating for <b class="bold">moderate Islamic values</b>, <b class="bold">economic modernization</b>, and <b class="bold">regional integration</b>. It has
+                    governed in several coalitions since 2020 and is known for its technocratic leadership and
+                    diplomatic
+                    foreign policy.</li>
+                <li>The <b class="bold">Racabi Justice Movement (RJM)</b> represents much of the <b class="bold">Racabi
+                        minority</b> and focuses on <b class="bold">minority rights</b>, <b class="bold">decentralization</b>, and <b class="bold">social equity</b>. It often aligns with
+                    broader progressive coalitions in Parliament and has a strong base in the western provinces.</li>
+                <li>The <b class="bold">National Conservative Front (NCF)</b> is a right-wing party that promotes <b class="bold">traditionalist Islamic governance</b>, <b class="bold">cultural preservation</b>,
+                    and
+                    <b class="bold">national defense</b>. Though occasionally accused of sectarian rhetoric, it remains
+                    within constitutional boundaries and participates fully in democratic life.
+                </li>
+                <li>The <b class="bold">Social Renewal Bloc (SRB)</b> is a secular leftist party pushing for <b class="bold">labor reforms</b>, <b class="bold">education expansion</b>, and <b class="bold">state-led economic development</b>. It garners significant support among youth,
+                    trade
+                    unions, and urban workers.</li>
+                <li>The <b class="bold">Green Crescent Party (GCP)</b>, a newer but growing force, centers its platform
+                    around <b class="bold">environmental protection</b>, <b class="bold">anti-corruption</b>, and <b class="bold">sustainable development</b>, reflecting increasing ecological awareness across the
+                    country.</li>
+            </ul>
+            <p class="paragraph">Elections in Lamberia occur on a <b class="bold">fixed four-year cycle</b> for
+                Parliament,
+                with
+                the <b class="bold">Prime Minister chosen from the majority or ruling coalition</b>. <b class="bold">Presidential elections</b>, held every <b class="bold">six years</b>, are often
+                symbolic
+                but feature active national campaigns. Voter turnout in recent cycles has exceeded <b class="bold">76%</b>,
+                a testament to the country's <b class="bold">engaged electorate</b> and <b class="bold">trust in the
+                    democratic process</b>. Freedom of the press, judicial independence, and a politically active civil
+                society reinforce the <b class="bold">democratic culture</b> of Lamberia. Debates in Parliament are
+                often
+                lively, with televised sessions and vibrant political discourse extending into universities, local
+                councils,
+                and mosques.</p>
+            <h3 class="sub-heading" id="Administrative_subdivisions">Administrative
+                subdivisions</h3>
+            <figure class="image image-right"><img src="https://dyscover.ielectro.com/content/image/Destenian_Cusea_relations.png?t=1763808105000">
+                <figcaption>Lamberia's important ally is Destenia</figcaption>
+            </figure>
+            <p class="paragraph"><b class="bold">Lamberia</b> is administratively structured as a <b class="bold">unitary
+                    state</b> divided into <b class="bold">15 provinces</b>, known in Tayanusan as <i class="italic">wilayat</i>. This subdivision system is designed to facilitate efficient governance
+                while
+                preserving national unity across a diverse and geographically vast country. The provincial structure
+                reflects both <b class="bold">historical regions</b> and <b class="bold">modern administrative
+                    considerations</b>, enabling the central government to implement policies effectively while
+                accommodating local needs and identities.
+            </p>
+            <p class="paragraph">Each <b class="bold">province</b> functions as the <b class="bold">primary
+                    administrative
+                    unit</b> below the national level, serving as a regional extension of the central government.
+                Provinces
+                vary significantly in terms of <b class="bold">geography</b>, <b class="bold">population density</b>, <b class="bold">economic activity</b>, and <b class="bold">ethnic composition</b>, yet all operate
+                under a
+                standardized framework set forth by the <b class="bold">Ministry of Interior and Territorial
+                    Affairs</b>. At
+                the head of each province is a <b class="bold">Governor (Wali)</b>, who is appointed directly by the <b class="bold">central government</b> in Tarek, typically upon the recommendation of the Prime
+                Minister
+                and with oversight from Parliament. The governor acts as the state&rsquo;s highest representative in the
+                province, tasked with <b class="bold">implementing national laws</b>, <b class="bold">coordinating
+                    security</b>, and <b class="bold">managing public services</b>. Although governors are not elected,
+                their administrative staff and policy decisions are closely monitored by local advisory councils.</p>
+            <p class="paragraph">Below the provinces are <b class="bold">districts</b>, or mudiriat, which serve as
+                secondary
+                divisions and are responsible for more localized governance. Each district has its own administrative
+                director and staff, tasked with overseeing <b class="bold">municipal services</b>, <b class="bold">infrastructure</b>, <b class="bold">education</b>, and <b class="bold">local economic
+                    development</b>. Within districts, there are <b class="bold">municipalities</b> (baladiyat), which
+                manage city-level administration, particularly in urbanized areas.
+            </p>
+            <p class="paragraph">While the structure is centralized, each province has a <b class="bold">Provincial
+                    Council</b>,
+                composed of representatives either elected or appointed from local stakeholders, religious leaders, and
+                civil society figures. These councils have <b class="bold">advisory authority</b> and provide <b class="bold">feedback to the national government</b> on provincial priorities, cultural matters, and
+                development needs, fostering a limited but meaningful <b class="bold">consultative process</b>. The
+                administrative division into 15 provinces ensures a <b class="bold">balanced territorial
+                    organization</b>,
+                allowing the national government to maintain <b class="bold">cohesive control</b> while granting room
+                for <b class="bold">regional variation</b> and <b class="bold">cultural representation</b>, especially
+                in
+                provinces with significant <b class="bold">Racabi or mixed populations</b>. This structure also plays a
+                critical role in <b class="bold">election logistics</b>, <b class="bold">infrastructure planning</b>, <b class="bold">security coordination</b>, and <b class="bold">disaster response</b>, making it
+                foundational to Lamberia&rsquo;s internal governance.</p>
+            <h3 class="sub-heading" id="Foreign_relations">Foreign relations</h3>
+            <p class="paragraph"><b class="bold">Lamberia&rsquo;s foreign policy</b> is shaped by a firm commitment to
+                <b class="bold">diplomacy</b>, <b class="bold">multilateralism</b>, and the principle of <b class="bold">sovereign equality among nations</b>. As a nation with a rising regional profile and a
+                long-standing tradition of <b class="bold">non-aggression</b>, Lamberia positions itself as a <b class="bold">bridge between cultures, blocs, and continents</b>, particularly between the Tayanusan,
+                Edrobean, and Litherian spheres. Its diplomatic doctrine emphasizes <b class="bold">strategic
+                    neutrality</b>, <b class="bold">regional leadership</b>, and <b class="bold">pragmatic
+                    alliances</b>,
+                reflecting a desire to preserve both <b class="bold">ideological independence</b> and <b class="bold">economic security</b> in a shifting global order.
+            </p>
+            <p class="paragraph">At the heart of Lamberia&rsquo;s regional strategy lies its self-perception as the <b class="bold">natural leader of the Tayanusan Community (TC)</b>, a stance that has elevated its role
+                within the organization but has also fostered a <b class="bold">subtle but growing rivalry with
+                    Cusea</b>,
+                another influential power in Tayanusa. While both countries are founding members of the TC and
+                collaborate
+                on trade and infrastructure integration, their <b class="bold">competition for political influence over
+                    smaller Tayanusan states</b>&mdash;especially those with fragile institutions or mixed religious
+                demographics&mdash;has generated a quiet but persistent contest for hegemony in the region.
+            </p>
+            <p class="paragraph">Lamberia&rsquo;s closest and most strategic ally on the global stage is <b class="bold">Destenia</b>, with whom it shares deep and expanding ties. The relationship is grounded
+                primarily in <b class="bold">economic cooperation</b>, particularly in the areas of <b class="bold">energy</b>, <b class="bold">infrastructure development</b>, and <b class="bold">technological exchange</b>. However, the cornerstone of this alliance lies in the <b class="bold">military-industrial domain</b>, as <b class="bold">Destenia serves as Lamberia&rsquo;s
+                    main
+                    weapons supplier</b>, enabling the latter to modernize its armed forces while maintaining
+                technological
+                parity in a volatile region. The two countries often coordinate positions in global forums, particularly
+                within the <b class="bold">World Union</b>, where they promote a <b class="bold">multipolar order</b>,
+                <b class="bold">developmental sovereignty</b>, and <b class="bold">collective security frameworks</b>.
+            </p>
+            <p class="paragraph">Relations with <b class="bold">Suklan</b> remain complex. While no direct hostilities
+                have
+                occurred in recent decades, <b class="bold">political and religious tensions</b> linger beneath the
+                surface.
+                Lamberia views Suklan&rsquo;s <b class="bold">isolationist posture</b> and <b class="bold">sectarian
+                    undertones</b> with caution, while Suklan remains wary of Lamberia&rsquo;s <b class="bold">expanding
+                    influence in maritime Tayanusa</b>. Nevertheless, both countries maintain <b class="bold">cordial
+                    diplomatic relations</b>, conduct bilateral dialogues, and collaborate within multilateral settings
+                such
+                as the <b class="bold">Global Reserve Fund</b> and the <b class="bold">International Energy Agency</b>.
+                These engagements help prevent friction from escalating into open rivalry.
+            </p>
+            <p class="paragraph">Lamberia maintains a <b class="bold">skeptical yet pragmatic posture toward the
+                    Edrobean
+                    world
+                    and Valmirica</b>, often criticizing what it calls the <b class="bold">hypocrisy of Edrobean
+                    democracies</b>, particularly on issues of <b class="bold">interventionism</b>, <b class="bold">human</b> and <b class="bold">migrant rights</b>. Despite these ideological
+                differences, Lamberia is an <b class="bold">active cooperating partner of the Edrobean Community and
+                    Valmirica</b>, participating in <b class="bold">economic initiatives</b>, <b class="bold">climate
+                    talks</b>, and <b class="bold">counterterrorism frameworks</b>, as long as such cooperation respects
+                Lamberian <b class="bold">sovereignty</b> and avoids political conditionalities.
+            </p>
+            <p class="paragraph">The country&rsquo;s multilateral diplomacy is also evident in its active membership in
+                global
+                organizations such as the <b class="bold">World Union</b>, the <b class="bold">Islamic Cooperation
+                    Organization</b>, the <b class="bold">Global Reserve Fund</b>, and the <b class="bold">International
+                    Energy Agency</b>. Lamberia uses these platforms to promote <b class="bold">fairer trade terms</b>,
+                <b class="bold">energy equity</b>, and <b class="bold">non-aligned security cooperation</b>. It
+                consistently advocates for <b class="bold">reform of global governance structures</b>, calling for <b class="bold">greater voice and representation for Tayanusan and Global South nations</b>.</p>
+            <h3 class="sub-heading" id="Military">Military</h3>
+            <p class="paragraph">The <b class="bold">military of Lamberia</b>, formally known as the <b class="bold">Lamberian
+                    National Defense Forces (LNDF)</b>, is a <b class="bold">professional, modern, and highly
+                    disciplined
+                    armed force</b> tasked with defending the sovereignty, territorial integrity, and strategic
+                interests of
+                the Islamic Republic of Lamberia. As a <b class="bold">non-aggressive but highly vigilant nation</b>,
+                Lamberia maintains a <b class="bold">defensive military doctrine</b> rooted in deterrence, rapid
+                mobilization, and close cooperation with key strategic allies&mdash;most notably <b class="bold">Destenia</b>, from which it sources a significant portion of its <b class="bold">advanced
+                    weaponry and defense technologies</b>. The LNDF is composed of <b class="bold">four primary
+                    branches</b>:</p>
+            <ul class="point-list">
+                <li>The <b class="bold">Lamberian Army</b> is the largest component of the military, responsible for <b class="bold">land-based defense</b>, <b class="bold">border protection</b>, and <b class="bold">internal security support</b>. It maintains a combination of <b class="bold">mechanized
+                        divisions</b>, <b class="bold">infantry brigades</b>, and <b class="bold">desert warfare
+                        units</b>,
+                    with strong emphasis on training in <b class="bold">arid environments</b> and <b class="bold">mountain
+                        operations</b> due to the country's demanding terrain. The Army is structured around <b class="bold">three regional commands</b>, each overseeing deployments in the north, center, and
+                    southern provinces.</li>
+                <li>The <b class="bold">Lamberian Navy</b>, while comparatively modest in size, plays a crucial role in
+                    securing the <b class="bold">Blue Sea</b>, <b class="bold">Sea of Ricene</b>, and <b class="bold">Grandic Ocean</b> maritime borders. It operates a fleet of <b class="bold">frigates</b>, <b class="bold">patrol vessels</b>, and <b class="bold">coastal
+                        defense
+                        units</b>, many of which have been acquired or co-developed in partnership with Destenia. The
+                    Navy
+                    also maintains <b class="bold">rapid-reaction marine detachments</b>, particularly for defending the
+                    <b class="bold">Aletian Islands</b> and conducting anti-smuggling operations.</li>
+                <li>The <b class="bold">Lamberian Air Force</b> is a growing and technologically advancing arm of the
+                    military. It controls a range of <b class="bold">fighter aircraft</b>, <b class="bold">transport
+                        planes</b>, and <b class="bold">surveillance drones</b>, and plays a pivotal role in <b class="bold">border patrol</b>, <b class="bold">airspace sovereignty</b>, and <b class="bold">strategic reconnaissance</b>. Through its partnership with Destenia, Lamberia has
+                    gained access to <b class="bold">4.5-generation combat aircraft</b>, <b class="bold">advanced radar
+                        systems</b>, and <b class="bold">electronic warfare capabilities</b>.</li>
+                <li>The <b class="bold">Republican Guard</b>, a highly trained and politically loyal elite corps, is
+                    tasked
+                    with the <b class="bold">protection of national institutions</b>, the <b class="bold">President</b>,
+                    and
+                    <b class="bold">key government facilities</b>. The Guard is also deployed in special internal
+                    operations, counterterrorism, and national emergencies, and is considered the most ideologically
+                    committed and best-equipped force in the country.
+                </li>
+            </ul>
+            <p class="paragraph">The military is commanded by the <b class="bold">Supreme Council of National
+                    Defense</b>,
+                chaired by the <b class="bold">President of the Republic</b>, with operational control exercised by the
+                <b class="bold">Chief of the General Staff</b>, who oversees strategic planning, resource allocation,
+                and
+                coordination among branches. Civilian oversight is guaranteed through the <b class="bold">Ministry of
+                    Defense</b>, which answers to Parliament and ensures alignment with national policy.
+            </p>
+            <p class="paragraph">Lamberia maintains a <b class="bold">professional volunteer force</b> with <b class="bold">no
+                    compulsory conscription</b>, although the constitution permits a <b class="bold">universal
+                    mobilization
+                    clause</b> in times of war or existential threat. The total number of active personnel stands at
+                approximately <b class="bold">260,000</b>, with an additional <b class="bold">150,000 in reserve
+                    formations</b>. The <b class="bold">defense industry</b> is steadily growing, focusing on <b class="bold">light arms manufacturing</b>, <b class="bold">aerospace maintenance</b>, and <b class="bold">desert-adapted armored vehicles</b>. However, for high-end military technology,
+                Lamberia
+                remains closely dependent on imports from <b class="bold">Destenia</b>, which has become not only its <b class="bold">main weapons supplier</b> but also a <b class="bold">partner in training, doctrine
+                    development, and cyber defense</b>.</p>
+            <p class="paragraph">Strategically, the LNDF has adopted a <b class="bold">forward-defense model</b>,
+                deploying
+                early-warning systems and rapid-response battalions near <b class="bold">vulnerable maritime and land
+                    borders</b>, especially near the <b class="bold">Suklan frontier</b>, where historical tensions
+                require
+                heightened readiness. Despite those tensions, Lamberia maintains a <b class="bold">strict policy of
+                    non-intervention</b>, <b class="bold">rejects the establishment of foreign military bases on its
+                    soil</b>, and <b class="bold">refuses to participate in offensive coalitions</b>, reinforcing its
+                image
+                as a <b class="bold">sovereign, defensive power</b>.</p>
+            <h3 class="sub-heading" id="Law_enforcement">Law enforcement</h3>
+            <p class="paragraph">The <b class="bold">law enforcement system of Lamberia</b> is a centralized,
+                multi-tiered
+                structure designed to uphold <b class="bold">public order</b>, <b class="bold">state security</b>, and
+                the
+                <b class="bold">rule of law</b> within the framework of a <b class="bold">constitutional republic</b>.
+                While
+                operating under the overarching authority of the <b class="bold">Ministry of Justice and Internal
+                    Security</b>, Lamberia&rsquo;s police forces maintain a high degree of <b class="bold">professionalism</b>, <b class="bold">discipline</b>, and <b class="bold">public
+                    accountability</b>, reflecting the country&rsquo;s status as the <b class="bold">only true democracy
+                    in
+                    Tayanusa</b>. Law enforcement agencies are empowered by the <b class="bold">Lamberian Penal Code</b>
+                and
+                must act in compliance with the <b class="bold">constitutional protections of civil liberties</b>,
+                including
+                freedom of expression, fair trial, and privacy.
+            </p>
+            <p class="paragraph">The primary force is the <b class="bold">Lamberian National Police (LNP)</b>, which
+                serves
+                as
+                the <b class="bold">general-purpose civil police</b> across the entire territory. The LNP is responsible
+                for
+                <b class="bold">crime prevention</b>, <b class="bold">public safety</b>, <b class="bold">criminal
+                    investigations</b>, and <b class="bold">traffic enforcement</b>. Structured into <b class="bold">provincial commands</b>, the force operates local stations in every district and
+                municipality, ensuring widespread presence and rapid response capabilities. Officers undergo intensive
+                training at the <b class="bold">National Police Academy in Tarek</b>, where they receive education not
+                only
+                in law enforcement techniques but also in <b class="bold">human rights</b>, <b class="bold">community
+                    relations</b>, and <b class="bold">non-lethal conflict resolution</b>.
+            </p>
+            <p class="paragraph">In parallel to the LNP, the <b class="bold">Judicial Police Directorate (JPD)</b>
+                functions
+                as a
+                <b class="bold">specialized investigative agency</b> under the oversight of the <b class="bold">Ministry
+                    of
+                    Justice</b> and the <b class="bold">Public Prosecutor&rsquo;s Office</b>. Its officers work
+                alongside
+                judges and prosecutors in conducting <b class="bold">forensic analysis</b>, <b class="bold">financial
+                    investigations</b>, <b class="bold">organized crime probes</b>, and <b class="bold">anti-corruption
+                    operations</b>. The JPD plays a key role in Lamberia&rsquo;s efforts to maintain <b class="bold">judicial independence</b> and enforce <b class="bold">transparency laws</b>, especially
+                in
+                cases involving public officials or transnational crimes.
+            </p>
+            <p class="paragraph">The <b class="bold">Border and Maritime Security Corps (BMSC)</b>, a militarized police
+                force,
+                is tasked with protecting <b class="bold">Lamberia&rsquo;s land borders</b>, <b class="bold">ports</b>,
+                and
+                <b class="bold">coastlines</b>. Operating in coordination with the Navy, it is responsible for <b class="bold">anti-smuggling operations</b>, <b class="bold">illegal migration control</b>, and <b class="bold">monitoring of restricted zones</b> such as the Grandic Ocean islands. The BMSC also
+                conducts <b class="bold">joint drills</b> with Destenian advisors, especially in counter-piracy and
+                maritime
+                interdiction.
+            </p>
+            <p class="paragraph">For internal threats, terrorism prevention, and intelligence operations, Lamberia
+                relies on
+                the
+                <b class="bold">General Directorate for National Security (GDNS)</b>, the highest security agency in the
+                country. The GDNS has both <b class="bold">domestic and foreign intelligence mandates</b>, with
+                divisions
+                focusing on <b class="bold">cybersecurity</b>, <b class="bold">counterterrorism</b>, and <b class="bold">surveillance of extremist networks</b>. Although secretive in nature, the GDNS is
+                subject
+                to <b class="bold">parliamentary oversight</b> through a special security committee, ensuring its
+                actions
+                remain consistent with national law.
+            </p>
+            <p class="paragraph">Maintaining public confidence in law enforcement is a key concern of the Lamberian
+                state.
+                The <b class="bold">Police Ethics Board</b>, an independent civilian-led institution, is responsible for
+                investigating <b class="bold">misconduct</b>, <b class="bold">abuse of power</b>, and <b class="bold">violations of rights</b> by law enforcement personnel. Citizens can submit complaints
+                anonymously, and findings are regularly published to the public to guarantee transparency. In rural and
+                sparsely populated regions&mdash;especially in the southern and desert provinces&mdash;the <b class="bold">Regional Constabulary Forces (RCF)</b> operate as auxiliary units trained in both
+                police
+                and civil affairs. Their role includes <b class="bold">conflict mediation</b>, <b class="bold">tribal
+                    liaison</b>, and <b class="bold">emergency response</b>, helping bridge the gap between state
+                institutions and isolated communities.</p>
+            <p class="paragraph">Lamberia has invested heavily in <b class="bold">digital policing infrastructure</b>,
+                including
+                <b class="bold">nationwide biometric identification</b>, <b class="bold">centralized criminal
+                    databases</b>,
+                and <b class="bold">real-time surveillance systems</b> in urban centers. However, strict regulations
+                exist
+                to protect against <b class="bold">invasive practices</b>, and any surveillance initiative requires
+                judicial
+                authorization. Ultimately, Lamberia&rsquo;s law enforcement model is defined by a blend of <b class="bold">central control</b>, <b class="bold">institutional accountability</b>, and <b class="bold">local adaptability</b>, making it one of the most advanced and respected policing
+                systems
+                in the Tayanusan region. Its ability to balance <b class="bold">state authority with civil liberties</b>
+                reflects the country's broader democratic ethos and commitment to <b class="bold">justice through rule
+                    of
+                    law</b>.
+            </p>
+            <h2 class="heading" id="Economy">Economy</h2>
+            <p class="paragraph">The <b class="bold">economy of Lamberia</b> is a powerful and strategically positioned
+                engine
+                within the Tayanusan region and the broader global market. With a <b class="bold">GDP of 3.4 trillion
+                    DTR</b>, it ranks as the <b class="bold">third-largest economy in the world</b>, driven primarily by
+                its
+                unparalleled dominance in the <b class="bold">energy sector</b>, alongside strong performance in <b class="bold">infrastructure development</b>, <b class="bold">industrial manufacturing</b>, and <b class="bold">logistics services</b>. Despite its formal designation as an Islamic Republic, the
+                country
+                follows a <b class="bold">market-oriented economic model</b> with <b class="bold">state oversight in
+                    strategic sectors</b>, especially in energy, mining, and defense.
+            </p>
+            <p class="paragraph">Lamberia holds the distinction of being the <b class="bold">largest oil exporter in the
+                    world</b>, with daily exports exceeding <b class="bold">11 million barrels</b>, contributing to over
+                <b class="bold">40% of its GDP</b> and nearly <b class="bold">70% of government revenue</b>. Its vast
+                petroleum reserves&mdash;particularly those in the <b class="bold">Ricene Basin</b>, the <b class="bold">Deshari Desert Fields</b>, and the offshore platforms in the <b class="bold">Grandic
+                    Ocean
+                    and Blue Sea</b>&mdash;have made Lamberia a central pillar of global energy supply. The national oil
+                conglomerate, <b class="bold">LAMOIL</b>, is state-owned but operates under corporate structures similar
+                to
+                multinational firms, maintaining <b class="bold">joint ventures with firms from Destenia, the Edrobean
+                    Community, and the Tayanusan bloc</b>.
+            </p>
+            <p class="paragraph">Natural gas, liquefied petroleum, and petrochemicals also form a significant part of
+                the
+                export
+                portfolio, with Lamberia investing heavily in <b class="bold">refining capacity</b>, <b class="bold">pipeline infrastructure</b>, and <b class="bold">gas-to-liquid (GTL) technologies</b>.
+                The
+                country&rsquo;s membership in the <b class="bold">International Energy Agency</b> and the <b class="bold">Global Reserve Fund</b> allows it to exert considerable influence on <b class="bold">energy
+                    policy</b>, <b class="bold">price stabilization</b>, and <b class="bold">emergency reserves
+                    coordination</b> across multiple continents.
+            </p>
+            <p class="paragraph">While energy dominates, Lamberia has actively pursued a <b class="bold">diversification
+                    strategy</b>, led by the <b class="bold">Ministry of Economic Development</b>, to reduce dependence
+                on
+                hydrocarbons. This includes significant investments in <b class="bold">renewable energy</b>, <b class="bold">heavy industries</b>, <b class="bold">agriculture modernization</b>, and <b class="bold">transportation logistics</b>, especially along the <b class="bold">DesTay
+                    Corridor</b>&mdash;a vast infrastructure project linking Lamberia with Destenia and other Tayanusan
+                economies through railways, ports, and highways. The <b class="bold">industrial sector</b>, comprising
+                <b class="bold">steel</b>, <b class="bold">cement</b>, <b class="bold">chemicals</b>, and <b class="bold">automotive assembly</b>, accounts for about <b class="bold">25% of GDP</b>. Several <b class="bold">industrial zones</b>, particularly around the capital <b class="bold">Tarek</b>, have
+                attracted foreign direct investment due to tax incentives, high-skilled labor, and state guarantees.
+                Lamberia also maintains a growing <b class="bold">defense manufacturing sector</b>, producing small
+                arms,
+                armored vehicles, and communication systems, many of which are exported to allied nations.</p>
+            <p class="paragraph">The <b class="bold">agricultural sector</b>, though limited by arid geography, remains
+                vital for
+                food security and rural employment. Through extensive <b class="bold">irrigation projects</b> supported
+                by
+                the <b class="bold">Setraki River</b> and water conservation programs near <b class="bold">Al-Shaimsa
+                    Lake</b>, Lamberia produces <b class="bold">dates, citrus fruits, grains, and legumes</b>, with
+                significant volumes directed to domestic consumption and export to neighboring countries.
+                Lamberia&rsquo;s
+                <b class="bold">services sector</b>&mdash;particularly <b class="bold">finance</b>, <b class="bold">telecommunications</b>, and <b class="bold">construction</b>&mdash;has grown rapidly in
+                urban areas. The financial capital <b class="bold">Nourat</b> is home to regional branches of several
+                global
+                banks, while local fintech startups are beginning to digitize public services and consumer transactions.
+                The
+                <b class="bold">Lamberian Riyal (LBR)</b> is a <b class="bold">stable, non-convertible currency</b>
+                managed
+                by the <b class="bold">Central Bank of Lamberia</b>, which uses sovereign wealth funds to stabilize
+                inflation and cushion budget shocks during oil price fluctuations.
+            </p>
+            <p class="paragraph">Trade policy is oriented around <b class="bold">bilateral agreements</b> with Destenia,
+                the
+                Edrobean Community, and Tayanusan states. Lamberia is a <b class="bold">founding member of the Tayanusan
+                    Economic Compact</b>, promoting intra-regional trade liberalization and infrastructure
+                harmonization.
+                Despite its <b class="bold">skepticism toward Edrobean political models</b>, Lamberia maintains <b class="bold">active commercial ties</b> with Edrobean ports and industries, particularly in <b class="bold">raw materials, energy</b>, and <b class="bold">construction services</b>. Unemployment
+                is
+                officially around <b class="bold">5.8%</b>, though rural underemployment remains a concern. The
+                government
+                has launched massive <b class="bold">public works programs</b> and <b class="bold">vocational education
+                    campaigns</b> to increase workforce participation among youth and women, while maintaining a <b class="bold">robust welfare system</b> funded by energy revenues.</p>
+            <h2 class="heading" id="Demography">Demography</h2>
+            <p class="paragraph"><b class="bold">Lamberia&rsquo;s demography</b> reflects a dynamic and steadily growing
+                nation,
+                shaped by <b class="bold">youthful vitality</b>, <b class="bold">urban expansion</b>, and <b class="bold">a
+                    strong emphasis on national cohesion</b>. With a total population of <b class="bold">53,047,324</b>,
+                the
+                Islamic Republic of Lamberia ranks among the most populous countries in the <b class="bold">Tayanusan
+                    region</b>, serving as a key demographic engine for regional development. Its population density
+                varies
+                significantly by geography, with dense concentrations along <b class="bold">coastal areas and river
+                    systems</b>, and sparser settlements across the <b class="bold">interior deserts</b> and <b class="bold">mountain ranges</b>.
+            </p>
+            <p class="paragraph">The population is predominantly <b class="bold">young</b>, with a <b class="bold">median
+                    age of
+                    28.6 years</b>, a consequence of high birth rates during the early 2000s and effective health
+                campaigns
+                that have reduced infant and maternal mortality. Over <b class="bold">60% of citizens are under the age
+                    of
+                    35</b>, giving the country a vast labor pool and substantial human capital for future growth. This
+                <b class="bold">youth bulge</b> is both a strategic asset and a policy challenge, driving national
+                investments in <b class="bold">education</b>, <b class="bold">vocational training</b>, and <b class="bold">job creation</b>.
+            </p>
+            <p class="paragraph">Lamberia's <b class="bold">urbanization rate</b> has surged in the last two decades,
+                with
+                approximately <b class="bold">71% of the population now residing in urban centers</b>. Major cities
+                include
+                the <b class="bold">capital Tarek</b>, which alone houses nearly 8 million residents and functions as
+                the
+                political, cultural, and religious heart of the nation; <b class="bold">Nourat</b>, the economic and
+                financial hub; and <b class="bold">Ladhrat</b>, known for its industrial base and vibrant working-class
+                districts. Rapid urban growth has led to the development of modern infrastructure, but it has also
+                placed
+                pressure on housing, transportation, and public services&mdash;issues being addressed through ambitious
+                <b class="bold">urban renewal programs</b>.
+            </p>
+            <p class="paragraph">The <b class="bold">rural population</b>, comprising the remaining 29%, is primarily
+                engaged in
+                <b class="bold">agriculture</b>, <b class="bold">pastoralism</b>, and <b class="bold">resource
+                    extraction</b>, especially in the <b class="bold">desert provinces</b> and <b class="bold">mountain
+                    valleys</b>. Government policies aim to reduce regional inequality through <b class="bold">infrastructure expansion</b>, <b class="bold">rural electrification</b>, and the <b class="bold">digital inclusion</b> of remote communities. <b class="bold">Life expectancy</b> in
+                Lamberia has risen significantly in recent decades, currently standing at <b class="bold">76 years</b>
+                for
+                women and <b class="bold">73 years</b> for men. This improvement is largely due to <b class="bold">expanded
+                    access to public healthcare</b>, <b class="bold">nationwide vaccination programs</b>, and <b class="bold">improvements in nutrition and water sanitation</b>, particularly in underserved
+                regions.
+                The country boasts a <b class="bold">universal healthcare system</b>, with additional private providers
+                operating in urban centers under strict regulation.
+            </p>
+            <p class="paragraph">In terms of family structure, Lamberia combines traditional and modern values. While <b class="bold">extended families</b> remain common in rural areas, <b class="bold">nuclear
+                    households</b>
+                now dominate in urban regions. Marriage rates are high, and the <b class="bold">average household
+                    size</b>
+                is 4.2 persons, though this number has been declining slightly due to economic modernization and
+                shifting
+                cultural norms. <b class="bold">Fertility rates</b> have declined to an average of <b class="bold">2.5
+                    children per woman</b>, reflecting increased female education, urbanization, and access to
+                reproductive
+                healthcare. Nevertheless, this rate remains above replacement level, ensuring <b class="bold">continued
+                    population growth</b> well into the mid-21st century.</p>
+            <p class="paragraph">Lamberia also maintains a relatively small but growing <b class="bold">diaspora
+                    population</b>,
+                primarily in <b class="bold">Destenia</b>, <b class="bold">Comussania</b>, and <b class="bold">Edrobean
+                    countries</b>, where Lamberians pursue education, business, and professional careers. Remittances
+                from
+                the diaspora contribute modestly to the economy and are viewed as an important bridge to the global
+                Lamberian community.</p>
+            <h3 class="sub-heading" id="Language">Language</h3>
+            <p class="paragraph"><b class="bold">Language in Lamberia</b> serves as a powerful unifying force,
+                reflecting
+                both
+                the country's <b class="bold">national identity</b> and its <b class="bold">inclusive civic culture</b>.
+                The
+                sole <b class="bold">official language</b> of the Islamic Republic of Lamberia is <b class="bold">Tayanusan</b>, which is used in <b class="bold">government administration</b>, <b class="bold">education</b>, <b class="bold">media</b>, and <b class="bold">legal affairs</b> across
+                all
+                regions and social strata. Despite the country&rsquo;s ethnic diversity, the <b class="bold">linguistic
+                    landscape</b> is remarkably cohesive: <b class="bold">both Lamberians and Racabi minorities speak
+                    Tayanusan fluently</b>, making Lamberia one of the few multi-ethnic nations in the region with a <b class="bold">single, shared linguistic foundation</b>.
+            </p>
+            <p class="paragraph">Tayanusan in Lamberia has evolved into a <b class="bold">standardized national
+                    dialect</b>,
+                often referred to as <b class="bold">Lamberian Tayanusan</b>, distinguished by its <b class="bold">clear
+                    pronunciation</b>, <b class="bold">modern lexicon</b>, and incorporation of administrative and
+                scientific terms borrowed from <b class="bold">Edrobean languages</b>. This variant is used in national
+                broadcasts, state education, and official publications, reinforcing a sense of shared civic identity.
+                While
+                <b class="bold">Racabi</b> is not recognized as an official or regional language, elements of <b class="bold">Racabi culture and oral tradition</b> remain present in poetry, music, and local
+                religious
+                ceremonies&mdash;especially in the western provinces where Racabi communities are concentrated. The
+                state
+                supports <b class="bold">cultural preservation programs</b> that allow Racabi heritage to thrive within
+                the
+                broader framework of Tayanusan linguistic unity, ensuring that <b class="bold">ethnic coexistence</b> is
+                maintained without fragmenting national communication.
+            </p>
+            <p class="paragraph">All students, regardless of background, are taught in <b class="bold">Tayanusan from
+                    early
+                    schooling</b>, and <b class="bold">literacy rates exceed 96%</b>, thanks in part to universal
+                education
+                policies and the widespread availability of public media in accessible dialects. In urban centers such
+                as <b class="bold">Tarek</b>, <b class="bold">Nourat</b>, and <b class="bold">Al-Muharraq</b>, Tayanusan
+                is
+                also used in informal commercial signage, street culture, and digital media, making it not only the
+                language
+                of the state but also the <b class="bold">everyday language of the people</b>.</p>
+            <h3 class="sub-heading" id="Religion">Religion</h3>
+            <p class="paragraph"><b class="bold">Religion in Lamberia</b> plays a profound yet constitutionally balanced
+                role in
+                the country&rsquo;s national identity, social fabric, and institutional life. While the state is
+                officially
+                designated as the <b class="bold">Islamic Republic of Lamberia</b>, the <b class="bold">constitution is
+                    largely secular</b>, ensuring <b class="bold">freedom of worship</b>, <b class="bold">protection of
+                    religious minorities</b>, and the <b class="bold">non-compulsory nature of religious observance</b>
+                in
+                public affairs. This delicate balance between <b class="bold">Islamic heritage</b> and <b class="bold">republican governance</b> has helped make Lamberia one of the most <b class="bold">religiously tolerant and stable nations</b> in Tayanusa.
+            </p>
+            <p class="paragraph">An overwhelming <b class="bold">95% of the population is Muslim</b>, with the vast
+                majority
+                adhering to <b class="bold">Sunni Islam</b>, specifically following the <b class="bold">Maliki school of
+                    jurisprudence</b>. Islam is recognized as the <b class="bold">state religion</b>, and many aspects
+                of
+                national life&mdash;such as public holidays, cultural values, and moral discourse&mdash;are influenced
+                by
+                Islamic tradition. The <b class="bold">Ministry of Religious Affairs and Endowments</b> oversees the <b class="bold">administration of mosques</b>, the <b class="bold">training of imams</b>, and the <b class="bold">certification of Islamic charities</b>, ensuring that religious institutions align with
+                national law while preserving their spiritual autonomy.
+            </p>
+            <p class="paragraph">The state does not impose religious law in civil or criminal matters. Instead, <b class="bold">civil courts govern most legal proceedings</b>, with <b class="bold">religious courts
+                    limited to personal status issues</b> such as marriage, divorce, inheritance, and
+                guardianship&mdash;always within the bounds of constitutional protections. Participation in religious
+                courts
+                is voluntary and subject to the consent of all parties involved. The <b class="bold">Supreme Court of
+                    Lamberia</b> has jurisdiction over religious cases in the event of constitutional conflicts,
+                safeguarding against theocratic overreach.
+            </p>
+            <p class="paragraph">The remaining <b class="bold">5% of the population is Christian</b>, primarily composed
+                of
+                <b class="bold">Catholic communities</b>, concentrated in urban centers such as <b class="bold">Tarek</b>,
+                <b class="bold">Ladhrat</b>, and parts of <b class="bold">western Lamberia</b>, where <b class="bold">Racabi
+                    Christians</b> maintain vibrant traditions. Christian citizens enjoy <b class="bold">full civil
+                    rights</b>, and the government supports <b class="bold">interfaith councils</b>, <b class="bold">protected worship sites</b>, and <b class="bold">minority language publications</b> to
+                ensure cultural and religious continuity. Christians serve in public office, the judiciary, and the
+                military
+                without discrimination, reflecting the country&rsquo;s commitment to <b class="bold">religious
+                    pluralism</b>. Lamberia&rsquo;s religious policy explicitly rejects sectarianism and bans the
+                political
+                use of religion. Political parties and religious organizations are <b class="bold">prohibited from
+                    inciting
+                    division</b> or claiming exclusive representation of religious identities. Religious leaders who
+                engage
+                in political speech are subject to <b class="bold">judicial oversight</b>, and mosques or churches found
+                violating laws of <b class="bold">incitement or hate speech</b> are subject to suspension or
+                dissolution.
+            </p>
+            <p class="paragraph">In education, <b class="bold">religious instruction is offered in public schools</b> as
+                an
+                optional subject, with separate curricula available for Muslim and Christian students. Parents may also
+                opt
+                their children out entirely. Religious content in textbooks is carefully regulated to emphasize <b class="bold">tolerance</b>, <b class="bold">shared values</b>, and <b class="bold">civic
+                    responsibility</b>. Public life in Lamberia reflects this equilibrium. <b class="bold">Islamic
+                    holidays</b> such as <b class="bold">Eid al-Fitr</b> and <b class="bold">Eid al-Adha</b> are
+                national
+                holidays, but <b class="bold">Christian holidays</b> like <b class="bold">Christmas</b> and <b class="bold">Easter</b> are recognized and respected, especially in Christian-majority
+                neighborhoods.
+                Public fasts and processions are common, but participation is never mandatory, and government workplaces
+                remain inclusive and diverse.</p>
+            <h3 class="sub-heading" id="Ethnicities">Ethnicities</h3>
+            <p class="paragraph"><b class="bold">Lamberia</b> is a <b class="bold">multiethnic republic</b>
+                characterized by
+                a
+                strong sense of <b class="bold">national unity</b>, fostered through a shared language, civic identity,
+                and
+                inclusive governance. Despite its rich ethnic composition, the country has successfully avoided
+                sectarianism
+                or ethnic marginalization, instead embracing a model of <b class="bold">integration without
+                    assimilation</b>, where diverse communities contribute to a <b class="bold">common national
+                    project</b>.
+            </p>
+            <p class="paragraph">The majority of the population&mdash;<b class="bold">87%&mdash;identify as ethnic
+                    Lamberians</b>, who trace their ancestry to the <b class="bold">native desert and coastal tribes</b>
+                of
+                northern Tayanusa. Lamberians are culturally tied to the <b class="bold">Tayanusan heritage</b>, with
+                deep
+                historical roots in the region&rsquo;s <b class="bold">Islamic scholarship</b>, <b class="bold">nomadic
+                    traditions</b>, and <b class="bold">urban trade networks</b>. They are predominantly Sunni Muslim
+                and
+                form the social, political, and cultural core of the republic. Lamberians are distributed throughout the
+                country but are especially concentrated in the central and eastern provinces, as well as in the capital
+                <b class="bold">Tarek</b> and industrial hubs such as <b class="bold">Nourat</b> and <b class="bold">Al-Muharraq</b>.
+            </p>
+            <p class="paragraph">The second-largest ethnic group is the <b class="bold">Racabi minority</b>, comprising
+                approximately <b class="bold">13% of the population</b>. Racabis are an ancient people originating from
+                the
+                western mountain regions and are distinguished by <b class="bold">cultural customs</b>, <b class="bold">religious diversity</b>, and <b class="bold">communal traditions</b> that set them
+                apart
+                from the Lamberian majority. While most Racabis are Muslim, there is also a significant <b class="bold">Christian minority</b> among them, especially in the highland provinces. Despite
+                historical
+                marginalization during pre-republican regimes, the Racabi people have been fully integrated into modern
+                Lamberian society, with strong representation in <b class="bold">education</b>, <b class="bold">business</b>, <b class="bold">civil society</b>, and even <b class="bold">national
+                    politics</b>&mdash;notably through the <b class="bold">Racabi Justice Movement</b>, a key political
+                party advocating for regional equity and cultural preservation.
+            </p>
+            <p class="paragraph">A small but present <b class="bold">3% of the population</b> falls into the tag of
+                <b class="bold">Others</b>, which includes <b class="bold">Tayanusan migrants</b>, <b class="bold">Edrobean
+                    expatriates</b>, and <b class="bold">descendants of long-settled Litherians</b>. These communities
+                are
+                mostly urban-based and often engage in <b class="bold">specialized professions</b>, including academia,
+                international trade, and technology sectors. While not large in number, they contribute to the <b class="bold">cosmopolitan character</b> of cities like Tarek and Ladhrat and are protected by
+                national
+                anti-discrimination laws.
+            </p>
+            <p class="paragraph">Lamberia does not officially categorize citizens based on ethnicity in civil documents,
+                in
+                line
+                with its constitutional commitment to <b class="bold">equal citizenship</b>. Instead, the state promotes
+                a
+                concept known as <b class="bold">&ldquo;Unified National Identity&rdquo;</b>, which emphasizes <b class="bold">linguistic unity (Tayanusan)</b>, <b class="bold">civic participation</b>, and <b class="bold">shared historical memory</b>&mdash;particularly the unification struggle and the
+                drafting
+                of the 2021 constitution.</p>
+        </section>
+    </aside>
+</body>
+</html>

@@ -1,73 +1,85 @@
 .logo {
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.35rem;
+    font-weight: 800;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    letter-spacing: -0.02em;
+    gap: 0.65rem;
+    letter-spacing: -0.03em;
+    color: var(--brand-blue);
 }
 .logo::before {
     content: "";
     display: inline-block;
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
     background-image: url("https://www.ielectro.com/assets/brand/logo.png");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
+    filter: drop-shadow(0 4px 10px rgba(249, 115, 22, 0.18));
 }
 nav {
     position: sticky;
     top: 0;
     z-index: 1000;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 8px 24px rgba(11, 31, 58, 0.04);
+    transition: box-shadow var(--transition-base);
 }
 .nav-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 0;
+    padding: 0.95rem 0;
+    gap: 1rem;
 }
 .nav-links {
     display: flex;
-    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.35rem;
 }
 .nav-links a {
     position: relative;
     text-decoration: none;
-    color: var(--text-color);
-    font-weight: 500;
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    transition: all 0.2s ease;
-}
-.nav-links a::after {
-    content: "";
-    position: absolute;
-    width: 0;
-    height: 2px;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--secondary-color);
-    transition: width 0.3s ease;
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.92rem;
+    padding: 0.55rem 0.95rem;
+    border-radius: 999px;
+    transition:
+        color var(--transition-fast),
+        background-color var(--transition-fast),
+        box-shadow var(--transition-fast),
+        transform var(--transition-fast);
 }
 .nav-links a:hover {
-    color: var(--secondary-solid);
+    color: var(--brand-blue);
     background: var(--secondary-light);
-}
-.nav-links a:hover::after {
-    width: 80%;
+    transform: translateY(-1px);
 }
 .nav-links a.active {
-    color: var(--secondary-solid);
-    font-weight: 600;
+    color: var(--brand-blue);
     background: var(--secondary-light);
+    box-shadow: none;
 }
-.nav-links a.active::after {
-    width: 80%;
+.nav-links a.active::before {
+    content: "";
+    position: absolute;
+    inset: auto 0.85rem -0.35rem;
+    height: 3px;
+    border-radius: 999px;
+    background: var(--brand-orange);
+}
+@media (max-width: 900px) {
+    .nav-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .nav-links {
+        justify-content: center;
+    }
 }

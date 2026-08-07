@@ -19,6 +19,10 @@
     color: var(--blue-color);
     font-weight: 600;
 }
+.manager-actions .search-item {
+    margin: 0;
+    min-width: 12rem;
+}
 @media (max-width: 768px) {
     .manager-container {
         padding: 1rem;

@@ -141,10 +141,10 @@ export class Template {
             await box.create();
             box.footer((footer) => {
                 footer.innerHTML = `
-                    <button class="add">
+                    <button class="button add">
                         Add field
                     </button>
-                    <button class="delete">
+                    <button class="button delete">
                         Delete template
                     </button>
                 `;

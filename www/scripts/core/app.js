@@ -1,9 +1,12 @@
 import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
-import Navbar from "./navbar.js";
-import Footer from "./footer.js";
-export default class App {
-    static initialize() {
-        Nesh.Request.setBaseUrl("api");
+import { Navbar } from "./navbar.js";
+import { Footer } from "./footer.js";
+
+export class App {
+    constructor() {
+        this.init();
+    }
+    init() {
         Nesh.Input.enablePlainTextPaste();
         Nesh.Input.disableAutocomplete();
         Nesh.Input.disableTextCorrection();

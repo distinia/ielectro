@@ -42,11 +42,14 @@ class Users
     private function show(): void
     {
         Request::get();
-        $id = Routing::id();
-        if ($id === null) {
+        $key = Routing::segment(2);
+        if ($key === null || $key === '') {
             Response::badRequest('Missing user id');
         }
-        Response::success(UserProfile::one($id));
+        if (ctype_digit((string) $key)) {
+            Response::success(UserProfile::one((int) $key));
+        }
+        Response::success(UserProfile::byUsername((string) $key));
     }
     private function update(): void
     {
@@ -81,6 +84,7 @@ class User
     public static function id(): int
     {
         $accountId = Identity::id();
+        Db::useDyscover();
         $row = Query::fetch(
             'SELECT id FROM users WHERE account_id = ? LIMIT 1',
             [$accountId]
@@ -109,7 +113,7 @@ class UserProfile
                 du.created_at,
                 a.username
             FROM users du
-            INNER JOIN accounts a ON a.id = du.account_id
+            " . Db::joinAccounts() . "
             WHERE du.id = ?
             LIMIT 1",
             [$id]
@@ -136,6 +140,48 @@ class UserProfile
             'created_at' => $row['created_at'],
         ];
     }
+    public static function byUsername(string $username): array
+    {
+        $row = Query::fetch(
+            "SELECT
+                du.id,
+                du.biography,
+                du.website,
+                du.role,
+                du.status,
+                du.created_at,
+                a.username
+            FROM users du
+            " . Db::joinAccounts() . "
+            WHERE a.username = ?
+            LIMIT 1",
+            [$username]
+        );
+        if (!$row) {
+            Db::useAccount();
+            $account = Query::fetch(
+                'SELECT id FROM accounts WHERE username = ? LIMIT 1',
+                [$username]
+            );
+            Db::useDyscover();
+            if (!$account) {
+                Response::notFound('User not found');
+            }
+            $userRow = Query::fetch(
+                'SELECT id FROM users WHERE account_id = ? LIMIT 1',
+                [(int) $account['id']]
+            );
+            if (!$userRow) {
+                Query::execute(
+                    'INSERT INTO users(account_id) VALUES(?)',
+                    [(int) $account['id']]
+                );
+                return self::one(Query::lastId());
+            }
+            return self::one((int) $userRow['id']);
+        }
+        return self::one((int) $row['id']);
+    }
 }
 class UserCard
 {
@@ -144,7 +190,7 @@ class UserCard
         $row = Query::fetch(
             "SELECT du.id, du.biography, a.username
             FROM users du
-            INNER JOIN accounts a ON a.id = du.account_id
+            " . Db::joinAccounts() . "
             WHERE du.id = ?
             LIMIT 1",
             [$id]

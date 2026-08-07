@@ -11,6 +11,9 @@ class Api
     public function handle(): void
     {
         $this->session();
+        if ($this->app->database !== null) {
+            $this->app->database->use();
+        }
         $service = Routing::segment(1);
         if (!$service) {
             Response::notFound();
@@ -66,7 +69,16 @@ class Api
             Routing::segment(1),
             Routing::segment(2),
         ]));
+        $segment1 = Routing::segment(1);
+        $publicRoots = array_values(array_filter(
+            $this->publicApi,
+            static fn(string $route): bool => !str_contains($route, '/')
+        ));
         $isPublic = in_array($path, $this->publicApi, true)
+            || (
+                $method === 'GET'
+                && in_array($segment1, $publicRoots, true)
+            )
             || (
                 $method === 'POST'
                 && Routing::segment(1) === 'sessions'

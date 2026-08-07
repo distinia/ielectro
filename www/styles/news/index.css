@@ -2,7 +2,7 @@
 .header {
     background:
         linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 59, 255, 0.25)),
-        url("https://www.ielectro.com/media/home.png");
+        url("https://www.ielectro.com/assets/headers/news.png");
     background-position: center;
     background-size: cover;
 }

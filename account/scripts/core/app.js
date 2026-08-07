@@ -36,12 +36,7 @@ export class App {
         return ["login", "create", "oauth-create", "password-recovery"].includes(page);
     }
     async authenticated() {
-        try {
-            await Nesh.Request.get("https://account.ielectro.com/api/user");
-            return true;
-        } catch {
-            return false;
-        }
+        return Nesh.Auth.logged();
     }
 }
 

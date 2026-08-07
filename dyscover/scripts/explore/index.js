@@ -1,5 +1,9 @@
-export { UserCard } from "./user-card.js";
-export { UI } from "./ui.js";
-export { Load } from "./load.js";
-export { Recents } from "./recents.js";
-export { Output } from "./output.js";
+import { App } from "../core/app.js";
+import { UI } from "./ui.js";
+import { Load } from "./load.js";
+
+document.addEventListener("DOMContentLoaded", async () => {
+    if (!(await App.boot())) return;
+    new UI();
+    new Load();
+});

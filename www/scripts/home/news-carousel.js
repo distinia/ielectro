@@ -1,10 +1,10 @@
-export default class NewsCarousel {
+export class NewsCarousel {
     constructor(root) {
         this.root = root;
         this.slides = Array.from(root.querySelectorAll(".carousel-slide"));
         this.prev = root.querySelector(".carousel-arrow.prev");
         this.next = root.querySelector(".carousel-arrow.next");
-        this.index = this.slides.findIndex((s) => s.classList.contains("active"));
+        this.index = this.slides.findIndex((slide) => slide.classList.contains("active"));
         if (this.index < 0) this.index = 0;
         if (this.slides.length === 0) return;
         this.render();
@@ -16,8 +16,8 @@ export default class NewsCarousel {
         this.render();
     }
     render() {
-        this.slides.forEach((slide, idx) => {
-            const active = idx === this.index;
+        this.slides.forEach((slide, index) => {
+            const active = index === this.index;
             slide.classList.toggle("active", active);
             slide.style.display = active ? "flex" : "none";
         });
