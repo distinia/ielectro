@@ -28,12 +28,7 @@ CREATE TABLE IF NOT EXISTS `career_applications` (
   UNIQUE KEY `uq_career_applications_uuid` (`uuid`),
   KEY `idx_career_applications_status` (`status`),
   KEY `idx_career_applications_reviewed_by` (`reviewed_by`),
-  KEY `idx_career_applications_created` (`created_at`),
-  CONSTRAINT `career_applications_ibfk_1`
-    FOREIGN KEY (`reviewed_by`)
-    REFERENCES `accounts` (`id`)
-    ON DELETE SET NULL
-    ON UPDATE CASCADE
+  KEY `idx_career_applications_created` (`created_at`)
 );
 CREATE TABLE IF NOT EXISTS `news` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -51,12 +46,7 @@ CREATE TABLE IF NOT EXISTS `news` (
   KEY `idx_news_author` (`author_id`),
   KEY `idx_news_status` (`status`),
   KEY `idx_news_published` (`published_at`),
-  FULLTEXT KEY `ft_news_search` (`title`,`excerpt`,`body`),
-  CONSTRAINT `news_ibfk_1`
-    FOREIGN KEY (`author_id`)
-    REFERENCES `accounts` (`id`)
-    ON DELETE SET NULL
-    ON UPDATE CASCADE
+  FULLTEXT KEY `ft_news_search` (`title`,`excerpt`,`body`)
 );
 CREATE TABLE IF NOT EXISTS `team` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,

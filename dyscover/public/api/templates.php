@@ -41,7 +41,7 @@ class Templates
     private static function requireTemplate(int $id): void
     {
         $row = Query::fetch(
-            "SELECT id FROM dyscover_posts
+            "SELECT id FROM posts
             WHERE id = ? AND type = 'template' AND status = 'active' LIMIT 1",
             [$id]
         );
@@ -52,7 +52,7 @@ class Templates
     private static function requireOwned(int $id): void
     {
         $row = Query::fetch(
-            "SELECT user_id FROM dyscover_posts
+            "SELECT user_id FROM posts
             WHERE id = ? AND type = 'template' AND status = 'active' LIMIT 1",
             [$id]
         );
@@ -70,7 +70,7 @@ class TemplateFields
     {
         return Query::fetchAll(
             'SELECT id, name, type, position
-            FROM dyscover_template_fields
+            FROM template_fields
             WHERE template_id = ?
             ORDER BY position ASC',
             [$templateId]
@@ -82,7 +82,7 @@ class TemplateFields
             Response::badRequest('Invalid fields');
         }
         $existing = Query::fetchAll(
-            'SELECT id FROM dyscover_template_fields WHERE template_id = ?',
+            'SELECT id FROM template_fields WHERE template_id = ?',
             [$templateId]
         );
         $existingIds = array_map(
@@ -102,7 +102,7 @@ class TemplateFields
             $fieldId = isset($field['id']) ? (int) $field['id'] : 0;
             if ($fieldId > 0 && in_array($fieldId, $existingIds, true)) {
                 Query::execute(
-                    'UPDATE dyscover_template_fields
+                    'UPDATE template_fields
                     SET name = ?, type = ?, position = ?
                     WHERE id = ? AND template_id = ?',
                     [$name, $type, (int) $position, $fieldId, $templateId]
@@ -111,7 +111,7 @@ class TemplateFields
                 continue;
             }
             Query::execute(
-                'INSERT INTO dyscover_template_fields(template_id, name, type, position)
+                'INSERT INTO template_fields(template_id, name, type, position)
                 VALUES (?, ?, ?, ?)',
                 [$templateId, $name, $type, (int) $position]
             );
@@ -119,7 +119,7 @@ class TemplateFields
         }
         foreach (array_diff($existingIds, $keptIds) as $removeId) {
             Query::execute(
-                'DELETE FROM dyscover_template_fields
+                'DELETE FROM template_fields
                 WHERE id = ? AND template_id = ?',
                 [$removeId, $templateId]
             );

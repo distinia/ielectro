@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../src/autoload.php';
 use Nesh\App;
-use Nesh\Connection;
+use Nesh\Database;
 new Install();
 class Install
 {
@@ -35,11 +35,13 @@ class Install
             if (!is_dir($appPath . '/public')) {
                 continue;
             }
-            $database = 'ielectro_' . $folder;
-            App::bootstrapDatabase($appPath, $database);
+            $database = new Database('ielectro_' . $folder);
+            $database->create();
+            $database->use();
+            $database->tables($appPath . '/database');
+            $database->close();
             $count++;
         }
-        Database::close();
         return $count;
     }
     private function javascript(): int

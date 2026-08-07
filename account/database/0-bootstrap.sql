@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `accounts` (
   UNIQUE KEY `uq_accounts_email` (`email`),
   KEY `idx_accounts_created` (`created_at`)
 );
-CREATE TABLE IF NOT EXISTS `account_sessions` (
+CREATE TABLE IF NOT EXISTS `sessions` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `account_id` BIGINT UNSIGNED NOT NULL,
   `token_hash` CHAR(64) NOT NULL,
@@ -40,13 +40,13 @@ CREATE TABLE IF NOT EXISTS `account_sessions` (
   KEY `idx_sessions_last_activity` (`last_activity`),
   KEY `idx_sessions_token_revoked`
     (`token_hash`, `revoked_at`, `expires_at`),
-  CONSTRAINT `fk_account_sessions_account`
+  CONSTRAINT `fk_sessions_account`
     FOREIGN KEY (`account_id`)
     REFERENCES `accounts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `account_activity` (
+CREATE TABLE IF NOT EXISTS `activity` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `account_id` BIGINT UNSIGNED DEFAULT NULL,
   `action` ENUM(
@@ -61,23 +61,23 @@ CREATE TABLE IF NOT EXISTS `account_activity` (
     'profile_updated',
     'phone_number_changed',
     'session_revoked',
-    'account_deleted'
+    'deleted'
   ) NOT NULL,
   `details` TEXT DEFAULT NULL,
   `ip_address` VARCHAR(45) DEFAULT NULL,
   `device_info` TEXT DEFAULT NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `idx_account_activity_account` (`account_id`),
-  KEY `idx_account_activity_action` (`action`),
-  KEY `idx_account_activity_created` (`created_at`),
-  CONSTRAINT `account_activity_ibfk_1`
+  KEY `idx_activity_account` (`account_id`),
+  KEY `idx_activity_action` (`action`),
+  KEY `idx_activity_created` (`created_at`),
+  CONSTRAINT `activity_ibfk_1`
     FOREIGN KEY (`account_id`)
     REFERENCES `accounts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `account_email_verifications` (
+CREATE TABLE IF NOT EXISTS `email_verifications` (
   `account_id` BIGINT UNSIGNED NOT NULL,
   `target_email` VARCHAR(255) NOT NULL,
   `otp_code` VARCHAR(12) NOT NULL,
@@ -86,13 +86,13 @@ CREATE TABLE IF NOT EXISTS `account_email_verifications` (
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`account_id`),
   KEY `idx_email_verifications_expires` (`expires_at`),
-  CONSTRAINT `account_email_verifications_ibfk_1`
+  CONSTRAINT `email_verifications_ibfk_1`
     FOREIGN KEY (`account_id`)
     REFERENCES `accounts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `account_password_resets` (
+CREATE TABLE IF NOT EXISTS `password_resets` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `account_id` BIGINT UNSIGNED NOT NULL,
   `token_hash` char(64) NOT NULL,
@@ -104,13 +104,13 @@ CREATE TABLE IF NOT EXISTS `account_password_resets` (
   UNIQUE KEY `uq_password_resets_token` (`token_hash`),
   KEY `idx_password_resets_user` (`account_id`),
   KEY `idx_password_resets_expires` (`expires_at`),
-  CONSTRAINT `account_password_resets_ibfk_1`
+  CONSTRAINT `password_resets_ibfk_1`
     FOREIGN KEY (`account_id`)
     REFERENCES `accounts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `account_oauth_pending` (
+CREATE TABLE IF NOT EXISTS `oauth_pending` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `provider` ENUM('google','apple','github','discord') NOT NULL,
   `provider_account_id` VARCHAR(255) NOT NULL,

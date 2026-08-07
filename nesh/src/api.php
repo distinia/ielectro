@@ -1,19 +1,25 @@
 <?php
 namespace Nesh;
-class Api 
+class Api
 {
     private App $app;
     public array $publicApi = [];
     public function __construct(App $app)
     {
         $this->app = $app;
+    }
+    public function handle(): void
+    {
         $this->session();
         $service = Routing::segment(1);
         if (!$service) {
             Response::notFound();
         }
         $fileService = $service;
-        if (!is_file($this->app->paths['api'] . "/{$fileService}.php") && str_ends_with($fileService, 's')) {
+        if (
+            !is_file($this->app->paths['api'] . "/{$fileService}.php")
+            && str_ends_with($fileService, 's')
+        ) {
             $singular = substr($fileService, 0, -1);
             if (is_file($this->app->paths['api'] . "/{$singular}.php")) {
                 $fileService = $singular;

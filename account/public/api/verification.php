@@ -59,13 +59,13 @@ class EmailVerification
             Response::badRequest('Email already verified');
         }
         Query::execute(
-            "DELETE FROM account_email_verifications
+            "DELETE FROM email_verifications
             WHERE account_id = ?",
             [$accountId]
         );
         $otp = self::otp();
         Query::execute(
-            "INSERT INTO account_email_verifications(
+            "INSERT INTO email_verifications(
                 account_id,
                 target_email,
                 otp_code,
@@ -97,7 +97,7 @@ class EmailVerification
     {
         $verification = Query::fetch(
             "SELECT account_id
-            FROM account_email_verifications
+            FROM email_verifications
             WHERE account_id = ?
             AND otp_code = ?
             AND expires_at > NOW()
@@ -118,7 +118,7 @@ class EmailVerification
             [$accountId]
         );
         Query::execute(
-            "UPDATE account_email_verifications
+            "UPDATE email_verifications
             SET used_at = NOW()
             WHERE account_id = ?",
             [$accountId]

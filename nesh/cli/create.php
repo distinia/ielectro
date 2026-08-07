@@ -103,7 +103,13 @@ class Create
             $file,
             <<<'PHP'
     <?php
-    require_once __DIR__.'/../bootstrap.php';
+    namespace App;
+    class Example
+    {
+        public function index(): void
+        {
+        }
+    }
     PHP
         );
         echo "API '{$name}' created successfully.".PHP_EOL;

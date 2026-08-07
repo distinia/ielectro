@@ -1,13 +1,8 @@
-CREATE TABLE IF NOT EXISTS `dominions_users` (
+CREATE TABLE IF NOT EXISTS `users` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `account_id` BIGINT UNSIGNED NOT NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_dominions_users_account_id` (`account_id`),
-  CONSTRAINT `dominions_users_ibfk_1`
-    FOREIGN KEY (`account_id`)
-    REFERENCES `accounts` (`id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
+  UNIQUE KEY `uq_users_account_id` (`account_id`)
 );

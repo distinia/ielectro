@@ -15,10 +15,12 @@ class Recovery
     {
         Request::post();
         RateLimit::check('password_recovery', 6, 900);
+        $GLOBALS['account']->database->use();
         $identifier = trim((string) Request::value('identifier'));
         if (!Validate::required($identifier)) {
             Response::badRequest('Username or email is required');
         }
+        $GLOBALS['account']->database->use();
         $account = Query::fetch(
             "SELECT id, username, email, name, surname
             FROM accounts
@@ -33,14 +35,14 @@ class Recovery
             Response::notFound('Account not found');
         }
         Query::execute(
-            "DELETE FROM account_password_resets
+            "DELETE FROM password_resets
             WHERE account_id = ?",
             [$account['id']]
         );
         $token = Generate::token();
         $otp = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
         Query::execute(
-            "INSERT INTO account_password_resets(
+            "INSERT INTO password_resets(
                 account_id,
                 token_hash,
                 otp_code,
@@ -89,9 +91,10 @@ class Recovery
         if (!Validate::min($password, 8)) {
             Response::badRequest('Password must be at least 8 characters');
         }
+        $GLOBALS['account']->database->use();
         $reset = Query::fetch(
             "SELECT id, account_id
-            FROM account_password_resets
+            FROM password_resets
             WHERE token_hash = ?
             AND otp_code = ?
             AND expires_at > NOW()
@@ -115,13 +118,13 @@ class Recovery
             ]
         );
         Query::execute(
-            "UPDATE account_password_resets
+            "UPDATE password_resets
             SET used_at = NOW()
             WHERE id = ?",
             [$reset['id']]
         );
         Query::execute(
-            "DELETE FROM account_sessions
+            "DELETE FROM sessions
             WHERE account_id = ?",
             [$reset['account_id']]
         );

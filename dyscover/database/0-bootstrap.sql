@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `dyscover_users` (
+CREATE TABLE IF NOT EXISTS `users` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `account_id` BIGINT UNSIGNED NOT NULL,
   `biography` text DEFAULT NULL,
@@ -10,14 +10,9 @@ CREATE TABLE IF NOT EXISTS `dyscover_users` (
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_dyscover_users_account` (`account_id`),
-  CONSTRAINT `dyscover_users_ibfk_1`
-    FOREIGN KEY (`account_id`)
-    REFERENCES `accounts` (`id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
+  UNIQUE KEY `uq_users_account` (`account_id`)
 );
-CREATE TABLE IF NOT EXISTS `dyscover_tags` (
+CREATE TABLE IF NOT EXISTS `tags` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -25,20 +20,20 @@ CREATE TABLE IF NOT EXISTS `dyscover_tags` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_tag_name` (`name`)
 );
-CREATE TABLE IF NOT EXISTS `dyscover_follows` (
+CREATE TABLE IF NOT EXISTS `follows` (
   `follower_id` BIGINT UNSIGNED NOT NULL,
   `followed_id` BIGINT UNSIGNED NOT NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`follower_id`, `followed_id`),
   KEY `idx_follows_followed` (`followed_id`),
-  CONSTRAINT `dyscover_follows_ibfk_1`
+  CONSTRAINT `follows_ibfk_1`
     FOREIGN KEY (`follower_id`)
-    REFERENCES `dyscover_users` (`id`)
+    REFERENCES `users` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `dyscover_follows_ibfk_2`
+  CONSTRAINT `follows_ibfk_2`
     FOREIGN KEY (`followed_id`)
-    REFERENCES `dyscover_users` (`id`)
+    REFERENCES `users` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );

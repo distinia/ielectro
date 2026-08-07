@@ -89,10 +89,10 @@ class ExploreSearch
                 s.comments,
                 s.shares,
                 s.bookmarks
-            FROM dyscover_posts p
-            INNER JOIN dyscover_users du ON du.id = p.user_id
+            FROM posts p
+            INNER JOIN users du ON du.id = p.user_id
             INNER JOIN accounts a ON a.id = du.account_id
-            LEFT JOIN dyscover_post_statistics s ON s.post_id = p.id
+            LEFT JOIN post_statistics s ON s.post_id = p.id
             WHERE p.status = 'active'
             AND p.visibility = 'public'
             ORDER BY s.views DESC, p.published_at DESC
@@ -112,10 +112,10 @@ class ExploreSearch
                 s.comments,
                 s.shares,
                 s.bookmarks
-            FROM dyscover_posts p
-            INNER JOIN dyscover_users du ON du.id = p.user_id
+            FROM posts p
+            INNER JOIN users du ON du.id = p.user_id
             INNER JOIN accounts a ON a.id = du.account_id
-            LEFT JOIN dyscover_post_statistics s ON s.post_id = p.id
+            LEFT JOIN post_statistics s ON s.post_id = p.id
             WHERE p.type = ?
             AND p.status = 'active'
             AND p.visibility = 'public'
@@ -130,7 +130,7 @@ class ExploreSearch
     {
         $rows = Query::fetchAll(
             "SELECT du.id
-            FROM dyscover_users du
+            FROM users du
             INNER JOIN accounts a ON a.id = du.account_id
             WHERE a.username LIKE ?
             ORDER BY a.username ASC

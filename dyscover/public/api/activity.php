@@ -27,8 +27,8 @@ class Activity
                 n.viewed_at,
                 n.created_at,
                 a.username AS actor_username
-            FROM dyscover_activity n
-            INNER JOIN dyscover_users du ON du.id = n.actor_id
+            FROM activity n
+            INNER JOIN users du ON du.id = n.actor_id
             INNER JOIN accounts a ON a.id = du.account_id
             WHERE n.recipient_id = ?
             ORDER BY n.id DESC
@@ -55,7 +55,7 @@ class Activity
             Response::badRequest('Missing activity id');
         }
         Query::execute(
-            'DELETE FROM dyscover_activity
+            'DELETE FROM activity
             WHERE id = ? AND recipient_id = ?',
             [$id, User::id()]
         );

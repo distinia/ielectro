@@ -141,7 +141,7 @@ Supported shares:
 * Any other sharing method
 Database:
 ```text
-dyscover_post_shares
+post_shares
 ```
 Store:
 * `post_id`
@@ -168,7 +168,7 @@ Otherwise it remains normal text.
 ## Views System
 Implement:
 ```text
-dyscover_post_views
+post_views
 ```
 When a post is displayed through:
 ```js
@@ -275,7 +275,7 @@ Mentioned
 Display all posts where the user was mentioned.
 Database:
 ```text
-dyscover_post_mentions
+post_mentions
 ```
 Fields:
 * `id`
@@ -499,7 +499,7 @@ body
 ```
 of:
 ```text
-dyscover_chat_messages
+chat_messages
 ```
 Use:
 ```text
@@ -536,7 +536,7 @@ Required for supporting millions of files.
 Implement private groups.
 Database:
 ```text
-dyscover_groups
+groups
 ```
 Functions:
 * Create group
@@ -555,7 +555,7 @@ created_at
 ```
 Relations:
 ```text
-dyscover_group_members
+group_members
 ```
 ---
 # Chat UI Design

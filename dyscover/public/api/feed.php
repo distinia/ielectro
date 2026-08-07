@@ -29,8 +29,8 @@ class Feed
             $tagPlaceholders = implode(',', array_fill(0, count($tags), '?'));
             $tagSql = " AND p.id IN (
                 SELECT pt.post_id
-                FROM dyscover_post_tags pt
-                INNER JOIN dyscover_tags t ON t.id = pt.tag_id
+                FROM post_tags pt
+                INNER JOIN tags t ON t.id = pt.tag_id
                 WHERE t.name IN ({$tagPlaceholders})
             )";
             $params = array_merge($params, $tags);
@@ -46,16 +46,16 @@ class Feed
                 s.comments,
                 s.shares,
                 s.bookmarks
-            FROM dyscover_posts p
-            INNER JOIN dyscover_users du ON du.id = p.user_id
+            FROM posts p
+            INNER JOIN users du ON du.id = p.user_id
             INNER JOIN accounts a ON a.id = du.account_id
-            LEFT JOIN dyscover_post_statistics s ON s.post_id = p.id
+            LEFT JOIN post_statistics s ON s.post_id = p.id
             WHERE p.type IN ({$placeholders})
             AND p.status = 'active'
             AND p.visibility = 'public'
             {$tagSql}
             AND p.user_id IN (
-                SELECT followed_id FROM dyscover_follows WHERE follower_id = ?
+                SELECT followed_id FROM follows WHERE follower_id = ?
                 UNION SELECT ?
             )
             ORDER BY p.published_at DESC, p.id DESC

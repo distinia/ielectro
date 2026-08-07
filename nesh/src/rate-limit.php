@@ -9,6 +9,7 @@ class RateLimit
         int $windowSeconds,
         ?string $identifier = null
     ): void {
+        $GLOBALS['admin']->database->use();
         $scope = trim($scope);
         if ($scope === '') {
             Response::error('Invalid rate limit scope');

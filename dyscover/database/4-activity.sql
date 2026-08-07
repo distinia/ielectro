@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `dyscover_activity` (
+CREATE TABLE IF NOT EXISTS `activity` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `recipient_id` BIGINT UNSIGNED NOT NULL,
   `actor_id` BIGINT UNSIGNED NOT NULL,
@@ -16,24 +16,24 @@ CREATE TABLE IF NOT EXISTS `dyscover_activity` (
   KEY `idx_activity_type` (`type`),
   KEY `idx_activity_read` (`viewed_at`),
   KEY `idx_activity_created` (`created_at`),
-  CONSTRAINT `dyscover_activity_ibfk_1`
+  CONSTRAINT `activity_ibfk_1`
     FOREIGN KEY (`recipient_id`)
-    REFERENCES `dyscover_users` (`id`)
+    REFERENCES `users` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `dyscover_activity_ibfk_2`
+  CONSTRAINT `activity_ibfk_2`
     FOREIGN KEY (`actor_id`)
-    REFERENCES `dyscover_users` (`id`)
+    REFERENCES `users` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `dyscover_activity_ibfk_3`
+  CONSTRAINT `activity_ibfk_3`
     FOREIGN KEY (`post_id`)
-    REFERENCES `dyscover_posts` (`id`)
+    REFERENCES `posts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `dyscover_activity_ibfk_4`
+  CONSTRAINT `activity_ibfk_4`
     FOREIGN KEY (`group_id`)
-    REFERENCES `dyscover_groups` (`id`)
+    REFERENCES `groups` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );

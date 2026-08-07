@@ -90,11 +90,11 @@ class Pending
         $token = bin2hex(random_bytes(32));
         $tokenHash = hash('sha256', $token);
         Query::execute(
-            "DELETE FROM account_oauth_pending WHERE provider = ? AND email = ?",
+            "DELETE FROM oauth_pending WHERE provider = ? AND email = ?",
             [self::PROVIDER, $email]
         );
         Query::execute(
-            "INSERT INTO account_oauth_pending(provider, provider_user_id, token_hash, email, name, surname, expires_at) VALUES (?, '', ?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 20 MINUTE))",
+            "INSERT INTO oauth_pending(provider, provider_user_id, token_hash, email, name, surname, expires_at) VALUES (?, '', ?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 20 MINUTE))",
             [self::PROVIDER, $tokenHash, $email, $name, $surname]
         );
         Cookie::set(self::COOKIE, $token, 1200);
@@ -106,7 +106,7 @@ class Pending
             return null;
         }
         return Query::fetch(
-            "SELECT email, name, surname FROM account_oauth_pending WHERE provider = ? AND token_hash = ? AND expires_at > NOW() LIMIT 1",
+            "SELECT email, name, surname FROM oauth_pending WHERE provider = ? AND token_hash = ? AND expires_at > NOW() LIMIT 1",
             [self::PROVIDER, hash('sha256', $token)]
         );
     }
@@ -121,7 +121,7 @@ class Pending
             return;
         }
         Query::execute(
-            "DELETE FROM account_oauth_pending WHERE provider = ? AND token_hash = ?",
+            "DELETE FROM oauth_pending WHERE provider = ? AND token_hash = ?",
             [self::PROVIDER, hash('sha256', $token)]
         );
         Cookie::delete(self::COOKIE);

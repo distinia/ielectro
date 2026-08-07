@@ -19,8 +19,9 @@ class Dyscover
 {
     public static function create(int $accountId): void
     {
+        $GLOBALS['dyscover']->database->use();
         Query::execute(
-            "INSERT INTO dyscover_users (account_id)
+            "INSERT INTO users (account_id)
             VALUES (?)",
             [$accountId]
         );
@@ -31,9 +32,10 @@ class Dyscover
     }
    public static function delete(int $accountId): void
     {
+        $GLOBALS['dyscover']->database->use();
         Query::execute(
             "DELETE
-            FROM dyscover_users
+            FROM users
             WHERE account_id = ?",
             [$accountId]
         );
@@ -46,17 +48,19 @@ class Dominions
 {
     public static function create(int $accountId): void
     {
+        $GLOBALS['dominions']->database->use();
         Query::execute(
-            "INSERT INTO dominions_users (account_id)
+            "INSERT INTO users (account_id)
             VALUES (?)",
             [$accountId]
         );
     }
     public static function delete(int $accountId): void
     {
+        $GLOBALS['dominions']->database->use();
         Query::execute(
             "DELETE
-            FROM dominions_users
+            FROM users
             WHERE account_id = ?",
             [$accountId]
         );

@@ -17,7 +17,7 @@ class Identity
                 s.id AS session_id,
                 s.account_id,
                 a.username
-            FROM account_sessions s
+            FROM sessions s
             INNER JOIN accounts a
                 ON a.id = s.account_id
             WHERE s.token_hash = ?
@@ -32,7 +32,7 @@ class Identity
             return null;
         }
         Query::execute("
-            UPDATE account_sessions
+            UPDATE sessions
             SET last_activity = NOW()
             WHERE id = ?
         ", [

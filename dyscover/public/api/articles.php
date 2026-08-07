@@ -23,7 +23,7 @@ class Articles
         }
         $post = Query::fetch(
             "SELECT id, user_id, uuid
-            FROM dyscover_posts
+            FROM posts
             WHERE uuid = ?
             AND type = 'article'
             AND status = 'active'

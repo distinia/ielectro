@@ -126,13 +126,13 @@ Requirements:
 -   map `/page` to `/pages/page/page.php`
 -   hide internal folders
 ## Database
-Use prefix `dominions_` for every table.
+Use prefix `` for every table.
 Examples:
--   dominions_maps
--   dominions_countries
--   dominions_games
--   dominions_players
--   dominions_territories
+-   maps
+-   countries
+-   games
+-   players
+-   territories
 ## MVP
 Implement only:
 -   Home

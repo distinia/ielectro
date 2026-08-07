@@ -55,9 +55,9 @@ class HomePage {
             username_changed: "Username changed",
             password_recovery_requested: "Recovery requested",
             password_reset_completed: "Password reset",
-            account_created: "Account created",
-            account_deletion_scheduled: "Deletion scheduled",
-            account_deletion_cancelled: "Deletion cancelled",
+            created: "Account created",
+            deletion_scheduled: "Deletion scheduled",
+            deletion_cancelled: "Deletion cancelled",
         };
         return map[action] || String(action || "Event").replace(/_/g, " ");
     }

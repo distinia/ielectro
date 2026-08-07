@@ -22,7 +22,7 @@ class CreatorCenter
     {
         return Query::count(
             "SELECT COUNT(*)
-            FROM dyscover_posts
+            FROM posts
             WHERE user_id = ?
             AND type = ?
             AND status = 'active'",

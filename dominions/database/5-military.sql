@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `dominions_military_branches` (
+CREATE TABLE IF NOT EXISTS `military_branches` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `territory_id` BIGINT UNSIGNED NOT NULL,
   `name` VARCHAR(100) NOT NULL,
@@ -6,31 +6,31 @@ CREATE TABLE IF NOT EXISTS `dominions_military_branches` (
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_dominions_military_branches` (`territory_id`, `name`),
-  CONSTRAINT `dominions_military_branches_ibfk_1`
+  UNIQUE KEY `uq_military_branches` (`territory_id`, `name`),
+  CONSTRAINT `military_branches_ibfk_1`
     FOREIGN KEY (`territory_id`)
-    REFERENCES `dominions_territories` (`id`)
+    REFERENCES `territories` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `dominions_military_commanders` (
+CREATE TABLE IF NOT EXISTS `military_commanders` (
   `statesman_id` BIGINT UNSIGNED NOT NULL,
   `branch_id` BIGINT UNSIGNED NOT NULL,
   `rank` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`statesman_id`),
   KEY `idx_branch_id` (`branch_id`),
-  CONSTRAINT `dominions_military_commanders_ibfk_1`
+  CONSTRAINT `military_commanders_ibfk_1`
     FOREIGN KEY (`statesman_id`)
-    REFERENCES `dominions_statesmen` (`id`)
+    REFERENCES `statesmen` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `dominions_military_commanders_ibfk_2`
+  CONSTRAINT `military_commanders_ibfk_2`
     FOREIGN KEY (`branch_id`)
-    REFERENCES `dominions_military_branches` (`id`)
+    REFERENCES `military_branches` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `dominions_military_bases` (
+CREATE TABLE IF NOT EXISTS `military_bases` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `territory_id` BIGINT UNSIGNED NOT NULL,
   `branch_id` BIGINT UNSIGNED NOT NULL,
@@ -55,23 +55,23 @@ CREATE TABLE IF NOT EXISTS `dominions_military_bases` (
   KEY `idx_territory_id` (`territory_id`),
   KEY `idx_branch_id` (`branch_id`),
   KEY `idx_commander_id` (`commander_id`),
-  CONSTRAINT `dominions_military_bases_ibfk_1`
+  CONSTRAINT `military_bases_ibfk_1`
     FOREIGN KEY (`territory_id`)
-    REFERENCES `dominions_territories` (`id`)
+    REFERENCES `territories` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `dominions_military_bases_ibfk_2`
+  CONSTRAINT `military_bases_ibfk_2`
     FOREIGN KEY (`branch_id`)
-    REFERENCES `dominions_military_branches` (`id`)
+    REFERENCES `military_branches` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `dominions_military_bases_ibfk_3`
+  CONSTRAINT `military_bases_ibfk_3`
     FOREIGN KEY (`commander_id`)
-    REFERENCES `dominions_military_commanders` (`statesman_id`)
+    REFERENCES `military_commanders` (`statesman_id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `dominions_military_units` (
+CREATE TABLE IF NOT EXISTS `military_units` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `territory_id` BIGINT UNSIGNED NOT NULL,
   `branch_id` BIGINT UNSIGNED NOT NULL,
@@ -94,33 +94,33 @@ CREATE TABLE IF NOT EXISTS `dominions_military_units` (
   KEY `idx_parent_id` (`parent_id`),
   KEY `idx_base_id` (`base_id`),
   KEY `idx_commander_id` (`commander_id`),
-  CONSTRAINT `dominions_military_units_ibfk_1`
+  CONSTRAINT `military_units_ibfk_1`
     FOREIGN KEY (`territory_id`)
-    REFERENCES `dominions_territories` (`id`)
+    REFERENCES `territories` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `dominions_military_units_ibfk_2`
+  CONSTRAINT `military_units_ibfk_2`
     FOREIGN KEY (`branch_id`)
-    REFERENCES `dominions_military_branches` (`id`)
+    REFERENCES `military_branches` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `dominions_military_units_ibfk_3`
+  CONSTRAINT `military_units_ibfk_3`
     FOREIGN KEY (`parent_id`)
-    REFERENCES `dominions_military_units` (`id`)
+    REFERENCES `military_units` (`id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE,
-  CONSTRAINT `dominions_military_units_ibfk_4`
+  CONSTRAINT `military_units_ibfk_4`
     FOREIGN KEY (`base_id`)
-    REFERENCES `dominions_military_bases` (`id`)
+    REFERENCES `military_bases` (`id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE,
-  CONSTRAINT `dominions_military_units_ibfk_5`
+  CONSTRAINT `military_units_ibfk_5`
     FOREIGN KEY (`commander_id`)
-    REFERENCES `dominions_military_commanders` (`statesman_id`)
+    REFERENCES `military_commanders` (`statesman_id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `dominions_military_equipment` (
+CREATE TABLE IF NOT EXISTS `military_equipment` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `territory_id` BIGINT UNSIGNED NOT NULL,
   `name` VARCHAR(150) NOT NULL,
@@ -135,43 +135,43 @@ CREATE TABLE IF NOT EXISTS `dominions_military_equipment` (
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `idx_territory_id` (`territory_id`),
-  CONSTRAINT `dominions_military_equipment_ibfk_1`
+  CONSTRAINT `military_equipment_ibfk_1`
     FOREIGN KEY (`territory_id`)
-    REFERENCES `dominions_territories` (`id`)
+    REFERENCES `territories` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `dominions_military_stockpile` (
+CREATE TABLE IF NOT EXISTS `military_stockpile` (
   `territory_id` BIGINT UNSIGNED NOT NULL,
   `equipment_id` BIGINT UNSIGNED NOT NULL,
   `quantity` INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`territory_id`, `equipment_id`),
   KEY `idx_equipment_id` (`equipment_id`),
-  CONSTRAINT `dominions_military_stockpile_ibfk_1`
+  CONSTRAINT `military_stockpile_ibfk_1`
     FOREIGN KEY (`territory_id`)
-    REFERENCES `dominions_territories` (`id`)
+    REFERENCES `territories` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `dominions_military_stockpile_ibfk_2`
+  CONSTRAINT `military_stockpile_ibfk_2`
     FOREIGN KEY (`equipment_id`)
-    REFERENCES `dominions_military_equipment` (`id`)
+    REFERENCES `military_equipment` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `dominions_military_unit_equipment` (
+CREATE TABLE IF NOT EXISTS `military_unit_equipment` (
   `unit_id` BIGINT UNSIGNED NOT NULL,
   `equipment_id` BIGINT UNSIGNED NOT NULL,
   `quantity` INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`unit_id`, `equipment_id`),
   KEY `idx_equipment_id` (`equipment_id`),
-  CONSTRAINT `dominions_military_unit_equipment_ibfk_1`
+  CONSTRAINT `military_unit_equipment_ibfk_1`
     FOREIGN KEY (`unit_id`)
-    REFERENCES `dominions_military_units` (`id`)
+    REFERENCES `military_units` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `dominions_military_unit_equipment_ibfk_2`
+  CONSTRAINT `military_unit_equipment_ibfk_2`
     FOREIGN KEY (`equipment_id`)
-    REFERENCES `dominions_military_equipment` (`id`)
+    REFERENCES `military_equipment` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );

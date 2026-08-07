@@ -23,15 +23,15 @@ class Users
             return;
         }
         if ($resource === 'likes') {
-            (new UserEngagement('dyscover_post_likes'))->index();
+            (new UserEngagement('post_likes'))->index();
             return;
         }
         if ($resource === 'bookmarks') {
-            (new UserEngagement('dyscover_post_bookmarks'))->index();
+            (new UserEngagement('post_bookmarks'))->index();
             return;
         }
         if ($resource === 'reposts') {
-            (new UserEngagement('dyscover_post_reposts'))->index();
+            (new UserEngagement('post_reposts'))->index();
             return;
         }
         Routing::method([
@@ -70,7 +70,7 @@ class Users
         }
         $params[] = $id;
         Query::execute(
-            'UPDATE dyscover_users SET ' . implode(', ', $fields) . ' WHERE id = ?',
+            'UPDATE users SET ' . implode(', ', $fields) . ' WHERE id = ?',
             $params
         );
         Response::success(UserProfile::one($id));
@@ -82,12 +82,12 @@ class User
     {
         $accountId = Identity::id();
         $row = Query::fetch(
-            'SELECT id FROM dyscover_users WHERE account_id = ? LIMIT 1',
+            'SELECT id FROM users WHERE account_id = ? LIMIT 1',
             [$accountId]
         );
         if (!$row) {
             Query::execute(
-                'INSERT INTO dyscover_users(account_id) VALUES(?)',
+                'INSERT INTO users(account_id) VALUES(?)',
                 [$accountId]
             );
             return Query::lastId();
@@ -108,7 +108,7 @@ class UserProfile
                 du.status,
                 du.created_at,
                 a.username
-            FROM dyscover_users du
+            FROM users du
             INNER JOIN accounts a ON a.id = du.account_id
             WHERE du.id = ?
             LIMIT 1",
@@ -126,11 +126,11 @@ class UserProfile
             'status' => $row['status'],
             'avatar' => Avatar::url((int) $row['id']),
             'followers' => Query::count(
-                'SELECT COUNT(*) FROM dyscover_follows WHERE followed_id = ?',
+                'SELECT COUNT(*) FROM follows WHERE followed_id = ?',
                 [$id]
             ),
             'following' => Query::count(
-                'SELECT COUNT(*) FROM dyscover_follows WHERE follower_id = ?',
+                'SELECT COUNT(*) FROM follows WHERE follower_id = ?',
                 [$id]
             ),
             'created_at' => $row['created_at'],
@@ -143,7 +143,7 @@ class UserCard
     {
         $row = Query::fetch(
             "SELECT du.id, du.biography, a.username
-            FROM dyscover_users du
+            FROM users du
             INNER JOIN accounts a ON a.id = du.account_id
             WHERE du.id = ?
             LIMIT 1",
@@ -179,8 +179,8 @@ class UserFollowers
         }
         $rows = Query::fetchAll(
             "SELECT du.id
-            FROM dyscover_follows f
-            INNER JOIN dyscover_users du ON du.id = f.follower_id
+            FROM follows f
+            INNER JOIN users du ON du.id = f.follower_id
             WHERE f.followed_id = ?
             ORDER BY f.created_at DESC",
             [$id]
@@ -202,7 +202,7 @@ class UserFollowers
             Response::badRequest('Invalid follow target');
         }
         Query::execute(
-            'INSERT IGNORE INTO dyscover_follows(follower_id, followed_id) VALUES(?, ?)',
+            'INSERT IGNORE INTO follows(follower_id, followed_id) VALUES(?, ?)',
             [$followerId, $followedId]
         );
         Response::created('Followed');
@@ -215,7 +215,7 @@ class UserFollowers
             Response::badRequest('Missing user id');
         }
         Query::execute(
-            'DELETE FROM dyscover_follows
+            'DELETE FROM follows
             WHERE follower_id = ? AND followed_id = ?',
             [User::id(), $followedId]
         );
@@ -233,8 +233,8 @@ class UserFollowing
         }
         $rows = Query::fetchAll(
             "SELECT du.id
-            FROM dyscover_follows f
-            INNER JOIN dyscover_users du ON du.id = f.followed_id
+            FROM follows f
+            INNER JOIN users du ON du.id = f.followed_id
             WHERE f.follower_id = ?
             ORDER BY f.created_at DESC",
             [$id]

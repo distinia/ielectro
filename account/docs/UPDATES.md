@@ -74,7 +74,7 @@ The application logs actions that are not included in the database schema.
 Examples:
 ```
 login_failed
-account_deletion_scheduled
+deletion_scheduled
 ```
 The current enum definition does not support these values.
 ### Required Change
@@ -277,7 +277,7 @@ Keep:
 ## Username History
 Keep:
 ```
-account_username_history
+username_history
 ```
 This provides:
 * Redirect compatibility

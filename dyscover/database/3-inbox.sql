@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `dyscover_inbox_chats` (
+CREATE TABLE IF NOT EXISTS `inbox_chats` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `type` ENUM('direct','group') NOT NULL DEFAULT 'direct',
   `group_id` BIGINT UNSIGNED DEFAULT NULL,
@@ -7,30 +7,30 @@ CREATE TABLE IF NOT EXISTS `dyscover_inbox_chats` (
   PRIMARY KEY (`id`),
   KEY `idx_chats_group` (`group_id`),
   KEY `idx_chats_updated` (`updated_at`),
-  CONSTRAINT `dyscover_inbox_chats_ibfk_1`
+  CONSTRAINT `inbox_chats_ibfk_1`
     FOREIGN KEY (`group_id`)
-    REFERENCES `dyscover_groups` (`id`)
+    REFERENCES `groups` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `dyscover_inbox_members` (
+CREATE TABLE IF NOT EXISTS `inbox_members` (
   `chat_id` BIGINT UNSIGNED NOT NULL,
   `user_id` BIGINT UNSIGNED NOT NULL,
   `joined_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`chat_id`, `user_id`),
   KEY `idx_inbox_members_user` (`user_id`),
-  CONSTRAINT `dyscover_inbox_members_ibfk_1`
+  CONSTRAINT `inbox_members_ibfk_1`
     FOREIGN KEY (`chat_id`)
-    REFERENCES `dyscover_inbox_chats` (`id`)
+    REFERENCES `inbox_chats` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `dyscover_inbox_members_ibfk_2`
+  CONSTRAINT `inbox_members_ibfk_2`
     FOREIGN KEY (`user_id`)
-    REFERENCES `dyscover_users` (`id`)
+    REFERENCES `users` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `dyscover_inbox_messages` (
+CREATE TABLE IF NOT EXISTS `inbox_messages` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `chat_id` BIGINT UNSIGNED NOT NULL,
   `sender_id` BIGINT UNSIGNED NOT NULL,
@@ -46,77 +46,77 @@ CREATE TABLE IF NOT EXISTS `dyscover_inbox_messages` (
   KEY `idx_messages_post` (`post_id`),
   KEY `idx_messages_reply` (`reply_to_id`),
   KEY `idx_messages_created` (`created_at`),
-  CONSTRAINT `dyscover_inbox_messages_ibfk_1`
+  CONSTRAINT `inbox_messages_ibfk_1`
     FOREIGN KEY (`chat_id`)
-    REFERENCES `dyscover_inbox_chats` (`id`)
+    REFERENCES `inbox_chats` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `dyscover_inbox_messages_ibfk_2`
+  CONSTRAINT `inbox_messages_ibfk_2`
     FOREIGN KEY (`sender_id`)
-    REFERENCES `dyscover_users` (`id`)
+    REFERENCES `users` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `dyscover_inbox_messages_ibfk_3`
+  CONSTRAINT `inbox_messages_ibfk_3`
     FOREIGN KEY (`post_id`)
-    REFERENCES `dyscover_posts` (`id`)
+    REFERENCES `posts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `dyscover_inbox_messages_ibfk_4`
+  CONSTRAINT `inbox_messages_ibfk_4`
     FOREIGN KEY (`reply_to_id`)
-    REFERENCES `dyscover_inbox_messages` (`id`)
+    REFERENCES `inbox_messages` (`id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `dyscover_inbox_message_reads` (
+CREATE TABLE IF NOT EXISTS `inbox_message_reads` (
   `message_id` BIGINT UNSIGNED NOT NULL,
   `user_id` BIGINT UNSIGNED NOT NULL,
   `read_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`message_id`, `user_id`),
   KEY `idx_message_reads_user` (`user_id`),
-  CONSTRAINT `dyscover_message_reads_ibfk_1`
+  CONSTRAINT `message_reads_ibfk_1`
     FOREIGN KEY (`message_id`)
-    REFERENCES `dyscover_inbox_messages` (`id`)
+    REFERENCES `inbox_messages` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `dyscover_message_reads_ibfk_2`
+  CONSTRAINT `message_reads_ibfk_2`
     FOREIGN KEY (`user_id`)
-    REFERENCES `dyscover_users` (`id`)
+    REFERENCES `users` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `dyscover_inbox_message_reactions` (
+CREATE TABLE IF NOT EXISTS `inbox_message_reactions` (
   `message_id` BIGINT UNSIGNED NOT NULL,
   `user_id` BIGINT UNSIGNED NOT NULL,
   `emoji` VARCHAR(20) NOT NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`message_id`, `user_id`),
   KEY `idx_reactions_user` (`user_id`),
-  CONSTRAINT `dyscover_message_reactions_ibfk_1`
+  CONSTRAINT `message_reactions_ibfk_1`
     FOREIGN KEY (`message_id`)
-    REFERENCES `dyscover_inbox_messages` (`id`)
+    REFERENCES `inbox_messages` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `dyscover_message_reactions_ibfk_2`
+  CONSTRAINT `message_reactions_ibfk_2`
     FOREIGN KEY (`user_id`)
-    REFERENCES `dyscover_users` (`id`)
+    REFERENCES `users` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `dyscover_inbox_typing` (
+CREATE TABLE IF NOT EXISTS `inbox_typing` (
   `chat_id` BIGINT UNSIGNED NOT NULL,
   `user_id` BIGINT UNSIGNED NOT NULL,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`chat_id`, `user_id`),
   KEY `idx_typing_updated` (`updated_at`),
   KEY `idx_typing_user` (`user_id`),
-  CONSTRAINT `dyscover_inbox_typing_ibfk_1`
+  CONSTRAINT `inbox_typing_ibfk_1`
     FOREIGN KEY (`chat_id`)
-    REFERENCES `dyscover_inbox_chats` (`id`)
+    REFERENCES `inbox_chats` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `dyscover_inbox_typing_ibfk_2`
+  CONSTRAINT `inbox_typing_ibfk_2`
     FOREIGN KEY (`user_id`)
-    REFERENCES `dyscover_users` (`id`)
+    REFERENCES `users` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );

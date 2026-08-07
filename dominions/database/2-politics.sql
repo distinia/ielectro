@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `dominions_factions` (
+CREATE TABLE IF NOT EXISTS `factions` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `territory_id` BIGINT UNSIGNED NOT NULL,
   `name` VARCHAR(100) NOT NULL,
@@ -8,15 +8,15 @@ CREATE TABLE IF NOT EXISTS `dominions_factions` (
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_dominions_factions` (`territory_id`, `name`),
+  UNIQUE KEY `uq_factions` (`territory_id`, `name`),
   KEY `idx_territory_id` (`territory_id`),
-  CONSTRAINT `dominions_factions_ibfk_1`
+  CONSTRAINT `factions_ibfk_1`
     FOREIGN KEY (`territory_id`)
-    REFERENCES `dominions_territories` (`id`)
+    REFERENCES `territories` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `dominions_statesmen` (
+CREATE TABLE IF NOT EXISTS `statesmen` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `territory_id` BIGINT UNSIGNED NOT NULL,
   `faction_id` BIGINT UNSIGNED DEFAULT NULL,
@@ -35,34 +35,34 @@ CREATE TABLE IF NOT EXISTS `dominions_statesmen` (
   PRIMARY KEY (`id`),
   KEY `idx_territory_id` (`territory_id`),
   KEY `idx_faction_id` (`faction_id`),
-  CONSTRAINT `dominions_statesmen_ibfk_1`
+  CONSTRAINT `statesmen_ibfk_1`
     FOREIGN KEY (`territory_id`)
-    REFERENCES `dominions_territories` (`id`)
+    REFERENCES `territories` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `dominions_statesmen_ibfk_2`
+  CONSTRAINT `statesmen_ibfk_2`
     FOREIGN KEY (`faction_id`)
-    REFERENCES `dominions_factions` (`id`)
+    REFERENCES `factions` (`id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `dominions_leaders` (
+CREATE TABLE IF NOT EXISTS `leaders` (
     `territory_id` BIGINT UNSIGNED NOT NULL,
     `statesman_id` BIGINT UNSIGNED NOT NULL,
     PRIMARY KEY (`territory_id`),
     UNIQUE (`statesman_id`),
     CONSTRAINT `fk_leaders_territory`
         FOREIGN KEY (`territory_id`)
-        REFERENCES `dominions_territories`(`id`)
+        REFERENCES `territories`(`id`)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
     CONSTRAINT `fk_leaders_statesman`
         FOREIGN KEY (`statesman_id`)
-        REFERENCES `dominions_statesmen`(`id`)
+        REFERENCES `statesmen`(`id`)
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `dominions_elections` (
+CREATE TABLE IF NOT EXISTS `elections` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `territory_id` BIGINT UNSIGNED NOT NULL,
   `name` VARCHAR(150) NOT NULL,
@@ -73,26 +73,26 @@ CREATE TABLE IF NOT EXISTS `dominions_elections` (
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `idx_territory_id` (`territory_id`),
-  CONSTRAINT `dominions_elections_ibfk_1`
+  CONSTRAINT `elections_ibfk_1`
     FOREIGN KEY (`territory_id`)
-    REFERENCES `dominions_territories` (`id`)
+    REFERENCES `territories` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `dominions_election_candidates` (
+CREATE TABLE IF NOT EXISTS `election_candidates` (
   `election_id` BIGINT UNSIGNED NOT NULL,
   `statesman_id` BIGINT UNSIGNED NOT NULL,
   `votes` BIGINT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`election_id`, `statesman_id`),
   KEY `idx_statesman_id` (`statesman_id`),
-  CONSTRAINT `dominions_election_candidates_ibfk_1`
+  CONSTRAINT `election_candidates_ibfk_1`
     FOREIGN KEY (`election_id`)
-    REFERENCES `dominions_elections` (`id`)
+    REFERENCES `elections` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `dominions_election_candidates_ibfk_2`
+  CONSTRAINT `election_candidates_ibfk_2`
     FOREIGN KEY (`statesman_id`)
-    REFERENCES `dominions_statesmen` (`id`)
+    REFERENCES `statesmen` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );

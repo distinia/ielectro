@@ -69,7 +69,7 @@ class Posts
         }
         $uuid = PostAssets::requireUuid($input['uuid'] ?? '');
         if (Query::exists(
-            'SELECT 1 FROM dyscover_posts WHERE uuid = ? LIMIT 1',
+            'SELECT 1 FROM posts WHERE uuid = ? LIMIT 1',
             [$uuid]
         )) {
             Response::conflict('Uuid already exists');
@@ -100,7 +100,7 @@ class Posts
             $previewImage = $processed['preview_image'];
         }
         Query::execute(
-            "INSERT INTO dyscover_posts(
+            "INSERT INTO posts(
                 user_id, uuid, type, title, description,
                 extension, preview_image, visibility, status
             )
@@ -118,7 +118,7 @@ class Posts
         );
         $id = Query::lastId();
         Query::execute(
-            'INSERT INTO dyscover_post_statistics(post_id) VALUES(?)',
+            'INSERT INTO post_statistics(post_id) VALUES(?)',
             [$id]
         );
         if ($type === 'article') {
@@ -151,7 +151,7 @@ class Posts
         if ($fields) {
             $params[] = $postId;
             Query::execute(
-                'UPDATE dyscover_posts SET ' . implode(', ', $fields) . ' WHERE id = ?',
+                'UPDATE posts SET ' . implode(', ', $fields) . ' WHERE id = ?',
                 $params
             );
         }
@@ -169,7 +169,7 @@ class Posts
             }
             $processed = PostAssets::storeMedia($type, $mediaFile, $userId, $uuid, true);
             Query::execute(
-                'UPDATE dyscover_posts SET extension = ?, preview_image = ? WHERE id = ?',
+                'UPDATE posts SET extension = ?, preview_image = ? WHERE id = ?',
                 [$processed['extension'], $processed['preview_image'], $postId]
             );
             $updated = true;
@@ -191,7 +191,7 @@ class Posts
         Request::delete();
         $post = PostData::requireOwned(Routing::id());
         Query::execute(
-            "UPDATE dyscover_posts SET status = 'hidden' WHERE id = ?",
+            "UPDATE posts SET status = 'hidden' WHERE id = ?",
             [(int) $post['id']]
         );
         Response::success('Post deleted');
@@ -216,7 +216,7 @@ class PostData
             Response::badRequest('Missing post id');
         }
         $row = Query::fetch(
-            'SELECT * FROM dyscover_posts WHERE id = ? LIMIT 1',
+            'SELECT * FROM posts WHERE id = ? LIMIT 1',
             [$id]
         );
         if (!$row || $row['status'] !== 'active') {
@@ -275,8 +275,8 @@ class PostData
             'views' => (int) ($row['views'] ?? 0),
             'published_at' => $row['published_at'] ?? null,
             'updated_at' => $row['updated_at'] ?? null,
-            'liked' => PostEngagement::exists('dyscover_post_likes', $id, $viewerId),
-            'bookmarked' => PostEngagement::exists('dyscover_post_bookmarks', $id, $viewerId),
+            'liked' => PostEngagement::exists('post_likes', $id, $viewerId),
+            'bookmarked' => PostEngagement::exists('post_bookmarks', $id, $viewerId),
         ];
     }
     private static function fetchRow(string $where, array $params): ?array
@@ -293,10 +293,10 @@ class PostData
                 s.comments,
                 s.shares,
                 s.bookmarks
-            FROM dyscover_posts p
-            INNER JOIN dyscover_users du ON du.id = p.user_id
+            FROM posts p
+            INNER JOIN users du ON du.id = p.user_id
             INNER JOIN accounts a ON a.id = du.account_id
-            LEFT JOIN dyscover_post_statistics s ON s.post_id = p.id";
+            LEFT JOIN post_statistics s ON s.post_id = p.id";
     }
 }
 class PostEngagement
@@ -328,7 +328,7 @@ class PostEngagement
     private static function adjustStat(string $field, int $postId, int $delta): void
     {
         Query::execute(
-            "UPDATE dyscover_post_statistics
+            "UPDATE post_statistics
             SET {$field} = GREATEST(0, {$field} + ?)
             WHERE post_id = ?",
             [$delta, $postId]
@@ -359,8 +359,8 @@ class PostComments
         }
         $rows = Query::fetchAll(
             "SELECT c.id, c.user_id, c.body, c.created_at, a.username
-            FROM dyscover_post_comments c
-            INNER JOIN dyscover_users du ON du.id = c.user_id
+            FROM post_comments c
+            INNER JOIN users du ON du.id = c.user_id
             INNER JOIN accounts a ON a.id = du.account_id
             WHERE c.post_id = ? AND c.status = 'active'
             ORDER BY c.id ASC",
@@ -387,7 +387,7 @@ class PostComments
             Response::badRequest('Empty comment');
         }
         Query::execute(
-            "INSERT INTO dyscover_post_comments(post_id, user_id, body, status)
+            "INSERT INTO post_comments(post_id, user_id, body, status)
             VALUES (?, ?, ?, 'active')",
             [$postId, User::id(), $body]
         );
@@ -403,7 +403,7 @@ class PostComments
             Response::badRequest('Empty comment');
         }
         Query::execute(
-            "UPDATE dyscover_post_comments
+            "UPDATE post_comments
             SET body = ?
             WHERE id = ? AND user_id = ? AND status = 'active'",
             [$body, $commentId, User::id()]
@@ -415,7 +415,7 @@ class PostComments
         Request::delete();
         $commentId = (int) Routing::segment(4);
         $row = Query::fetch(
-            'SELECT post_id FROM dyscover_post_comments
+            'SELECT post_id FROM post_comments
             WHERE id = ? AND user_id = ? LIMIT 1',
             [$commentId, User::id()]
         );
@@ -423,7 +423,7 @@ class PostComments
             Response::notFound('Comment not found');
         }
         Query::execute(
-            "UPDATE dyscover_post_comments SET status = 'hidden' WHERE id = ?",
+            "UPDATE post_comments SET status = 'hidden' WHERE id = ?",
             [$commentId]
         );
         PostEngagement::adjustStatDirect('comments', (int) $row['post_id'], -1);
@@ -442,13 +442,13 @@ class PostLikes
     private function add(): void
     {
         Request::post();
-        PostEngagement::add('dyscover_post_likes', 'likes', (int) Routing::id());
+        PostEngagement::add('post_likes', 'likes', (int) Routing::id());
         Response::created('Liked');
     }
     private function remove(): void
     {
         Request::delete();
-        PostEngagement::remove('dyscover_post_likes', 'likes', (int) Routing::id());
+        PostEngagement::remove('post_likes', 'likes', (int) Routing::id());
         Response::success('Unliked');
     }
 }
@@ -464,13 +464,13 @@ class PostBookmarks
     private function add(): void
     {
         Request::post();
-        PostEngagement::add('dyscover_post_bookmarks', 'bookmarks', (int) Routing::id());
+        PostEngagement::add('post_bookmarks', 'bookmarks', (int) Routing::id());
         Response::created('Bookmarked');
     }
     private function remove(): void
     {
         Request::delete();
-        PostEngagement::remove('dyscover_post_bookmarks', 'bookmarks', (int) Routing::id());
+        PostEngagement::remove('post_bookmarks', 'bookmarks', (int) Routing::id());
         Response::success('Bookmark removed');
     }
 }
@@ -486,13 +486,13 @@ class PostReposts
     private function add(): void
     {
         Request::post();
-        PostEngagement::add('dyscover_post_reposts', 'shares', (int) Routing::id());
+        PostEngagement::add('post_reposts', 'shares', (int) Routing::id());
         Response::created('Reposted');
     }
     private function remove(): void
     {
         Request::delete();
-        PostEngagement::remove('dyscover_post_reposts', 'shares', (int) Routing::id());
+        PostEngagement::remove('post_reposts', 'shares', (int) Routing::id());
         Response::success('Repost removed');
     }
 }
@@ -507,7 +507,7 @@ class PostShares
     private function add(): void
     {
         Request::post();
-        PostEngagement::add('dyscover_post_shares', 'shares', (int) Routing::id());
+        PostEngagement::add('post_shares', 'shares', (int) Routing::id());
         Response::created('Shared');
     }
 }
@@ -525,7 +525,7 @@ class PostViews
         $postId = (int) Routing::id();
         $userId = User::id();
         $exists = Query::exists(
-            'SELECT 1 FROM dyscover_post_views
+            'SELECT 1 FROM post_views
             WHERE post_id = ? AND user_id = ?
             AND created_at > DATE_SUB(NOW(), INTERVAL 1 DAY)
             LIMIT 1',
@@ -533,7 +533,7 @@ class PostViews
         );
         if (!$exists) {
             Query::execute(
-                'INSERT INTO dyscover_post_views(post_id, user_id) VALUES(?, ?)',
+                'INSERT INTO post_views(post_id, user_id) VALUES(?, ?)',
                 [$postId, $userId]
             );
             PostEngagement::adjustStatDirect('views', $postId, 1);

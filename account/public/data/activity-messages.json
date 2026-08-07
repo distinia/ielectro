@@ -8,8 +8,8 @@
     "logout_all_devices": "You signed out all other devices on {datetime}.",
     "password_recovery_requested": "Password recovery was requested on {datetime}.",
     "password_reset_completed": "Your password was reset via recovery on {datetime}.",
-    "account_created": "Your account was created on {datetime}.",
-    "account_deletion_scheduled": "Account deletion was scheduled on {datetime}.",
-    "account_deletion_cancelled": "Scheduled account deletion was cancelled on {datetime}.",
+    "created": "Your account was created on {datetime}.",
+    "deletion_scheduled": "Account deletion was scheduled on {datetime}.",
+    "deletion_cancelled": "Scheduled account deletion was cancelled on {datetime}.",
     "default": "{details} ({datetime})"
 }

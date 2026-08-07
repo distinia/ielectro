@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `dominions_organizations` (
+CREATE TABLE IF NOT EXISTS `organizations` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(150) NOT NULL,
   `type` ENUM(
@@ -18,27 +18,27 @@ CREATE TABLE IF NOT EXISTS `dominions_organizations` (
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_dominions_organizations_name` (`name`)
+  UNIQUE KEY `uq_organizations_name` (`name`)
 );
-CREATE TABLE IF NOT EXISTS `dominions_organization_members` (
+CREATE TABLE IF NOT EXISTS `organization_members` (
   `organization_id` BIGINT UNSIGNED NOT NULL,
   `country_id` BIGINT UNSIGNED NOT NULL,
   `joined` INT DEFAULT NULL,
   `left_at` INT DEFAULT NULL,
   PRIMARY KEY (`organization_id`, `country_id`),
   KEY `idx_country_id` (`country_id`),
-  CONSTRAINT `dominions_organization_members_ibfk_1`
+  CONSTRAINT `organization_members_ibfk_1`
     FOREIGN KEY (`organization_id`)
-    REFERENCES `dominions_organizations` (`id`)
+    REFERENCES `organizations` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `dominions_organization_members_ibfk_2`
+  CONSTRAINT `organization_members_ibfk_2`
     FOREIGN KEY (`country_id`)
-    REFERENCES `dominions_countries` (`id`)
+    REFERENCES `countries` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `dominions_country_relations` (
+CREATE TABLE IF NOT EXISTS `country_relations` (
   `country_id` BIGINT UNSIGNED NOT NULL,
   `target_country_id` BIGINT UNSIGNED NOT NULL,
   `relation` TINYINT NOT NULL DEFAULT 0,
@@ -46,18 +46,18 @@ CREATE TABLE IF NOT EXISTS `dominions_country_relations` (
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`country_id`, `target_country_id`),
   KEY `idx_target_country_id` (`target_country_id`),
-  CONSTRAINT `dominions_country_relations_ibfk_1`
+  CONSTRAINT `country_relations_ibfk_1`
     FOREIGN KEY (`country_id`)
-    REFERENCES `dominions_countries` (`id`)
+    REFERENCES `countries` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `dominions_country_relations_ibfk_2`
+  CONSTRAINT `country_relations_ibfk_2`
     FOREIGN KEY (`target_country_id`)
-    REFERENCES `dominions_countries` (`id`)
+    REFERENCES `countries` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `dominions_country_subjects` (
+CREATE TABLE IF NOT EXISTS `country_subjects` (
   `country_id` BIGINT UNSIGNED NOT NULL,
   `overlord_country_id` BIGINT UNSIGNED NOT NULL,
   `type` ENUM(
@@ -77,18 +77,18 @@ CREATE TABLE IF NOT EXISTS `dominions_country_subjects` (
   `description` TEXT DEFAULT NULL,
   PRIMARY KEY (`country_id`, `overlord_country_id`),
   KEY `idx_overlord_country_id` (`overlord_country_id`),
-  CONSTRAINT `dominions_country_subjects_ibfk_1`
+  CONSTRAINT `country_subjects_ibfk_1`
     FOREIGN KEY (`country_id`)
-    REFERENCES `dominions_countries` (`id`)
+    REFERENCES `countries` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `dominions_country_subjects_ibfk_2`
+  CONSTRAINT `country_subjects_ibfk_2`
     FOREIGN KEY (`overlord_country_id`)
-    REFERENCES `dominions_countries` (`id`)
+    REFERENCES `countries` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `dominions_treaties` (
+CREATE TABLE IF NOT EXISTS `treaties` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(150) NOT NULL,
   `type` ENUM(
@@ -109,19 +109,19 @@ CREATE TABLE IF NOT EXISTS `dominions_treaties` (
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 );
-CREATE TABLE IF NOT EXISTS `dominions_treaty_members` (
+CREATE TABLE IF NOT EXISTS `treaty_members` (
   `treaty_id` BIGINT UNSIGNED NOT NULL,
   `country_id` BIGINT UNSIGNED NOT NULL,
   PRIMARY KEY (`treaty_id`, `country_id`),
   KEY `idx_country_id` (`country_id`),
-  CONSTRAINT `dominions_treaty_members_ibfk_1`
+  CONSTRAINT `treaty_members_ibfk_1`
     FOREIGN KEY (`treaty_id`)
-    REFERENCES `dominions_treaties` (`id`)
+    REFERENCES `treaties` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `dominions_treaty_members_ibfk_2`
+  CONSTRAINT `treaty_members_ibfk_2`
     FOREIGN KEY (`country_id`)
-    REFERENCES `dominions_countries` (`id`)
+    REFERENCES `countries` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );

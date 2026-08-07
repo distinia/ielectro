@@ -14,9 +14,9 @@ const FILTER_PASSWORD = new Set([
     "password_reset_completed",
 ]);
 const FILTER_ACCOUNT = new Set([
-    "account_created",
-    "account_deletion_scheduled",
-    "account_deletion_cancelled",
+    "created",
+    "deletion_scheduled",
+    "deletion_cancelled",
     "username_changed",
 ]);
 function filterCategory(action) {

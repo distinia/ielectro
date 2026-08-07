@@ -38,7 +38,7 @@ class Sessions
                     last_activity,
                     created_at,
                     expires_at
-                FROM account_sessions
+                FROM sessions
                 WHERE account_id = ?
                 AND revoked_at IS NULL
                 AND expires_at > NOW()
@@ -85,6 +85,7 @@ class Sessions
             Response::badRequest('Username or email and password are required');
         }
         RateLimit::check('login', 8, 900, $identifier);
+        $GLOBALS['account']->database->use();
         $account = Query::fetch(
             "SELECT id, password_hash
             FROM accounts
@@ -140,7 +141,7 @@ class Session
         $tokenHash = Generate::hash($token);
         $location = new Geolocation(Request::ip());
         Query::execute(
-            "INSERT INTO account_sessions(
+            "INSERT INTO sessions(
                 account_id,
                 token_hash,
                 ip_address,
@@ -180,7 +181,7 @@ class Session
             return;
         }
         Query::execute(
-            "UPDATE account_sessions
+            "UPDATE sessions
             SET revoked_at = NOW()
             WHERE token_hash = ?
             AND revoked_at IS NULL",
@@ -197,7 +198,7 @@ class Session
         $currentHash = Generate::hash($token);
         $session = Query::fetch(
             "SELECT id
-            FROM account_sessions
+            FROM sessions
             WHERE token_hash = ?
             AND account_id = ?
             AND revoked_at IS NULL
@@ -213,7 +214,7 @@ class Session
         }
         $newToken = Generate::token();
         Query::execute(
-            "UPDATE account_sessions
+            "UPDATE sessions
             SET token_hash = ?,
                 expires_at = DATE_ADD(NOW(), INTERVAL ? SECOND),
                 last_activity = NOW()
@@ -233,7 +234,7 @@ class Session
     public static function revoke(int $sessionId): bool
     {
         return Query::execute(
-            "UPDATE account_sessions
+            "UPDATE sessions
             SET revoked_at = NOW()
             WHERE id = ?
             AND account_id = ?
@@ -247,7 +248,7 @@ class Session
     public static function revokeAllFor(int $accountId, ?string $excludeToken = null): void
     {
         $sql = "
-            UPDATE account_sessions
+            UPDATE sessions
             SET revoked_at = NOW()
             WHERE account_id = ?
             AND revoked_at IS NULL

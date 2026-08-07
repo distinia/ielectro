@@ -9,14 +9,15 @@ class App
     public string $namespace;
     public string $url;
     public array $paths;
-    public Database $database;
+    public ?Database $database = null;
     public Api $api;
     public Pages $pages;
+    private bool $booted = false;
     public function __construct(
         string $name,
         string $subdomain,
         string $folder,
-        string $database,
+        ?string $databaseName  = null,
         string $version = '1.0.0'
     ) {
         $this->version = $version;
@@ -39,25 +40,38 @@ class App
             'backups'   => ROOT_PATH . '/' . $folder . '/storage/backups',
             'database'  => ROOT_PATH . '/' . $folder . '/database',
         ];
-        foreach ($this->paths as $name => $directory) {
-            if ($name === 'database') {
+        foreach ($this->paths as $pathName => $directory) {
+            if ($pathName === 'database') {
                 continue;
             }
             File::makeDirectory($directory);
         }
-        $this->database = new Database($database);
-        $this->database->create();
-        $this->database->start();
-        $this->database->tables($this->paths['database']);
-        $this->database->use();
+        if($databaseName !== null){
+            $this->database = new Database($databaseName);
+        }
         $this->api = new Api($this);
         $this->pages = new Pages($this);
     }
     public function run(): void
     {
+        $this->boot();
+        if ($this->database !== null) {
+            $this->database->use();
+        }
         match (Routing::segment(0)) {
-            'api' => $this->api,
-            default => $this->pages,
+            'api' => $this->api->handle(),
+            default => $this->pages->render(),
         };
+    }
+    private function boot(): void
+    {
+        if ($this->booted) {
+            return;
+        }
+        if ($this->database !== null) {
+            $this->database->create();
+            $this->database->tables($this->paths['database']);
+        }
+        $this->booted = true;
     }
 }

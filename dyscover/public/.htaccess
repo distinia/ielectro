@@ -1,8 +1,5 @@
+DirectoryIndex index.php
 RewriteEngine On
-RewriteCond %{REQUEST_FILENAME} -f [OR]
-RewriteCond %{REQUEST_FILENAME} -d
+RewriteCond %{REQUEST_FILENAME} -f
 RewriteRule ^ - [L]
-RewriteRule ^article/[^/]+/?$ router.php [L,QSA]
-RewriteRule ^user/[^/]+/?$ router.php [L,QSA]
-RewriteRule ^explore/[^/]+/?$ router.php [L,QSA]
-RewriteRule ^ router.php [L,QSA]
+RewriteRule ^ index.php [L,QSA]

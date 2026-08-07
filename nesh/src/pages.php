@@ -6,8 +6,13 @@ class Pages
     public function __construct(App $app)
     {
         $this->app = $app;
+    }
+    public function render(): void
+    {
         Security::ensure();
-        [$page, $assets] = $this->();
+        $page = Routing::path() === 'home'
+            ? 'home'
+            : Routing::segment(0);
         $path = $this->app->paths['pages'] . '/' . $page . '.html';
         if (!is_file($path)) {
             Response::notFound();
@@ -16,7 +21,7 @@ class Pages
         if ($html === false) {
             Response::notFound();
         }
-        echo $this->injectHead($html, $assets);
+        echo $this->injectHead($html, $page);
     }
     private function injectHead(string $html, string $file): string
     {

@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `dominions_territories` (
+CREATE TABLE IF NOT EXISTS `territories` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `parent_id` BIGINT UNSIGNED DEFAULT NULL,
   `created_by` BIGINT UNSIGNED NOT NULL,
@@ -13,18 +13,18 @@ CREATE TABLE IF NOT EXISTS `dominions_territories` (
   PRIMARY KEY (`id`),
   KEY `idx_parent_id` (`parent_id`),
   KEY `idx_created_by` (`created_by`),
-  CONSTRAINT `dominions_territories_ibfk_1`
+  CONSTRAINT `territories_ibfk_1`
     FOREIGN KEY (`parent_id`)
-    REFERENCES `dominions_territories` (`id`)
+    REFERENCES `territories` (`id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE,
-  CONSTRAINT `dominions_territories_ibfk_2`
+  CONSTRAINT `territories_ibfk_2`
     FOREIGN KEY (`created_by`)
-    REFERENCES `dominions_users` (`id`)
+    REFERENCES `users` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `dominions_countries` (
+CREATE TABLE IF NOT EXISTS `countries` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `territory_id` BIGINT UNSIGNED NOT NULL,
   `official_name` VARCHAR(255) NOT NULL,
@@ -68,21 +68,21 @@ CREATE TABLE IF NOT EXISTS `dominions_countries` (
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_dominions_countries_territory_id` (`territory_id`),
-  UNIQUE KEY `uq_dominions_countries_official_name` (`official_name`),
-  CONSTRAINT `dominions_countries_ibfk_1`
+  UNIQUE KEY `uq_countries_territory_id` (`territory_id`),
+  UNIQUE KEY `uq_countries_official_name` (`official_name`),
+  CONSTRAINT `countries_ibfk_1`
     FOREIGN KEY (`territory_id`)
-    REFERENCES `dominions_territories` (`id`)
+    REFERENCES `territories` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `dominions_country_languages` (
+CREATE TABLE IF NOT EXISTS `country_languages` (
   `country_id` BIGINT UNSIGNED NOT NULL,
   `language` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`country_id`, `language`),
-  CONSTRAINT `dominions_country_languages_ibfk_1`
+  CONSTRAINT `country_languages_ibfk_1`
     FOREIGN KEY (`country_id`)
-    REFERENCES `dominions_countries` (`id`)
+    REFERENCES `countries` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );

@@ -59,10 +59,10 @@ class Inbox
         Request::delete();
         $chatId = Routing::id();
         InboxAccess::requireMember((int) $chatId, User::id());
-        Query::execute('DELETE FROM dyscover_inbox_messages WHERE chat_id = ?', [$chatId]);
-        Query::execute('DELETE FROM dyscover_inbox_typing WHERE chat_id = ?', [$chatId]);
-        Query::execute('DELETE FROM dyscover_inbox_members WHERE chat_id = ?', [$chatId]);
-        Query::execute('DELETE FROM dyscover_inbox_chats WHERE id = ?', [$chatId]);
+        Query::execute('DELETE FROM inbox_messages WHERE chat_id = ?', [$chatId]);
+        Query::execute('DELETE FROM inbox_typing WHERE chat_id = ?', [$chatId]);
+        Query::execute('DELETE FROM inbox_members WHERE chat_id = ?', [$chatId]);
+        Query::execute('DELETE FROM inbox_chats WHERE id = ?', [$chatId]);
         Response::success('Inbox deleted');
     }
 }
@@ -117,7 +117,7 @@ class InboxMessages
             Response::badRequest('Missing body');
         }
         Query::execute(
-            'UPDATE dyscover_inbox_messages
+            'UPDATE inbox_messages
             SET body = ?
             WHERE id = ? AND sender_id = ?',
             [$body, $messageId, User::id()]
@@ -129,7 +129,7 @@ class InboxMessages
         Request::delete();
         $messageId = (int) Routing::segment(4);
         Query::execute(
-            'DELETE FROM dyscover_inbox_messages
+            'DELETE FROM inbox_messages
             WHERE id = ? AND sender_id = ?',
             [$messageId, User::id()]
         );
@@ -150,21 +150,21 @@ class InboxData
                 lm.type AS last_type,
                 (
                     SELECT COUNT(*)
-                    FROM dyscover_inbox_messages um
-                    LEFT JOIN dyscover_inbox_message_reads r
+                    FROM inbox_messages um
+                    LEFT JOIN inbox_message_reads r
                         ON r.message_id = um.id AND r.user_id = ?
                     WHERE um.chat_id = c.id
                     AND um.sender_id != ?
                     AND r.message_id IS NULL
                 ) AS unread_count
-            FROM dyscover_inbox_chats c
-            INNER JOIN dyscover_inbox_members mem ON mem.chat_id = c.id
-            INNER JOIN dyscover_inbox_members peer_mem
+            FROM inbox_chats c
+            INNER JOIN inbox_members mem ON mem.chat_id = c.id
+            INNER JOIN inbox_members peer_mem
                 ON peer_mem.chat_id = c.id AND peer_mem.user_id != mem.user_id
-            INNER JOIN dyscover_users peer ON peer.id = peer_mem.user_id
+            INNER JOIN users peer ON peer.id = peer_mem.user_id
             INNER JOIN accounts peer_a ON peer_a.id = peer.account_id
-            LEFT JOIN dyscover_inbox_messages lm ON lm.id = (
-                SELECT m2.id FROM dyscover_inbox_messages m2
+            LEFT JOIN inbox_messages lm ON lm.id = (
+                SELECT m2.id FROM inbox_messages m2
                 WHERE m2.chat_id = c.id
                 ORDER BY m2.created_at DESC, m2.id DESC LIMIT 1
             )
@@ -184,7 +184,7 @@ class InboxData
     {
         $row = Query::fetch(
             'SELECT id, type, created_at, updated_at
-            FROM dyscover_inbox_chats WHERE id = ? LIMIT 1',
+            FROM inbox_chats WHERE id = ? LIMIT 1',
             [$chatId]
         );
         if (!$row) {
@@ -202,8 +202,8 @@ class InboxData
     {
         $rows = Query::fetchAll(
             "SELECT m.id, m.sender_id, m.type, m.body, m.attachment, m.created_at, a.username
-            FROM dyscover_inbox_messages m
-            INNER JOIN dyscover_users du ON du.id = m.sender_id
+            FROM inbox_messages m
+            INNER JOIN users du ON du.id = m.sender_id
             INNER JOIN accounts a ON a.id = du.account_id
             WHERE m.chat_id = ?
             ORDER BY m.created_at ASC, m.id ASC",
@@ -224,9 +224,9 @@ class InboxData
     {
         $row = Query::fetch(
             "SELECT c.id
-            FROM dyscover_inbox_chats c
-            INNER JOIN dyscover_inbox_members m1 ON m1.chat_id = c.id AND m1.user_id = ?
-            INNER JOIN dyscover_inbox_members m2 ON m2.chat_id = c.id AND m2.user_id = ?
+            FROM inbox_chats c
+            INNER JOIN inbox_members m1 ON m1.chat_id = c.id AND m1.user_id = ?
+            INNER JOIN inbox_members m2 ON m2.chat_id = c.id AND m2.user_id = ?
             WHERE c.type = 'direct' LIMIT 1",
             [$userA, $userB]
         );
@@ -235,11 +235,11 @@ class InboxData
     public static function createDirect(int $userA, int $userB): array
     {
         Query::execute(
-            "INSERT INTO dyscover_inbox_chats(type, updated_at) VALUES('direct', NOW())"
+            "INSERT INTO inbox_chats(type, updated_at) VALUES('direct', NOW())"
         );
         $chatId = Query::lastId();
         Query::execute(
-            'INSERT INTO dyscover_inbox_members(chat_id, user_id) VALUES(?, ?), (?, ?)',
+            'INSERT INTO inbox_members(chat_id, user_id) VALUES(?, ?), (?, ?)',
             [$chatId, $userA, $chatId, $userB]
         );
         return ['id' => $chatId];
@@ -252,14 +252,14 @@ class InboxData
         ?string $attachment
     ): int {
         Query::execute(
-            'INSERT INTO dyscover_inbox_messages(
+            'INSERT INTO inbox_messages(
                 chat_id, sender_id, type, body, attachment
             ) VALUES (?, ?, ?, ?, ?)',
             [$chatId, $senderId, $type, $body, $attachment]
         );
         $messageId = Query::lastId();
         Query::execute(
-            'UPDATE dyscover_inbox_chats SET updated_at = NOW() WHERE id = ?',
+            'UPDATE inbox_chats SET updated_at = NOW() WHERE id = ?',
             [$chatId]
         );
         return $messageId;
@@ -282,7 +282,7 @@ class InboxAccess
     public static function requireMember(int $chatId, int $userId): void
     {
         if (!Query::exists(
-            'SELECT 1 FROM dyscover_inbox_members
+            'SELECT 1 FROM inbox_members
             WHERE chat_id = ? AND user_id = ? LIMIT 1',
             [$chatId, $userId]
         )) {
@@ -295,13 +295,13 @@ class InboxReads
     public static function markChatRead(int $chatId, int $userId): void
     {
         $rows = Query::fetchAll(
-            'SELECT id FROM dyscover_inbox_messages
+            'SELECT id FROM inbox_messages
             WHERE chat_id = ? AND sender_id != ?',
             [$chatId, $userId]
         );
         foreach ($rows as $row) {
             Query::execute(
-                'INSERT IGNORE INTO dyscover_inbox_message_reads(message_id, user_id)
+                'INSERT IGNORE INTO inbox_message_reads(message_id, user_id)
                 VALUES(?, ?)',
                 [(int) $row['id'], $userId]
             );
