@@ -5,6 +5,24 @@ class Response
     private static function send(array|string $content, int $code = 200): never
     {
         http_response_code($code);
+        if ($code >= 400) {
+            $message = is_array($content)
+                ? (
+                    $content['message']
+                    ?? $content['error']
+                    ?? 'Request failed'
+                )
+                : (string) $content;
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(
+                [
+                    'success' => false,
+                    'message' => $message,
+                ],
+                \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES
+            );
+            exit;
+        }
         if (is_array($content)) {
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode($content, \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES);

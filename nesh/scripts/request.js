@@ -1,8 +1,4 @@
 export default class Request {
-    static baseUrl = "";
-    static setBaseUrl(url) {
-        this.baseUrl = String(url).replace(/\/+$/, "");
-    }
     static csrfToken() {
         const cookie = document.cookie
             .split(";")

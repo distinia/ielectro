@@ -1,0 +1,20 @@
+{
+    "sections": [
+        {
+            "class": "section-0",
+            "fields": ["name", "surname"]
+        },
+        {
+            "class": "section-1",
+            "fields": ["birthday", "gender"]
+        },
+        {
+            "class": "section-2",
+            "fields": ["email", "username", "password"]
+        },
+        {
+            "class": "section-3",
+            "fields": ["terms-of-service-agreement"]
+        }
+    ]
+}

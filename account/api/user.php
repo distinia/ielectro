@@ -175,7 +175,8 @@ class Data
                 gender,
                 email,
                 phone_number,
-                created_at
+                created_at,
+                deletion_scheduled_at
             FROM accounts
             WHERE id = ?
             LIMIT 1",
@@ -245,8 +246,18 @@ class Update
         WHERE id = ?",
             [Identity::id()]
         );
+        if (!$account) {
+            Response::notFound('Account not found');
+        }
+        if (
+            array_key_exists('password', $input)
+            || array_key_exists('current_password', $input)
+        ) {
+            $this->password($input, $account);
+        }
         $update = [];
         $params = [];
+        $emailChanged = false;
         foreach (self::FIELDS as $field => $config) {
             if (!array_key_exists($field, $input)) {
                 continue;
@@ -261,6 +272,7 @@ class Update
             $params[] = $value;
             if (!empty($config['verify'])) {
                 $update[] = "email_verified_at = NULL";
+                $emailChanged = true;
             }
             Activity::log(
                 Identity::id(),
@@ -278,7 +290,50 @@ class Update
         WHERE id = ?",
             $params
         );
+        if ($emailChanged) {
+            EmailVerification::send(Identity::id());
+        }
         Response::success('Account updated');
+    }
+    private function password(array $input, array $account): void
+    {
+        $current = (string) ($input['current_password'] ?? '');
+        $password = (string) ($input['password'] ?? '');
+        $confirm = (string) ($input['confirm_password'] ?? '');
+        if (
+            !Validate::required($current)
+            || !Validate::required($password)
+            || !Validate::required($confirm)
+        ) {
+            Response::badRequest('All password fields are required');
+        }
+        if (!Validate::same($password, $confirm)) {
+            Response::badRequest('Passwords do not match');
+        }
+        if (!Validate::min($password, 8)) {
+            Response::badRequest('Password must be at least 8 characters');
+        }
+        if (
+            $account['password_hash'] === null
+            || !Password::verify($current, $account['password_hash'])
+        ) {
+            Response::unauthorized('Current password is incorrect');
+        }
+        Query::execute(
+            "UPDATE accounts
+            SET password_hash = ?
+            WHERE id = ?",
+            [
+                Password::hash($password),
+                Identity::id(),
+            ]
+        );
+        Activity::log(
+            Identity::id(),
+            'password_change',
+            'Password changed from profile'
+        );
+        Response::success('Password updated');
     }
     private function prepare(string $field, mixed $value, array $config): mixed
     {

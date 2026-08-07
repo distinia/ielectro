@@ -1,51 +1,83 @@
-````text
-Refactor the server protection system.
+```text
+Please address the following issues without changing the existing architecture or business logic.
 
-The current approach uses a single root `.htaccess` file containing multiple RewriteRules to block protected directories. Remove this architecture completely.
+## 1. Profile
 
-Instead, every protected directory must contain its own `.htaccess` file.
+After updating any profile field, the remaining actions stop working.
 
-Requirements:
+Example:
 
-- Keep the existing `Server::protect()` API.
-- For every protected directory (default: `database`, `storage`, `data`, plus any directory added through `protect()`), automatically create or overwrite a `.htaccess` file inside that directory.
-- The generated `.htaccess` must deny all HTTP access to both the directory itself and every file and subdirectory contained within it.
-- The solution must be compatible with both Apache 2.4+ and Apache 2.2.
+- Update username → works.
+- Afterwards, changing email, password, or any other field no longer works.
 
-Use the following rules:
+Investigate the cause and ensure every Profile action continues working independently after any successful update.
 
-```apache
-<IfModule mod_authz_core.c>
-    Require all denied
-</IfModule>
+---
 
-<IfModule !mod_authz_core.c>
-    Order Allow,Deny
-    Deny from all
-</IfModule>
-````
+## 2. Google OAuth Flow
 
-The root `.htaccess` should no longer contain any protection rules. It must only contain:
+Remove the Google Client ID dependency currently defined inside `autoload.php`.
 
-```apache
-DirectoryIndex index.php
+It is unnecessary for the current architecture.
 
-RewriteEngine On
+Google authentication already returns all the information we need:
 
-RewriteCond %{REQUEST_FILENAME} -f
-RewriteRule ^ - [L]
+- email
+- given_name
+- full_name
 
-RewriteRule ^ index.php [L,QSA]
-```
+Use these values directly.
 
-Additional requirements:
+The expected flow is:
 
-* `Server::protect()` must remain chainable.
-* Protected directories should be created automatically if they do not already exist.
-* The `.htaccess` file inside each protected directory must always be regenerated (overwrite if it already exists).
-* This logic must be completely independent from the database bootstrap process. Protecting directories should not depend on whether the application has already been initialized.
-
-Refactor the implementation to keep the code as simple, modular, and maintainable as possible.
+1. Authenticate with Google.
+2. Send the returned user information to:
 
 ```
+
+POST /api/oauth/google
+
+```
+
+3. If the account already exists, complete the login normally.
+4. If the account does not exist, redirect to the `oauth-create` page.
+5. On `oauth-create`, retrieve the pending OAuth data using:
+
+```
+
+GET /api/oauth/google
+
+```
+
+This endpoint should provide the pending values (email, username, etc.).
+
+6. Complete account creation using:
+
+```
+
+POST /api/user
+
+```
+
+Do not introduce any unnecessary client-side Google configuration.
+
+---
+
+## 3. Password & Email Update
+
+The Profile page currently cannot update the user's password.
+
+Implement password updates correctly.
+
+Also, when the user changes their email address, the new email must always go through the verification process before becoming active.
+
+Email verification should behave consistently with the account creation flow.
+
+---
+
+## 4. Profile UI
+
+The expand/collapse arrow used for the Profile rows is almost invisible.
+
+Replace it with a clearer and more visible icon that matches the application's design language.
 ```

@@ -71,6 +71,11 @@ class Api
                 $method === 'POST'
                 && Routing::segment(1) === 'sessions'
                 && Routing::segment(2) === null
+            )
+            || (
+                $method === 'POST'
+                && Routing::segment(1) === 'user'
+                && Routing::segment(2) === null
             );
         if ($method === 'GET') {
             if (!$isPublic) {

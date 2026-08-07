@@ -40,7 +40,6 @@ define('CACHE_LIFETIME', 3600);
 define('API_VERSION', 'v1');
 define('API_RATE_LIMIT', 60);
 define('API_ALLOW_CORS', false);
-define('GOOGLE_CLIENT_ID', '330597496243-srvq8tqchj7bpgo4d1kqf1tt5j1rj6mo.apps.googleusercontent.com');
 # Real-time WebSocket
 define('REALTIME_URL', '');
 define('REALTIME_TOKEN', '');

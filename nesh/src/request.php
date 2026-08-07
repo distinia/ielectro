@@ -7,12 +7,60 @@ class Request
         if (PHP_SAPI === 'cli') {
             return;
         }
+        ini_set('display_errors', '0');
+        ini_set('log_errors', '1');
+        set_exception_handler([self::class, 'handleException']);
+        set_error_handler([self::class, 'handleError']);
+        register_shutdown_function([self::class, 'handleShutdown']);
         Security::ensure();
         self::cors(
             $_SERVER['REQUEST_METHOD'] === 'GET'
                 ? ['GET', 'OPTIONS']
                 : ['POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
         );
+    }
+    public static function handleException(\Throwable $exception): void
+    {
+        Log::exception($exception);
+        if (!headers_sent()) {
+            Response::error('Unable to complete request.');
+        }
+    }
+    public static function handleError(
+        int $severity,
+        string $message,
+        string $file,
+        int $line
+    ): bool {
+        if (!(error_reporting() & $severity)) {
+            return false;
+        }
+        throw new \ErrorException($message, 0, $severity, $file, $line);
+    }
+    public static function handleShutdown(): void
+    {
+        $error = error_get_last();
+        if ($error === null) {
+            return;
+        }
+        $fatal = [
+            E_ERROR,
+            E_PARSE,
+            E_CORE_ERROR,
+            E_COMPILE_ERROR,
+        ];
+        if (!in_array($error['type'], $fatal, true)) {
+            return;
+        }
+        Log::error(sprintf(
+            "%s\nFile: %s\nLine: %d",
+            $error['message'],
+            $error['file'],
+            $error['line']
+        ));
+        if (!headers_sent()) {
+            Response::error('Unable to complete request.');
+        }
     }
     public static function csrf(): ?string
     {

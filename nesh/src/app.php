@@ -63,10 +63,6 @@ class App
             default => $this->pages->render(),
         };
     }
-    public static function get(string $name): ?App
-    {
-        return self::$apps[$name] ?? null;
-    }
     private function boot(): void
     {
         $boot = $this->paths['storage'] . '/.booted';

@@ -2,11 +2,28 @@
 namespace Account;
 use Nesh\Response;
 use Nesh\Request;
+use Nesh\Routing;
 use Nesh\Cookie;
 use Nesh\Query;
 use Nesh\Client;
 class Oauth {
     public function google(): void
+    {
+        Routing::method([
+            'GET' => fn() => $this->readPending(),
+            'POST' => fn() => $this->authenticate(),
+        ]);
+    }
+    private function readPending(): void
+    {
+        Request::get();
+        $pending = Pending::get();
+        if (!$pending) {
+            Response::notFound('No pending Google sign-up');
+        }
+        Response::success($pending);
+    }
+    private function authenticate(): void
     {
         Request::post();
         $credential = trim((string) Request::value('credential'));
@@ -17,19 +34,22 @@ class Oauth {
         if (!$payload) {
             Response::unauthorized('Invalid Google credential');
         }
+        $profile = Google::profile($payload);
         $account = Query::fetch(
             "SELECT id FROM accounts WHERE email = ? LIMIT 1",
-            [$payload['email']]
+            [$profile['email']]
         );
         if (!$account) {
             Pending::create(
-                $payload['email'],
-                $payload['name'] ?? '',
-                $payload['surname'] ?? ''
+                $profile['email'],
+                $profile['name'],
+                $profile['surname']
             );
             Response::success([
-                'username' => $account['username'],
-                'email' => $account['email']
+                'email' => $profile['email'],
+                'name' => $profile['name'],
+                'surname' => $profile['surname'],
+                'signup_required' => true,
             ]);
         }
         Pending::delete();
@@ -63,12 +83,6 @@ class Google
         )) {
             return null;
         }
-        if (
-            GOOGLE_CLIENT_ID !== ''
-            && ($payload['aud'] ?? '') !== GOOGLE_CLIENT_ID
-        ) {
-            return null;
-        }
         if ((int) ($payload['exp'] ?? 0) <= time()) {
             return null;
         }
@@ -79,6 +93,28 @@ class Google
             return null;
         }
         return $payload;
+    }
+    public static function profile(array $payload): array
+    {
+        $email = trim((string) ($payload['email'] ?? ''));
+        $name = trim((string) ($payload['given_name'] ?? ''));
+        $surname = trim((string) ($payload['family_name'] ?? ''));
+        $fullName = trim((string) ($payload['full_name'] ?? $payload['name'] ?? ''));
+        if ($name === '' && $fullName !== '') {
+            $parts = preg_split('/\s+/', $fullName, 2);
+            $name = trim((string) ($parts[0] ?? ''));
+            if ($surname === '') {
+                $surname = trim((string) ($parts[1] ?? ''));
+            }
+        } elseif ($surname === '' && $fullName !== '' && $name !== '') {
+            $remainder = trim(str_replace($name, '', $fullName));
+            $surname = $remainder;
+        }
+        return [
+            'email' => $email,
+            'name' => $name,
+            'surname' => $surname,
+        ];
     }
 }
 class Pending

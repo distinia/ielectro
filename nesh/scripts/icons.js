@@ -1,6 +1,6 @@
 export default class Icons {
     static cache = {};
-    static baseUrl = "https://nesh.ielectro.com/icons/";
+    static baseUrl = "https://nesh.ielectro.com/icon/";
     static async load(container = document.body) {
         const elements = Array.from(container.querySelectorAll("i[data-icon]"));
         if (!elements.length) return;
