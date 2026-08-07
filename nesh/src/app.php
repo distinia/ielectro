@@ -13,7 +13,6 @@ class App
     public ?Database $database = null;
     public Api $api;
     public Pages $pages;
-    private bool $booted = false;
     public function __construct(
         string $name,
         string $subdomain,
@@ -29,7 +28,6 @@ class App
         $this->url = 'https://' . $subdomain . '.' . DOMAIN;
         $this->paths = [
             'root'      => ROOT_PATH . '/' . $folder,
-            'public'    => ROOT_PATH . '/' . $folder . '',
             'api'       => ROOT_PATH . '/' . $folder . '/api',
             'assets'    => ROOT_PATH . '/' . $folder . '/assets',
             'pages'     => ROOT_PATH . '/' . $folder . '/pages',
@@ -50,13 +48,14 @@ class App
         if($databaseName !== null){
             $this->database = new Database($databaseName);
         }
+        $this->server = new Server($this);
+        $this->boot();
         $this->api = new Api($this);
         $this->pages = new Pages($this);
         self::$apps[$this->folder] = $this;
     }
     public function run(): void
     {
-        $this->boot();
         if ($this->database !== null) {
             $this->database->use();
         }
@@ -65,19 +64,23 @@ class App
             default => $this->pages->render(),
         };
     }
+    public static function get(string $name): ?App
+    {
+        return self::$apps[$name] ?? null;
+    }
     private function boot(): void
     {
-        if ($this->booted) {
+        $boot = $this->paths['storage'] . '/.booted';
+        if (is_file($boot)) {
             return;
         }
         if ($this->database !== null) {
             $this->database->create();
             $this->database->tables($this->paths['database']);
         }
-        $this->booted = true;
-    }
-    public static function get(string $name): ?App
-    {
-        return self::$apps[$name] ?? null;
+        $this->server->save();
+        if (!touch($boot)) {
+            Response::error('Unable to create boot file.');
+        }    
     }
 }

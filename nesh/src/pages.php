@@ -26,7 +26,7 @@ class Pages
     private function injectHead(string $html, string $file): string
     {
         $stylesheet = '/styles/' . $file . '/index.css';
-        if (!is_file($this->app->paths['public'] . $stylesheet)) {
+        if (!is_file($this->app->paths['root'] . $stylesheet)) {
             $stylesheet = '/styles/pages/' . $file . '.css';
         }
         $head = '    <meta charset="' . CHARSET . '">

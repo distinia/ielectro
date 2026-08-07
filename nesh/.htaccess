@@ -1,10 +1,35 @@
+# Default entry point
+DirectoryIndex index.php
+
+# Enable URL rewriting
 RewriteEngine On
+
+# Allow CORS only from *.ielectro.com
 <IfModule mod_headers.c>
-   SetEnvIf Origin "^https://([a-zA-Z0-9-]+\.)?ielectro\.com$" CORS_ORIGIN=$0
-   Header always set Access-Control-Allow-Origin "%{CORS_ORIGIN}e" env=CORS_ORIGIN
+    SetEnvIf Origin "^https://([A-Za-z0-9-]+\.)?ielectro\.com$" CORS_ORIGIN=$0
+
+    Header always set Access-Control-Allow-Origin "%{CORS_ORIGIN}e" env=CORS_ORIGIN
     Header always set Access-Control-Allow-Credentials "true" env=CORS_ORIGIN
     Header always set Vary "Origin"
 </IfModule>
-RewriteCond %{REQUEST_FILENAME} -f [OR]
-RewriteCond %{REQUEST_FILENAME} -d
+
+# Block sensitive directories
+RewriteRule ^cli(?:/.*)?$ - [F,L,NC]
+RewriteRule ^skeleton(?:/.*)?$ - [F,L,NC]
+RewriteRule ^src(?:/.*)?$ - [F,L,NC]
+RewriteRule ^vendor(?:/.*)?$ - [F,L,NC]
+RewriteRule ^data(?:/.*)?$ - [F,L,NC]
+
+# Block sensitive files
+RewriteRule ^composer\.json$ - [F,L,NC]
+RewriteRule ^composer\.lock$ - [F,L,NC]
+RewriteRule ^\.env(?:\..*)?$ - [F,L,NC]
+RewriteRule ^\.git - [F,L,NC]
+RewriteRule ^\.ht - [F,L,NC]
+
+# Serve existing files
+RewriteCond %{REQUEST_FILENAME} -f
 RewriteRule ^ - [L]
+
+# Route everything else to index.php
+RewriteRule ^ index.php [L,QSA]
