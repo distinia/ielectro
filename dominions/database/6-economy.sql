@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `currencies` (
+CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`currencies` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(100) NOT NULL,
   `code` CHAR(3) DEFAULT NULL,
@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS `currencies` (
   UNIQUE KEY `uq_currencies_name` (`name`),
   UNIQUE KEY `uq_currencies_code` (`code`)
 );
-CREATE TABLE IF NOT EXISTS `territory_economies` (
+CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`territory_economies` (
   `territory_id` BIGINT UNSIGNED NOT NULL,
   `currency_id` BIGINT UNSIGNED DEFAULT NULL,
   `gdp` DECIMAL(20,2) UNSIGNED DEFAULT NULL,
@@ -32,18 +32,18 @@ CREATE TABLE IF NOT EXISTS `territory_economies` (
     ON UPDATE CASCADE,
   CONSTRAINT `territory_economies_ibfk_2`
     FOREIGN KEY (`currency_id`)
-    REFERENCES `currencies` (`id`)
+    REFERENCES `ielectro_dominions`.`currencies` (`id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `resources` (
+CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`resources` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(100) NOT NULL,
   `description` TEXT DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_resources_name` (`name`)
 );
-CREATE TABLE IF NOT EXISTS `territory_resources` (
+CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`territory_resources` (
   `territory_id` BIGINT UNSIGNED NOT NULL,
   `resource_id` BIGINT UNSIGNED NOT NULL,
   `production` DECIMAL(20,2) NOT NULL DEFAULT 0,
@@ -58,18 +58,18 @@ CREATE TABLE IF NOT EXISTS `territory_resources` (
     ON UPDATE CASCADE,
   CONSTRAINT `territory_resources_ibfk_2`
     FOREIGN KEY (`resource_id`)
-    REFERENCES `resources` (`id`)
+    REFERENCES `ielectro_dominions`.`resources` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `industries` (
+CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`industries` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(100) NOT NULL,
   `description` TEXT DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_industries_name` (`name`)
 );
-CREATE TABLE IF NOT EXISTS `territory_industries` (
+CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`territory_industries` (
   `territory_id` BIGINT UNSIGNED NOT NULL,
   `industry_id` BIGINT UNSIGNED NOT NULL,
   `employees` BIGINT UNSIGNED NOT NULL DEFAULT 0,
@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS `territory_industries` (
     ON UPDATE CASCADE,
   CONSTRAINT `territory_industries_ibfk_2`
     FOREIGN KEY (`industry_id`)
-    REFERENCES `industries` (`id`)
+    REFERENCES `ielectro_dominions`.`industries` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );

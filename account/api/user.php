@@ -44,7 +44,6 @@ class Create
         $account = $this->validate();
         $accountId = $this->insert($account);
         Services::create($accountId);
-        $GLOBALS['account']->database->use();
         Session::create($accountId);
         Activity::log(
             $accountId,
@@ -93,7 +92,7 @@ class Create
         if (
             Query::exists(
                 "SELECT 1
-                FROM accounts
+                FROM ielectro_account.accounts
                 WHERE username = ?",
                 [$account['username']]
             )
@@ -103,7 +102,7 @@ class Create
         if (
             Query::exists(
                 "SELECT 1
-                FROM accounts
+                FROM ielectro_account.accounts
                 WHERE email = ?",
                 [$account['email']]
             )
@@ -117,7 +116,7 @@ class Create
         Query::begin();
         try {
             Query::execute(
-                "INSERT INTO accounts(
+                "INSERT INTO ielectro_account.accounts(
                     username,
                     name,
                     surname,
@@ -152,7 +151,7 @@ class Create
         } while (
             Query::exists(
                 "SELECT 1
-                FROM accounts
+                FROM ielectro_account.accounts
                 WHERE username = ?",
                 [$username]
             )
@@ -177,7 +176,7 @@ class Data
                 phone_number,
                 created_at,
                 deletion_scheduled_at
-            FROM accounts
+            FROM ielectro_account.accounts
             WHERE id = ?
             LIMIT 1",
             [Identity::id()]
@@ -242,7 +241,7 @@ class Update
         }
         $account = Query::fetch(
             "SELECT *
-        FROM accounts
+        FROM ielectro_account.accounts
         WHERE id = ?",
             [Identity::id()]
         );
@@ -285,7 +284,7 @@ class Update
         }
         $params[] = Identity::id();
         Query::execute(
-            "UPDATE accounts
+            "UPDATE ielectro_account.accounts
         SET " . implode(', ', $update) . "
         WHERE id = ?",
             $params
@@ -320,7 +319,7 @@ class Update
             Response::unauthorized('Current password is incorrect');
         }
         Query::execute(
-            "UPDATE accounts
+            "UPDATE ielectro_account.accounts
             SET password_hash = ?
             WHERE id = ?",
             [
@@ -386,7 +385,7 @@ class Update
         if (
             Query::exists(
                 "SELECT 1
-            FROM accounts
+            FROM ielectro_account.accounts
             WHERE {$config['column']} = ?
             AND id <> ?",
                 [
@@ -407,7 +406,7 @@ class Delete
     {
         Request::delete();
         Query::execute(
-            "UPDATE accounts
+            "UPDATE ielectro_account.accounts
             SET deletion_scheduled_at = DATE_ADD(NOW(), INTERVAL 30 DAY)
             WHERE id = ?",
             [Identity::id()]
@@ -426,7 +425,7 @@ class Delete
     {
         Request::patch();
         Query::execute(
-            "UPDATE accounts
+            "UPDATE ielectro_account.accounts
             SET deletion_scheduled_at = NULL
             WHERE id = ?",
             [Identity::id()]

@@ -69,9 +69,8 @@ class Posts
         }
         $uuid = PostAssets::requireUuid($input['uuid'] ?? '');
         $userId = User::id();
-        $GLOBALS['dyscover']->database->use();
         $existing = Query::fetch(
-            'SELECT id, uuid, user_id FROM posts WHERE uuid = ? LIMIT 1',
+            'SELECT id, uuid, user_id FROM ielectro_dyscover.dyscover_posts WHERE uuid = ? LIMIT 1',
             [$uuid]
         );
         if ($existing) {
@@ -121,7 +120,7 @@ class Posts
             $previewImage = PostAssets::defaultPreview();
         }
         Query::execute(
-            "INSERT INTO posts(
+            "INSERT INTO ielectro_dyscover.dyscover_posts(
                 user_id, uuid, type, title, description,
                 extension, preview_image, visibility, status
             )
@@ -139,7 +138,7 @@ class Posts
         );
         $id = Query::lastId();
         Query::execute(
-            'INSERT INTO post_statistics(post_id) VALUES(?)',
+            'INSERT INTO ielectro_dyscover.dyscover_post_statistics(post_id) VALUES(?)',
             [$id]
         );
         if ($type === 'article') {
@@ -183,7 +182,7 @@ class Posts
         if ($fields) {
             $params[] = $postId;
             Query::execute(
-                'UPDATE posts SET ' . implode(', ', $fields) . ' WHERE id = ?',
+                'UPDATE ielectro_dyscover.dyscover_posts SET ' . implode(', ', $fields) . ' WHERE id = ?',
                 $params
             );
         }
@@ -201,7 +200,7 @@ class Posts
             }
             $processed = PostAssets::storeMedia($type, $mediaFile, $userId, $uuid, true);
             Query::execute(
-                'UPDATE posts SET extension = ?, preview_image = ? WHERE id = ?',
+                'UPDATE ielectro_dyscover.dyscover_posts SET extension = ?, preview_image = ? WHERE id = ?',
                 [$processed['extension'], $processed['preview_image'], $postId]
             );
             $updated = true;
@@ -229,7 +228,7 @@ class Posts
                 true
             );
             Query::execute(
-                'UPDATE posts SET preview_image = ? WHERE id = ?',
+                'UPDATE ielectro_dyscover.dyscover_posts SET preview_image = ? WHERE id = ?',
                 [$previewImage, $postId]
             );
             $updated = true;
@@ -247,9 +246,8 @@ class Posts
     {
         Request::delete();
         $post = PostData::requireOwned(Routing::id());
-        $GLOBALS['dyscover']->database->use();
         Query::execute(
-            "UPDATE posts SET status = 'hidden' WHERE id = ?",
+            "UPDATE ielectro_dyscover.dyscover_posts SET status = 'hidden' WHERE id = ?",
             [(int) $post['id']]
         );
         Response::success('Post deleted');
@@ -273,9 +271,8 @@ class PostData
         if ($id === null || $id <= 0) {
             Response::badRequest('Missing post id');
         }
-        $GLOBALS['dyscover']->database->use();
         $row = Query::fetch(
-            'SELECT * FROM posts WHERE id = ? LIMIT 1',
+            'SELECT * FROM ielectro_dyscover.dyscover_posts WHERE id = ? LIMIT 1',
             [$id]
         );
         if (!$row || $row['status'] !== 'active') {
@@ -288,7 +285,6 @@ class PostData
     }
     public static function listByUser(int $userId): array
     {
-        $GLOBALS['dyscover']->database->use();
         $rows = Query::fetchAll(
             self::selectSql() . "
             WHERE p.user_id = ?
@@ -315,7 +311,6 @@ class PostData
         if (!$rows) {
             return [];
         }
-        $GLOBALS['dyscover']->database->use();
         $rows = Accounts::attachUsernames($rows);
         $viewerId = User::id();
         $tagMap = PostTags::mapForPosts(array_map(
@@ -376,8 +371,8 @@ class PostData
             'published_at' => $row['published_at'] ?? null,
             'created_at' => $row['published_at'] ?? $row['created_at'] ?? null,
             'updated_at' => $row['updated_at'] ?? null,
-            'liked' => PostEngagement::exists('post_likes', $id, $viewerId),
-            'bookmarked' => PostEngagement::exists('post_bookmarks', $id, $viewerId),
+            'liked' => PostEngagement::exists('ielectro_dyscover.dyscover_post_likes', $id, $viewerId),
+            'bookmarked' => PostEngagement::exists('ielectro_dyscover.dyscover_post_bookmarks', $id, $viewerId),
         ];
     }
     private static function mediaUrl(array $row): string
@@ -414,16 +409,15 @@ class PostData
                 s.comments,
                 s.shares,
                 s.bookmarks
-            FROM posts p
-            INNER JOIN users du ON du.id = p.user_id
-            LEFT JOIN post_statistics s ON s.post_id = p.id";
+            FROM ielectro_dyscover.dyscover_posts p
+            INNER JOIN ielectro_dyscover.dyscover_users du ON du.id = p.user_id
+            LEFT JOIN ielectro_dyscover.dyscover_post_statistics s ON s.post_id = p.id";
     }
 }
 class PostEngagement
 {
     public static function exists(string $table, int $postId, int $userId): bool
     {
-        $GLOBALS['dyscover']->database->use();
         return Query::exists(
             "SELECT 1 FROM {$table} WHERE post_id = ? AND user_id = ? LIMIT 1",
             [$postId, $userId]
@@ -453,7 +447,7 @@ class PostEngagement
     private static function adjustStat(string $field, int $postId, int $delta): void
     {
         Query::execute(
-            "UPDATE post_statistics
+            "UPDATE ielectro_dyscover.dyscover_post_statistics
             SET {$field} = GREATEST(0, {$field} + ?)
             WHERE post_id = ?",
             [$delta, $postId]
@@ -484,8 +478,8 @@ class PostComments
         }
         $rows = Query::fetchAll(
             "SELECT c.id, c.user_id, c.body, c.created_at, du.account_id
-            FROM post_comments c
-            INNER JOIN users du ON du.id = c.user_id
+            FROM ielectro_dyscover.dyscover_post_comments c
+            INNER JOIN ielectro_dyscover.dyscover_users du ON du.id = c.user_id
             WHERE c.post_id = ? AND c.status = 'active'
             ORDER BY c.id ASC",
             [$postId]
@@ -512,7 +506,7 @@ class PostComments
             Response::badRequest('Empty comment');
         }
         Query::execute(
-            "INSERT INTO post_comments(post_id, user_id, body, status)
+            "INSERT INTO ielectro_dyscover.dyscover_post_comments(post_id, user_id, body, status)
             VALUES (?, ?, ?, 'active')",
             [$postId, User::id(), $body]
         );
@@ -530,7 +524,7 @@ class PostComments
             Response::badRequest('Empty comment');
         }
         Query::execute(
-            "UPDATE post_comments
+            "UPDATE ielectro_dyscover.dyscover_post_comments
             SET body = ?
             WHERE id = ? AND user_id = ? AND status = 'active'",
             [$body, $commentId, User::id()]
@@ -542,7 +536,7 @@ class PostComments
         Request::delete();
         $commentId = (int) Routing::segment(4);
         $row = Query::fetch(
-            'SELECT post_id FROM post_comments
+            'SELECT post_id FROM ielectro_dyscover.dyscover_post_comments
             WHERE id = ? AND user_id = ? LIMIT 1',
             [$commentId, User::id()]
         );
@@ -550,7 +544,7 @@ class PostComments
             Response::notFound('Comment not found');
         }
         Query::execute(
-            "UPDATE post_comments SET status = 'hidden' WHERE id = ?",
+            "UPDATE ielectro_dyscover.dyscover_post_comments SET status = 'hidden' WHERE id = ?",
             [$commentId]
         );
         PostEngagement::adjustStatDirect('comments', (int) $row['post_id'], -1);
@@ -570,7 +564,7 @@ class PostLikes
     {
         Request::post();
         $postId = (int) Routing::id();
-        if (PostEngagement::add('post_likes', 'likes', $postId)) {
+        if (PostEngagement::add('ielectro_dyscover.dyscover_post_likes', 'likes', $postId)) {
             ActivityNotify::onLike($postId, User::id());
         }
         Response::created('Liked');
@@ -578,7 +572,7 @@ class PostLikes
     private function remove(): void
     {
         Request::delete();
-        PostEngagement::remove('post_likes', 'likes', (int) Routing::id());
+        PostEngagement::remove('ielectro_dyscover.dyscover_post_likes', 'likes', (int) Routing::id());
         Response::success('Unliked');
     }
 }
@@ -594,13 +588,13 @@ class PostBookmarks
     private function add(): void
     {
         Request::post();
-        PostEngagement::add('post_bookmarks', 'bookmarks', (int) Routing::id());
+        PostEngagement::add('ielectro_dyscover.dyscover_post_bookmarks', 'bookmarks', (int) Routing::id());
         Response::created('Bookmarked');
     }
     private function remove(): void
     {
         Request::delete();
-        PostEngagement::remove('post_bookmarks', 'bookmarks', (int) Routing::id());
+        PostEngagement::remove('ielectro_dyscover.dyscover_post_bookmarks', 'bookmarks', (int) Routing::id());
         Response::success('Bookmark removed');
     }
 }
@@ -617,7 +611,7 @@ class PostReposts
     {
         Request::post();
         $postId = (int) Routing::id();
-        if (PostEngagement::add('post_reposts', 'shares', $postId)) {
+        if (PostEngagement::add('ielectro_dyscover.dyscover_post_reposts', 'shares', $postId)) {
             ActivityNotify::onShare($postId, User::id());
         }
         Response::created('Reposted');
@@ -625,7 +619,7 @@ class PostReposts
     private function remove(): void
     {
         Request::delete();
-        PostEngagement::remove('post_reposts', 'shares', (int) Routing::id());
+        PostEngagement::remove('ielectro_dyscover.dyscover_post_reposts', 'shares', (int) Routing::id());
         Response::success('Repost removed');
     }
 }
@@ -641,7 +635,7 @@ class PostShares
     {
         Request::post();
         $postId = (int) Routing::id();
-        if (PostEngagement::add('post_shares', 'shares', $postId)) {
+        if (PostEngagement::add('ielectro_dyscover.dyscover_post_shares', 'shares', $postId)) {
             ActivityNotify::onShare($postId, User::id());
         }
         Response::created('Shared');
@@ -661,7 +655,7 @@ class PostViews
         $postId = (int) Routing::id();
         $userId = User::id();
         $exists = Query::exists(
-            'SELECT 1 FROM post_views
+            'SELECT 1 FROM ielectro_dyscover.dyscover_post_views
             WHERE post_id = ? AND user_id = ?
             AND created_at > DATE_SUB(NOW(), INTERVAL 1 DAY)
             LIMIT 1',
@@ -669,7 +663,7 @@ class PostViews
         );
         if (!$exists) {
             Query::execute(
-                'INSERT INTO post_views(post_id, user_id) VALUES(?, ?)',
+                'INSERT INTO ielectro_dyscover.dyscover_post_views(post_id, user_id) VALUES(?, ?)',
                 [$postId, $userId]
             );
             PostEngagement::adjustStatDirect('views', $postId, 1);
@@ -861,11 +855,10 @@ class PostTags
 {
     public static function names(int $postId): array
     {
-        $GLOBALS['dyscover']->database->use();
         $rows = Query::fetchAll(
             'SELECT t.name
-            FROM post_tags pt
-            INNER JOIN tags t ON t.id = pt.tag_id
+            FROM ielectro_dyscover.dyscover_post_tags pt
+            INNER JOIN ielectro_dyscover.dyscover_tags t ON t.id = pt.tag_id
             WHERE pt.post_id = ?
             ORDER BY t.name',
             [$postId]
@@ -878,12 +871,11 @@ class PostTags
         if (!$postIds) {
             return [];
         }
-        $GLOBALS['dyscover']->database->use();
         $placeholders = implode(',', array_fill(0, count($postIds), '?'));
         $rows = Query::fetchAll(
             "SELECT pt.post_id, t.name
-            FROM post_tags pt
-            INNER JOIN tags t ON t.id = pt.tag_id
+            FROM ielectro_dyscover.dyscover_post_tags pt
+            INNER JOIN ielectro_dyscover.dyscover_tags t ON t.id = pt.tag_id
             WHERE pt.post_id IN ({$placeholders})
             ORDER BY t.name",
             $postIds
@@ -896,13 +888,12 @@ class PostTags
     }
     public static function sync(int $postId, mixed $input): void
     {
-        $GLOBALS['dyscover']->database->use();
         $names = self::parse($input);
-        Query::execute('DELETE FROM post_tags WHERE post_id = ?', [$postId]);
+        Query::execute('DELETE FROM ielectro_dyscover.dyscover_post_tags WHERE post_id = ?', [$postId]);
         foreach ($names as $name) {
             $tagId = self::ensure($name);
             Query::execute(
-                'INSERT IGNORE INTO post_tags(post_id, tag_id) VALUES(?, ?)',
+                'INSERT IGNORE INTO ielectro_dyscover.dyscover_post_tags(post_id, tag_id) VALUES(?, ?)',
                 [$postId, $tagId]
             );
         }
@@ -955,10 +946,9 @@ class PostTags
         if ($term === '') {
             return [];
         }
-        $GLOBALS['dyscover']->database->use();
         $rows = Query::fetchAll(
             'SELECT name
-            FROM tags
+            FROM ielectro_dyscover.dyscover_tags
             WHERE name LIKE ?
             ORDER BY name
             LIMIT ' . (int) $limit,
@@ -975,13 +965,13 @@ class PostTags
     private static function ensure(string $name): int
     {
         $row = Query::fetch(
-            'SELECT id FROM tags WHERE name = ? LIMIT 1',
+            'SELECT id FROM ielectro_dyscover.dyscover_tags WHERE name = ? LIMIT 1',
             [$name]
         );
         if ($row) {
             return (int) $row['id'];
         }
-        Query::execute('INSERT INTO tags(name) VALUES(?)', [$name]);
+        Query::execute('INSERT INTO ielectro_dyscover.dyscover_tags(name) VALUES(?)', [$name]);
         return Query::lastId();
     }
 }

@@ -15,18 +15,17 @@ POST /api/user/email
 ---
 # File Structure
 ```
-public/
-└── api/
-    ├── auth.php
-    ├── user.php
-    ├── profile.php
-    └── ...
+api/
+└── auth.php
+    user.php
+    profile.php
+    ...
 ```
 One file = one service.
 The filename determines the class name.
 Example:
 ```
-public/api/auth.php
+api/auth.php
 ```
 contains
 ```php

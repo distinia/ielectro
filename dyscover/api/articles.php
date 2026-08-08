@@ -25,11 +25,10 @@ class Articles
         if (!Validate::required($uuid)) {
             Response::badRequest('Missing article uuid');
         }
-        $GLOBALS['dyscover']->database->use();
         $post = Query::fetch(
             "SELECT p.id, p.user_id, p.uuid, p.title, p.description, p.status, du.account_id
-            FROM posts p
-            INNER JOIN users du ON du.id = p.user_id
+            FROM ielectro_dyscover.dyscover_posts p
+            INNER JOIN ielectro_dyscover.dyscover_users du ON du.id = p.user_id
             WHERE p.uuid = ?
             AND p.type = 'article'
             LIMIT 1",
@@ -47,9 +46,8 @@ class Articles
         $canEdit = false;
         $accountId = Identity::id();
         if ($accountId !== null) {
-            $GLOBALS['dyscover']->database->use();
             $owner = Query::fetch(
-                'SELECT id FROM users WHERE account_id = ? LIMIT 1',
+                'SELECT id FROM ielectro_dyscover.dyscover_users WHERE account_id = ? LIMIT 1',
                 [$accountId]
             );
             $canEdit = $owner && (int) $post['user_id'] === (int) $owner['id'];
@@ -72,10 +70,9 @@ class Articles
         if (!Validate::required($uuid)) {
             Response::badRequest('Missing article uuid');
         }
-        $GLOBALS['dyscover']->database->use();
         $post = Query::fetch(
             "SELECT id, user_id, uuid
-            FROM posts
+            FROM ielectro_dyscover.dyscover_posts
             WHERE uuid = ?
             AND type = 'article'
             AND status = 'active'

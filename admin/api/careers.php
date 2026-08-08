@@ -44,7 +44,7 @@ class Create
         Request::post();
         $listing = CareerFields::validate(Request::body());
         Query::execute(
-            "INSERT INTO careers(
+            "INSERT INTO ielectro_admin.careers(
                 title,
                 location,
                 employment_type,
@@ -81,7 +81,7 @@ class Data
                 status,
                 created_at,
                 updated_at
-            FROM careers
+            FROM ielectro_admin.careers
             ORDER BY id DESC"
         );
         Response::success(CareerFields::rows($rows));
@@ -101,7 +101,7 @@ class Data
                 status,
                 created_at,
                 updated_at
-            FROM careers
+            FROM ielectro_admin.careers
             WHERE id = ?
             LIMIT 1",
             [$id]
@@ -118,7 +118,7 @@ class Update
     {
         Request::patch();
         $id = CareerFields::id();
-        if (!Query::exists("SELECT 1 FROM careers WHERE id = ? LIMIT 1", [$id])) {
+        if (!Query::exists("SELECT 1 FROM ielectro_admin.careers WHERE id = ? LIMIT 1", [$id])) {
             Response::notFound('Career not found');
         }
         $input = Request::body();
@@ -169,7 +169,7 @@ class Update
         }
         $params[] = $id;
         Query::execute(
-            "UPDATE careers
+            "UPDATE ielectro_admin.careers
             SET " . implode(', ', $fields) . "
             WHERE id = ?",
             $params
@@ -183,10 +183,10 @@ class Delete
     {
         Request::delete();
         $id = CareerFields::id();
-        if (!Query::exists("SELECT 1 FROM careers WHERE id = ? LIMIT 1", [$id])) {
+        if (!Query::exists("SELECT 1 FROM ielectro_admin.careers WHERE id = ? LIMIT 1", [$id])) {
             Response::notFound('Career not found');
         }
-        Query::execute("DELETE FROM careers WHERE id = ?", [$id]);
+        Query::execute("DELETE FROM ielectro_admin.careers WHERE id = ?", [$id]);
         Response::success('Career deleted');
     }
 }
@@ -327,7 +327,7 @@ class Apply
             Response::error('Unable to upload CV');
         }
         Query::execute(
-            "INSERT INTO career_applications(
+            "INSERT INTO ielectro_admin.career_applications(
                 uuid,
                 full_name,
                 email,

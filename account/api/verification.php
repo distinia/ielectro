@@ -47,7 +47,7 @@ class EmailVerification
                 email,
                 name,
                 email_verified_at
-            FROM accounts
+            FROM ielectro_account.accounts
             WHERE id = ?
             LIMIT 1",
             [$accountId]
@@ -59,13 +59,13 @@ class EmailVerification
             Response::badRequest('Email already verified');
         }
         Query::execute(
-            "DELETE FROM email_verifications
+            "DELETE FROM ielectro_account.account_email_verifications
             WHERE account_id = ?",
             [$accountId]
         );
         $otp = self::otp();
         Query::execute(
-            "INSERT INTO email_verifications(
+            "INSERT INTO ielectro_account.account_email_verifications(
                 account_id,
                 target_email,
                 otp_code,
@@ -97,7 +97,7 @@ class EmailVerification
     {
         $verification = Query::fetch(
             "SELECT account_id
-            FROM email_verifications
+            FROM ielectro_account.account_email_verifications
             WHERE account_id = ?
             AND otp_code = ?
             AND expires_at > NOW()
@@ -112,13 +112,13 @@ class EmailVerification
             return false;
         }
         Query::execute(
-            "UPDATE accounts
+            "UPDATE ielectro_account.accounts
             SET email_verified_at = NOW()
             WHERE id = ?",
             [$accountId]
         );
         Query::execute(
-            "UPDATE email_verifications
+            "UPDATE ielectro_account.account_email_verifications
             SET used_at = NOW()
             WHERE account_id = ?",
             [$accountId]

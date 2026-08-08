@@ -9,7 +9,6 @@ class RateLimit
         int $windowSeconds,
         ?string $identifier = null
     ): void {
-        $GLOBALS['admin']->database->use();
         $scope = trim($scope);
         if ($scope === '') {
             Response::error('Invalid rate limit scope');
@@ -27,7 +26,7 @@ class RateLimit
                 id,
                 attempts,
                 window_start
-            FROM rate_limits
+            FROM ielectro_admin.rate_limits
             WHERE scope_key = ?
             AND ip_address = ?
             LIMIT 1
@@ -37,7 +36,7 @@ class RateLimit
         ]);
         if (!$row) {
             Query::execute("
-                INSERT INTO rate_limits(
+                INSERT INTO ielectro_admin.rate_limits(
                     scope_key,
                     ip_address,
                     attempts,
@@ -78,7 +77,7 @@ class RateLimit
             ]);
             $row = Query::fetch("
                 SELECT attempts, window_start
-                FROM rate_limits
+                FROM ielectro_admin.rate_limits
                 WHERE scope_key = ?
                 AND ip_address = ?
                 LIMIT 1
@@ -94,7 +93,7 @@ class RateLimit
         $windowStart = strtotime($row['window_start']);
         if ($windowStart === false || time() - $windowStart > $windowSeconds) {
             Query::execute("
-                UPDATE rate_limits
+                UPDATE ielectro_admin.rate_limits
                 SET
                     attempts = 1,
                     window_start = NOW(),
@@ -110,7 +109,7 @@ class RateLimit
             Response::tooManyRequests();
         }
         Query::execute("
-            UPDATE rate_limits
+            UPDATE ielectro_admin.rate_limits
             SET attempts = attempts + 1
             WHERE id = ?
         ", [(int) $row['id']]);

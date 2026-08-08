@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `careers` (
+CREATE TABLE IF NOT EXISTS `ielectro_admin`.`careers` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `title` VARCHAR(255) NOT NULL,
   `location` VARCHAR(180) DEFAULT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS `careers` (
   KEY `idx_careers_status` (`status`),
   KEY `idx_careers_created` (`created_at`)
 );
-CREATE TABLE IF NOT EXISTS `career_applications` (
+CREATE TABLE IF NOT EXISTS `ielectro_admin`.`career_applications` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `uuid` CHAR(36) NOT NULL,
   `full_name` VARCHAR(160) NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS `career_applications` (
   KEY `idx_career_applications_reviewed_by` (`reviewed_by`),
   KEY `idx_career_applications_created` (`created_at`)
 );
-CREATE TABLE IF NOT EXISTS `news` (
+CREATE TABLE IF NOT EXISTS `ielectro_admin`.`news` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `author_id` BIGINT UNSIGNED DEFAULT NULL,
   `uuid` CHAR(36) NOT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS `news` (
   KEY `idx_news_published` (`published_at`),
   FULLTEXT KEY `ft_news_search` (`title`,`excerpt`,`body`)
 );
-CREATE TABLE IF NOT EXISTS `team` (
+CREATE TABLE IF NOT EXISTS `ielectro_admin`.`team` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `uuid` CHAR(36) NOT NULL,
   `full_name` VARCHAR(160) NOT NULL,
@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS `team` (
   UNIQUE KEY `uq_team_uuid` (`uuid`),
   KEY `idx_team_status` (`status`)
 );
-CREATE TABLE IF NOT EXISTS `rate_limits` (
+CREATE TABLE IF NOT EXISTS `ielectro_admin`.`rate_limits` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `scope_key` varchar(128) NOT NULL,
   `ip_address` varchar(45) NOT NULL,

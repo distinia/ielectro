@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `groups` (
+CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_groups` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   `image` varchar(255) DEFAULT NULL,
@@ -12,11 +12,11 @@ CREATE TABLE IF NOT EXISTS `groups` (
   KEY `idx_groups_visibility` (`visibility`),
   CONSTRAINT `groups_ibfk_1`
     FOREIGN KEY (`creator_id`)
-    REFERENCES `users` (`id`)
+    REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `group_members` (
+CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_group_members` (
   `group_id` BIGINT UNSIGNED NOT NULL,
   `user_id` BIGINT UNSIGNED NOT NULL,
   `role` ENUM('owner','admin','moderator','member') DEFAULT 'member',
@@ -25,12 +25,12 @@ CREATE TABLE IF NOT EXISTS `group_members` (
   KEY `idx_group_members_user` (`user_id`),
   CONSTRAINT `group_members_ibfk_1`
     FOREIGN KEY (`group_id`)
-    REFERENCES `groups` (`id`)
+    REFERENCES `ielectro_dyscover`.`dyscover_groups` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `group_members_ibfk_2`
     FOREIGN KEY (`user_id`)
-    REFERENCES `users` (`id`)
+    REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );

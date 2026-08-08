@@ -55,7 +55,7 @@ class Create
         Query::begin();
         try {
             Query::execute(
-                "INSERT INTO news(
+                "INSERT INTO ielectro_admin.news(
                     author_id,
                     uuid,
                     title,
@@ -80,7 +80,7 @@ class Create
             );
             if ($uploaded !== null) {
                 Query::execute(
-                    "UPDATE news SET image = ? WHERE id = ?",
+                    "UPDATE ielectro_admin.news SET image = ? WHERE id = ?",
                     [$uploaded, $id]
                 );
             }
@@ -108,7 +108,7 @@ class Data
                 published_at,
                 created_at,
                 updated_at
-            FROM news
+            FROM ielectro_admin.news
             ORDER BY published_at DESC, id DESC"
         );
         Response::success(NewsFields::rows($rows));
@@ -127,7 +127,7 @@ class Data
                 published_at,
                 created_at,
                 updated_at
-            FROM news
+            FROM ielectro_admin.news
             WHERE id = ?
             LIMIT 1",
             [$id]
@@ -146,7 +146,7 @@ class Update
         $id = NewsFields::id();
         $row = Query::fetch(
             "SELECT uuid
-            FROM news
+            FROM ielectro_admin.news
             WHERE id = ?
             LIMIT 1",
             [$id]
@@ -201,7 +201,7 @@ class Update
         }
         $params[] = $id;
         Query::execute(
-            "UPDATE news
+            "UPDATE ielectro_admin.news
             SET " . implode(', ', $fields) . "
             WHERE id = ?",
             $params
@@ -217,7 +217,7 @@ class Delete
         $id = NewsFields::id();
         $row = Query::fetch(
             "SELECT uuid
-            FROM news
+            FROM ielectro_admin.news
             WHERE id = ?
             LIMIT 1",
             [$id]
@@ -226,7 +226,7 @@ class Delete
             Response::notFound('News not found');
         }
         NewsFields::removeImages($row['uuid']);
-        Query::execute("DELETE FROM news WHERE id = ?", [$id]);
+        Query::execute("DELETE FROM ielectro_admin.news WHERE id = ?", [$id]);
         Response::success('News deleted');
     }
 }

@@ -11,9 +11,6 @@ class Api
     public function handle(): void
     {
         $this->session();
-        if ($this->app->database !== null) {
-            $this->app->database->use();
-        }
         $service = Routing::segment(1);
         if (!$service) {
             Response::notFound();

@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `activity` (
+CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_activity` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `recipient_id` BIGINT UNSIGNED NOT NULL,
   `actor_id` BIGINT UNSIGNED NOT NULL,
@@ -18,22 +18,22 @@ CREATE TABLE IF NOT EXISTS `activity` (
   KEY `idx_activity_created` (`created_at`),
   CONSTRAINT `activity_ibfk_1`
     FOREIGN KEY (`recipient_id`)
-    REFERENCES `users` (`id`)
+    REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `activity_ibfk_2`
     FOREIGN KEY (`actor_id`)
-    REFERENCES `users` (`id`)
+    REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `activity_ibfk_3`
     FOREIGN KEY (`post_id`)
-    REFERENCES `posts` (`id`)
+    REFERENCES `ielectro_dyscover`.`dyscover_posts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `activity_ibfk_4`
     FOREIGN KEY (`group_id`)
-    REFERENCES `groups` (`id`)
+    REFERENCES `ielectro_dyscover`.`dyscover_groups` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );

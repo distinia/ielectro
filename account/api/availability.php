@@ -26,7 +26,7 @@ class Availability
         }
         Response::success([
             'available' => !Query::exists(
-                "SELECT 1 FROM accounts WHERE username = ? LIMIT 1",
+                "SELECT 1 FROM ielectro_account.accounts WHERE username = ? LIMIT 1",
                 [$username]
             )
         ]);
@@ -38,7 +38,7 @@ class Availability
         }
         Response::success([
             'available' => !Query::exists(
-                "SELECT 1 FROM accounts WHERE email = ? LIMIT 1",
+                "SELECT 1 FROM ielectro_account.accounts WHERE email = ? LIMIT 1",
                 [$email]
             )
         ]);
@@ -50,7 +50,7 @@ class Availability
         }
         Response::success([
             'available' => !Query::exists(
-                "SELECT 1 FROM accounts WHERE phone = ? LIMIT 1",
+                "SELECT 1 FROM ielectro_account.accounts WHERE phone = ? LIMIT 1",
                 [$phone]
             )
         ]);

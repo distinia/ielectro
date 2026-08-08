@@ -43,7 +43,7 @@ class Create
         Query::begin();
         try {
             Query::execute(
-                "INSERT INTO team(
+                "INSERT INTO ielectro_admin.team(
                     uuid,
                     full_name,
                     role_text,
@@ -72,7 +72,7 @@ class Create
             );
             if ($uploaded !== null) {
                 Query::execute(
-                    "UPDATE team SET avatar = ? WHERE id = ?",
+                    "UPDATE ielectro_admin.team SET avatar = ? WHERE id = ?",
                     [$uploaded, $id]
                 );
             }
@@ -102,7 +102,7 @@ class Data
                 status,
                 created_at,
                 updated_at
-            FROM team
+            FROM ielectro_admin.team
             ORDER BY id DESC"
         );
         Response::success(TeamFields::rows($rows));
@@ -123,7 +123,7 @@ class Data
                 status,
                 created_at,
                 updated_at
-            FROM team
+            FROM ielectro_admin.team
             WHERE id = ?
             LIMIT 1",
             [$id]
@@ -142,7 +142,7 @@ class Update
         $id = TeamFields::id();
         $row = Query::fetch(
             "SELECT uuid
-            FROM team
+            FROM ielectro_admin.team
             WHERE id = ?
             LIMIT 1",
             [$id]
@@ -202,7 +202,7 @@ class Update
         }
         $params[] = $id;
         Query::execute(
-            "UPDATE team
+            "UPDATE ielectro_admin.team
             SET " . implode(', ', $fields) . "
             WHERE id = ?",
             $params
@@ -218,7 +218,7 @@ class Delete
         $id = TeamFields::id();
         $row = Query::fetch(
             "SELECT uuid
-            FROM team
+            FROM ielectro_admin.team
             WHERE id = ?
             LIMIT 1",
             [$id]
@@ -227,7 +227,7 @@ class Delete
             Response::notFound('Team member not found');
         }
         TeamFields::removeImages($row['uuid']);
-        Query::execute("DELETE FROM team WHERE id = ?", [$id]);
+        Query::execute("DELETE FROM ielectro_admin.team WHERE id = ?", [$id]);
         Response::success('Team member deleted');
     }
 }

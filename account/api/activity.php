@@ -9,7 +9,7 @@ class Activity
     public static function log(?int $accountId, string $action, string $details): void 
     {
         Query::execute(
-            "INSERT INTO activity(account_id, action, details, ip_address, device_info)
+            "INSERT INTO ielectro_account.account_activity(account_id, action, details, ip_address, device_info)
             VALUES (?, ?, ?, ?, ?)",
             [
                 $accountId,
@@ -27,7 +27,7 @@ class Activity
         Response::success([
             'active_sessions' => Query::count(
                 "SELECT COUNT(*)
-                FROM sessions
+                FROM ielectro_account.account_sessions
                 WHERE account_id = ?
                 AND revoked_at IS NULL
                 AND expires_at > NOW()",
@@ -35,13 +35,13 @@ class Activity
             ),
             'activity_count' => Query::count(
                 "SELECT COUNT(*)
-                FROM activity
+                FROM ielectro_account.account_activity
                 WHERE account_id = ?",
                 [$accountId]
             ),
             'recent_activity' => Query::fetchAll(
                 "SELECT action, details, created_at
-                FROM activity
+                FROM ielectro_account.account_activity
                 WHERE account_id = ?
                 ORDER BY id DESC
                 LIMIT 10",

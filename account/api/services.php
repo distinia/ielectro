@@ -19,9 +19,8 @@ class Dyscover
 {
     public static function create(int $accountId): void
     {
-        $GLOBALS['dyscover']->database->use();
         Query::execute(
-            "INSERT INTO users (account_id)
+            "INSERT INTO ielectro_dyscover.dyscover_users (account_id)
             VALUES (?)",
             [$accountId]
         );
@@ -32,10 +31,9 @@ class Dyscover
     }
    public static function delete(int $accountId): void
     {
-        $GLOBALS['dyscover']->database->use();
         Query::execute(
             "DELETE
-            FROM users
+            FROM ielectro_dyscover.dyscover_users
             WHERE account_id = ?",
             [$accountId]
         );
@@ -48,20 +46,18 @@ class Dominions
 {
     public static function create(int $accountId): void
     {
-        $GLOBALS['dominions']->database->use();
         Query::execute(
-            "INSERT INTO users (account_id)
-            VALUES (?)",
+            'INSERT INTO ' . \Nesh\Schema::DOMINIONS_USERS . ' (account_id)
+            VALUES (?)',
             [$accountId]
         );
     }
     public static function delete(int $accountId): void
     {
-        $GLOBALS['dominions']->database->use();
         Query::execute(
-            "DELETE
-            FROM users
-            WHERE account_id = ?",
+            'DELETE
+            FROM ' . \Nesh\Schema::DOMINIONS_USERS . '
+            WHERE account_id = ?',
             [$accountId]
         );
     }

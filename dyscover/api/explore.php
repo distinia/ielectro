@@ -88,7 +88,6 @@ class ExploreSearch
     }
     public static function recents(): array
     {
-        $GLOBALS['dyscover']->database->use();
         $rows = Query::fetchAll(
             "SELECT
                 p.*,
@@ -98,9 +97,9 @@ class ExploreSearch
                 s.comments,
                 s.shares,
                 s.bookmarks
-            FROM posts p
-            INNER JOIN users du ON du.id = p.user_id
-            LEFT JOIN post_statistics s ON s.post_id = p.id
+            FROM ielectro_dyscover.dyscover_posts p
+            INNER JOIN ielectro_dyscover.dyscover_users du ON du.id = p.user_id
+            LEFT JOIN ielectro_dyscover.dyscover_post_statistics s ON s.post_id = p.id
             WHERE p.status = 'active'
             AND p.visibility = 'public'
             ORDER BY s.views DESC, p.published_at DESC
@@ -111,7 +110,6 @@ class ExploreSearch
     public static function posts(string $type, string $term): array
     {
         $like = '%' . $term . '%';
-        $GLOBALS['dyscover']->database->use();
         $rows = Query::fetchAll(
             "SELECT
                 p.*,
@@ -121,9 +119,9 @@ class ExploreSearch
                 s.comments,
                 s.shares,
                 s.bookmarks
-            FROM posts p
-            INNER JOIN users du ON du.id = p.user_id
-            LEFT JOIN post_statistics s ON s.post_id = p.id
+            FROM ielectro_dyscover.dyscover_posts p
+            INNER JOIN ielectro_dyscover.dyscover_users du ON du.id = p.user_id
+            LEFT JOIN ielectro_dyscover.dyscover_post_statistics s ON s.post_id = p.id
             WHERE p.type = ?
             AND p.status = 'active'
             AND p.visibility = 'public'
@@ -136,12 +134,10 @@ class ExploreSearch
     }
     public static function users(string $term): array
     {
-        $GLOBALS['account']->database->use();
         $accounts = Query::fetchAll(
-            'SELECT id FROM accounts WHERE username LIKE ? ORDER BY username ASC LIMIT 20',
+            'SELECT id FROM ielectro_account.accounts WHERE username LIKE ? ORDER BY username ASC LIMIT 20',
             ['%' . $term . '%']
         );
-        $GLOBALS['dyscover']->database->use();
         if (!$accounts) {
             return [];
         }
@@ -151,7 +147,7 @@ class ExploreSearch
             $accounts
         );
         $rows = Query::fetchAll(
-            "SELECT id FROM users WHERE account_id IN ({$placeholders})",
+            "SELECT id FROM ielectro_dyscover.dyscover_users WHERE account_id IN ({$placeholders})",
             $accountIds
         );
         return array_map(

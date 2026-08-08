@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `accounts` (
+CREATE TABLE IF NOT EXISTS `ielectro_account`.`accounts` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `username` VARCHAR(50) NOT NULL,
   `name` VARCHAR(50) DEFAULT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `accounts` (
   UNIQUE KEY `uq_accounts_email` (`email`),
   KEY `idx_accounts_created` (`created_at`)
 );
-CREATE TABLE IF NOT EXISTS `sessions` (
+CREATE TABLE IF NOT EXISTS `ielectro_account`.`account_sessions` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `account_id` BIGINT UNSIGNED NOT NULL,
   `token_hash` CHAR(64) NOT NULL,
@@ -42,11 +42,11 @@ CREATE TABLE IF NOT EXISTS `sessions` (
     (`token_hash`, `revoked_at`, `expires_at`),
   CONSTRAINT `fk_sessions_account`
     FOREIGN KEY (`account_id`)
-    REFERENCES `accounts` (`id`)
+    REFERENCES `ielectro_account`.`accounts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `activity` (
+CREATE TABLE IF NOT EXISTS `ielectro_account`.`account_activity` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `account_id` BIGINT UNSIGNED DEFAULT NULL,
   `action` ENUM(
@@ -73,11 +73,11 @@ CREATE TABLE IF NOT EXISTS `activity` (
   KEY `idx_activity_created` (`created_at`),
   CONSTRAINT `activity_ibfk_1`
     FOREIGN KEY (`account_id`)
-    REFERENCES `accounts` (`id`)
+    REFERENCES `ielectro_account`.`accounts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `email_verifications` (
+CREATE TABLE IF NOT EXISTS `ielectro_account`.`account_email_verifications` (
   `account_id` BIGINT UNSIGNED NOT NULL,
   `target_email` VARCHAR(255) NOT NULL,
   `otp_code` VARCHAR(12) NOT NULL,
@@ -88,11 +88,11 @@ CREATE TABLE IF NOT EXISTS `email_verifications` (
   KEY `idx_email_verifications_expires` (`expires_at`),
   CONSTRAINT `email_verifications_ibfk_1`
     FOREIGN KEY (`account_id`)
-    REFERENCES `accounts` (`id`)
+    REFERENCES `ielectro_account`.`accounts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `password_resets` (
+CREATE TABLE IF NOT EXISTS `ielectro_account`.`account_password_resets` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `account_id` BIGINT UNSIGNED NOT NULL,
   `token_hash` char(64) NOT NULL,
@@ -106,11 +106,11 @@ CREATE TABLE IF NOT EXISTS `password_resets` (
   KEY `idx_password_resets_expires` (`expires_at`),
   CONSTRAINT `password_resets_ibfk_1`
     FOREIGN KEY (`account_id`)
-    REFERENCES `accounts` (`id`)
+    REFERENCES `ielectro_account`.`accounts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `oauth_pending` (
+CREATE TABLE IF NOT EXISTS `ielectro_account`.`account_oauth_pending` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `provider` ENUM('google','apple','github','discord') NOT NULL,
   `provider_account_id` VARCHAR(255) NOT NULL,

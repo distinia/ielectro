@@ -35,7 +35,6 @@ class Activity
     {
         Request::get();
         $limit = max(1, min(100, (int) Request::value('limit', 50)));
-        $GLOBALS['dyscover']->database->use();
         $rows = Query::fetchAll(
             "SELECT
                 n.id,
@@ -51,9 +50,9 @@ class Activity
                 p.preview_image AS post_preview,
                 p.uuid AS post_uuid,
                 p.user_id AS post_user_id
-            FROM activity n
-            INNER JOIN users du ON du.id = n.actor_id
-            LEFT JOIN posts p ON p.id = n.post_id
+            FROM ielectro_dyscover.dyscover_activity n
+            INNER JOIN ielectro_dyscover.dyscover_users du ON du.id = n.actor_id
+            LEFT JOIN ielectro_dyscover.dyscover_posts p ON p.id = n.post_id
             WHERE n.recipient_id = ?
             ORDER BY n.id DESC
             LIMIT {$limit}",
@@ -83,9 +82,8 @@ class Activity
     private function markRead(int $id): void
     {
         Request::patch();
-        $GLOBALS['dyscover']->database->use();
         Query::execute(
-            'UPDATE activity
+            'UPDATE ielectro_dyscover.dyscover_activity
             SET viewed_at = NOW()
             WHERE id = ? AND recipient_id = ? AND viewed_at IS NULL',
             [$id, User::id()]
@@ -95,9 +93,8 @@ class Activity
     private function markAllRead(): void
     {
         Request::patch();
-        $GLOBALS['dyscover']->database->use();
         Query::execute(
-            'UPDATE activity
+            'UPDATE ielectro_dyscover.dyscover_activity
             SET viewed_at = NOW()
             WHERE recipient_id = ? AND viewed_at IS NULL',
             [User::id()]
@@ -107,9 +104,8 @@ class Activity
     private function destroy(int $id): void
     {
         Request::delete();
-        $GLOBALS['dyscover']->database->use();
         Query::execute(
-            'DELETE FROM activity
+            'DELETE FROM ielectro_dyscover.dyscover_activity
             WHERE id = ? AND recipient_id = ?',
             [$id, User::id()]
         );
@@ -136,27 +132,24 @@ class ActivityNotify
         ) {
             return;
         }
-        $GLOBALS['dyscover']->database->use();
         Query::execute(
-            'INSERT INTO activity(recipient_id, actor_id, post_id, type, message)
+            'INSERT INTO ielectro_dyscover.dyscover_activity(recipient_id, actor_id, post_id, type, message)
             VALUES (?, ?, ?, ?, ?)',
             [$recipientId, $actorId, $postId, $type, $message]
         );
     }
     public static function postOwner(int $postId): ?int
     {
-        $GLOBALS['dyscover']->database->use();
         $row = Query::fetch(
-            "SELECT user_id FROM posts WHERE id = ? AND status = 'active' LIMIT 1",
+            "SELECT user_id FROM ielectro_dyscover.dyscover_posts WHERE id = ? AND status = 'active' LIMIT 1",
             [$postId]
         );
         return $row ? (int) $row['user_id'] : null;
     }
     public static function postTitle(int $postId): string
     {
-        $GLOBALS['dyscover']->database->use();
         $row = Query::fetch(
-            'SELECT title FROM posts WHERE id = ? LIMIT 1',
+            'SELECT title FROM ielectro_dyscover.dyscover_posts WHERE id = ? LIMIT 1',
             [$postId]
         );
         return trim((string) ($row['title'] ?? ''));

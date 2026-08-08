@@ -35,11 +35,11 @@ class Install
             if (!is_dir($appPath . '')) {
                 continue;
             }
-            $database = new Database('ielectro_' . $folder);
-            $database->create();
-            $database->use();
-            $database->tables($appPath . '/database');
-            $database->close();
+            $databaseName = 'ielectro_' . $folder;
+            Database::create($databaseName);
+            
+            Database::tables($databaseName, $appPath . '/database');
+            Database::close();
             $count++;
         }
         return $count;

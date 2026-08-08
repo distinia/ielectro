@@ -15,15 +15,13 @@ class Recovery
     {
         Request::post();
         RateLimit::check('password_recovery', 6, 900);
-        $GLOBALS['account']->database->use();
         $identifier = trim((string) Request::value('identifier'));
         if (!Validate::required($identifier)) {
             Response::badRequest('Username or email is required');
         }
-        $GLOBALS['account']->database->use();
         $account = Query::fetch(
             "SELECT id, username, email, name, surname
-            FROM accounts
+            FROM ielectro_account.accounts
             WHERE username = ? OR email = ?
             LIMIT 1",
             [
@@ -35,14 +33,14 @@ class Recovery
             Response::notFound('Account not found');
         }
         Query::execute(
-            "DELETE FROM password_resets
+            "DELETE FROM ielectro_account.account_password_resets
             WHERE account_id = ?",
             [$account['id']]
         );
         $token = Generate::token();
         $otp = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
         Query::execute(
-            "INSERT INTO password_resets(
+            "INSERT INTO ielectro_account.account_password_resets(
                 account_id,
                 token_hash,
                 otp_code,
@@ -91,10 +89,9 @@ class Recovery
         if (!Validate::min($password, 8)) {
             Response::badRequest('Password must be at least 8 characters');
         }
-        $GLOBALS['account']->database->use();
         $reset = Query::fetch(
             "SELECT id, account_id
-            FROM password_resets
+            FROM ielectro_account.account_password_resets
             WHERE token_hash = ?
             AND otp_code = ?
             AND expires_at > NOW()
@@ -109,7 +106,7 @@ class Recovery
             Response::badRequest('Invalid recovery token or OTP');
         }
         Query::execute(
-            "UPDATE accounts
+            "UPDATE ielectro_account.accounts
             SET password_hash = ?
             WHERE id = ?",
             [
@@ -118,13 +115,13 @@ class Recovery
             ]
         );
         Query::execute(
-            "UPDATE password_resets
+            "UPDATE ielectro_account.account_password_resets
             SET used_at = NOW()
             WHERE id = ?",
             [$reset['id']]
         );
         Query::execute(
-            "DELETE FROM sessions
+            "DELETE FROM ielectro_account.account_sessions
             WHERE account_id = ?",
             [$reset['account_id']]
         );

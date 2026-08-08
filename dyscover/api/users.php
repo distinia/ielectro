@@ -46,7 +46,6 @@ class Users
     private function show(): void
     {
         Request::get();
-        $GLOBALS['dyscover']->database->use();
         $key = Routing::segment(2);
         if ($key === null || $key === '') {
             Response::badRequest('Missing user id');
@@ -78,7 +77,7 @@ class Users
         }
         $params[] = $id;
         Query::execute(
-            'UPDATE users SET ' . implode(', ', $fields) . ' WHERE id = ?',
+            'UPDATE ielectro_dyscover.dyscover_users SET ' . implode(', ', $fields) . ' WHERE id = ?',
             $params
         );
         Response::success(UserProfile::one($id));
@@ -92,14 +91,13 @@ class User
         if ($accountId === null) {
             Response::unauthorized();
         }
-        $GLOBALS['dyscover']->database->use();
         $row = Query::fetch(
-            'SELECT id FROM users WHERE account_id = ? LIMIT 1',
+            'SELECT id FROM ielectro_dyscover.dyscover_users WHERE account_id = ? LIMIT 1',
             [$accountId]
         );
         if (!$row) {
             Query::execute(
-                'INSERT INTO users(account_id) VALUES(?)',
+                'INSERT INTO ielectro_dyscover.dyscover_users(account_id) VALUES(?)',
                 [$accountId]
             );
             return Query::lastId();
@@ -114,12 +112,10 @@ class Accounts
         if ($id <= 0) {
             return null;
         }
-        $GLOBALS['account']->database->use();
         $row = Query::fetch(
-            'SELECT id, username FROM accounts WHERE id = ? LIMIT 1',
+            'SELECT id, username FROM ielectro_account.accounts WHERE id = ? LIMIT 1',
             [$id]
         );
-        $GLOBALS['dyscover']->database->use();
         return $row;
     }
     public static function findByUsername(string $username): ?array
@@ -128,12 +124,10 @@ class Accounts
         if ($username === '') {
             return null;
         }
-        $GLOBALS['account']->database->use();
         $row = Query::fetch(
-            'SELECT id, username FROM accounts WHERE username = ? LIMIT 1',
+            'SELECT id, username FROM ielectro_account.accounts WHERE username = ? LIMIT 1',
             [$username]
         );
-        $GLOBALS['dyscover']->database->use();
         return $row;
     }
     public static function usernamesByAccountIds(array $accountIds): array
@@ -145,13 +139,11 @@ class Accounts
         if (!$accountIds) {
             return [];
         }
-        $GLOBALS['account']->database->use();
         $placeholders = implode(',', array_fill(0, count($accountIds), '?'));
         $rows = Query::fetchAll(
-            "SELECT id, username FROM accounts WHERE id IN ({$placeholders})",
+            "SELECT id, username FROM ielectro_account.accounts WHERE id IN ({$placeholders})",
             $accountIds
         );
-        $GLOBALS['dyscover']->database->use();
         $map = [];
         foreach ($rows as $row) {
             $map[(int) $row['id']] = (string) $row['username'];
@@ -178,7 +170,6 @@ class UserProfile
 {
     public static function one(int $id): array
     {
-        $GLOBALS['dyscover']->database->use();
         $row = Query::fetch(
             "SELECT
                 du.id,
@@ -188,7 +179,7 @@ class UserProfile
                 du.status,
                 du.created_at,
                 du.account_id
-            FROM users du
+            FROM ielectro_dyscover.dyscover_users du
             WHERE du.id = ?
             LIMIT 1",
             [$id]
@@ -197,7 +188,6 @@ class UserProfile
             Response::notFound('User not found');
         }
         $account = Accounts::find((int) $row['account_id']);
-        $GLOBALS['dyscover']->database->use();
         return [
             'id' => (int) $row['id'],
             'username' => is_array($account) ? (string) ($account['username'] ?? '') : '',
@@ -207,11 +197,11 @@ class UserProfile
             'status' => $row['status'],
             'avatar' => Avatar::url((int) $row['id']),
             'followers' => Query::count(
-                'SELECT COUNT(*) FROM follows WHERE followed_id = ?',
+                'SELECT COUNT(*) FROM ielectro_dyscover.dyscover_follows WHERE followed_id = ?',
                 [$id]
             ),
             'following' => Query::count(
-                'SELECT COUNT(*) FROM follows WHERE follower_id = ?',
+                'SELECT COUNT(*) FROM ielectro_dyscover.dyscover_follows WHERE follower_id = ?',
                 [$id]
             ),
             'created_at' => $row['created_at'],
@@ -223,14 +213,13 @@ class UserProfile
         if (!$account) {
             Response::notFound('User not found');
         }
-        $GLOBALS['dyscover']->database->use();
         $row = Query::fetch(
-            'SELECT id FROM users WHERE account_id = ? LIMIT 1',
+            'SELECT id FROM ielectro_dyscover.dyscover_users WHERE account_id = ? LIMIT 1',
             [(int) $account['id']]
         );
         if (!$row) {
             Query::execute(
-                'INSERT INTO users(account_id) VALUES(?)',
+                'INSERT INTO ielectro_dyscover.dyscover_users(account_id) VALUES(?)',
                 [(int) $account['id']]
             );
             return self::one(Query::lastId());
@@ -242,10 +231,9 @@ class UserCard
 {
     public static function one(int $id): array
     {
-        $GLOBALS['dyscover']->database->use();
         $row = Query::fetch(
             "SELECT du.id, du.biography, du.account_id
-            FROM users du
+            FROM ielectro_dyscover.dyscover_users du
             WHERE du.id = ?
             LIMIT 1",
             [$id]
@@ -254,7 +242,6 @@ class UserCard
             Response::notFound('User not found');
         }
         $account = Accounts::find((int) $row['account_id']);
-        $GLOBALS['dyscover']->database->use();
         return [
             'id' => (int) $row['id'],
             'username' => is_array($account) ? (string) ($account['username'] ?? '') : '',
@@ -282,8 +269,8 @@ class UserFollowers
         }
         $rows = Query::fetchAll(
             "SELECT du.id
-            FROM follows f
-            INNER JOIN users du ON du.id = f.follower_id
+            FROM ielectro_dyscover.dyscover_follows f
+            INNER JOIN ielectro_dyscover.dyscover_users du ON du.id = f.follower_id
             WHERE f.followed_id = ?
             ORDER BY f.created_at DESC",
             [$id]
@@ -304,9 +291,8 @@ class UserFollowers
         if ($followerId === $followedId) {
             Response::badRequest('Invalid follow target');
         }
-        $GLOBALS['dyscover']->database->use();
         $affected = Query::execute(
-            'INSERT IGNORE INTO follows(follower_id, followed_id) VALUES(?, ?)',
+            'INSERT IGNORE INTO ielectro_dyscover.dyscover_follows(follower_id, followed_id) VALUES(?, ?)',
             [$followerId, $followedId]
         );
         if ($affected > 0) {
@@ -326,17 +312,15 @@ class UserFollowers
             if ($profileId !== User::id()) {
                 Response::forbidden();
             }
-            $GLOBALS['dyscover']->database->use();
             Query::execute(
-                'DELETE FROM follows
+                'DELETE FROM ielectro_dyscover.dyscover_follows
                 WHERE followed_id = ? AND follower_id = ?',
                 [$profileId, (int) $followerId]
             );
             Response::success('Follower removed');
         }
-        $GLOBALS['dyscover']->database->use();
         Query::execute(
-            'DELETE FROM follows
+            'DELETE FROM ielectro_dyscover.dyscover_follows
             WHERE follower_id = ? AND followed_id = ?',
             [User::id(), $profileId]
         );
@@ -354,8 +338,8 @@ class UserFollowing
         }
         $rows = Query::fetchAll(
             "SELECT du.id
-            FROM follows f
-            INNER JOIN users du ON du.id = f.followed_id
+            FROM ielectro_dyscover.dyscover_follows f
+            INNER JOIN ielectro_dyscover.dyscover_users du ON du.id = f.followed_id
             WHERE f.follower_id = ?
             ORDER BY f.created_at DESC",
             [$id]

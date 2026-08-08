@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `posts` (
+CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_posts` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` BIGINT UNSIGNED NOT NULL,
   `uuid` CHAR(16) NOT NULL,
@@ -24,11 +24,11 @@ CREATE TABLE IF NOT EXISTS `posts` (
   KEY `idx_posts_updated` (`updated_at`),
   CONSTRAINT `posts_ibfk_1`
     FOREIGN KEY (`user_id`)
-    REFERENCES `users` (`id`)
+    REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `post_likes` (
+CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_post_likes` (
   `post_id` BIGINT UNSIGNED NOT NULL,
   `user_id` BIGINT UNSIGNED NOT NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -36,16 +36,16 @@ CREATE TABLE IF NOT EXISTS `post_likes` (
   KEY `idx_post_likes_user` (`user_id`),
   CONSTRAINT `post_likes_ibfk_1`
     FOREIGN KEY (`post_id`)
-    REFERENCES `posts` (`id`)
+    REFERENCES `ielectro_dyscover`.`dyscover_posts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `post_likes_ibfk_2`
     FOREIGN KEY (`user_id`)
-    REFERENCES `users` (`id`)
+    REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `post_comments` (
+CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_post_comments` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `post_id` BIGINT UNSIGNED NOT NULL,
   `user_id` BIGINT UNSIGNED NOT NULL,
@@ -60,16 +60,16 @@ CREATE TABLE IF NOT EXISTS `post_comments` (
   KEY `idx_post_comments_created` (`created_at`),
   CONSTRAINT `post_comments_ibfk_1`
     FOREIGN KEY (`post_id`)
-    REFERENCES `posts` (`id`)
+    REFERENCES `ielectro_dyscover`.`dyscover_posts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `post_comments_ibfk_2`
     FOREIGN KEY (`user_id`)
-    REFERENCES `users` (`id`)
+    REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `post_shares` (
+CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_post_shares` (
   `post_id` BIGINT UNSIGNED NOT NULL,
   `user_id` BIGINT UNSIGNED NOT NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -77,16 +77,16 @@ CREATE TABLE IF NOT EXISTS `post_shares` (
   KEY `idx_post_shares_user` (`user_id`),
   CONSTRAINT `post_shares_ibfk_1`
     FOREIGN KEY (`post_id`)
-    REFERENCES `posts` (`id`)
+    REFERENCES `ielectro_dyscover`.`dyscover_posts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `post_shares_ibfk_2`
     FOREIGN KEY (`user_id`)
-    REFERENCES `users` (`id`)
+    REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `post_bookmarks` (
+CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_post_bookmarks` (
   `post_id` BIGINT UNSIGNED NOT NULL,
   `user_id` BIGINT UNSIGNED NOT NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -94,16 +94,16 @@ CREATE TABLE IF NOT EXISTS `post_bookmarks` (
   KEY `idx_post_bookmarks_user` (`user_id`),
   CONSTRAINT `post_bookmarks_ibfk_1`
     FOREIGN KEY (`post_id`)
-    REFERENCES `posts` (`id`)
+    REFERENCES `ielectro_dyscover`.`dyscover_posts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `post_bookmarks_ibfk_2`
     FOREIGN KEY (`user_id`)
-    REFERENCES `users` (`id`)
+    REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `post_views` (
+CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_post_views` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `post_id` BIGINT UNSIGNED NOT NULL,
   `user_id` BIGINT UNSIGNED DEFAULT NULL,
@@ -114,16 +114,16 @@ CREATE TABLE IF NOT EXISTS `post_views` (
   KEY `idx_post_views_created` (`created_at`),
   CONSTRAINT `post_views_ibfk_1`
     FOREIGN KEY (`post_id`)
-    REFERENCES `posts` (`id`)
+    REFERENCES `ielectro_dyscover`.`dyscover_posts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `post_views_ibfk_2`
     FOREIGN KEY (`user_id`)
-    REFERENCES `users` (`id`)
+    REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `post_mentions` (
+CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_post_mentions` (
   `post_id` BIGINT UNSIGNED NOT NULL,
   `user_id` BIGINT UNSIGNED NOT NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -131,32 +131,32 @@ CREATE TABLE IF NOT EXISTS `post_mentions` (
   KEY `idx_post_mentions_user` (`user_id`),
   CONSTRAINT `post_mentions_ibfk_1`
     FOREIGN KEY (`post_id`)
-    REFERENCES `posts` (`id`)
+    REFERENCES `ielectro_dyscover`.`dyscover_posts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `post_mentions_ibfk_2`
     FOREIGN KEY (`user_id`)
-    REFERENCES `users` (`id`)
+    REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `post_tags` (
+CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_post_tags` (
   `post_id` BIGINT UNSIGNED NOT NULL,
   `tag_id` BIGINT UNSIGNED NOT NULL,
   PRIMARY KEY (`post_id`, `tag_id`),
   KEY `idx_post_tags_tag` (`tag_id`),
   CONSTRAINT `post_tags_ibfk_1`
     FOREIGN KEY (`post_id`)
-    REFERENCES `posts` (`id`)
+    REFERENCES `ielectro_dyscover`.`dyscover_posts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `post_tags_ibfk_2`
     FOREIGN KEY (`tag_id`)
-    REFERENCES `tags` (`id`)
+    REFERENCES `ielectro_dyscover`.`dyscover_tags` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `post_reposts` (
+CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_post_reposts` (
   `post_id` BIGINT UNSIGNED NOT NULL,
   `user_id` BIGINT UNSIGNED NOT NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -164,16 +164,16 @@ CREATE TABLE IF NOT EXISTS `post_reposts` (
   KEY `idx_post_reposts_user` (`user_id`),
   CONSTRAINT `post_reposts_ibfk_1`
     FOREIGN KEY (`post_id`)
-    REFERENCES `posts` (`id`)
+    REFERENCES `ielectro_dyscover`.`dyscover_posts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `post_reposts_ibfk_2`
     FOREIGN KEY (`user_id`)
-    REFERENCES `users` (`id`)
+    REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `post_statistics` (
+CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_post_statistics` (
   `post_id` BIGINT UNSIGNED NOT NULL,
   `views` BIGINT UNSIGNED NOT NULL DEFAULT 0,
   `likes` BIGINT UNSIGNED NOT NULL DEFAULT 0,
@@ -186,11 +186,11 @@ CREATE TABLE IF NOT EXISTS `post_statistics` (
   PRIMARY KEY (`post_id`),
   CONSTRAINT `post_statistics_ibfk_1`
     FOREIGN KEY (`post_id`)
-    REFERENCES `posts` (`id`)
+    REFERENCES `ielectro_dyscover`.`dyscover_posts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `template_fields` (
+CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_template_fields` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `template_id` BIGINT UNSIGNED NOT NULL,
   `name` VARCHAR(255) NOT NULL,
@@ -200,7 +200,7 @@ CREATE TABLE IF NOT EXISTS `template_fields` (
   KEY `idx_template_fields_template` (`template_id`),
   CONSTRAINT `template_fields_ibfk_1`
     FOREIGN KEY (`template_id`)
-    REFERENCES `posts` (`id`)
+    REFERENCES `ielectro_dyscover`.`dyscover_posts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
