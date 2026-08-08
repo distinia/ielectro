@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`population` (
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_territory_id` (`territory_id`),
-  CONSTRAINT `population_ibfk_1`
+  CONSTRAINT `dominions_population_ibfk_1`
     FOREIGN KEY (`territory_id`)
     REFERENCES `territories` (`id`)
     ON DELETE CASCADE
@@ -33,12 +33,12 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`territory_ethnicities` (
   `ielectro_dominions`.`population` BIGINT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`territory_id`, `ethnicity_id`),
   KEY `idx_ethnicity_id` (`ethnicity_id`),
-  CONSTRAINT `territory_ethnicities_ibfk_1`
+  CONSTRAINT `dominions_territory_ethnicities_ibfk_1`
     FOREIGN KEY (`territory_id`)
     REFERENCES `territories` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `territory_ethnicities_ibfk_2`
+  CONSTRAINT `dominions_territory_ethnicities_ibfk_2`
     FOREIGN KEY (`ethnicity_id`)
     REFERENCES `ielectro_dominions`.`ethnicities` (`id`)
     ON DELETE CASCADE
@@ -57,12 +57,12 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`territory_religions` (
   `ielectro_dominions`.`population` BIGINT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`territory_id`, `religion_id`),
   KEY `idx_religion_id` (`religion_id`),
-  CONSTRAINT `territory_religions_ibfk_1`
+  CONSTRAINT `dominions_territory_religions_ibfk_1`
     FOREIGN KEY (`territory_id`)
     REFERENCES `territories` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `territory_religions_ibfk_2`
+  CONSTRAINT `dominions_territory_religions_ibfk_2`
     FOREIGN KEY (`religion_id`)
     REFERENCES `ielectro_dominions`.`religions` (`id`)
     ON DELETE CASCADE
@@ -83,12 +83,12 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`territory_languages` (
   `is_official` TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`territory_id`, `language_id`),
   KEY `idx_language_id` (`language_id`),
-  CONSTRAINT `territory_languages_ibfk_1`
+  CONSTRAINT `dominions_territory_languages_ibfk_1`
     FOREIGN KEY (`territory_id`)
     REFERENCES `territories` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `territory_languages_ibfk_2`
+  CONSTRAINT `dominions_territory_languages_ibfk_2`
     FOREIGN KEY (`language_id`)
     REFERENCES `ielectro_dominions`.`languages` (`id`)
     ON DELETE CASCADE
@@ -106,12 +106,12 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`territory_genders` (
   `ielectro_dominions`.`population` BIGINT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`territory_id`, `gender_id`),
   KEY `idx_gender_id` (`gender_id`),
-  CONSTRAINT `territory_genders_ibfk_1`
+  CONSTRAINT `dominions_territory_genders_ibfk_1`
     FOREIGN KEY (`territory_id`)
     REFERENCES `territories` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `territory_genders_ibfk_2`
+  CONSTRAINT `dominions_territory_genders_ibfk_2`
     FOREIGN KEY (`gender_id`)
     REFERENCES `ielectro_dominions`.`genders` (`id`)
     ON DELETE CASCADE
@@ -132,12 +132,12 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`territory_age_groups` (
   `ielectro_dominions`.`population` BIGINT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`territory_id`, `age_group_id`),
   KEY `idx_age_group_id` (`age_group_id`),
-  CONSTRAINT `territory_age_groups_ibfk_1`
+  CONSTRAINT `dominions_territory_age_groups_ibfk_1`
     FOREIGN KEY (`territory_id`)
     REFERENCES `territories` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `territory_age_groups_ibfk_2`
+  CONSTRAINT `dominions_territory_age_groups_ibfk_2`
     FOREIGN KEY (`age_group_id`)
     REFERENCES `ielectro_dominions`.`age_groups` (`id`)
     ON DELETE CASCADE

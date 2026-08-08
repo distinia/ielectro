@@ -15,22 +15,37 @@ class Routing
         return self::$app?->basePath ?? '/';
     }
 
+    public static function route(): string
+    {
+        return self::normalizedApplicationPath();
+    }
+
     public static function path(): string
     {
-        $route = trim(self::applicationPath(), '/');
-        return $route === '' ? 'home' : $route;
+        $relative = trim(self::route(), '/');
+        return $relative === '' ? 'home' : $relative;
     }
 
     public static function applicationPath(): string
     {
-        return trim(self::normalizedApplicationPath(), '/');
+        return trim(self::route(), '/');
     }
 
     public static function normalizedApplicationPath(): string
     {
-        $requestPath = self::requestPath();
-        $stripped = self::stripBasePath($requestPath, self::basePath());
-        return self::sanitizePath($stripped);
+        $path = self::requestPath();
+        $path = self::sanitizePath($path);
+        $path = self::stripBasePath($path, self::basePath());
+        return self::sanitizePath($path);
+    }
+
+    public static function segments(): array
+    {
+        $relative = self::applicationPath();
+        if ($relative === '') {
+            return [];
+        }
+        return explode('/', $relative);
     }
 
     public static function method(array $methods): void
@@ -55,8 +70,7 @@ class Routing
 
     public static function segment(int $index, mixed $default = null): mixed
     {
-        $segments = explode('/', self::path());
-        return $segments[$index] ?? $default;
+        return self::segments()[$index] ?? $default;
     }
 
     public static function id(?int $default = null): ?int
@@ -69,7 +83,7 @@ class Routing
         if (is_string($messageSegment) && ctype_digit($messageSegment)) {
             return (int) $messageSegment;
         }
-        foreach (explode('/', self::path()) as $part) {
+        foreach (self::segments() as $part) {
             if (ctype_digit((string) $part)) {
                 return (int) $part;
             }
@@ -104,10 +118,10 @@ class Routing
         if (!is_string($path) || $path === '') {
             return '/';
         }
-        return self::normalizePath(rawurldecode($path));
+        return self::normalizeSlashes(rawurldecode($path));
     }
 
-    private static function normalizePath(string $path): string
+    private static function normalizeSlashes(string $path): string
     {
         $path = str_replace('\\', '/', $path);
         if ($path === '') {
@@ -146,7 +160,7 @@ class Routing
 
     private static function sanitizePath(string $path): string
     {
-        $path = self::normalizePath($path);
+        $path = self::normalizeSlashes($path);
         $parts = explode('/', trim($path, '/'));
         $safe = [];
 
@@ -155,7 +169,9 @@ class Routing
                 continue;
             }
             if ($part === '..') {
-                array_pop($safe);
+                if ($safe !== []) {
+                    array_pop($safe);
+                }
                 continue;
             }
             $safe[] = $part;

@@ -7,6 +7,7 @@ USAGE
   php nesh <command>
 GLOBAL COMMANDS
   install                   Install NESH.
+  domain <URL>              Configure deployment URLs for all applications.
   version                   Display the framework version.
   help                      Display this help page.
 APPLICATION COMMANDS

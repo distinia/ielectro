@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS `ielectro_account`.`account_sessions` (
   KEY `idx_sessions_last_activity` (`last_activity`),
   KEY `idx_sessions_token_revoked`
     (`token_hash`, `revoked_at`, `expires_at`),
-  CONSTRAINT `fk_sessions_account`
+  CONSTRAINT `account_fk_sessions_account`
     FOREIGN KEY (`account_id`)
     REFERENCES `ielectro_account`.`accounts` (`id`)
     ON DELETE CASCADE
@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS `ielectro_account`.`account_activity` (
   KEY `idx_activity_account` (`account_id`),
   KEY `idx_activity_action` (`action`),
   KEY `idx_activity_created` (`created_at`),
-  CONSTRAINT `activity_ibfk_1`
+  CONSTRAINT `account_activity_ibfk_1`
     FOREIGN KEY (`account_id`)
     REFERENCES `ielectro_account`.`accounts` (`id`)
     ON DELETE CASCADE
@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS `ielectro_account`.`account_email_verifications` (
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`account_id`),
   KEY `idx_email_verifications_expires` (`expires_at`),
-  CONSTRAINT `email_verifications_ibfk_1`
+  CONSTRAINT `account_email_verifications_ibfk_1`
     FOREIGN KEY (`account_id`)
     REFERENCES `ielectro_account`.`accounts` (`id`)
     ON DELETE CASCADE
@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS `ielectro_account`.`account_password_resets` (
   UNIQUE KEY `uq_password_resets_token` (`token_hash`),
   KEY `idx_password_resets_user` (`account_id`),
   KEY `idx_password_resets_expires` (`expires_at`),
-  CONSTRAINT `password_resets_ibfk_1`
+  CONSTRAINT `account_password_resets_ibfk_1`
     FOREIGN KEY (`account_id`)
     REFERENCES `ielectro_account`.`accounts` (`id`)
     ON DELETE CASCADE

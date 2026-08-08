@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_inbox_chats` (
   PRIMARY KEY (`id`),
   KEY `idx_chats_group` (`group_id`),
   KEY `idx_chats_updated` (`updated_at`),
-  CONSTRAINT `inbox_chats_ibfk_1`
+  CONSTRAINT `dyscover_inbox_chats_ibfk_1`
     FOREIGN KEY (`group_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_groups` (`id`)
     ON DELETE CASCADE
@@ -19,12 +19,12 @@ CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_inbox_members` (
   `joined_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`chat_id`, `user_id`),
   KEY `idx_inbox_members_user` (`user_id`),
-  CONSTRAINT `inbox_members_ibfk_1`
+  CONSTRAINT `dyscover_inbox_members_ibfk_1`
     FOREIGN KEY (`chat_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_inbox_chats` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `inbox_members_ibfk_2`
+  CONSTRAINT `dyscover_inbox_members_ibfk_2`
     FOREIGN KEY (`user_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE
@@ -46,22 +46,22 @@ CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_inbox_messages` (
   KEY `idx_messages_post` (`post_id`),
   KEY `idx_messages_reply` (`reply_to_id`),
   KEY `idx_messages_created` (`created_at`),
-  CONSTRAINT `inbox_messages_ibfk_1`
+  CONSTRAINT `dyscover_inbox_messages_ibfk_1`
     FOREIGN KEY (`chat_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_inbox_chats` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `inbox_messages_ibfk_2`
+  CONSTRAINT `dyscover_inbox_messages_ibfk_2`
     FOREIGN KEY (`sender_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `inbox_messages_ibfk_3`
+  CONSTRAINT `dyscover_inbox_messages_ibfk_3`
     FOREIGN KEY (`post_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_posts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `inbox_messages_ibfk_4`
+  CONSTRAINT `dyscover_inbox_messages_ibfk_4`
     FOREIGN KEY (`reply_to_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_inbox_messages` (`id`)
     ON DELETE SET NULL
@@ -73,12 +73,12 @@ CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_inbox_message_reads` (
   `read_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`message_id`, `user_id`),
   KEY `idx_message_reads_user` (`user_id`),
-  CONSTRAINT `message_reads_ibfk_1`
+  CONSTRAINT `dyscover_message_reads_ibfk_1`
     FOREIGN KEY (`message_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_inbox_messages` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `message_reads_ibfk_2`
+  CONSTRAINT `dyscover_message_reads_ibfk_2`
     FOREIGN KEY (`user_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE
@@ -91,12 +91,12 @@ CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_inbox_message_reactions
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`message_id`, `user_id`),
   KEY `idx_reactions_user` (`user_id`),
-  CONSTRAINT `message_reactions_ibfk_1`
+  CONSTRAINT `dyscover_message_reactions_ibfk_1`
     FOREIGN KEY (`message_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_inbox_messages` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `message_reactions_ibfk_2`
+  CONSTRAINT `dyscover_message_reactions_ibfk_2`
     FOREIGN KEY (`user_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE
@@ -109,12 +109,12 @@ CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_inbox_typing` (
   PRIMARY KEY (`chat_id`, `user_id`),
   KEY `idx_typing_updated` (`updated_at`),
   KEY `idx_typing_user` (`user_id`),
-  CONSTRAINT `inbox_typing_ibfk_1`
+  CONSTRAINT `dyscover_inbox_typing_ibfk_1`
     FOREIGN KEY (`chat_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_inbox_chats` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `inbox_typing_ibfk_2`
+  CONSTRAINT `dyscover_inbox_typing_ibfk_2`
     FOREIGN KEY (`user_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE

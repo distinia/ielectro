@@ -26,12 +26,12 @@ CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_follows` (
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`follower_id`, `followed_id`),
   KEY `idx_follows_followed` (`followed_id`),
-  CONSTRAINT `follows_ibfk_1`
+  CONSTRAINT `dyscover_follows_ibfk_1`
     FOREIGN KEY (`follower_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `follows_ibfk_2`
+  CONSTRAINT `dyscover_follows_ibfk_2`
     FOREIGN KEY (`followed_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE

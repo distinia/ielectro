@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_groups` (
   PRIMARY KEY (`id`),
   KEY `idx_groups_creator` (`creator_id`),
   KEY `idx_groups_visibility` (`visibility`),
-  CONSTRAINT `groups_ibfk_1`
+  CONSTRAINT `dyscover_groups_ibfk_1`
     FOREIGN KEY (`creator_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE
@@ -23,12 +23,12 @@ CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_group_members` (
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`group_id`, `user_id`),
   KEY `idx_group_members_user` (`user_id`),
-  CONSTRAINT `group_members_ibfk_1`
+  CONSTRAINT `dyscover_group_members_ibfk_1`
     FOREIGN KEY (`group_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_groups` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `group_members_ibfk_2`
+  CONSTRAINT `dyscover_group_members_ibfk_2`
     FOREIGN KEY (`user_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE

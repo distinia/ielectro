@@ -40,9 +40,7 @@ class Url
     }
     public static function segments(): array
     {
-        return array_values(array_filter(
-            explode('/', trim(self::path(), '/'))
-        ));
+        return Routing::segments();
     }
     public static function build(string $path = '', array $query = []): string
     {

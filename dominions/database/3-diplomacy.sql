@@ -27,12 +27,12 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`organization_members` (
   `left_at` INT DEFAULT NULL,
   PRIMARY KEY (`organization_id`, `country_id`),
   KEY `idx_country_id` (`country_id`),
-  CONSTRAINT `organization_members_ibfk_1`
+  CONSTRAINT `dominions_organization_members_ibfk_1`
     FOREIGN KEY (`organization_id`)
     REFERENCES `ielectro_dominions`.`organizations` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `organization_members_ibfk_2`
+  CONSTRAINT `dominions_organization_members_ibfk_2`
     FOREIGN KEY (`country_id`)
     REFERENCES `countries` (`id`)
     ON DELETE CASCADE
@@ -46,12 +46,12 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`country_relations` (
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`country_id`, `target_country_id`),
   KEY `idx_target_country_id` (`target_country_id`),
-  CONSTRAINT `country_relations_ibfk_1`
+  CONSTRAINT `dominions_country_relations_ibfk_1`
     FOREIGN KEY (`country_id`)
     REFERENCES `countries` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `country_relations_ibfk_2`
+  CONSTRAINT `dominions_country_relations_ibfk_2`
     FOREIGN KEY (`target_country_id`)
     REFERENCES `countries` (`id`)
     ON DELETE CASCADE
@@ -77,12 +77,12 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`country_subjects` (
   `description` TEXT DEFAULT NULL,
   PRIMARY KEY (`country_id`, `overlord_country_id`),
   KEY `idx_overlord_country_id` (`overlord_country_id`),
-  CONSTRAINT `country_subjects_ibfk_1`
+  CONSTRAINT `dominions_country_subjects_ibfk_1`
     FOREIGN KEY (`country_id`)
     REFERENCES `countries` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `country_subjects_ibfk_2`
+  CONSTRAINT `dominions_country_subjects_ibfk_2`
     FOREIGN KEY (`overlord_country_id`)
     REFERENCES `countries` (`id`)
     ON DELETE CASCADE
@@ -114,12 +114,12 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`treaty_members` (
   `country_id` BIGINT UNSIGNED NOT NULL,
   PRIMARY KEY (`treaty_id`, `country_id`),
   KEY `idx_country_id` (`country_id`),
-  CONSTRAINT `treaty_members_ibfk_1`
+  CONSTRAINT `dominions_treaty_members_ibfk_1`
     FOREIGN KEY (`treaty_id`)
     REFERENCES `ielectro_dominions`.`treaties` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `treaty_members_ibfk_2`
+  CONSTRAINT `dominions_treaty_members_ibfk_2`
     FOREIGN KEY (`country_id`)
     REFERENCES `countries` (`id`)
     ON DELETE CASCADE

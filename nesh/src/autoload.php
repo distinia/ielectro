@@ -1,5 +1,7 @@
 <?php
 # Service
+# Deployment: subdomain
+# Base URL: https://ielectro.com
 define('DOMAIN', 'ielectro.com');
 # CORS
 define('CORS_ALLOWED_DOMAINS', [DOMAIN , 'google.com']);
@@ -17,7 +19,7 @@ define('DB_CHARSET', 'utf8mb4');
 define('SESSION_NAME', 'ielectro_session');
 define('SESSION_LIFETIME', 86400);
 # Cookies
-define('COOKIE_DOMAIN', '.' . DOMAIN);
+define('COOKIE_DOMAIN', '.ielectro.com');
 define('COOKIE_PATH', '/');
 define('COOKIE_SECURE', true);
 define('COOKIE_HTTPONLY', true);
@@ -77,8 +79,8 @@ spl_autoload_register(function (string $class): void {
 });
 \Nesh\Request::start();
 use Nesh\App;
-$GLOBALS['account'] = new App('iElectro Account', 'account', 'account', 'ielectro_account', '1.0.0');
-$GLOBALS['admin'] = new App('iElectro Admin', 'admin', 'admin', 'ielectro_admin', '1.0.0');
-$GLOBALS['dyscover'] = new App('Dyscover', 'dyscover', 'dyscover', 'ielectro_dyscover', '1.0.0');
-$GLOBALS['dominions'] = new App('Dominions', 'dominions', 'dominions', 'ielectro_dominions', '1.0.0');
-$GLOBALS['ielectro'] = new App('iElectro', 'www', 'www', null, '1.0.0');
+$GLOBALS['account'] = new App('iElectro Account', 'https://account.ielectro.com', 'account', 'ielectro_account', '1.0.0');
+$GLOBALS['admin'] = new App('iElectro Admin', 'https://admin.ielectro.com', 'admin', 'ielectro_admin', '1.0.0');
+$GLOBALS['dyscover'] = new App('Dyscover', 'https://dyscover.ielectro.com', 'dyscover', 'ielectro_dyscover', '1.0.0');
+$GLOBALS['dominions'] = new App('Dominions', 'https://dominions.ielectro.com', 'dominions', 'ielectro_dominions', '1.0.0');
+$GLOBALS['ielectro'] = new App('iElectro', 'https://www.ielectro.com', 'www', null, '1.0.0');

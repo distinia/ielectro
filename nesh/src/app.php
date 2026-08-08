@@ -7,11 +7,10 @@ class App
 
     public string $version;
     public string $name;
-    public string $subdomain;
-    public string $folder;
-    public string $namespace;
     public string $url;
     public string $basePath;
+    public string $folder;
+    public string $namespace;
     public array $paths;
     public ?string $database = null;
     public Api $api;
@@ -19,18 +18,17 @@ class App
 
     public function __construct(
         string $name,
-        string $subdomain,
+        string $url,
         string $folder,
         ?string $databaseName = null,
         string $version = '1.0.0'
     ) {
         $this->version = $version;
         $this->name = $name;
-        $this->subdomain = $subdomain;
         $this->folder = $folder;
         $this->namespace = ucfirst($folder);
-        $this->basePath = $this->resolveBasePath();
-        $this->url = $this->resolveUrl();
+        $this->url = self::normalizeUrl($url);
+        $this->basePath = self::basePathFromUrl($this->url);
 
         $this->paths = [
             'root'     => ROOT_PATH . '/' . $folder,
@@ -124,47 +122,25 @@ class App
         }
     }
 
-    private function resolveBasePath(): string
+    private static function normalizeUrl(string $url): string
     {
-        $scriptDir = str_replace(
-            '\\',
-            '/',
-            dirname($_SERVER['SCRIPT_NAME'] ?? '/index.php')
-        );
+        $url = trim($url);
 
-        if ($scriptDir === '/' || $scriptDir === '.' || $scriptDir === '') {
+        if ($url === '') {
+            Response::error('Invalid application URL');
+        }
+
+        return rtrim($url, '/');
+    }
+
+    private static function basePathFromUrl(string $url): string
+    {
+        $path = parse_url($url, PHP_URL_PATH);
+
+        if (!is_string($path) || $path === '' || $path === '/') {
             return '/';
         }
 
-        return rtrim($scriptDir, '/');
-    }
-
-    private function resolveUrl(): string
-    {
-        $configured = 'https://' . $this->subdomain . '.' . DOMAIN;
-
-        if (PHP_SAPI === 'cli') {
-            return $configured;
-        }
-
-        $host = trim((string) ($_SERVER['HTTP_HOST'] ?? ''));
-        $configuredHost = parse_url($configured, PHP_URL_HOST);
-
-        if ($this->basePath === '/' && $host === $configuredHost) {
-            return $configured;
-        }
-
-        $protocol = (
-            !empty($_SERVER['HTTPS'])
-            && $_SERVER['HTTPS'] !== 'off'
-        ) ? 'https' : 'http';
-
-        if ($host === '') {
-            return $configured;
-        }
-
-        return $protocol . '://' . $host . (
-            $this->basePath === '/' ? '' : $this->basePath
-        );
+        return '/' . trim($path, '/') . '/';
     }
 }

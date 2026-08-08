@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_posts` (
   KEY `idx_posts_status` (`status`),
   KEY `idx_posts_published` (`published_at`),
   KEY `idx_posts_updated` (`updated_at`),
-  CONSTRAINT `posts_ibfk_1`
+  CONSTRAINT `dyscover_posts_ibfk_1`
     FOREIGN KEY (`user_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE
@@ -34,12 +34,12 @@ CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_post_likes` (
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`post_id`, `user_id`),
   KEY `idx_post_likes_user` (`user_id`),
-  CONSTRAINT `post_likes_ibfk_1`
+  CONSTRAINT `dyscover_post_likes_ibfk_1`
     FOREIGN KEY (`post_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_posts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `post_likes_ibfk_2`
+  CONSTRAINT `dyscover_post_likes_ibfk_2`
     FOREIGN KEY (`user_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE
@@ -58,12 +58,12 @@ CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_post_comments` (
   KEY `idx_post_comments_user` (`user_id`),
   KEY `idx_post_comments_status` (`status`),
   KEY `idx_post_comments_created` (`created_at`),
-  CONSTRAINT `post_comments_ibfk_1`
+  CONSTRAINT `dyscover_post_comments_ibfk_1`
     FOREIGN KEY (`post_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_posts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `post_comments_ibfk_2`
+  CONSTRAINT `dyscover_post_comments_ibfk_2`
     FOREIGN KEY (`user_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE
@@ -75,12 +75,12 @@ CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_post_shares` (
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`post_id`, `user_id`),
   KEY `idx_post_shares_user` (`user_id`),
-  CONSTRAINT `post_shares_ibfk_1`
+  CONSTRAINT `dyscover_post_shares_ibfk_1`
     FOREIGN KEY (`post_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_posts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `post_shares_ibfk_2`
+  CONSTRAINT `dyscover_post_shares_ibfk_2`
     FOREIGN KEY (`user_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE
@@ -92,12 +92,12 @@ CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_post_bookmarks` (
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`post_id`, `user_id`),
   KEY `idx_post_bookmarks_user` (`user_id`),
-  CONSTRAINT `post_bookmarks_ibfk_1`
+  CONSTRAINT `dyscover_post_bookmarks_ibfk_1`
     FOREIGN KEY (`post_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_posts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `post_bookmarks_ibfk_2`
+  CONSTRAINT `dyscover_post_bookmarks_ibfk_2`
     FOREIGN KEY (`user_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE
@@ -112,12 +112,12 @@ CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_post_views` (
   KEY `idx_post_views_post` (`post_id`),
   KEY `idx_post_views_user` (`user_id`),
   KEY `idx_post_views_created` (`created_at`),
-  CONSTRAINT `post_views_ibfk_1`
+  CONSTRAINT `dyscover_post_views_ibfk_1`
     FOREIGN KEY (`post_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_posts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `post_views_ibfk_2`
+  CONSTRAINT `dyscover_post_views_ibfk_2`
     FOREIGN KEY (`user_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE
@@ -129,12 +129,12 @@ CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_post_mentions` (
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`post_id`, `user_id`),
   KEY `idx_post_mentions_user` (`user_id`),
-  CONSTRAINT `post_mentions_ibfk_1`
+  CONSTRAINT `dyscover_post_mentions_ibfk_1`
     FOREIGN KEY (`post_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_posts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `post_mentions_ibfk_2`
+  CONSTRAINT `dyscover_post_mentions_ibfk_2`
     FOREIGN KEY (`user_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE
@@ -145,12 +145,12 @@ CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_post_tags` (
   `tag_id` BIGINT UNSIGNED NOT NULL,
   PRIMARY KEY (`post_id`, `tag_id`),
   KEY `idx_post_tags_tag` (`tag_id`),
-  CONSTRAINT `post_tags_ibfk_1`
+  CONSTRAINT `dyscover_post_tags_ibfk_1`
     FOREIGN KEY (`post_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_posts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `post_tags_ibfk_2`
+  CONSTRAINT `dyscover_post_tags_ibfk_2`
     FOREIGN KEY (`tag_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_tags` (`id`)
     ON DELETE CASCADE
@@ -162,12 +162,12 @@ CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_post_reposts` (
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`post_id`, `user_id`),
   KEY `idx_post_reposts_user` (`user_id`),
-  CONSTRAINT `post_reposts_ibfk_1`
+  CONSTRAINT `dyscover_post_reposts_ibfk_1`
     FOREIGN KEY (`post_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_posts` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `post_reposts_ibfk_2`
+  CONSTRAINT `dyscover_post_reposts_ibfk_2`
     FOREIGN KEY (`user_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE
@@ -184,7 +184,7 @@ CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_post_statistics` (
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`post_id`),
-  CONSTRAINT `post_statistics_ibfk_1`
+  CONSTRAINT `dyscover_post_statistics_ibfk_1`
     FOREIGN KEY (`post_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_posts` (`id`)
     ON DELETE CASCADE
@@ -198,7 +198,7 @@ CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_template_fields` (
   `position` INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `idx_template_fields_template` (`template_id`),
-  CONSTRAINT `template_fields_ibfk_1`
+  CONSTRAINT `dyscover_template_fields_ibfk_1`
     FOREIGN KEY (`template_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_posts` (`id`)
     ON DELETE CASCADE

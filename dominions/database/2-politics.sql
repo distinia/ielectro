@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`factions` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_factions` (`territory_id`, `name`),
   KEY `idx_territory_id` (`territory_id`),
-  CONSTRAINT `factions_ibfk_1`
+  CONSTRAINT `dominions_factions_ibfk_1`
     FOREIGN KEY (`territory_id`)
     REFERENCES `territories` (`id`)
     ON DELETE CASCADE
@@ -35,12 +35,12 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`statesmen` (
   PRIMARY KEY (`id`),
   KEY `idx_territory_id` (`territory_id`),
   KEY `idx_faction_id` (`faction_id`),
-  CONSTRAINT `statesmen_ibfk_1`
+  CONSTRAINT `dominions_statesmen_ibfk_1`
     FOREIGN KEY (`territory_id`)
     REFERENCES `territories` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `statesmen_ibfk_2`
+  CONSTRAINT `dominions_statesmen_ibfk_2`
     FOREIGN KEY (`faction_id`)
     REFERENCES `ielectro_dominions`.`factions` (`id`)
     ON DELETE SET NULL
@@ -51,12 +51,12 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`leaders` (
     `statesman_id` BIGINT UNSIGNED NOT NULL,
     PRIMARY KEY (`territory_id`),
     UNIQUE (`statesman_id`),
-    CONSTRAINT `fk_leaders_territory`
+    CONSTRAINT `dominions_fk_leaders_territory`
         FOREIGN KEY (`territory_id`)
         REFERENCES `territories`(`id`)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-    CONSTRAINT `fk_leaders_statesman`
+    CONSTRAINT `dominions_fk_leaders_statesman`
         FOREIGN KEY (`statesman_id`)
         REFERENCES `ielectro_dominions`.`statesmen`(`id`)
         ON DELETE CASCADE
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`elections` (
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `idx_territory_id` (`territory_id`),
-  CONSTRAINT `elections_ibfk_1`
+  CONSTRAINT `dominions_elections_ibfk_1`
     FOREIGN KEY (`territory_id`)
     REFERENCES `territories` (`id`)
     ON DELETE CASCADE
@@ -85,12 +85,12 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`election_candidates` (
   `votes` BIGINT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`election_id`, `statesman_id`),
   KEY `idx_statesman_id` (`statesman_id`),
-  CONSTRAINT `election_candidates_ibfk_1`
+  CONSTRAINT `dominions_election_candidates_ibfk_1`
     FOREIGN KEY (`election_id`)
     REFERENCES `ielectro_dominions`.`elections` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `election_candidates_ibfk_2`
+  CONSTRAINT `dominions_election_candidates_ibfk_2`
     FOREIGN KEY (`statesman_id`)
     REFERENCES `ielectro_dominions`.`statesmen` (`id`)
     ON DELETE CASCADE

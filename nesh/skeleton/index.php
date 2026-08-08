@@ -4,7 +4,7 @@ $iElectroApp = $GLOBALS['iElectroApp'] ?? null;
 if (!$iElectroApp instanceof \Nesh\App) {
     $iElectroApp = new \Nesh\App(
         'Application',
-        'app',
+        'https://app.ielectro.com',
         'app',
         'ielectro_app',
         '1.0.0'

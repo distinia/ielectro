@@ -1,274 +1,407 @@
-also remove /public/ this folder do not exist nowhere anymore
+Certo. Io darei a Cursor un prompt così, abbastanza preciso da evitare che interpreti male la logica:
 
+```text
+Implement a centralized Nesh deployment system.
 
-THEN:
+Do NOT modify the application's business logic.
+Do NOT change class names, database logic, API behavior, routing behavior, or UI behavior unless required to update deployment URLs.
 
-Refactor the Nesh routing system to make it completely independent from the way an application is exposed on the web.
+The goal is to make the entire iElectro project easily portable between different hosting environments.
 
-## Goal
+# 1. Deployment command
 
-The current routing assumes that the application is always hosted on its own subdomain.
+Add/support this CLI command:
 
-For example:
+php nesh domain <URL>
 
-https://dyscover.ielectro.com/api/posts
+Examples:
 
-The router currently interprets:
+php nesh domain https://ielectro.com
 
-/api/posts
+php nesh domain https://ielectro.altervista.org
 
-correctly because the application is mounted at the domain root.
+php nesh domain http://localhost/ielectro
 
-However, in the future the same application may be hosted under a subdirectory:
-
-https://www.example.com/dyscover/api/posts
-
-In that situation, the router must still interpret the application route as:
-
-/api/posts
-
-The routing system must therefore understand the application's base path and remove it before parsing route segments.
+The command must automatically determine the deployment type from the supplied URL.
 
 ---
 
-# Required architecture
+# 2. Deployment modes
 
-The Router must NEVER assume that the first URL segment belongs to the application.
+## Mode A — Subdomains
 
-The router must work relative to the application's mount point.
+When the supplied URL represents the main iElectro domain:
 
-These two URLs must produce exactly the same routing result:
+https://ielectro.com
 
-https://dyscover.ielectro.com/api/posts
+the applications must use subdomains.
 
-https://www.example.com/dyscover/api/posts
+The resulting URLs are:
 
-Both must internally become:
-
-/api/posts
-
-Therefore:
-
-Routing::segment(0) => api
-Routing::segment(1) => posts
-
-The application code must not need to change between the two hosting configurations.
-
----
-
-# App configuration
-
-The application must expose its base path/mount point through the App configuration.
-
-For example:
-
-Subdomain deployment:
-
-URL:
+https://account.ielectro.com
+https://admin.ielectro.com
 https://dyscover.ielectro.com
-
-Base path:
-/
-
-Subdirectory deployment:
-
-URL:
-https://www.example.com/dyscover
-
-Base path:
-/dyscover/
-
-Do not hardcode `/dyscover` inside the Router.
-
-Do not hardcode any application name or folder inside the Router.
-
-The Router must receive or determine the current application's base path dynamically.
+https://dominions.ielectro.com
+https://nesh.ielectro.com
+https://www.ielectro.com
 
 ---
 
-# Routing behavior
+## Mode B — Subfolders
 
-The Router should:
-
-1. obtain the current request URI
-2. determine the application's base path
-3. remove the application's base path from the request URI
-4. normalize the remaining path
-5. parse the remaining path into segments
+When the supplied URL does not support/use the iElectro subdomain structure, use subfolders.
 
 Example:
 
-REQUEST_URI:
+https://ielectro.altervista.org
 
-/dyscover/api/posts?page=2
+The resulting URLs are:
 
-Application base path:
-
-/dyscover
-
-Normalized application path:
-
-/api/posts
-
-Result:
-
-Routing::segment(0) => api
-Routing::segment(1) => posts
-
-Query parameters must remain available separately.
+https://ielectro.altervista.org/account
+https://ielectro.altervista.org/admin
+https://ielectro.altervista.org/dyscover
+https://ielectro.altervista.org/dominions
+https://ielectro.altervista.org/nesh
+https://ielectro.altervista.org/www
 
 ---
 
-# Subdomain example
+## Mode C — Local development
+
+Example:
+
+http://localhost/ielectro
+
+Use the same subfolder structure:
+
+https://account.ielectro.com
+https://admin.ielectro.com
+https://dyscover.ielectro.com
+https://dominions.ielectro.com
+https://nesh.ielectro.com
+https://www.ielectro.com
+
+The implementation must also work with other local base URLs and must not hardcode `localhost`.
+
+---
+
+# 3. IMPORTANT: www is a normal application
+
+`www` MUST NOT be treated as the root application.
+
+It is a normal application and must always be exposed as:
+
+Subdomain mode:
+
+https://www.ielectro.com
+
+Subfolder mode:
+
+https://example.com/www
+
+Local mode:
+
+https://www.ielectro.com
+
+Do NOT convert `/www` into `/`.
+
+Do NOT create special handling that hides the `www` folder.
+
+The application folder is always:
+
+www
+
+and its public URL must correspond to that deployment mode.
+
+---
+
+# 4. Applications
+
+The deployment system must know these applications:
+
+account
+admin
+dyscover
+dominions
+nesh
+www
+
+The folder name is the canonical identifier of the application.
+
+For example:
+
+account → account
+admin → admin
+dyscover → dyscover
+dominions → dominions
+nesh → nesh
+www → www
+
+Do not duplicate this information throughout the codebase.
+
+---
+
+# 5. autoload.php
+
+The deployment command must update the centralized application configuration inside `autoload.php`.
+
+The existing App initialization currently looks conceptually like:
+
+new App(
+    'iElectro Account',
+    'https://account.ielectro.com',
+    'account',
+    'ielectro_account',
+    '1.0.0'
+);
+
+Update the URL passed to every App according to the selected deployment.
+
+The folder parameter must remain unchanged.
+
+The deployment URL must be generated from the deployment configuration rather than manually hardcoded for each environment.
+
+Do not move the App initialization to a separate runtime configuration system unless absolutely necessary.
+
+`autoload.php` remains the centralized project configuration file.
+
+---
+
+# 6. Global URL migration
+
+After changing the deployment, the CLI command must scan the project and update old iElectro URLs.
+
+It must search relevant project files, including:
+
+- PHP
+- HTML
+- CSS
+- JavaScript
+- JSON
+- configuration files
+- Markdown/documentation files only where appropriate
+
+It must update known application URLs such as:
+
+https://account.ielectro.com
+https://admin.ielectro.com
+https://dyscover.ielectro.com
+https://dominions.ielectro.com
+https://nesh.ielectro.com
+https://www.ielectro.com
+
+to their new deployment equivalents.
+
+For example, when switching to:
+
+http://localhost/ielectro
+
+replace:
+
+https://account.ielectro.com
+
+with:
+
+https://account.ielectro.com
+
+and similarly for every other application.
+
+When switching to:
+
+https://ielectro.altervista.org
+
+replace them with:
+
+https://ielectro.altervista.org/account
+https://ielectro.altervista.org/admin
+etc.
+
+When switching back to:
+
+https://ielectro.com
+
+restore:
+
+https://account.ielectro.com
+https://admin.ielectro.com
+etc.
+
+---
+
+# 7. Do not perform a blind replacement
+
+Do NOT simply replace arbitrary occurrences of `ielectro.com`.
+
+The deployment system must understand each application's canonical URL.
+
+For example:
+
+account → account
+admin → admin
+dyscover → dyscover
+dominions → dominions
+nesh → nesh
+www → www
+
+Only replace URLs that correspond to known iElectro applications.
+
+Do not modify unrelated URLs.
+
+Do not modify database hosts, email addresses, third-party domains, or unrelated strings unless they are explicitly part of the deployment configuration.
+
+---
+
+# 8. Idempotency
+
+Running the command multiple times with the same URL must be safe.
+
+For example:
+
+php nesh domain http://localhost/ielectro
+
+followed again by:
+
+php nesh domain http://localhost/ielectro
+
+must NOT produce:
+
+http://localhost/ielectro/ielectro/account
+
+or any other duplicated path.
+
+The command must always resolve URLs from the canonical application definitions.
+
+---
+
+# 9. App URL generation
+
+The App class must remain scalable.
+
+It should receive the final application URL, for example:
+
+new App(
+    'iElectro Account',
+    'https://account.ielectro.com',
+    'account',
+    'ielectro_account',
+    '1.0.0'
+);
+
+The `folder` remains the source of the application's identity.
+
+Do not make App depend on a specific hosting provider.
+
+It must work with:
+
+- subdomains
+- subfolders
+- localhost
+- arbitrary domains
+- arbitrary base paths
+
+---
+
+# 10. Preserve existing architecture
+
+Do NOT introduce unnecessary abstractions.
+
+Do NOT create duplicated configuration systems.
+
+Do NOT create a second independent deployment configuration that conflicts with `autoload.php`.
+
+Do NOT modify business logic.
+
+Do NOT modify API logic.
+
+Do NOT modify database logic.
+
+Do NOT modify routing unless a deployment URL change requires it.
+
+Do NOT rename existing classes or methods.
+
+Use the existing Nesh architecture wherever possible.
+
+---
+
+# 11. CLI behavior
+
+The CLI should validate the supplied URL before modifying anything.
+
+If the URL is invalid, show a clear error and do not modify the project.
+
+Before changing files, determine:
+
+- protocol
+- host
+- base path
+- deployment mode
+- application URLs
+
+Then perform the migration.
+
+The CLI should report what deployment was detected.
+
+Example:
+
+Deployment: subdomain
+Base URL: https://ielectro.com
+
+Applications:
+
+account   https://account.ielectro.com
+admin     https://admin.ielectro.com
+dyscover  https://dyscover.ielectro.com
+dominions https://dominions.ielectro.com
+nesh      https://nesh.ielectro.com
+www       https://www.ielectro.com
 
 For:
 
-https://dyscover.ielectro.com/api/posts
+php nesh domain http://localhost/ielectro
 
-Base path:
+show:
 
-/
+Deployment: subfolder
+Base URL: http://localhost/ielectro
 
-The router must produce:
+Applications:
 
-/api/posts
-
-Exactly the same result.
-
----
-
-# Important
-
-Do NOT rewrite the application's business logic.
-
-Do NOT modify API endpoint behavior.
-
-Do NOT modify controllers.
-
-Do NOT modify existing endpoint names.
-
-Do NOT introduce application-specific routing logic.
-
-Do NOT create separate routing implementations for subdomains and subdirectories.
-
-There must be ONE generic routing implementation.
+account   https://account.ielectro.com
+admin     https://admin.ielectro.com
+dyscover  https://dyscover.ielectro.com
+dominions https://dominions.ielectro.com
+nesh      https://nesh.ielectro.com
+www       https://www.ielectro.com
 
 ---
 
-# App
+# 12. Final requirement
 
-Update Nesh\App if necessary so it can expose the application's:
+The deployment system must allow the entire iElectro project to be moved between:
 
-- public URL
-- base path
-- folder
-- other routing information required by the Router
+https://ielectro.com
 
-Keep the existing App architecture and naming conventions.
+https://ielectro.altervista.org
 
-Do not introduce unnecessary properties or abstractions.
+http://localhost/ielectro
 
----
+or another equivalent domain/base path
 
-# URLs and assets
+by running only:
 
-Review any existing URL/path generation that assumes the application is mounted at `/`.
+php nesh domain <URL>
 
-Where appropriate, use the application's base path instead.
+The command must automatically:
 
-The same application should be able to work under:
+1. detect the deployment mode
+2. generate all application URLs
+3. update `autoload.php`
+4. update old application URLs throughout the project
+5. preserve the `folder` names
+6. keep `www` exposed as `/www` in subfolder deployments
+7. avoid duplicate paths
+8. avoid modifying unrelated URLs
+9. leave the rest of the application architecture untouched
 
-https://dyscover.ielectro.com/
-
-and:
-
-https://www.example.com/dyscover/
-
-without changing application code.
-
-Do not break absolute URLs such as:
-
-https://dyscover.ielectro.com/api
-
-when the application is deployed on its own subdomain.
-
----
-
-# Compatibility
-
-All existing calls such as:
-
-Routing::segment(0)
-Routing::segment(1)
-Routing::segment(2)
-
-must continue working exactly as before.
-
-Only the source of the route path should change.
-
-Existing applications must continue working:
-
-- account
-- admin
-- dyscover
-- dominions
-- www
-
----
-
-# Security
-
-The implementation must correctly normalize paths and must not allow the base path removal logic to create path traversal or malformed routes.
-
-Handle:
-
-- trailing slashes
-- duplicate slashes
-- query strings
-- empty paths
-- URL-encoded paths
-- root application paths
-- subdirectory application paths
-
-Do not use fragile string replacement that could remove `/app` from an unrelated part of the URL.
-
-The base path must only be removed from the beginning of the request path.
-
----
-
-# Cleanup
-
-After implementing the new routing architecture:
-
-- remove obsolete routing assumptions
-- remove duplicated routing logic
-- remove unused code
-- remove unnecessary constants
-- keep everything Object-Oriented
-- keep the implementation simple
-
-Do not create standalone helper functions.
-
-All logic must belong to the appropriate class.
-
----
-
-# Final requirement
-
-The important architectural rule is:
-
-THE APPLICATION MUST NOT CARE WHETHER IT IS HOSTED AT THE DOMAIN ROOT OR INSIDE A SUBDIRECTORY.
-
-These:
-
-https://dyscover.ielectro.com/api/posts
-
-and:
-
-https://www.example.com/dyscover/api/posts
-
-must be indistinguishable to the application after routing normalization.
-
-The final routing system must be portable, generic, scalable, and independent from the hosting environment.
-
-
+The result must be deterministic, scalable, reversible, and safe to run repeatedly.
+```
