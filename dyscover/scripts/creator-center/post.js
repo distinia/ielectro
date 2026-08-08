@@ -16,40 +16,38 @@ export class Post {
         this.constructor.list.set(this.element, this);
     }
 
-    static async loadTable() {
+    static renderTable(allPosts = []) {
         const table = document.querySelector(this.table);
         if (!table) return;
         const tbody = table.querySelector("tbody");
-        try {
-            const userId = await App.resolveSelfUserId();
-            if (!userId) {
-                throw new Error("Missing user id");
-            }
-            const res = await Request.get(Api.userPosts(userId));
-            const items = Api.list(res).filter(
-                (item) => String(item.type) === this.type,
-            );
-            tbody.innerHTML = "";
-            this.list.clear();
-            if (!items.length) {
-                const copy = EmptyState.creatorType(this.type);
-                tbody.innerHTML = `<tr class="table-empty-row"><td colspan="4">${EmptyState.html({ ...copy, compact: true })}</td></tr>`;
-                EmptyState.bindAction(tbody, () => this.create());
-                await Icons.load(tbody);
-                return;
-            }
-            items.forEach((item) => {
-                const row = document.createElement("tr");
-                const post = new this(row, item);
-                tbody.appendChild(post.loadRow());
-            });
-            this.bindTable(table);
-        } catch {
+        const items = allPosts.filter(
+            (item) => String(item.type) === this.type,
+        );
+        tbody.innerHTML = "";
+        this.list.clear();
+        if (!items.length) {
             const copy = EmptyState.creatorType(this.type);
             tbody.innerHTML = `<tr class="table-empty-row"><td colspan="4">${EmptyState.html({ ...copy, compact: true })}</td></tr>`;
             EmptyState.bindAction(tbody, () => this.create());
-            await Icons.load(tbody);
+            Icons.load(tbody);
+            return;
         }
+        items.forEach((item) => {
+            const row = document.createElement("tr");
+            const post = new this(row, item);
+            tbody.appendChild(post.loadRow());
+        });
+        this.bindTable(table);
+    }
+
+    static async loadTable() {
+        const { CreatorRegistry } = await import("./registry.js");
+        if (CreatorRegistry.loaded) {
+            this.renderTable(CreatorRegistry.posts);
+            await CreatorRegistry.applySearch();
+            return;
+        }
+        await CreatorRegistry.loadAll();
     }
 
     static bindTable(table) {
@@ -73,7 +71,6 @@ export class Post {
             post.element.addEventListener("click", (event) => {
                 if (event.target.closest("input, label, button, a")) return;
                 this.selectExclusive(post);
-                post.view();
             });
             const checkbox = post.element.querySelector("input[type='checkbox']");
             checkbox?.addEventListener("click", (event) => {
@@ -86,6 +83,10 @@ export class Post {
                     post.setChecked(false);
                     this.syncCheckAll(table);
                 }
+            });
+            post.element.addEventListener("dblclick", (event) => {
+                if (event.target.closest("input, label, button, a")) return;
+                post.view();
             });
         });
     }
@@ -119,13 +120,16 @@ export class Post {
     static getSelected() {
         const selected = [];
         this.list.forEach((post) => {
-            const input = post.element?.querySelector("input[type='checkbox']");
-            if (input?.checked) {
-                post.checked = true;
-                selected.push(post);
-            } else {
-                post.checked = false;
+            if (!post.element || post.element.classList.contains("table-empty-row")) {
+                return;
             }
+            const input = post.element.querySelector("input[type='checkbox']");
+            if (input?.checked || post.checked) {
+                post.setChecked(true);
+                selected.push(post);
+                return;
+            }
+            post.setChecked(false);
         });
         return selected;
     }

@@ -1,8 +1,8 @@
 <?php
 namespace Dyscover;
 use Nesh\File;
+use Nesh\Generate;
 use Nesh\Image;
-use Nesh\Query;
 use Nesh\Request;
 use Nesh\Response;
 use Nesh\Routing;
@@ -41,20 +41,23 @@ class Avatar
         File::makeDirectory($dir);
         self::purgeStaleAvatars($dir);
         $target = $dir . '/' . self::FILENAME;
-        if (is_file($target)) {
-            unlink($target);
+        $image = Image::upload($file, Generate::token(), true);
+        $image->cover(512, 512);
+        if ($image->extension() !== 'png') {
+            $image->convert('png');
         }
-        $image = Image::upload(
-            $file,
-            pathinfo(self::FILENAME, PATHINFO_FILENAME),
-            true
-        );
-        $image->resize(512, 512)->save($dir);
-        if ($image->path() !== $target && is_file($image->path())) {
-            if (is_file($target)) {
-                unlink($target);
+        $image->save($dir);
+        $savedPath = $image->path();
+        if ($savedPath !== $target) {
+            if (!File::movePath($savedPath, $target, true)) {
+                if (is_file($savedPath)) {
+                    unlink($savedPath);
+                }
+                Response::error('Unable to save avatar');
             }
-            rename($image->path(), $target);
+        }
+        if (!is_file($target)) {
+            Response::error('Unable to save avatar');
         }
         Response::success(['url' => self::url($userId)]);
     }

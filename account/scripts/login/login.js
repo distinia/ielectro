@@ -2,6 +2,56 @@ import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
 import { Alert } from "../core/alert.js";
 import { Api } from "../core/api.js";
 
+const GOOGLE_CLIENT_ID =
+    "330597496243-srvq8tqchj7bpgo4d1kqf1tt5j1rj6mo.apps.googleusercontent.com";
+
+export class GoogleSignIn {
+    static init(onCredential) {
+        const mount = () => {
+            if (!window.google?.accounts?.id) {
+                return false;
+            }
+
+            window.google.accounts.id.initialize({
+                client_id: GOOGLE_CLIENT_ID,
+                callback: (response) => onCredential(response.credential),
+                ux_mode: "popup",
+                context: "signin",
+                auto_select: false,
+            });
+
+            const target = document.querySelector(".g_id_signin");
+
+            if (target) {
+                target.replaceChildren();
+                window.google.accounts.id.renderButton(target, {
+                    type: "standard",
+                    shape: "rectangular",
+                    theme: "outline",
+                    text: "signin_with",
+                    size: "large",
+                    locale: "en-US",
+                    logo_alignment: "left",
+                });
+            }
+
+            return true;
+        };
+
+        if (mount()) {
+            return;
+        }
+
+        const timer = window.setInterval(() => {
+            if (mount()) {
+                window.clearInterval(timer);
+            }
+        }, 50);
+
+        window.setTimeout(() => window.clearInterval(timer), 10000);
+    }
+}
+
 export class Login {
     constructor() {
         this.form = document.querySelector("form");

@@ -1,7 +1,9 @@
 import { Api } from "../core/api.js";
 import { Alert, Box, Request } from "../core/index.js";
 import { CreatorMeta } from "./creator-meta.js";
+import { CreatorHelp } from "./creator-help.js";
 import { Post } from "./post.js";
+import { CreatorRegistry } from "./registry.js";
 
 export class Article extends Post {
     static type = "article";
@@ -15,6 +17,7 @@ export class Article extends Post {
         this.method = method;
         const modal = new Box(
             method === "POST" ? "Create Article" : "Edit Article",
+            { variant: "article", help: CreatorHelp.article },
         );
         this.modal = modal;
         modal.create().then(() => {
@@ -26,15 +29,16 @@ export class Article extends Post {
                     description: this.item.description,
                     tags: this.item.tags,
                 })}
-                <span class="hint">The server creates a blank HTML article file automatically. You can edit the full article in the editor after creating.</span>
             </form>`;
                 CreatorMeta.bindTags(body);
             });
             modal.footer((f) => {
                 f.innerHTML = `
-            <button type="submit" class="button" form="article-form">
+            <button type="button" class="button button-secondary modal-cancel">Cancel</button>
+            <button type="submit" class="button button-primary" form="article-form">
                 ${method === "POST" ? "Create article" : "Save changes"}
             </button>`;
+                f.querySelector(".modal-cancel")?.addEventListener("click", () => modal.close());
             });
             const form = document.querySelector("#article-form");
             const submitBtn = document.querySelector('button[form="article-form"]');
@@ -63,7 +67,7 @@ export class Article extends Post {
                         method === "POST" ? "Article created" : "Article updated",
                     );
                     modal.close();
-                    Article.loadTable();
+                    await CreatorRegistry.reload();
                     return true;
                 });
                 if (done === null) return;

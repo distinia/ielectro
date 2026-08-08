@@ -44,6 +44,18 @@ export class OAuthCreate {
         const formData = new FormData(this.form);
         formData.append("name", this.oauth.name);
         formData.append("surname", this.oauth.surname);
+
+        const day = formData.get("day");
+        const month = formData.get("month");
+        const year = formData.get("year");
+
+        if (day && month && year) {
+            formData.set(
+                "birthday",
+                `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
+            );
+        }
+
         try {
             const response = await Nesh.Request.post(
                 "https://account.ielectro.com/api/user",

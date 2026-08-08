@@ -23,19 +23,19 @@ class Users
             return;
         }
         if ($resource === 'likes') {
-            (new UserEngagement('post_likes'))->index();
+            (new UserEngagement('ielectro_dyscover.dyscover_post_likes'))->index();
             return;
         }
         if ($resource === 'bookmarks') {
-            (new UserEngagement('post_bookmarks'))->index();
+            (new UserEngagement('ielectro_dyscover.dyscover_post_bookmarks'))->index();
             return;
         }
         if ($resource === 'reposts') {
-            (new UserEngagement('post_reposts'))->index();
+            (new UserEngagement('ielectro_dyscover.dyscover_post_reposts'))->index();
             return;
         }
         if ($resource === 'mentions') {
-            (new UserEngagement('post_mentions'))->index();
+            (new UserEngagement('ielectro_dyscover.dyscover_post_mentions'))->index();
             return;
         }
         Routing::method([

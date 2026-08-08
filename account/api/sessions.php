@@ -25,27 +25,34 @@ class Sessions
     private function list(): void
     {
         Request::get();
-        Response::success(
-            Query::fetchAll(
-                "SELECT
-                    id,
-                    ip_address,
-                    browser,
-                    os,
-                    device_info,
-                    city,
-                    country,
-                    last_activity,
-                    created_at,
-                    expires_at
-                FROM ielectro_account.account_sessions
-                WHERE account_id = ?
-                AND revoked_at IS NULL
-                AND expires_at > NOW()
-                ORDER BY last_activity DESC",
-                [Identity::id()]
-            )
+        $currentSessionId = Identity::sessionId();
+        $rows = Query::fetchAll(
+            "SELECT
+                id,
+                ip_address,
+                browser,
+                os,
+                device_info,
+                city,
+                country,
+                last_activity,
+                created_at,
+                expires_at
+            FROM ielectro_account.account_sessions
+            WHERE account_id = ?
+            AND revoked_at IS NULL
+            AND expires_at > NOW()
+            ORDER BY last_activity DESC",
+            [Identity::id()]
         );
+
+        foreach ($rows as &$row) {
+            $row['is_current'] = $currentSessionId !== null
+                && (int) $row['id'] === (int) $currentSessionId;
+        }
+        unset($row);
+
+        Response::success($rows);
     }
     private function destroy(): void
     {
@@ -56,7 +63,8 @@ class Sessions
             if (!Session::revoke($sessionId)) {
                 Response::notFound('Session not found');
             }
-            if ($sessionId === Identity::sessionId()) {
+            $currentSessionRevoked = $sessionId === Identity::sessionId();
+            if ($currentSessionRevoked) {
                 Session::clearCookie();
             }
             Activity::log(
@@ -64,7 +72,10 @@ class Sessions
                 'session_revoked',
                 'Revoked session id ' . $sessionId
             );
-            Response::success('Session disconnected');
+            Response::success([
+                'message' => 'Session disconnected',
+                'current_session_revoked' => $currentSessionRevoked,
+            ]);
         }
         Session::destroy();
         Activity::log(
@@ -122,13 +133,12 @@ class Sessions
         Request::delete();
         $accountId = Identity::id();
         Session::revokeAllFor($accountId, Session::token());
-        Session::clearCookie();
         Activity::log(
             $accountId,
-            'logout',
+            'session_revoked',
             'Revoked all other sessions'
         );
-        Response::success('All sessions disconnected');
+        Response::success('All other sessions disconnected');
     }
 }
 class Session

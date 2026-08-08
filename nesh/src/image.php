@@ -54,13 +54,44 @@ class Image extends File
     {
         return $this->exists() && getimagesize($this->path) !== false;
     }
+    protected function resolveFormat(): string
+    {
+        if ($this->targetExtension !== null) {
+            return $this->targetExtension;
+        }
+        $size = @getimagesize($this->path);
+        if ($size !== false && !empty($size['mime'])) {
+            $detected = match ($size['mime']) {
+                'image/jpeg', 'image/jpg' => 'jpeg',
+                'image/png' => 'png',
+                'image/gif' => 'gif',
+                'image/webp' => 'webp',
+                'image/bmp', 'image/x-ms-bmp' => 'bmp',
+                'image/avif' => 'avif',
+                default => null,
+            };
+            if ($detected !== null) {
+                return $detected;
+            }
+        }
+        return match (strtolower((string) ($this->extension() ?? ''))) {
+            'jpg', 'jpeg' => 'jpeg',
+            'png' => 'png',
+            'gif' => 'gif',
+            'webp' => 'webp',
+            'bmp' => 'bmp',
+            'avif' => 'avif',
+            default => strtolower((string) ($this->extension() ?? '')),
+        };
+    }
     protected function loadResource(): \GdImage
     {
         if ($this->resource instanceof \GdImage) {
             return $this->resource;
         }
-        $resource = match ($this->extension()) {
-            'jpg', 'jpeg' => imagecreatefromjpeg($this->path),
+        $format = $this->resolveFormat();
+        $resource = match ($format) {
+            'jpeg', 'jpg' => imagecreatefromjpeg($this->path),
             'png' => imagecreatefrompng($this->path),
             'gif' => imagecreatefromgif($this->path),
             'webp' => imagecreatefromwebp($this->path),
@@ -90,7 +121,7 @@ class Image extends File
             return;
         }
         self::makeDirectory(dirname($this->path));
-        $extension = $this->targetExtension ?? $this->extension();
+        $extension = $this->targetExtension ?? $this->resolveFormat();
         $saved = match ($extension) {
             'jpg', 'jpeg' => imagejpeg($this->resource, $this->path, $this->quality),
             'png' => imagepng($this->resource, $this->path),

@@ -44,6 +44,7 @@ class Create
         $account = $this->validate();
         $accountId = $this->insert($account);
         Services::create($accountId);
+        Pending::delete();
         Session::create($accountId);
         Activity::log(
             $accountId,
@@ -54,6 +55,7 @@ class Create
     }
     private function validate(): array
     {
+        $oauthSignup = Pending::get() !== null;
         $account = [
             'username' => Strings::normalize(Request::value('username')),
             'name' => trim((string) Request::value('name')),
@@ -67,9 +69,16 @@ class Create
             $account['username'] = $this->generateUsername();
         }
         if (!Validate::required($account['password'])) {
-            $account['password'] = Generate::token(16);
+            if ($oauthSignup) {
+                $account['password'] = null;
+            } else {
+                Response::badRequest('Password is required');
+            }
         }
-        foreach ($account as $value) {
+        foreach ($account as $key => $value) {
+            if ($key === 'password' && $value === null) {
+                continue;
+            }
             if (!Validate::required($value)) {
                 Response::badRequest('All fields are required');
             }
@@ -86,7 +95,10 @@ class Create
         if (!Validate::in($account['gender'], ['Male', 'Female', 'Other'])) {
             Response::badRequest('Invalid gender');
         }
-        if (!Validate::min($account['password'], 8)) {
+        if (
+            $account['password'] !== null
+            && !Validate::min($account['password'], 8)
+        ) {
             Response::badRequest('Password must be at least 8 characters');
         }
         if (
@@ -133,7 +145,9 @@ class Create
                     $account['birthday'],
                     $account['gender'],
                     $account['email'],
-                    Password::hash($account['password'])
+                    $account['password'] === null
+                        ? null
+                        : Password::hash($account['password'])
                 ]
             );
             $accountId = Query::lastId();
@@ -175,7 +189,8 @@ class Data
                 email,
                 phone_number,
                 created_at,
-                deletion_scheduled_at
+                deletion_scheduled_at,
+                (password_hash IS NOT NULL) AS has_password
             FROM ielectro_account.accounts
             WHERE id = ?
             LIMIT 1",
@@ -184,6 +199,7 @@ class Data
         if (!$account) {
             Response::notFound('Account not found');
         }
+        $account['has_password'] = (bool) $account['has_password'];
         Response::success($account);
     }
 }
@@ -214,6 +230,7 @@ class Update
             'column' => 'phone_number',
             'validator' => 'phone',
             'unique' => true,
+            'activity' => 'phone_number_changed',
             'log' => 'Phone number changed'
         ],
         'email' => [
@@ -221,6 +238,7 @@ class Update
             'validator' => 'email',
             'unique' => true,
             'verify' => true,
+            'activity' => 'email_changed',
             'log' => 'Email changed'
         ],
         'username' => [
@@ -228,7 +246,7 @@ class Update
             'validator' => 'username',
             'normalize' => true,
             'unique' => true,
-            'activity' => 'username_change',
+            'activity' => 'username_changed',
             'log' => 'Username changed'
         ]
     ];
@@ -275,7 +293,7 @@ class Update
             }
             Activity::log(
                 Identity::id(),
-                $config['activity'] ?? 'profile_update',
+                $config['activity'] ?? 'profile_updated',
                 "{$config['log']}: {$account[$config['column']]} -> {$value}"
             );
         }
@@ -299,13 +317,19 @@ class Update
         $current = (string) ($input['current_password'] ?? '');
         $password = (string) ($input['password'] ?? '');
         $confirm = (string) ($input['confirm_password'] ?? '');
+        $hasPassword = $account['password_hash'] !== null;
+
         if (
-            !Validate::required($current)
-            || !Validate::required($password)
+            !Validate::required($password)
             || !Validate::required($confirm)
         ) {
-            Response::badRequest('All password fields are required');
+            Response::badRequest('New password and confirmation are required');
         }
+
+        if ($hasPassword && !Validate::required($current)) {
+            Response::badRequest('Current password is required');
+        }
+
         if (!Validate::same($password, $confirm)) {
             Response::badRequest('Passwords do not match');
         }
@@ -313,8 +337,8 @@ class Update
             Response::badRequest('Password must be at least 8 characters');
         }
         if (
-            $account['password_hash'] === null
-            || !Password::verify($current, $account['password_hash'])
+            $hasPassword
+            && !Password::verify($current, $account['password_hash'])
         ) {
             Response::unauthorized('Current password is incorrect');
         }
@@ -329,10 +353,16 @@ class Update
         );
         Activity::log(
             Identity::id(),
-            'password_change',
-            'Password changed from profile'
+            'password_changed',
+            $hasPassword
+                ? 'Password changed from profile'
+                : 'Password set from profile'
         );
-        Response::success('Password updated');
+        Response::success(
+            $hasPassword
+                ? 'Password updated'
+                : 'Password set successfully'
+        );
     }
     private function prepare(string $field, mixed $value, array $config): mixed
     {
@@ -413,7 +443,7 @@ class Delete
         );
         Activity::log(
             Identity::id(),
-            'profile_update',
+            'profile_updated',
             'Account scheduled for deletion.'
         );
         Session::destroy();
@@ -432,7 +462,7 @@ class Delete
         );
         Activity::log(
             Identity::id(),
-            'profile_update',
+            'profile_updated',
             'Scheduled account deletion cancelled.'
         );
         Response::success(

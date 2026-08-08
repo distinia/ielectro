@@ -1,4 +1,5 @@
 import { CreatorRegistry } from "./registry.js";
+import { Search } from "./search.js";
 
 const TYPES = [
     "article",
@@ -32,6 +33,7 @@ export class Table {
             document.querySelectorAll(".upload-hint").forEach((hint) => {
                 hint.classList.toggle("is-active", hint.dataset.type === type);
             });
+            Search.instance?.apply();
         };
 
         document.querySelectorAll(".upload-hint").forEach((hint) => {

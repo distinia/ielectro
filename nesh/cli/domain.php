@@ -1,6 +1,6 @@
 <?php
 
-require_once NESH_FRAMEWORK . '/deployment.php';
+require_once NESH_CLI . '/deployment.php';
 
 use Nesh\Deployment;
 

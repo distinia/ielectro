@@ -79,3 +79,17 @@
         transform: none;
     }
 }
+
+.mention-link {
+    color: var(--blue-mid, #1565c0);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.mention-link:hover {
+    text-decoration: underline;
+}
+
+.mention-link strong {
+    font-weight: inherit;
+}

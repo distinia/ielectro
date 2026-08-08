@@ -112,6 +112,7 @@ class Posts
             if (!$mediaFile) {
                 Response::badRequest('Missing media file');
             }
+            PostAssets::assertMediaSize($type, $mediaFile);
             $processed = PostAssets::storeMedia($type, $mediaFile, $userId, $uuid, false);
             $extension = $processed['extension'];
             $previewImage = $processed['preview_image'];
@@ -198,6 +199,7 @@ class Posts
             if (!PostAssets::isMediaType($type)) {
                 Response::badRequest('Media is only valid for media posts');
             }
+            PostAssets::assertMediaSize($type, $mediaFile);
             $processed = PostAssets::storeMedia($type, $mediaFile, $userId, $uuid, true);
             Query::execute(
                 'UPDATE ielectro_dyscover.dyscover_posts SET extension = ?, preview_image = ? WHERE id = ?',
@@ -462,53 +464,126 @@ class PostComments
 {
     public function index(): void
     {
+        $commentId = Routing::segment(4);
+        $sub = Routing::segment(5);
+        if (is_string($commentId) && ctype_digit($commentId) && $sub === 'likes') {
+            (new PostCommentLikes())->index();
+            return;
+        }
+        if (is_string($commentId) && ctype_digit($commentId)) {
+            Routing::method([
+                'PATCH'  => fn() => $this->update(),
+                'DELETE' => fn() => $this->delete(),
+            ]);
+            return;
+        }
         Routing::method([
-            'GET'    => fn() => $this->list(),
-            'POST'   => fn() => $this->create(),
-            'PATCH'  => fn() => $this->update(),
-            'DELETE' => fn() => $this->delete(),
+            'GET'  => fn() => $this->list(),
+            'POST' => fn() => $this->create(),
         ]);
+    }
+    private function postId(): int
+    {
+        $postId = Routing::id();
+        if ($postId === null) {
+            Response::badRequest('Missing post id');
+        }
+        return $postId;
+    }
+    private function commentId(): int
+    {
+        $commentId = (int) Routing::segment(4);
+        if ($commentId <= 0) {
+            Response::badRequest('Missing comment id');
+        }
+        return $commentId;
+    }
+    private function viewerId(): ?int
+    {
+        if (\Nesh\Identity::id() === null) {
+            return null;
+        }
+        return User::id();
     }
     private function list(): void
     {
         Request::get();
-        $postId = Routing::id();
-        if ($postId === null) {
-            Response::badRequest('Missing post id');
-        }
+        $postId = $this->postId();
+        $viewerId = $this->viewerId();
         $rows = Query::fetchAll(
-            "SELECT c.id, c.user_id, c.body, c.created_at, du.account_id
+            "SELECT
+                c.id,
+                c.user_id,
+                c.parent_id,
+                c.body,
+                c.created_at,
+                du.account_id,
+                (
+                    SELECT COUNT(*)
+                    FROM ielectro_dyscover.dyscover_post_comment_likes l
+                    WHERE l.comment_id = c.id
+                ) AS likes,
+                " . ($viewerId !== null
+                    ? "EXISTS(
+                        SELECT 1
+                        FROM ielectro_dyscover.dyscover_post_comment_likes l
+                        WHERE l.comment_id = c.id AND l.user_id = ?
+                    )"
+                    : "0") . " AS liked
             FROM ielectro_dyscover.dyscover_post_comments c
             INNER JOIN ielectro_dyscover.dyscover_users du ON du.id = c.user_id
             WHERE c.post_id = ? AND c.status = 'active'
             ORDER BY c.id ASC",
-            [$postId]
+            $viewerId !== null ? [$viewerId, $postId] : [$postId]
         );
         $rows = Accounts::attachUsernames($rows);
-        Response::success(array_map(fn(array $row): array => [
-            'id' => (int) $row['id'],
-            'user_id' => (int) $row['user_id'],
-            'username' => $row['username'],
-            'avatar' => Avatar::url((int) $row['user_id']),
-            'body' => $row['body'],
-            'created_at' => $row['created_at'],
-        ], $rows));
+        Response::success(array_map(function (array $row) use ($viewerId): array {
+            $userId = (int) $row['user_id'];
+            return [
+                'id' => (int) $row['id'],
+                'user_id' => $userId,
+                'parent_id' => isset($row['parent_id']) && $row['parent_id'] !== null
+                    ? (int) $row['parent_id']
+                    : null,
+                'username' => $row['username'],
+                'avatar' => Avatar::url($userId),
+                'body' => $row['body'],
+                'likes' => (int) ($row['likes'] ?? 0),
+                'liked' => (bool) ($row['liked'] ?? false),
+                'own' => $viewerId !== null && $userId === $viewerId,
+                'created_at' => $row['created_at'],
+            ];
+        }, $rows));
     }
     private function create(): void
     {
         Request::post();
-        $postId = Routing::id();
-        if ($postId === null) {
-            Response::badRequest('Missing post id');
-        }
+        $postId = $this->postId();
         $body = trim((string) Request::value('body'));
         if (!Validate::required($body)) {
             Response::badRequest('Empty comment');
         }
+        $parentId = Request::value('parent_id');
+        $parentId = is_numeric($parentId) ? (int) $parentId : null;
+        if ($parentId !== null && $parentId <= 0) {
+            $parentId = null;
+        }
+        if ($parentId !== null) {
+            $parent = Query::fetch(
+                "SELECT id FROM ielectro_dyscover.dyscover_post_comments
+                WHERE id = ? AND post_id = ? AND status = 'active'
+                LIMIT 1",
+                [$parentId, $postId]
+            );
+            if (!$parent) {
+                Response::badRequest('Invalid reply target');
+            }
+        }
         Query::execute(
-            "INSERT INTO ielectro_dyscover.dyscover_post_comments(post_id, user_id, body, status)
-            VALUES (?, ?, ?, 'active')",
-            [$postId, User::id(), $body]
+            "INSERT INTO ielectro_dyscover.dyscover_post_comments(
+                post_id, user_id, parent_id, body, status
+            ) VALUES (?, ?, ?, ?, 'active')",
+            [$postId, User::id(), $parentId, $body]
         );
         PostEngagement::adjustStatDirect('comments', $postId, 1);
         $commentId = (int) Query::lastId();
@@ -518,7 +593,7 @@ class PostComments
     private function update(): void
     {
         Request::patch();
-        $commentId = (int) Routing::segment(4);
+        $commentId = $this->commentId();
         $body = trim((string) Request::value('body'));
         if (!Validate::required($body)) {
             Response::badRequest('Empty comment');
@@ -531,24 +606,110 @@ class PostComments
         );
         Response::success('Comment updated');
     }
+    private function collectDescendantIds(int $commentId, int $postId): array
+    {
+        $ids = [$commentId];
+        $queue = [$commentId];
+        while ($queue !== []) {
+            $parentId = array_shift($queue);
+            $children = Query::fetchAll(
+                "SELECT id FROM ielectro_dyscover.dyscover_post_comments
+                WHERE post_id = ? AND parent_id = ? AND status = 'active'",
+                [$postId, $parentId]
+            );
+            foreach ($children as $child) {
+                $id = (int) $child['id'];
+                $ids[] = $id;
+                $queue[] = $id;
+            }
+        }
+        return $ids;
+    }
     private function delete(): void
     {
         Request::delete();
-        $commentId = (int) Routing::segment(4);
+        $commentId = $this->commentId();
         $row = Query::fetch(
             'SELECT post_id FROM ielectro_dyscover.dyscover_post_comments
-            WHERE id = ? AND user_id = ? LIMIT 1',
-            [$commentId, User::id()]
+            WHERE id = ? AND user_id = ? AND status = ? LIMIT 1',
+            [$commentId, User::id(), 'active']
         );
         if (!$row) {
             Response::notFound('Comment not found');
         }
+        $postId = (int) $row['post_id'];
+        $ids = $this->collectDescendantIds($commentId, $postId);
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
         Query::execute(
-            "UPDATE ielectro_dyscover.dyscover_post_comments SET status = 'hidden' WHERE id = ?",
-            [$commentId]
+            "UPDATE ielectro_dyscover.dyscover_post_comments
+            SET status = 'hidden'
+            WHERE id IN ({$placeholders})",
+            $ids
         );
-        PostEngagement::adjustStatDirect('comments', (int) $row['post_id'], -1);
-        Response::success('Comment deleted');
+        PostEngagement::adjustStatDirect('comments', $postId, -count($ids));
+        Response::success(['removed' => count($ids)]);
+    }
+}
+class PostCommentLikes
+{
+    public function index(): void
+    {
+        Routing::method([
+            'POST'   => fn() => $this->add(),
+            'DELETE' => fn() => $this->remove(),
+        ]);
+    }
+    private function postId(): int
+    {
+        $postId = Routing::id();
+        if ($postId === null) {
+            Response::badRequest('Missing post id');
+        }
+        return $postId;
+    }
+    private function commentId(): int
+    {
+        $commentId = (int) Routing::segment(4);
+        if ($commentId <= 0) {
+            Response::badRequest('Missing comment id');
+        }
+        return $commentId;
+    }
+    private function assertComment(int $commentId, int $postId): void
+    {
+        if (!Query::exists(
+            "SELECT 1 FROM ielectro_dyscover.dyscover_post_comments
+            WHERE id = ? AND post_id = ? AND status = 'active' LIMIT 1",
+            [$commentId, $postId]
+        )) {
+            Response::notFound('Comment not found');
+        }
+    }
+    private function add(): void
+    {
+        Request::post();
+        $postId = $this->postId();
+        $commentId = $this->commentId();
+        $this->assertComment($commentId, $postId);
+        Query::execute(
+            'INSERT IGNORE INTO ielectro_dyscover.dyscover_post_comment_likes(comment_id, user_id)
+            VALUES (?, ?)',
+            [$commentId, User::id()]
+        );
+        Response::created('Liked');
+    }
+    private function remove(): void
+    {
+        Request::delete();
+        $postId = $this->postId();
+        $commentId = $this->commentId();
+        $this->assertComment($commentId, $postId);
+        Query::execute(
+            'DELETE FROM ielectro_dyscover.dyscover_post_comment_likes
+            WHERE comment_id = ? AND user_id = ?',
+            [$commentId, User::id()]
+        );
+        Response::success('Unliked');
     }
 }
 class PostLikes
@@ -690,6 +851,38 @@ class PostAssets
     {
         return in_array($type, self::MEDIA_TYPES, true);
     }
+    public static function mediaMaxSize(string $type): int
+    {
+        return match ($type) {
+            'image' => defined('UPLOAD_IMAGE_MAX_SIZE')
+                ? (int) UPLOAD_IMAGE_MAX_SIZE
+                : 10485760,
+            'document' => defined('UPLOAD_DOCUMENT_MAX_SIZE')
+                ? (int) UPLOAD_DOCUMENT_MAX_SIZE
+                : 52428800,
+            default => defined('UPLOAD_MAX_SIZE')
+                ? (int) UPLOAD_MAX_SIZE
+                : 262144000,
+        };
+    }
+    public static function assertMediaSize(string $type, array $file): void
+    {
+        $max = self::mediaMaxSize($type);
+        $size = (int) ($file['size'] ?? 0);
+        if ($size <= 0 || $size <= $max) {
+            return;
+        }
+        Response::badRequest(
+            'File exceeds maximum size of '
+            . (int) round($max / 1048576)
+            . ' MB'
+        );
+    }
+    public static function ffmpegReady(): bool
+    {
+        exec('ffmpeg -version', $output, $code);
+        return $code === 0;
+    }
     public static function assetFolder(string $type): string
     {
         return self::ASSET_FOLDERS[$type] ?? $type;
@@ -801,18 +994,28 @@ class PostAssets
         int $userId
     ): array {
         $video = Video::upload($file, $uuid, false);
-        $video->compress()->save($dir);
+        if (self::ffmpegReady()) {
+            $video->compress()->save($dir);
+        } else {
+            $video->save($dir);
+        }
         $extension = $video->extension() ?? 'mp4';
-        $previewImage = self::saveVideoPreview($video, $dir, $uuid, $userId);
+        $previewImage = self::ffmpegReady()
+            ? self::saveVideoPreview($video, $dir, $uuid, $userId)
+            : self::defaultPreview();
         return [
             'extension' => $extension,
-            'preview_image' => $previewImage,
+            'preview_image' => $previewImage !== '' ? $previewImage : self::defaultPreview(),
         ];
     }
     private static function storeAudio(array $file, string $uuid, string $dir): array
     {
         $audio = Audio::upload($file, $uuid, false);
-        $audio->compress()->save($dir);
+        if (self::ffmpegReady()) {
+            $audio->compress()->save($dir);
+        } else {
+            $audio->save($dir);
+        }
         return [
             'extension' => $audio->extension() ?? 'mp3',
             'preview_image' => '',

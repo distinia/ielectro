@@ -2,17 +2,15 @@
     display: block;
     width: 100%;
     aspect-ratio: 4 / 5;
-    min-height: 220px;
+    min-height: 260px;
     padding: 0;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: none;
     border-radius: 18px;
     overflow: hidden;
     cursor: pointer;
     position: relative;
     background: #0f172a;
-    box-shadow:
-        0 10px 30px rgba(15, 23, 42, 0.14),
-        0 0 0 1px rgba(15, 23, 42, 0.04);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.14);
     transition:
         transform 0.22s var(--ease-spring, cubic-bezier(0.34, 1.15, 0.64, 1)),
         box-shadow 0.22s ease,
@@ -21,9 +19,7 @@
 
 .post-preview:hover {
     transform: translateY(-6px) scale(1.015);
-    box-shadow:
-        0 18px 40px rgba(15, 23, 42, 0.18),
-        0 0 0 1px rgba(30, 136, 229, 0.12);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
     opacity: 1;
 }
 
@@ -116,8 +112,8 @@
 
 .post-preview-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.15rem;
 }
 
 .post-preview-placeholder {

@@ -11,7 +11,6 @@ export class Card {
         this._loading = null;
         this._comments = new Comments(this);
         this._share = new Share(this);
-        this.canEdit = false;
     }
     static normalize(item = {}) {
         return App.enrichPost(item);
@@ -38,6 +37,18 @@ export class Card {
             month: "short",
             year: "numeric",
         });
+    }
+    engagementLineHtml(item = this.item) {
+        const likes = Number(item?.likes) || 0;
+        const comments = Number(item?.comments) || 0;
+        const views = Number(item?.views) || 0;
+        return `<strong>${likes}</strong> likes · <strong>${comments}</strong> comments · <strong>${views}</strong> views`;
+    }
+    updateEngagementLine(root) {
+        const line = root?.querySelector(".post-likes-line");
+        if (line) {
+            line.innerHTML = this.engagementLineHtml();
+        }
     }
     previewImageUrl() {
         const type = String(this.item?.type || "article");
@@ -161,11 +172,6 @@ export class Card {
         const avatar = this.avatarUrl(d);
         const profile = `https://dyscover.ielectro.com/users/${encodeURIComponent(d.username || "")}`;
         const articleUrl = d.url || "#";
-        const likes = Number(d.likes) || 0;
-        const comments = Number(d.comments) || 0;
-        const editLink = this.canEdit
-            ? `<a href="${articleUrl}" class="post-header-edit" aria-label="Edit article"><i data-icon="pencil"></i></a>`
-            : "";
         return `
       <article class="post-box post-box-horizontal">
         <div class="post-box-media">${this.mediaBlock()}</div>
@@ -176,7 +182,6 @@ export class Card {
               <a class="post-username" href="${profile}">${d.username || "unknown"}</a>
               <span class="post-title-link">${d.title || "unknown"}</span>
             </div>
-            ${editLink}
           </header>
             <div class="post-scroll">
             <div class="post-caption">
@@ -198,7 +203,7 @@ export class Card {
                 <i data-icon="bookmark"></i>
               </div>
             </div>
-            <div class="post-likes-line"><strong>${likes}</strong> likes · <strong>${comments}</strong> comments</div>
+            <div class="post-likes-line">${this.engagementLineHtml(d)}</div>
             <div class="post-date">${this.formatDate(d.created_at)}</div>
             <div class="post-comment-compose post-comment-compose-inline">
               <input class="post-comment-input" placeholder="Add a comment…" maxlength="4000">
@@ -210,11 +215,6 @@ export class Card {
     }
     async create(mount) {
         await this.ensureData();
-        const selfId = await App.resolveSelfUserId();
-        this.canEdit =
-            String(this.item?.type || "").toLowerCase() === "article" &&
-            !!selfId &&
-            Number(selfId) === Number(this.item?.user_id);
         if (!mount) return null;
         mount.innerHTML = this.buildBoxHtml();
         this.syncActionState(mount);
@@ -315,10 +315,7 @@ export class Card {
             this.item.likes =
                 Number(Api.record(res)?.likes ?? this.item.likes + (this.item.liked ? 1 : -1)) || 0;
             root?.querySelector('[data-action="like"]')?.classList.toggle("is-active", this.item.liked);
-            const line = root?.querySelector(".post-likes-line");
-            if (line) {
-                line.innerHTML = `<strong>${this.item.likes}</strong> likes · <strong>${Number(this.item.comments) || 0}</strong> comments`;
-            }
+            this.updateEngagementLine(root);
         } catch (e) {
             Alert.error(typeof e === "object" && e?.text ? e.text : "Like failed");
         }

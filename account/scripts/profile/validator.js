@@ -29,7 +29,7 @@ export class ProfileValidator {
         const rule = this.getRule(field);
         return rule?.errorMessage || "Invalid field";
     }
-    getFieldErrors(field, formData) {
+    getFieldErrors(field, formData, user = null) {
         const errors = {};
         if (field === "full-name") {
             const name = String(formData.get("name") || "").trim();
@@ -42,6 +42,7 @@ export class ProfileValidator {
             return errors;
         }
         if (field === "password") {
+            const requiresCurrent = user?.has_password !== false;
             const currentPassword = String(
                 formData.get("current-password") || "",
             ).trim();
@@ -49,7 +50,7 @@ export class ProfileValidator {
             const confirmPassword = String(
                 formData.get("confirm-password") || "",
             ).trim();
-            if (!currentPassword) {
+            if (requiresCurrent && !currentPassword) {
                 errors["current-password"] = "Current password is required";
             }
             if (!password) errors.password = this.error("password");

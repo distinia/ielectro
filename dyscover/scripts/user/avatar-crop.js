@@ -110,21 +110,24 @@ export class AvatarCrop {
         canvas.height = size;
         const ctx = canvas.getContext("2d");
         if (!ctx) throw new Error("Canvas unavailable");
-        const ratio = size / this.viewport;
-        const s = this.scale();
-        const drawW = this.naturalW * s;
-        const drawH = this.naturalH * s;
-        const x = (this.viewport - drawW) / 2 + this.offsetX;
-        const y = (this.viewport - drawH) / 2 + this.offsetY;
+        const scale = this.scale();
+        const sourceW = this.viewport / scale;
+        const sourceH = this.viewport / scale;
+        const sourceX = this.naturalW / 2 - sourceW / 2 - this.offsetX / scale;
+        const sourceY = this.naturalH / 2 - sourceH / 2 - this.offsetY / scale;
         ctx.beginPath();
         ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
         ctx.clip();
         ctx.drawImage(
             this.image,
-            x * ratio,
-            y * ratio,
-            drawW * ratio,
-            drawH * ratio,
+            sourceX,
+            sourceY,
+            sourceW,
+            sourceH,
+            0,
+            0,
+            size,
+            size,
         );
         return new Promise((resolve, reject) => {
             canvas.toBlob(

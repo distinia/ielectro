@@ -70,19 +70,6 @@
     will-change: transform;
 }
 
-.profile-edit-zoom-wrap {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-    width: min(100%, 240px);
-    font-size: 0.82rem;
-    color: var(--text-muted);
-}
-
-.profile-edit-zoom-wrap input[type="range"] {
-    width: 100%;
-}
-
 .profile-edit-avatar-hint {
     margin: 0;
     font-size: 0.78rem;

@@ -20,7 +20,7 @@ export class ProfileView {
                     {
                         field: "password",
                         label: "Password",
-                        value: "••••••••",
+                        id: "password",
                     },
                 ],
             },
@@ -48,6 +48,10 @@ export class ProfileView {
         this.setText("#gender", this.formatGender(user.gender || ""));
         this.setText("#email", user.email || "");
         this.setText("#username", user.username || "");
+        this.setText(
+            "#password",
+            user.has_password ? "••••••••" : "Not set",
+        );
     }
     setText(selector, value) {
         const element = this.root.querySelector(selector);

@@ -41,6 +41,7 @@
 .sidebar ul li a {
     display: flex;
     align-items: center;
+    gap: 12px;
     padding: 13px 18px;
     color: var(--text-secondary);
     text-decoration: none;
@@ -52,6 +53,17 @@
     font-weight: 500;
     font-size: 15px;
     position: relative;
+}
+.sidebar ul li a .sidebar-icon,
+.sidebar ul li a .icon-image,
+.sidebar ul li a svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    stroke: currentColor;
+}
+.sidebar ul li a .sidebar-label {
+    line-height: 1.2;
 }
 .sidebar ul li a::before {
     content: "";

@@ -5,6 +5,7 @@ import Input from "./input.js";
 import Request from "./request.js";
 import Table from "./table.js";
 import Validate from "./validate.js";
+
 export default class Nesh
 {
     static Auth = Auth;

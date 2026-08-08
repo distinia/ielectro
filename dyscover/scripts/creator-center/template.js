@@ -1,7 +1,9 @@
 import { Api } from "../core/api.js";
-import { Alert, Box, Request } from "../core/index.js";
+import { Alert, Box, Icons, Request } from "../core/index.js";
 import { CreatorMeta } from "./creator-meta.js";
+import { CreatorHelp } from "./creator-help.js";
 import { Post } from "./post.js";
+import { CreatorRegistry } from "./registry.js";
 
 const FIELD_TYPES = [
     ["text", "Text"],
@@ -25,6 +27,7 @@ export class Template extends Post {
         this.method = method;
         const modal = new Box(
             method === "POST" ? "Create Template" : "Edit Template",
+            { variant: "template", help: CreatorHelp.template },
         );
         this.modal = modal;
         modal.create().then(async () => {
@@ -59,14 +62,14 @@ export class Template extends Post {
                             </div>
                         </div>
                         <div class="template-field-add">
-                            <input class="input field-input" placeholder="Field name">
+                            <input class="input field-input" name="field_label" data-preserve-case="true" placeholder="Field name">
                             <select class="select field-type">
                                 ${FIELD_TYPES.map(
                                     ([value, label]) =>
                                         `<option value="${value}">${label}</option>`,
                                 ).join("")}
                             </select>
-                            <button type="button" class="button field-add">Add field</button>
+                            <button type="button" class="button button-secondary field-add">Add field</button>
                         </div>
                         <div class="template-field-list field-list"></div>
                     </section>
@@ -74,7 +77,10 @@ export class Template extends Post {
             </form>`;
             });
             modal.footer((f) => {
-                f.innerHTML = `<button type="submit" class="button" form="template-form">${method === "POST" ? "Create template" : "Save template"}</button>`;
+                f.innerHTML = `
+                <button type="button" class="button button-secondary modal-cancel">Cancel</button>
+                <button type="submit" class="button button-primary" form="template-form">${method === "POST" ? "Create template" : "Save template"}</button>`;
+                f.querySelector(".modal-cancel")?.addEventListener("click", () => modal.close());
             });
             this.form = document.querySelector("#template-form");
             CreatorMeta.bindTags(this.form);
@@ -122,6 +128,7 @@ export class Template extends Post {
             const name = input.value.trim();
             if (!name) return;
             list.appendChild(this.createFieldCard(name, select.value));
+            Icons.load(list);
             input.value = "";
             select.selectedIndex = 0;
         };
@@ -137,7 +144,7 @@ export class Template extends Post {
                 <strong data-name="${name}">${name}</strong>
                 <span data-type="${type}">${typeLabel}</span>
             </div>
-            <button type="button" class="button field-remove">Remove</button>`;
+            <button type="button" class="field-remove" aria-label="Remove field"><i data-icon="trash"></i></button>`;
         if (id) {
             card.dataset.id = String(id);
         }
@@ -156,6 +163,7 @@ export class Template extends Post {
                     this.createFieldCard(field.name, field.type, field.id),
                 );
             });
+            Icons.load(list);
         } catch {
             /* optional */
         }
@@ -214,7 +222,7 @@ export class Template extends Post {
                 Alert.success("Template updated");
             }
             modal.close();
-            Template.loadTable();
+            await CreatorRegistry.reload();
             return true;
         });
         if (done === null) return;

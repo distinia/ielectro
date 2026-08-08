@@ -50,15 +50,19 @@ export class ProfileService {
             return { username: String(formData.get("username") || "").trim() };
         }
         if (field === "password") {
-            return {
-                current_password: String(
-                    formData.get("current-password") || "",
-                ),
-                password: String(formData.get("password") || ""),
+            const body = {
+                password: String(formData.get("password") || "").trim(),
                 confirm_password: String(
                     formData.get("confirm-password") || "",
-                ),
+                ).trim(),
             };
+            const currentPassword = String(
+                formData.get("current-password") || "",
+            ).trim();
+            if (currentPassword !== "") {
+                body.current_password = currentPassword;
+            }
+            return body;
         }
         throw { text: "Invalid update field" };
     }

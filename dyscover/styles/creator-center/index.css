@@ -1,5 +1,6 @@
 @import "../core/index.css";
 @import "../article/box.css";
+@import "modal.css";
 @import "container.css";
 @import "tabs.css";
 @import "table.css";

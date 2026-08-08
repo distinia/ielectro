@@ -34,11 +34,32 @@ class File
         bool $overwrite = false
     ): string {
         if (
-            !isset($file['error'], $file['tmp_name'], $file['name']) ||
-            $file['error'] !== UPLOAD_ERR_OK ||
-            !is_uploaded_file($file['tmp_name'])
+            !isset($file['error'], $file['tmp_name'], $file['name'])
         ) {
             Response::badRequest('Invalid file');
+        }
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            $message = match ((int) $file['error']) {
+                UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE =>
+                    'File exceeds the upload size limit',
+                UPLOAD_ERR_NO_FILE => 'No file uploaded',
+                UPLOAD_ERR_PARTIAL => 'Upload interrupted, try again',
+                default => 'Upload failed',
+            };
+            Response::badRequest($message);
+        }
+        if (!is_uploaded_file($file['tmp_name'])) {
+            Response::badRequest('Invalid file');
+        }
+        if (
+            defined('UPLOAD_MAX_SIZE') &&
+            (int) ($file['size'] ?? 0) > (int) UPLOAD_MAX_SIZE
+        ) {
+            Response::badRequest(
+                'File exceeds maximum size of '
+                . (int) round((int) UPLOAD_MAX_SIZE / 1048576)
+                . ' MB'
+            );
         }
         self::makeDirectory($directory);
         $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
@@ -244,6 +265,11 @@ class File
         self::makeDirectory(dirname($destination));
         if (!$overwrite && self::pathExists($destination)) {
             return false;
+        }
+        if ($overwrite && self::pathExists($destination)) {
+            if (!unlink($destination)) {
+                return false;
+            }
         }
         $moved = rename($source, $destination);
         clearstatcache();

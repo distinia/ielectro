@@ -33,8 +33,13 @@ define('MAIL_ENCRYPTION', 'tls');
 define('MAIL_NAME', 'iElectro');
 define('MAIL_ADDRESS', 'noreply@' . DOMAIN);
 # Upload
-define('UPLOAD_MAX_SIZE', 10485760);
+define('UPLOAD_MAX_SIZE', 262144000);
+define('UPLOAD_IMAGE_MAX_SIZE', 10485760);
+define('UPLOAD_DOCUMENT_MAX_SIZE', 52428800);
 define('UPLOAD_ALLOWED', 'jpg,jpeg,png,gif,webp,avif,svg,pdf');
+@ini_set('upload_max_filesize', '256M');
+@ini_set('post_max_size', '256M');
+@ini_set('max_execution_time', '300');
 # Cache
 define('CACHE_PREFIX', 'ielectro_');
 define('CACHE_LIFETIME', 3600);

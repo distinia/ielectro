@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_post_comments` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `post_id` BIGINT UNSIGNED NOT NULL,
   `user_id` BIGINT UNSIGNED NOT NULL,
+  `parent_id` BIGINT UNSIGNED DEFAULT NULL,
   `body` TEXT NOT NULL,
   `status` ENUM('active','hidden') DEFAULT 'active',
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -56,6 +57,7 @@ CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_post_comments` (
   PRIMARY KEY (`id`),
   KEY `idx_post_comments_post` (`post_id`),
   KEY `idx_post_comments_user` (`user_id`),
+  KEY `idx_post_comments_parent` (`parent_id`),
   KEY `idx_post_comments_status` (`status`),
   KEY `idx_post_comments_created` (`created_at`),
   CONSTRAINT `dyscover_post_comments_ibfk_1`
@@ -64,6 +66,28 @@ CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_post_comments` (
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `dyscover_post_comments_ibfk_2`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `dyscover_post_comments_ibfk_3`
+    FOREIGN KEY (`parent_id`)
+    REFERENCES `ielectro_dyscover`.`dyscover_post_comments` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+);
+CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_post_comment_likes` (
+  `comment_id` BIGINT UNSIGNED NOT NULL,
+  `user_id` BIGINT UNSIGNED NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`comment_id`, `user_id`),
+  KEY `idx_post_comment_likes_user` (`user_id`),
+  CONSTRAINT `dyscover_post_comment_likes_ibfk_1`
+    FOREIGN KEY (`comment_id`)
+    REFERENCES `ielectro_dyscover`.`dyscover_post_comments` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `dyscover_post_comment_likes_ibfk_2`
     FOREIGN KEY (`user_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE

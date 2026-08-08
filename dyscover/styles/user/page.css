@@ -14,9 +14,15 @@
 .profile-posts {
   min-height: 240px;
 }
+.profile-posts .empty-state {
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: min(100%, 480px);
+  margin-inline: auto;
+}
 .profile-posts.post-preview-grid {
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.4rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.65rem;
 }
 .profile-posts .post-preview {
   min-height: 0;

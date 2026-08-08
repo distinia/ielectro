@@ -1,7 +1,9 @@
 import { Api } from "../core/api.js";
 import { Alert, Box, Request } from "../core/index.js";
 import { CreatorMeta } from "./creator-meta.js";
+import { CreatorHelp } from "./creator-help.js";
 import { Post } from "./post.js";
+import { CreatorRegistry } from "./registry.js";
 
 export class Image extends Post {
     static type = "image";
@@ -9,6 +11,8 @@ export class Image extends Post {
     static accept = "image/*";
     static uploadLabel = "image";
     static uploadHint = "JPG, PNG, WebP up to 10 MB";
+    static maxUploadBytes = 10485760;
+    static helpKey = "image";
 
     static create() {
         new this(null, {}).box("POST");
@@ -19,31 +23,44 @@ export class Image extends Post {
         const typeLabel = this.constructor.uploadLabel || this.constructor.type;
         const modal = new Box(
             method === "POST" ? `Upload ${typeLabel}` : `Edit ${typeLabel}`,
+            {
+                variant: "media",
+                help: CreatorHelp[this.constructor.helpKey || this.constructor.type],
+            },
         );
         this.modal = modal;
         modal.create().then(() => {
             modal.body((body) => {
                 body.innerHTML = `
-            <form id="media-form" class="creator-form" enctype="multipart/form-data">
-                ${CreatorMeta.fieldHtml({
-                    title: this.item.title,
-                    description: this.item.description,
-                    tags: this.item.tags,
-                })}
-                <div class="creator-field">
-                    <label>File</label>
-                    <label class="creator-upload-zone" for="media-file">
-                        <strong>Choose ${typeLabel} file</strong>
-                        <p>${this.constructor.uploadHint}</p>
-                    </label>
-                    <input type="file" id="media-file" name="media" accept="${this.constructor.accept}" ${method === "POST" ? "required" : ""} hidden>
-                    <div class="file-preview"></div>
+            <form id="media-form" class="creator-form media-form" enctype="multipart/form-data">
+                <div class="media-layout">
+                    <section class="media-details">
+                        ${CreatorMeta.fieldHtml({
+                            title: this.item.title,
+                            description: this.item.description,
+                            tags: this.item.tags,
+                        })}
+                    </section>
+                    <section class="media-upload-panel">
+                        <div class="creator-field">
+                            <label>File</label>
+                            <label class="creator-upload-zone" for="media-file">
+                                <strong>Choose ${typeLabel} file</strong>
+                                <p>${this.constructor.uploadHint}</p>
+                            </label>
+                            <input type="file" id="media-file" name="media" accept="${this.constructor.accept}" ${method === "POST" ? "required" : ""} hidden>
+                            <div class="file-preview"></div>
+                        </div>
+                    </section>
                 </div>
             </form>`;
                 CreatorMeta.bindTags(body);
             });
             modal.footer((f) => {
-                f.innerHTML = `<button type="submit" class="button" form="media-form">${method === "POST" ? "Upload" : "Save changes"}</button>`;
+                f.innerHTML = `
+                <button type="button" class="button button-secondary modal-cancel">Cancel</button>
+                <button type="submit" class="button button-primary" form="media-form">${method === "POST" ? "Upload" : "Save changes"}</button>`;
+                f.querySelector(".modal-cancel")?.addEventListener("click", () => modal.close());
             });
             this.mediaPreview();
             this.submitMedia(method, modal);
@@ -89,6 +106,16 @@ export class Image extends Post {
             e.preventDefault();
             const data = new FormData(form);
             const tags = CreatorMeta.readTags(form);
+            const file = data.get("media");
+            if (
+                method === "POST" &&
+                file instanceof File &&
+                this.constructor.maxUploadBytes &&
+                file.size > this.constructor.maxUploadBytes
+            ) {
+                const limit = Math.round(this.constructor.maxUploadBytes / 1048576);
+                return Alert.error(`File exceeds the ${limit} MB limit`);
+            }
             const done = await CreatorMeta.withSubmitLock(submitBtn, async () => {
                 if (method === "POST") {
                     data.append("type", this.constructor.type);
@@ -113,7 +140,7 @@ export class Image extends Post {
                 }
                 Alert.success(method === "POST" ? "Uploaded" : "Updated");
                 modal.close();
-                this.constructor.loadTable();
+                await CreatorRegistry.reload();
                 return true;
             });
             if (done === null) return;

@@ -24,15 +24,11 @@ export class BiographyEditor {
               <span>Change photo</span>
               <input type="file" class="profile-edit-avatar-input" accept="image/*" hidden>
             </label>
-            <label class="profile-edit-zoom-wrap" hidden>
-              <span>Zoom</span>
-              <input type="range" class="avatar-crop-zoom" min="1" max="3" step="0.01" value="1">
-            </label>
             <p class="profile-edit-avatar-hint" hidden>Drag to reposition your photo inside the circle.</p>
           </div>
           <div class="profile-edit-field">
             <label for="profile-bio">Biography</label>
-            <textarea id="profile-bio" class="bio-input profile-edit-bio" maxlength="2000" rows="5" placeholder="Write something about you…">${page.bio || ""}</textarea>
+            <textarea id="profile-bio" name="biography" class="bio-input profile-edit-bio" data-preserve-case="true" maxlength="2000" rows="5" placeholder="Write something about you…">${page.bio || ""}</textarea>
           </div>
           <div class="bio-actions">
             <button type="submit" class="profile-btn profile-btn-primary">Save profile</button>
@@ -43,21 +39,21 @@ export class BiographyEditor {
             const currentRing = body.querySelector(".profile-avatar-current");
             const cropRoot = body.querySelector(".profile-avatar-crop");
             const cropImage = body.querySelector(".profile-avatar-crop-image");
-            const zoomWrap = body.querySelector(".profile-edit-zoom-wrap");
             const hint = body.querySelector(".profile-edit-avatar-hint");
             const fileInput = body.querySelector(".profile-edit-avatar-input");
             let cropper = null;
+            let selectedFile = null;
             let objectUrl = null;
 
             fileInput?.addEventListener("change", () => {
                 const file = fileInput.files?.[0];
                 if (!file || !cropImage || !cropRoot) return;
+                selectedFile = file;
                 if (objectUrl) URL.revokeObjectURL(objectUrl);
                 objectUrl = URL.createObjectURL(file);
                 cropImage.onload = () => {
                     currentRing.hidden = true;
                     cropRoot.hidden = false;
-                    zoomWrap.hidden = false;
                     hint.hidden = false;
                     cropper = new AvatarCrop(cropRoot, cropImage);
                     cropper.bind();
@@ -72,13 +68,31 @@ export class BiographyEditor {
                     const text =
                         body.querySelector(".profile-edit-bio")?.value.trim() ||
                         "";
+                    const submitBtn = body.querySelector(
+                        'button[type="submit"]',
+                    );
+                    if (submitBtn) submitBtn.disabled = true;
                     try {
-                        if (cropper) {
-                            const blob = await cropper.toBlob();
+                        if (selectedFile) {
+                            let payload = selectedFile;
+                            if (cropper) {
+                                try {
+                                    payload = await cropper.toBlob();
+                                } catch {
+                                    payload = selectedFile;
+                                }
+                            }
                             const data = new FormData();
-                            data.append("avatar", blob, "avatar.png");
-                            await Request.post(Api.avatar, data);
-                            App.refreshAvatarImages(page.userId);
+                            data.append("avatar", payload, "avatar.png");
+                            const avatarRes = await Request.post(
+                                Api.avatar,
+                                data,
+                            );
+                            const saved = Api.record(avatarRes);
+                            App.refreshAvatarImages(
+                                page.userId,
+                                saved?.url || "",
+                            );
                         }
                         await Request.patch(Api.user(page.userId), {
                             biography: text,
@@ -94,11 +108,13 @@ export class BiographyEditor {
                         overlay.close();
                     } catch (err) {
                         Alert.error(
-                            typeof err === "object" && err?.text
-                                ? err.text
+                            typeof err === "object" &&
+                                (err?.message || err?.text)
+                                ? err.message || err.text
                                 : "Update failed",
                         );
                     } finally {
+                        if (submitBtn) submitBtn.disabled = false;
                         if (objectUrl) URL.revokeObjectURL(objectUrl);
                     }
                 },

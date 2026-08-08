@@ -1,11 +1,9 @@
 .post-box {
     background: rgba(255, 255, 255, 0.98);
-    border: 1px solid rgba(255, 255, 255, 0.92);
+    border: none;
     border-radius: 28px;
     overflow: hidden;
-    box-shadow:
-        0 32px 80px rgba(15, 23, 42, 0.22),
-        0 0 0 1px rgba(15, 23, 42, 0.05);
+    box-shadow: 0 32px 80px rgba(15, 23, 42, 0.22);
     animation: post-box-in 0.34s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -23,9 +21,9 @@
 .post-box-horizontal {
     display: flex;
     flex-direction: row;
-    width: min(1180px, calc(100vw - 4rem));
-    height: min(calc(100vh - 4.5rem), 92vh);
-    max-height: calc(100vh - 4.5rem);
+    width: min(1180px, calc(100vw - 3rem));
+    height: min(calc(100vh - 6rem), 84vh);
+    max-height: calc(100vh - 6rem);
 }
 
 .post-box-media {
@@ -56,9 +54,9 @@
 }
 
 .post-box-panel {
-    flex: 0 0 min(420px, 38vw);
-    min-width: 320px;
-    max-width: 420px;
+    flex: 0 0 min(520px, 42vw);
+    min-width: 360px;
+    max-width: 540px;
     display: flex;
     flex-direction: column;
     background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
@@ -74,7 +72,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 1rem;
+    padding: 0.75rem;
+    overflow: hidden;
+    box-sizing: border-box;
     animation: post-overlay-in 0.28s ease;
 }
 
@@ -118,11 +118,12 @@
 }
 
 .post-overlay-panel {
-    max-height: 92vh;
-    overflow: auto;
+    max-height: calc(100vh - 1.5rem);
+    overflow: hidden;
     width: 100%;
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 
 @media (max-width: 900px) {

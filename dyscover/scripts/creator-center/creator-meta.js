@@ -31,11 +31,11 @@ export class CreatorMeta {
         return `
                 <div class="creator-field">
                     <label for="creator-title">Title</label>
-                    <input id="creator-title" class="input" name="title" placeholder="Give your content a title" value="${escapeHtml(title)}" required>
+                    <input id="creator-title" class="input" name="title" data-preserve-case="true" placeholder="Give your content a title" value="${escapeHtml(title)}" required>
                 </div>
                 <div class="creator-field">
                     <label for="creator-description">Description</label>
-                    <textarea id="creator-description" class="textarea" name="description" placeholder="Short summary for feeds and search">${escapeHtml(description)}</textarea>
+                    <textarea id="creator-description" class="textarea" name="description" data-preserve-case="true" placeholder="Short summary for feeds and search">${escapeHtml(description)}</textarea>
                 </div>
                 <div class="creator-field tags-field">
                     <label for="creator-tags">Tags</label>

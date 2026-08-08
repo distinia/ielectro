@@ -40,10 +40,15 @@ class Oauth {
             [$profile['email']]
         );
         if (!$account) {
+            if ($profile['sub'] === '') {
+                Response::badRequest('Invalid Google account');
+            }
+
             Pending::create(
                 $profile['email'],
                 $profile['name'],
-                $profile['surname']
+                $profile['surname'],
+                $profile['sub']
             );
             Response::success([
                 'email' => $profile['email'],
@@ -114,6 +119,7 @@ class Google
             'email' => $email,
             'name' => $name,
             'surname' => $surname,
+            'sub' => trim((string) ($payload['sub'] ?? '')),
         ];
     }
 }
@@ -121,8 +127,13 @@ class Pending
 {
     private const COOKIE = 'google_signup_token';
     private const PROVIDER = 'google';
-    public static function create(string $email, string $name, string $surname): void
-    {
+    private const TTL = 1200;
+    public static function create(
+        string $email,
+        string $name,
+        string $surname,
+        string $providerAccountId
+    ): void {
         $token = bin2hex(random_bytes(32));
         $tokenHash = hash('sha256', $token);
         Query::execute(
@@ -130,10 +141,10 @@ class Pending
             [self::PROVIDER, $email]
         );
         Query::execute(
-            "INSERT INTO ielectro_account.account_oauth_pending(provider, provider_user_id, token_hash, email, name, surname, expires_at) VALUES (?, '', ?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 20 MINUTE))",
-            [self::PROVIDER, $tokenHash, $email, $name, $surname]
+            "INSERT INTO ielectro_account.account_oauth_pending(provider, provider_account_id, token_hash, email, name, surname, expires_at) VALUES (?, ?, ?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 20 MINUTE))",
+            [self::PROVIDER, $providerAccountId, $tokenHash, $email, $name, $surname]
         );
-        Cookie::set(self::COOKIE, $token, 1200);
+        Cookie::set(self::COOKIE, $token, time() + self::TTL);
     }
     public static function get(): ?array
     {

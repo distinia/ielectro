@@ -50,7 +50,10 @@ export class ProfileEditor {
             case "username":
                 return `<input type="text" name="username" class="input-field" autocomplete="off" placeholder="Username" value="${Nesh.Html.escape(user.username || "")}">`;
             case "password":
-                return `<input type="password" name="current-password" class="input-field" autocomplete="current-password" placeholder="Current password"><input type="password" name="password" class="input-field" autocomplete="new-password" placeholder="New password"><input type="password" name="confirm-password" class="input-field" autocomplete="new-password" placeholder="Confirm password">`;
+                if (user.has_password) {
+                    return `<input type="password" name="current-password" class="input-field" autocomplete="current-password" placeholder="Current password"><input type="password" name="password" class="input-field" autocomplete="new-password" placeholder="New password"><input type="password" name="confirm-password" class="input-field" autocomplete="new-password" placeholder="Confirm password">`;
+                }
+                return `<input type="password" name="password" class="input-field" autocomplete="new-password" placeholder="Password"><input type="password" name="confirm-password" class="input-field" autocomplete="new-password" placeholder="Confirm password">`;
             default:
                 return "";
         }
@@ -91,7 +94,11 @@ export class ProfileEditor {
     async save(field, button) {
         const form = this.modal.querySelector(".profile-modal-form");
         const formData = new FormData(form);
-        const fieldErrors = this.validator.getFieldErrors(field, formData);
+        const fieldErrors = this.validator.getFieldErrors(
+            field,
+            formData,
+            this.service.getUser(),
+        );
         if (Object.keys(fieldErrors).length > 0) {
             Alert.error(Object.values(fieldErrors)[0]);
             return;

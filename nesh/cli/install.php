@@ -21,27 +21,18 @@ class Install
     private function applications(): int
     {
         $count = 0;
-        $iterator = new DirectoryIterator(ROOT_PATH);
-        foreach ($iterator as $directory) {
-            if (
-                !$directory->isDir() ||
-                $directory->isDot() ||
-                $directory->getFilename() === 'nesh'
-            ) {
+
+        foreach (App::all() as $app) {
+            if ($app->database === null) {
                 continue;
             }
-            $folder = $directory->getFilename();
-            $appPath = $directory->getPathname();
-            if (!is_dir($appPath . '')) {
-                continue;
-            }
-            $databaseName = 'ielectro_' . $folder;
-            Database::create($databaseName);
-            
-            Database::tables($databaseName, $appPath . '/database');
+
+            Database::create($app->database);
+            Database::tables($app->database, $app->paths['database']);
             Database::close();
             $count++;
         }
+
         return $count;
     }
     private function javascript(): int

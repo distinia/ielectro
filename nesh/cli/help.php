@@ -8,6 +8,8 @@ USAGE
 GLOBAL COMMANDS
   install                   Install NESH.
   domain <URL>              Configure deployment URLs for all applications.
+  db --all <database>       Set the same database for every application that uses one.
+  db <application> <db>     Change the database for one application.
   version                   Display the framework version.
   help                      Display this help page.
 APPLICATION COMMANDS

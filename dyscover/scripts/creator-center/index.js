@@ -17,14 +17,14 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             Class.create();
         });
-        document.querySelector(".action-buttons .edit")?.addEventListener("click", () => {
+        document.querySelector(".action-buttons .edit")?.addEventListener("click", async () => {
             const Class = CreatorRegistry.activeClass();
             if (!Class) return;
             const selected = Class.getSelected();
             if (selected.length !== 1) {
                 return Alert.error("Select exactly one item");
             }
-            selected[0].edit();
+            await selected[0].edit();
         });
         document.querySelector(".action-buttons .delete")?.addEventListener("click", async () => {
             const Class = CreatorRegistry.activeClass();
@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             if (deleted) {
                 Alert.success(deleted === 1 ? "Deleted" : `${deleted} items deleted`);
-                await Class.loadTable();
+                await CreatorRegistry.reload();
                 await loadStats();
             }
         });

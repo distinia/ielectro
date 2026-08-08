@@ -28,8 +28,15 @@ export default class Input {
             case "password":
             case "current-password":
             case "confirm-password":
+            case "title":
+            case "description":
+            case "field_label":
+            case "biography":
                 break;
             default:
+                if (input.dataset.preserveCase === "true") {
+                    break;
+                }
                 input.value = input.value.toLowerCase();
         }
     }

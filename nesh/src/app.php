@@ -143,4 +143,30 @@ class App
 
         return '/' . trim($path, '/') . '/';
     }
+
+    public static function all(): array
+    {
+        return array_values(self::$apps);
+    }
+
+    public static function get(string $identifier): ?self
+    {
+        $identifier = strtolower(trim($identifier));
+
+        foreach (self::$apps as $folder => $app) {
+            if (strtolower($folder) === $identifier) {
+                return $app;
+            }
+        }
+
+        return null;
+    }
+
+    public static function withDatabase(): array
+    {
+        return array_values(array_filter(
+            self::$apps,
+            static fn(self $app): bool => $app->database !== null
+        ));
+    }
 }

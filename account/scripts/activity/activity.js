@@ -1,5 +1,6 @@
 import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
 import { Api } from "../core/api.js";
+import { ActivityFormat } from "../core/activity-format.js";
 
 export class ActivityFeed {
     constructor() {
@@ -12,27 +13,41 @@ export class ActivityFeed {
         this.load();
     }
     messagesUrl() {
-        return "https://account.ielectro.com/data/activity-messages.json";
+        return ActivityFormat.messagesUrl();
     }
     signinActions() {
-        return new Set(["login_success", "login_failed", "logout_all_devices", "login"]);
+        return new Set([
+            "login",
+            "logout",
+            "session_revoked",
+            "login_success",
+            "login_failed",
+            "logout_all_devices",
+        ]);
     }
     passwordActions() {
         return new Set([
             "password_changed",
             "password_change",
+            "password_reset",
             "password_recovery_requested",
             "password_reset_completed",
         ]);
     }
     accountActions() {
         return new Set([
-            "created",
             "register",
-            "deletion_scheduled",
-            "deletion_cancelled",
+            "created",
             "username_changed",
             "username_change",
+            "profile_updated",
+            "profile_update",
+            "email_changed",
+            "email_verified",
+            "phone_number_changed",
+            "deleted",
+            "deletion_scheduled",
+            "deletion_cancelled",
         ]);
     }
     filterCategory(action) {
@@ -47,7 +62,7 @@ export class ActivityFeed {
         return this.filterCategory(action) === filterValue;
     }
     shouldShowRowOnClient(row) {
-        return (row?.action || "") !== "logout";
+        return ActivityFormat.shouldShow(row);
     }
     async load() {
         await this.loadTemplates();
@@ -60,53 +75,17 @@ export class ActivityFeed {
         }
     }
     async loadTemplates() {
-        try {
-            this.templates = await Nesh.Request.get(this.messagesUrl());
-        } catch {
-            this.templates = { default: "{details} ({datetime})" };
-        }
+        this.templates = await ActivityFormat.loadTemplates();
+        this.formatter = new ActivityFormat(this.templates);
     }
     formatDateTime(iso) {
-        if (!iso) return "";
-        const d = new Date(iso);
-        if (Number.isNaN(d.getTime())) return String(iso);
-        return d.toLocaleString(undefined, {
-            dateStyle: "medium",
-            timeStyle: "short",
-        });
+        return (this.formatter || new ActivityFormat(this.templates)).formatDateTime(iso);
     }
     formatRow(row) {
-        const action = row.action || "event";
-        const datetime = this.formatDateTime(row.created_at);
-        const details = String(row.details || "").trim();
-        const tpl =
-            this.templates?.[action] ||
-            this.templates?.default ||
-            "{details} ({datetime})";
-        if (action === "username_changed" || action === "username_change") {
-            const m = details.match(/from\s+(\S+)\s+to\s+(\S+)/i);
-            const from = m ? m[1] : "?";
-            const to = m ? m[2] : "?";
-            return tpl
-                .replaceAll("{from}", from)
-                .replaceAll("{to}", to)
-                .replaceAll("{datetime}", datetime);
-        }
-        return tpl
-            .replaceAll("{details}", details || action)
-            .replaceAll("{datetime}", datetime);
+        return (this.formatter || new ActivityFormat(this.templates)).formatText(row);
     }
     formatSummaryHtml(row) {
-        const action = row.action || "event";
-        if (action === "username_changed" || action === "username_change") {
-            const details = String(row.details || "").trim();
-            const m = details.match(/from\s+(\S+)\s+to\s+(\S+)/i);
-            const from = Nesh.Html.escape(m ? m[1] : "?");
-            const to = Nesh.Html.escape(m ? m[2] : "?");
-            const datetime = Nesh.Html.escape(this.formatDateTime(row.created_at));
-            return `You changed your username from <strong>${from}</strong> to <strong>${to}</strong> on ${datetime}.`;
-        }
-        return Nesh.Html.escape(this.formatRow(row));
+        return (this.formatter || new ActivityFormat(this.templates)).formatHtml(row);
     }
     rowHtml(row) {
         const action = row.action || "";

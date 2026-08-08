@@ -36,6 +36,9 @@
 .account-hero--security {
     --account-hero-image: url("https://account.ielectro.com/assets/header/security.png");
 }
+.account-hero--services {
+    --account-hero-image: url("https://account.ielectro.com/assets/header/profile.png");
+}
 .account-hero h1 {
     margin: 0;
     padding: 0 20px;

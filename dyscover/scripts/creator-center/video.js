@@ -6,5 +6,7 @@ export class Video extends Image {
     static tab = ".video-tab";
     static accept = "video/*";
     static uploadLabel = "video";
-    static uploadHint = "MP4, WebM and other video formats";
+    static uploadHint = "MP4, WebM and other video formats up to 250 MB";
+    static maxUploadBytes = 262144000;
+    static helpKey = "video";
 }

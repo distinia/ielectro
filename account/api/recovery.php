@@ -62,7 +62,7 @@ class Recovery
         );
         Activity::log(
             $account['id'],
-            'password_recovery_requested',
+            'password_reset',
             Identity::username() . ' has requested a password recovery'
         );
         Response::success('Recovery email sent');
@@ -127,7 +127,7 @@ class Recovery
         );
         Activity::log(
             $reset['account_id'],
-            'password_change',
+            'password_changed',
             'Password changed via password recovery'
         );
         Response::success('Password updated successfully');
