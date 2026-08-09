@@ -375,6 +375,7 @@ class PostData
             'updated_at' => $row['updated_at'] ?? null,
             'liked' => PostEngagement::exists('ielectro_dyscover.dyscover_post_likes', $id, $viewerId),
             'bookmarked' => PostEngagement::exists('ielectro_dyscover.dyscover_post_bookmarks', $id, $viewerId),
+            'reposted' => PostEngagement::exists('ielectro_dyscover.dyscover_post_reposts', $id, $viewerId),
         ];
     }
     private static function mediaUrl(array $row): string

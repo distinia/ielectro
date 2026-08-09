@@ -14,6 +14,13 @@ export class Actions {
         if (onDone) await onDone();
     }
 
+    async followUser(targetUserId, onDone) {
+        await Request.post(Api.userFollowers(targetUserId));
+        Alert.success("Followed");
+        await Informations.refresh(this.page);
+        if (onDone) await onDone();
+    }
+
     async unfollow(onDone) {
         const confirm = await Alert.confirm("Unfollow this user?");
         if (!confirm) return;

@@ -16,6 +16,7 @@ export class Api {
         `${Api.base}/posts/${postId}/comments/${commentId}/likes`;
     static postLikes = (id) => `${Api.base}/posts/${id}/likes`;
     static postBookmarks = (id) => `${Api.base}/posts/${id}/bookmarks`;
+    static postReposts = (id) => `${Api.base}/posts/${id}/reposts`;
     static postShares = (id) => `${Api.base}/posts/${id}/shares`;
     static postViews = (id) => `${Api.base}/posts/${id}/views`;
 

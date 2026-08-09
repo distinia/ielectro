@@ -13,9 +13,15 @@ export class List {
 
     open() {
         const actionLabel = this.canManage
-            ? this.type === "followers"
-                ? "Remove"
-                : "Unfollow"
+            ? (user) => {
+                  if (this.type === "followers") {
+                      return user.viewer_following ? "Remove" : "Follow back";
+                  }
+                  if (this.type === "followings") {
+                      return "Unfollow";
+                  }
+                  return null;
+              }
             : null;
         const list = new UsersList({
             title: this.type === "followers" ? "Followers" : "Following",
@@ -38,11 +44,26 @@ export class List {
                       const actions = new Actions(this.page);
                       const me = await Auth.username();
                       if (this.type === "followers" && me === this.page?.username) {
-                          await actions.removeFollower(user.id, () => {
-                              row.remove();
-                              this.data = this.data.filter(
-                                  (entry) => Number(entry.id) !== Number(user.id),
-                              );
+                          if (user.viewer_following) {
+                              await actions.removeFollower(user.id, () => {
+                                  row.remove();
+                                  this.data = this.data.filter(
+                                      (entry) =>
+                                          Number(entry.id) !== Number(user.id),
+                                  );
+                              });
+                              return;
+                          }
+                          await actions.followUser(user.id, () => {
+                              user.viewer_following = true;
+                              const btn = row.querySelector(".users-list-action");
+                              if (btn) {
+                                  btn.textContent = "Remove";
+                                  btn.classList.remove(
+                                      "users-list-action--follow-back",
+                                  );
+                              }
+                              Informations.refresh(this.page);
                           });
                           return;
                       }

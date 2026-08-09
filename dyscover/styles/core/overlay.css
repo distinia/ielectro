@@ -150,6 +150,18 @@
     color: #b91c1c;
 }
 
+.users-list-action--follow-back {
+    background: var(--secondary-gradient);
+    color: #fff;
+    border: none;
+}
+
+.users-list-action--follow-back:hover {
+    background: var(--secondary-gradient);
+    color: #fff;
+    filter: brightness(1.05);
+}
+
 .users-list-empty {
     padding: 1rem 0.5rem;
 }

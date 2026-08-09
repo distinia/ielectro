@@ -40,7 +40,12 @@ export class Share {
             body.querySelector('[data-action="copy"]')?.addEventListener("click", async () => {
                 try {
                     await navigator.clipboard.writeText(this.shareLink());
-                    Request.post(Api.postShares(this.item.id)).catch(() => {});
+                    try {
+                        await Request.post(Api.postShares(this.item.id));
+                        this.card.recordShare();
+                    } catch {
+                        /* share count stays unchanged */
+                    }
                     overlay.close();
                 } catch {
                     Alert.error("Could not copy link");

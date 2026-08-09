@@ -38,16 +38,23 @@ export class Card {
             year: "numeric",
         });
     }
-    engagementLineHtml(item = this.item) {
-        const likes = Number(item?.likes) || 0;
-        const comments = Number(item?.comments) || 0;
-        const views = Number(item?.views) || 0;
-        return `<strong>${likes}</strong> likes · <strong>${comments}</strong> comments · <strong>${views}</strong> views`;
+    engagementCount(value) {
+        return String(Number(value) || 0);
     }
-    updateEngagementLine(root) {
-        const line = root?.querySelector(".post-likes-line");
-        if (line) {
-            line.innerHTML = this.engagementLineHtml();
+    viewsLineHtml(item = this.item) {
+        const views = Number(item?.views) || 0;
+        return `<strong>${views}</strong> views`;
+    }
+    updateEngagementUi(root) {
+        if (!root || !this.item) return;
+        root.querySelectorAll("[data-stat]").forEach((el) => {
+            const stat = el.dataset.stat;
+            if (!stat) return;
+            el.textContent = this.engagementCount(this.item[stat]);
+        });
+        const viewsLine = root.querySelector(".post-views-line");
+        if (viewsLine) {
+            viewsLine.innerHTML = this.viewsLineHtml();
         }
     }
     previewImageUrl() {
@@ -172,6 +179,10 @@ export class Card {
         const avatar = this.avatarUrl(d);
         const profile = `https://dyscover.ielectro.com/users/${encodeURIComponent(d.username || "")}`;
         const articleUrl = d.url || "#";
+        const likes = Number(d.likes) || 0;
+        const comments = Number(d.comments) || 0;
+        const shares = Number(d.shares) || 0;
+        const bookmarks = Number(d.bookmarks) || 0;
         return `
       <article class="post-box post-box-horizontal">
         <div class="post-box-media">${this.mediaBlock()}</div>
@@ -192,19 +203,32 @@ export class Card {
           </div>
           <div class="post-panel-footer">
             <div class="post-actions">
-              <div class="post-action-btn" data-action="like" aria-label="Like">
+              <div class="post-action-btn post-action-with-count post-action-like" data-action="like" aria-label="Like">
                 <i data-icon="heart"></i>
+                <span class="post-action-count" data-stat="likes">${likes}</span>
+              </div>
+              <div class="post-action-btn post-action-with-count" data-action="comment" aria-label="Comment">
+                <i data-icon="message-circle"></i>
+                <span class="post-action-count" data-stat="comments">${comments}</span>
               </div>
               ${isArticle ? `<a href="${articleUrl}" class="post-action-btn" data-action="visit" aria-label="Visit page"><i data-icon="globe"></i></a>` : ""}
-              <div class="post-action-btn" data-action="share" aria-label="Share">
-                <i data-icon="share-2"></i>
+              <div class="post-action-btn post-action-with-count post-action-repost" data-action="repost" aria-label="Repost">
+                <i data-icon="repeat"></i>
+                <span class="post-action-count" data-stat="shares">${shares}</span>
               </div>
-              <div class="post-action-btn post-action-save" data-action="save" aria-label="Save">
+              <div class="post-action-btn post-action-with-count" data-action="share" aria-label="Share">
+                <i data-icon="share-2"></i>
+                <span class="post-action-count" data-stat="shares">${shares}</span>
+              </div>
+              <div class="post-action-btn post-action-with-count post-action-save" data-action="save" aria-label="Save">
                 <i data-icon="bookmark"></i>
+                <span class="post-action-count" data-stat="bookmarks">${bookmarks}</span>
               </div>
             </div>
-            <div class="post-likes-line">${this.engagementLineHtml(d)}</div>
-            <div class="post-date">${this.formatDate(d.created_at)}</div>
+            <div class="post-meta-line">
+              <span class="post-date">${this.formatDate(d.created_at)}</span>
+              <span class="post-views-line">${this.viewsLineHtml(d)}</span>
+            </div>
             <div class="post-comment-compose post-comment-compose-inline">
               <input class="post-comment-input" placeholder="Add a comment…" maxlength="4000">
               <button type="button" class="post-comment-send-btn" aria-label="Send"><i data-icon="send"></i></button>
@@ -217,6 +241,7 @@ export class Card {
         await this.ensureData();
         if (!mount) return null;
         mount.innerHTML = this.buildBoxHtml();
+        this._mount = mount;
         this.syncActionState(mount);
         this.bindActions(mount);
         await this._comments.bindInline(mount);
@@ -226,6 +251,10 @@ export class Card {
         );
         this.recordView();
         return mount.querySelector(".post-box");
+    }
+    recordShare(root = this._mount) {
+        this.item.shares = (Number(this.item.shares) || 0) + 1;
+        this.updateEngagementUi(root);
     }
     recordView() {
         if (!this.item?.id || this._viewRecorded) return;
@@ -289,6 +318,7 @@ export class Card {
     syncActionState(root) {
         if (!root || !this.item) return;
         root.querySelector('[data-action="like"]')?.classList.toggle("is-active", !!this.item.liked);
+        root.querySelector('[data-action="repost"]')?.classList.toggle("is-active", !!this.item.reposted);
         root.querySelector('[data-action="save"]')?.classList.toggle("is-active", !!this.item.bookmarked);
     }
     bindActions(root) {
@@ -300,6 +330,7 @@ export class Card {
             input?.scrollIntoView({ behavior: "smooth", block: "nearest" });
         });
         root.querySelector('[data-action="share"]')?.addEventListener("click", () => this._share.open());
+        root.querySelector('[data-action="repost"]')?.addEventListener("click", () => this.repost(root));
         root.querySelector('[data-action="save"]')?.addEventListener("click", () => this.saved(root));
     }
     async likes(root) {
@@ -315,7 +346,7 @@ export class Card {
             this.item.likes =
                 Number(Api.record(res)?.likes ?? this.item.likes + (this.item.liked ? 1 : -1)) || 0;
             root?.querySelector('[data-action="like"]')?.classList.toggle("is-active", this.item.liked);
-            this.updateEngagementLine(root);
+            this.updateEngagementUi(root);
         } catch (e) {
             Alert.error(typeof e === "object" && e?.text ? e.text : "Like failed");
         }
@@ -324,6 +355,30 @@ export class Card {
         await this.ensureData();
         await this._comments.openBox();
     }
+    async repost(root) {
+        await this.ensureData();
+        try {
+            const url = Api.postReposts(this.item.id);
+            if (this.item.reposted) {
+                await Request.delete(url);
+                this.item.reposted = false;
+                this.item.shares = Math.max(
+                    0,
+                    (Number(this.item.shares) || 0) - 1,
+                );
+            } else {
+                await Request.post(url);
+                this.item.reposted = true;
+                this.item.shares = (Number(this.item.shares) || 0) + 1;
+            }
+            root
+                ?.querySelector('[data-action="repost"]')
+                ?.classList.toggle("is-active", this.item.reposted);
+            this.updateEngagementUi(root);
+        } catch (e) {
+            Alert.error(typeof e === "object" && e?.text ? e.text : "Repost failed");
+        }
+    }
     async saved(root) {
         await this.ensureData();
         try {
@@ -331,12 +386,18 @@ export class Card {
             if (this.item.bookmarked) {
                 await Request.delete(url);
                 this.item.bookmarked = false;
+                this.item.bookmarks = Math.max(
+                    0,
+                    (Number(this.item.bookmarks) || 0) - 1,
+                );
             } else {
                 await Request.post(url);
                 this.item.bookmarked = true;
+                this.item.bookmarks = (Number(this.item.bookmarks) || 0) + 1;
             }
             this.item.saved = this.item.bookmarked;
             root?.querySelector('[data-action="save"]')?.classList.toggle("is-active", this.item.bookmarked);
+            this.updateEngagementUi(root);
         } catch (e) {
             Alert.error(typeof e === "object" && e?.text ? e.text : "Save failed");
         }

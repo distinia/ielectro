@@ -188,7 +188,8 @@ class UserProfile
             Response::notFound('User not found');
         }
         $account = Accounts::find((int) $row['account_id']);
-        return [
+        $viewerId = User::id();
+        $payload = [
             'id' => (int) $row['id'],
             'username' => is_array($account) ? (string) ($account['username'] ?? '') : '',
             'biography' => $row['biography'] ?? '',
@@ -206,6 +207,21 @@ class UserProfile
             ),
             'created_at' => $row['created_at'],
         ];
+        if ($viewerId > 0 && $viewerId !== $id) {
+            $payload['follows_you'] = Query::exists(
+                'SELECT 1 FROM ielectro_dyscover.dyscover_follows
+                WHERE follower_id = ? AND followed_id = ?
+                LIMIT 1',
+                [$id, $viewerId]
+            );
+            $payload['viewer_following'] = Query::exists(
+                'SELECT 1 FROM ielectro_dyscover.dyscover_follows
+                WHERE follower_id = ? AND followed_id = ?
+                LIMIT 1',
+                [$viewerId, $id]
+            );
+        }
+        return $payload;
     }
     public static function byUsername(string $username): array
     {
@@ -267,6 +283,7 @@ class UserFollowers
         if ($id === null) {
             Response::badRequest('Missing user id');
         }
+        $viewerId = User::id();
         $rows = Query::fetchAll(
             "SELECT du.id
             FROM ielectro_dyscover.dyscover_follows f
@@ -276,7 +293,19 @@ class UserFollowers
             [$id]
         );
         Response::success(array_map(
-            fn(array $row): array => UserCard::one((int) $row['id']),
+            function (array $row) use ($id, $viewerId): array {
+                $followerId = (int) $row['id'];
+                $card = UserCard::one($followerId);
+                if ($viewerId > 0 && $viewerId === $id) {
+                    $card['viewer_following'] = Query::exists(
+                        'SELECT 1 FROM ielectro_dyscover.dyscover_follows
+                        WHERE follower_id = ? AND followed_id = ?
+                        LIMIT 1',
+                        [$viewerId, $followerId]
+                    );
+                }
+                return $card;
+            },
             $rows
         ));
     }

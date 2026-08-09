@@ -66,12 +66,20 @@ export class UsersList {
             const avatar =
                 user.avatar ||
                 `https://account.ielectro.com/u/${encodeURIComponent(user.username)}/avatar.png`;
+            const label =
+                typeof this.actionLabel === "function"
+                    ? this.actionLabel(user)
+                    : this.actionLabel;
+            const actionClass =
+                label === "Follow back"
+                    ? "users-list-action users-list-action--follow-back"
+                    : "users-list-action";
             li.innerHTML = `
                 <button type="button" class="users-list-link">
                     <img class="users-list-avatar" src="${avatar}" alt="">
                     <span class="users-list-name">${user.username}</span>
                 </button>
-                ${this.actionLabel ? `<button type="button" class="users-list-action">${this.actionLabel}</button>` : ""}`;
+                ${label ? `<button type="button" class="${actionClass}">${label}</button>` : ""}`;
             li.querySelector(".users-list-link")?.addEventListener("click", () => {
                 this.onSelect(user);
             });

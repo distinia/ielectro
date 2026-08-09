@@ -168,6 +168,7 @@ export class App {
             liked: !!item.liked,
             bookmarked: !!(item.bookmarked ?? item.saved),
             saved: !!(item.bookmarked ?? item.saved),
+            reposted: !!item.reposted,
             created_at: item.created_at || item.published_at || null,
         };
     }
@@ -241,6 +242,15 @@ export class App {
         const res = await Request.get(Api.userFollowing(selfId));
         return Api.list(res).some(
             (user) => Number(user.id) === Number(targetUserId),
+        );
+    }
+
+    static async isFollowedBy(userId) {
+        const selfId = await App.resolveSelfUserId();
+        if (!selfId || !userId || selfId === userId) return false;
+        const res = await Request.get(Api.userFollowers(selfId));
+        return Api.list(res).some(
+            (user) => Number(user.id) === Number(userId),
         );
     }
 

@@ -6,6 +6,7 @@ use Nesh\Routing;
 use Nesh\Cookie;
 use Nesh\Query;
 use Nesh\Client;
+use Nesh\Identity;
 class Oauth {
     public function google(): void
     {
@@ -26,6 +27,9 @@ class Oauth {
     private function authenticate(): void
     {
         Request::post();
+        if (Identity::id() !== null) {
+            Response::success('Already signed in');
+        }
         $credential = trim((string) Request::value('credential'));
         if ($credential === '') {
             Response::badRequest('Google credential is required');

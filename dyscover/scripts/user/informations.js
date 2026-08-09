@@ -34,7 +34,7 @@ export class Informations {
                 );
             }
             const usernameEl = document.querySelector(".username");
-            if (usernameEl) usernameEl.textContent = `@${user.username}`;
+            if (usernameEl) usernameEl.textContent = user.username || "";
             const posts = await Request.get(Api.userPosts(this.page.userId));
             const postCount = Api.list(posts).length;
             const postsEl = document.querySelector(".articles-number");

@@ -186,10 +186,7 @@ export class Comments {
                 (Number(this.item.comments) || 0) + delta,
             );
         }
-        const line = root?.querySelector(".post-likes-line");
-        if (line) {
-            line.innerHTML = this.card.engagementLineHtml(this.item);
-        }
+        this.card.updateEngagementUi(root);
     }
 
     async fetchRows() {

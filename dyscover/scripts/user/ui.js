@@ -55,10 +55,28 @@ export class UI {
                 );
             return;
         }
-        const following = await App.isFollowing(this.page.userId);
-        container.innerHTML = following
-            ? `<button type="button" class="profile-btn profile-btn-muted">Following</button>`
-            : `<button type="button" class="profile-btn profile-btn-primary">Follow</button>`;
+        let following = await App.isFollowing(this.page.userId);
+        let followsYou = false;
+        try {
+            const res = await Request.get(Api.user(this.page.username));
+            const user = Api.record(res) || {};
+            followsYou = !!user.follows_you;
+            if (user.viewer_following != null) {
+                following = !!user.viewer_following;
+            }
+        } catch {
+            followsYou = await App.isFollowedBy(this.page.userId);
+        }
+        let label = "Follow";
+        let btnClass = "profile-btn profile-btn-primary";
+        if (following) {
+            label = "Following";
+            btnClass = "profile-btn profile-btn-muted";
+        } else if (followsYou) {
+            label = "Follow back";
+            btnClass = "profile-btn profile-btn-primary profile-btn-follow-back";
+        }
+        container.innerHTML = `<button type="button" class="${btnClass}">${label}</button>`;
         container.querySelector("button").onclick = () =>
             following
                 ? new Actions(this.page).unfollow(() => this.initActions())
