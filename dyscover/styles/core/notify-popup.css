@@ -59,7 +59,6 @@ body.has-navbar .notify-popup-stack {
 }
 
 .notify-popup-avatar-wrap {
-    position: relative;
     flex-shrink: 0;
     width: 46px;
     height: 46px;
@@ -72,51 +71,6 @@ body.has-navbar .notify-popup-stack {
     object-fit: cover;
     display: block;
     box-shadow: 0 0 0 2px #fff;
-}
-
-.notify-popup-badge {
-    position: absolute;
-    right: -4px;
-    bottom: -4px;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    border: 2px solid #fff;
-    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.18);
-}
-
-.notify-popup-badge i {
-    width: 0.72rem;
-    height: 0.72rem;
-}
-
-.notify-popup-badge--like {
-    background: linear-gradient(135deg, #ff5252, #e53935);
-}
-
-.notify-popup-badge--comment {
-    background: linear-gradient(135deg, #42a5f5, #1565c0);
-}
-
-.notify-popup-badge--follow,
-.notify-popup-badge--unfollow {
-    background: linear-gradient(135deg, #7e57c2, #5e35b1);
-}
-
-.notify-popup-badge--share {
-    background: linear-gradient(135deg, #66bb6a, #2e7d32);
-}
-
-.notify-popup-badge--mention {
-    background: linear-gradient(135deg, #ffa726, #ef6c00);
-}
-
-.notify-popup-badge--default {
-    background: linear-gradient(135deg, #78909c, #546e7a);
 }
 
 .notify-popup-body {

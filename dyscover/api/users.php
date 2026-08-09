@@ -100,7 +100,9 @@ class User
                 'INSERT INTO ielectro_dyscover.dyscover_users(account_id) VALUES(?)',
                 [$accountId]
             );
-            return Query::lastId();
+            $userId = (int) Query::lastId();
+            Avatar::provision($userId);
+            return $userId;
         }
         return (int) $row['id'];
     }

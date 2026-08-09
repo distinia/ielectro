@@ -22,6 +22,23 @@ class Avatar
     {
         return \APP_URL . '/assets/users/' . $userId . '/' . self::FILENAME;
     }
+    public static function provision(int $userId): void
+    {
+        if ($userId <= 0) {
+            return;
+        }
+        $dir = \APP_ASSETS . '/users/' . $userId;
+        $target = $dir . '/' . self::FILENAME;
+        if (is_file($target)) {
+            return;
+        }
+        $defaultDir = \APP_ASSETS . '/default-user';
+        if (!is_dir($defaultDir)) {
+            File::makeDirectory($dir);
+            return;
+        }
+        File::copyDirectory($defaultDir, $dir, true);
+    }
     private function update(): void
     {
         $method = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'POST'));

@@ -6,7 +6,6 @@ import {
     resolveNotificationType,
     notificationArticle,
     notificationPostType,
-    notificationTypeIcon,
     formatRelativeTime,
 } from "./post-message.js";
 import { Mention } from "./mention.js";
@@ -145,17 +144,12 @@ export class NotificationPopup {
         this.ensureStack();
         const node = document.createElement("div");
         node.className = "notify-popup";
-        const icon = notificationTypeIcon(type);
-        const badgeClass = `notify-popup-badge--${String(type || "default").replace(/[^a-z0-9_-]/gi, "") || "default"}`;
         const inner = document.createElement("button");
         inner.type = "button";
         inner.className = "notify-popup-inner";
         inner.innerHTML = `
             <span class="notify-popup-avatar-wrap avatar">
                 <img class="notify-popup-avatar" src="${App.escapeAttr(avatar)}" alt="">
-                <span class="notify-popup-badge ${badgeClass}">
-                    <i data-icon="${icon}"></i>
-                </span>
             </span>
             <span class="notify-popup-body">
                 <p class="notify-popup-msg">${message}</p>

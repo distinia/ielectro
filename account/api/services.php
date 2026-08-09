@@ -59,21 +59,33 @@ class Dyscover
             VALUES (?)",
             [$accountId]
         );
+        $userId = (int) Query::lastId();
         File::copyDirectory(
             ROOT_PATH . '/dyscover/assets/default-user',
-            ROOT_PATH . '/dyscover/assets/users/' . $accountId
+            ROOT_PATH . '/dyscover/assets/users/' . $userId
         );
     }
     public static function delete(int $accountId): void
     {
+        $row = Query::fetch(
+            'SELECT id
+            FROM ielectro_dyscover.dyscover_users
+            WHERE account_id = ?
+            LIMIT 1',
+            [$accountId]
+        );
+        $userId = $row ? (int) $row['id'] : 0;
         Query::execute(
             "DELETE
             FROM ielectro_dyscover.dyscover_users
             WHERE account_id = ?",
             [$accountId]
         );
+        if ($userId <= 0) {
+            return;
+        }
         File::deleteDirectory(
-            ROOT_PATH . '/dyscover/assets/users/' . $accountId
+            ROOT_PATH . '/dyscover/assets/users/' . $userId
         );
     }
     public static function profile(int $accountId): ?array

@@ -1,10 +1,9 @@
 import { Api } from "../core/api.js";
-import { App, EmptyState, Icons, Request, Navbar, Card } from "../core/index.js";
+import { App, EmptyState, Icons, Request, Navbar, Card, Alert } from "../core/index.js";
 import {
     resolveNotificationType,
     notificationArticle,
     notificationPostType,
-    notificationTypeIcon,
     formatRelativeTime,
 } from "../core/post-message.js";
 
@@ -162,28 +161,73 @@ export class ActivityUI {
         }
     }
 
+    userProfileUrl(username = "") {
+        const raw = String(username || "").replace(/^@/, "").trim();
+        if (!raw) return `${Api.origin}/explore`;
+        return `${Api.origin}/users/${encodeURIComponent(raw)}`;
+    }
+
+    userLink(username = "") {
+        const raw = String(username || "").replace(/^@/, "").trim();
+        if (!raw) {
+            return `<strong class="notification-user">Someone</strong>`;
+        }
+        const href = this.userProfileUrl(raw);
+        return `<a class="notification-user-link" href="${App.escapeAttr(href)}"><strong>${App.escapeHtml(raw)}</strong></a>`;
+    }
+
+    buildUsersHtml(notification) {
+        const actors =
+            Array.isArray(notification.actors) && notification.actors.length
+                ? notification.actors
+                : [
+                      {
+                          username:
+                              notification.actor_username ||
+                              notification.user ||
+                              notification.username ||
+                              "",
+                      },
+                  ];
+        const othersCount = Math.max(0, Number(notification.others_count) || 0);
+        const links = actors
+            .map((actor) => this.userLink(actor.username))
+            .filter(Boolean);
+        if (!links.length) {
+            return this.userLink("");
+        }
+        if (othersCount > 0) {
+            const others = othersCount.toLocaleString("en-US");
+            if (links.length === 1) {
+                return `${links[0]} and ${others} others`;
+            }
+            return `${links[0]}, ${links[1]} and ${others} others`;
+        }
+        if (links.length === 1) {
+            return links[0];
+        }
+        if (links.length === 2) {
+            return `${links[0]} and ${links[1]}`;
+        }
+        return links.join(", ");
+    }
+
     buildMessage(notification) {
-        const user =
-            notification.actor_username ||
-            notification.user ||
-            notification.username ||
-            "User";
         const type = resolveNotificationType(notification);
         const template =
             ActivityUI.templates?.[type] ||
             ActivityUI.templates?.default ||
             "{user} sent you a notification";
-        const text = template
-            .replaceAll("{user}", user)
+        const usersHtml = this.buildUsersHtml(notification);
+        const suffix = template.includes("{user}")
+            ? template.split("{user}").slice(1).join("{user}")
+            : template;
+        const rest = suffix
             .replaceAll("{article}", notificationArticle(notification))
             .replaceAll("{post_type}", notificationPostType(notification))
             .replaceAll("{message}", notification.message || "")
             .replaceAll("{details}", notification.message || "");
-        const safe = App.escapeHtml(text);
-        return safe.replace(
-            App.escapeHtml(user),
-            `<strong class="notification-user">${App.escapeHtml(user)}</strong>`,
-        );
+        return `${usersHtml}${App.escapeHtml(rest)}`;
     }
 
     thumbUrl(notification) {
@@ -246,30 +290,50 @@ export class ActivityUI {
                 );
                 const ph = App.escapeHtml(App.initialsOf(user));
                 const type = resolveNotificationType(notification);
-                const icon = notificationTypeIcon(type);
-                const badgeClass = `notification-type-badge--${String(type || "default").replace(/[^a-z0-9_-]/gi, "") || "default"}`;
                 const message = this.buildMessage(notification);
                 const time = formatRelativeTime(notification.created_at);
                 const thumb = this.thumbUrl(notification);
                 const thumbHtml = thumb
                     ? `<div class="notification-thumb"><img src="${App.escapeAttr(thumb)}" alt="" loading="lazy"></div>`
                     : "";
-                return `
-            <article class="notification-item ${unread ? "notification-unread" : ""}" data-id="${id}" data-read="${unread ? "0" : "1"}">
-                <button type="button" class="notification-main" data-notification-id="${id}">
-                    <span class="notification-avatar-wrap">
+                const followHtml =
+                    type === "follow"
+                        ? `<button type="button" class="notification-follow-btn${notification.viewer_following ? " is-following" : ""}" data-actor-id="${Number(notification.actor_id) || 0}" data-following="${notification.viewer_following ? "1" : "0"}">${notification.viewer_following ? "Unfollow" : "Follow back"}</button>`
+                        : "";
+                const avatars =
+                    Array.isArray(notification.actors) && notification.actors.length
+                        ? notification.actors.slice(0, 2)
+                        : [
+                              {
+                                  username: user,
+                                  avatar:
+                                      notification.actor_avatar ||
+                                      App.userAvatarUrl(notification.actor_id, user),
+                              },
+                          ];
+                const avatarHtml =
+                    avatars.length > 1
+                        ? `<span class="notification-avatar-stack">${avatars
+                              .map(
+                                  (actor, index) =>
+                                      `<img class="notification-avatar-img notification-avatar-img--stack" src="${App.escapeAttr(actor.avatar || App.userAvatarUrl(actor.id, actor.username))}" alt="" loading="lazy" style="z-index:${avatars.length - index}" />`,
+                              )
+                              .join("")}</span>`
+                        : `<span class="notification-avatar-wrap">
                         <img class="notification-avatar-img" src="${av}" alt="" loading="lazy" />
                         <span class="notification-avatar-ph">${ph}</span>
-                        <span class="notification-type-badge ${badgeClass}">
-                            <i data-icon="${icon}"></i>
-                        </span>
-                    </span>
+                    </span>`;
+                return `
+            <article class="notification-item ${unread ? "notification-unread" : ""}${followHtml ? " notification-item--follow" : ""}" data-id="${id}" data-read="${unread ? "0" : "1"}">
+                <button type="button" class="notification-main" data-notification-id="${id}">
+                    ${avatarHtml}
                     <span class="notification-content">
                         <span class="notification-message">${message}</span>
                         <span class="notification-time">${App.escapeHtml(time || "now")}</span>
                     </span>
                     ${thumbHtml}
                 </button>
+                ${followHtml ? `<div class="notification-actions">${followHtml}</div>` : ""}
                 <button type="button" class="notification-delete" data-id="${id}" aria-label="Delete notification">
                     <i data-icon="x"></i>
                 </button>
@@ -293,6 +357,20 @@ export class ActivityUI {
             App.wireAvatarImg(img);
         });
 
+        this.list.querySelectorAll(".notification-user-link").forEach((link) => {
+            link.addEventListener("click", (e) => {
+                e.stopPropagation();
+            });
+        });
+
+        this.list.querySelectorAll(".notification-follow-btn").forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.toggleFollow(btn).catch(() => {});
+            });
+        });
+
         this.list.querySelectorAll(".notification-delete").forEach((btn) => {
             btn.addEventListener("click", async (e) => {
                 e.preventDefault();
@@ -314,6 +392,29 @@ export class ActivityUI {
                 }
             });
         });
+    }
+
+    async toggleFollow(btn) {
+        const actorId = Number(btn.dataset.actorId);
+        if (!actorId) return;
+        const following = btn.dataset.following === "1";
+        try {
+            if (following) {
+                await Request.delete(Api.userFollowers(actorId));
+                btn.dataset.following = "0";
+                btn.textContent = "Follow back";
+                btn.classList.remove("is-following");
+            } else {
+                await Request.post(Api.userFollowers(actorId));
+                btn.dataset.following = "1";
+                btn.textContent = "Unfollow";
+                btn.classList.add("is-following");
+            }
+        } catch (err) {
+            Alert.error(
+                typeof err === "object" && err?.text ? err.text : "Action failed",
+            );
+        }
     }
 }
 
