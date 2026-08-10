@@ -2,7 +2,6 @@ import { Alert, Icons } from "../core/index.js";
 import { API } from "./api.js";
 import { Select } from "./select.js";
 import { Index } from "./article-index.js";
-import { GenerateArticle } from "./generate-article.js";
 import { Save } from "./save.js";
 import { FormatText } from "./format-text.js";
 import { ReplaceText } from "./replace-text.js";
@@ -22,7 +21,6 @@ import { Template } from "./template.js";
 export class Editor {
     constructor() {
         this.elements = [Paragraph, Heading, Center, Bold, Italic, Caption, Link, List, Table, Legend, Percentage, Media, Template];
-        this.title = document.querySelector(".title");
         this.content = Select.container();
         this.box = null;
         this.isEditing = false;
@@ -121,8 +119,6 @@ export class Editor {
             switch (btn.dataset.action) {
                 case "save":
                     return Save.init();
-                case "generate-ai":
-                    return GenerateArticle.init();
                 case "replace":
                     return ReplaceText.init();
                 case "format":
@@ -175,11 +171,9 @@ export class Editor {
     startEditing() {
         if (this.isEditing) return;
         this.isEditing = true;
+        document.body.classList.add("is-editing");
         if (this.box) {
             this.box.classList.add("is-visible");
-        }
-        if (this.title) {
-            this.title.style.display = "none";
         }
         document.querySelector(".post-overlay")?.remove();
         this.activateElements();
@@ -188,11 +182,9 @@ export class Editor {
     closeEditing() {
         if (!this.isEditing) return;
         this.isEditing = false;
+        document.body.classList.remove("is-editing");
         if (this.box) {
             this.box.classList.remove("is-visible");
-        }
-        if (this.title) {
-            this.title.style.display = "";
         }
         ReplaceText.list.forEach((instance) => instance.closeEditing());
         this.activateElements();

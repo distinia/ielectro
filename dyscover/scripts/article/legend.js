@@ -1,7 +1,7 @@
 import { Alert } from "../core/index.js";
 import { Select } from "./select.js";
 import { Menu } from "./menu.js";
-import { GenerateArticle } from "./generate-article.js";
+import { ElementTree } from "./element-tree.js";
 export class Legend {
     static list = new Map();
     static className = "legend";
@@ -52,14 +52,14 @@ export class Legend {
     static generate(obj) {
         const element = Legend.create(obj.color || "", "");
         const instance = new Legend(element);
-        GenerateArticle.addChildren(instance.label, obj.children);
+        ElementTree.addChildren(instance.label, obj.children);
         return instance;
     }
     export() {
         return {
             element: Legend.className,
             color: this.color,
-            children: GenerateArticle.exportChildren(this.label)
+            children: ElementTree.exportChildren(this.label)
         };
     }
     static isValidColor(color) {

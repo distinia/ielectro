@@ -1,5 +1,5 @@
 import { Select } from "./select.js";
-import { GenerateArticle } from "./generate-article.js";
+import { ElementTree } from "./element-tree.js";
 import { Paragraph } from "./paragraph.js";
 import { Heading } from "./heading.js";
 export class Caption {
@@ -45,14 +45,14 @@ export class Caption {
     }
     generate(obj) {
         const element = Caption.create(obj.text || "<br>");
-        GenerateArticle.addChildren(element, obj.children);
+        ElementTree.addChildren(element, obj.children);
         return new Caption(element);
     }
     export() {
         return {
             element: Caption.className,
             text: this.element.innerText,
-            children: GenerateArticle.exportChildren(this.element)
+            children: ElementTree.exportChildren(this.element)
         };
     }
     startEditing() {

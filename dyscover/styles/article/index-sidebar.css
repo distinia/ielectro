@@ -28,10 +28,10 @@
 
 .article-index-sidebar .index-sidebar-header h4 {
     margin: 0;
-    font-size: 0.78rem;
-    font-weight: 700;
+    font-size: 0.72rem;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.14em;
     color: #64748b;
 }
 
@@ -78,7 +78,8 @@
     flex: 1 1 auto;
     min-height: 0;
     overflow: auto;
-    padding: 0.85rem 0.95rem 1.25rem;
+    padding: 0.75rem 0.85rem 1.25rem;
+    scrollbar-gutter: stable;
 }
 
 .article-index-sidebar .list {
@@ -92,26 +93,39 @@
 }
 
 .article-index-sidebar .list > li {
-    margin-bottom: 0.45rem;
+    margin-bottom: 0.25rem;
+    border-radius: 10px;
+    padding: 0.15rem 0.25rem;
+    transition: background 0.18s ease;
+}
+
+.article-index-sidebar .list > li:hover {
+    background: rgba(21, 101, 192, 0.06);
 }
 
 .article-index-sidebar .list span:first-child {
-    display: inline-block;
-    min-width: 2rem;
-    margin-right: 0.35rem;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: #94a3b8;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.85rem;
+    height: 1.85rem;
+    margin-right: 0.45rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #64748b;
+    background: rgba(15, 23, 42, 0.05);
+    border-radius: 8px;
     font-variant-numeric: tabular-nums;
 }
 
 .article-index-sidebar .list .link {
     display: inline;
-    font-size: 0.92rem;
-    line-height: 1.45;
+    font-size: 0.9rem;
+    line-height: 1.5;
     color: #334155;
     font-weight: 500;
     transition: color 0.2s ease;
+    text-decoration: none;
 }
 
 .article-index-sidebar .list .link:hover {
@@ -120,9 +134,14 @@
 
 .article-index-sidebar .list ul {
     list-style: none;
-    margin: 0.35rem 0 0.5rem;
-    padding-left: 1.35rem;
-    border-left: 2px solid rgba(21, 101, 192, 0.12);
+    margin: 0.25rem 0 0.35rem;
+    padding-left: 1.15rem;
+    border-left: 2px solid rgba(21, 101, 192, 0.14);
+}
+
+.article-index-sidebar .list ul .link {
+    font-size: 0.86rem;
+    color: #475569;
 }
 
 .article-index-sidebar .list-empty {

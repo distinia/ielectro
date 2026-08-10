@@ -9,15 +9,88 @@ use Nesh\Routing;
 use Nesh\Validate;
 
 require_once __DIR__ . '/posts.php';
+require_once __DIR__ . '/article-content.php';
+
 class Articles
 {
     public function index(): void
     {
+        if (Routing::segment(3) === 'preview') {
+            Routing::method([
+                'GET' => fn() => $this->preview(),
+            ]);
+            return;
+        }
         Routing::method([
             'GET' => fn() => $this->show(),
             'PUT' => fn() => $this->update(),
         ]);
     }
+
+    private function preview(): void
+    {
+        Request::get();
+        $raw = trim((string) Routing::segment(2));
+        if (!Validate::required($raw)) {
+            Response::badRequest('Missing article uuid');
+        }
+        $raw = rawurldecode(strtok($raw, '#') ?: $raw);
+        $post = null;
+        if (Validate::uuid(strtolower($raw))) {
+            $post = Query::fetch(
+                "SELECT p.id, p.user_id, p.uuid, p.title, p.description, p.preview_image, p.status
+                FROM ielectro_dyscover.dyscover_posts p
+                WHERE p.uuid = ?
+                AND p.type = 'article'
+                AND p.status = 'active'
+                AND p.visibility = 'public'
+                LIMIT 1",
+                [strtolower($raw)]
+            );
+        } else {
+            $titleGuess = str_replace(['_', '-'], ' ', $raw);
+            $post = Query::fetch(
+                "SELECT p.id, p.user_id, p.uuid, p.title, p.description, p.preview_image, p.status
+                FROM ielectro_dyscover.dyscover_posts p
+                WHERE p.type = 'article'
+                AND p.status = 'active'
+                AND p.visibility = 'public'
+                AND (
+                    LOWER(p.title) = LOWER(?)
+                    OR LOWER(REPLACE(p.title, ' ', '_')) = LOWER(?)
+                    OR LOWER(REPLACE(p.title, ' ', '-')) = LOWER(?)
+                )
+                LIMIT 1",
+                [$titleGuess, str_replace('-', '_', $raw), str_replace('_', '-', $raw)]
+            );
+        }
+        if (!$post) {
+            Response::notFound('Article not found');
+        }
+        $path = PostAssets::articlePath((int) $post['user_id'], (string) $post['uuid']);
+        if (!is_file($path)) {
+            Response::notFound('Article not found');
+        }
+        $html = (string) file_get_contents($path);
+        $cover = ArticleContent::extractCoverImage($html);
+        $paragraph = ArticleContent::extractFirstParagraph($html);
+        $previewImage = (string) ($post['preview_image'] ?? '');
+        if ($previewImage === '' || $previewImage === PostAssets::defaultPreview()) {
+            $previewImage = $cover !== '' ? $cover : PostAssets::defaultPreview();
+        }
+        if ($paragraph === '') {
+            $paragraph = htmlspecialchars((string) ($post['description'] ?? ''), ENT_QUOTES, 'UTF-8');
+        }
+        Response::success([
+            'id' => (int) $post['id'],
+            'uuid' => (string) $post['uuid'],
+            'title' => (string) ($post['title'] ?? ''),
+            'preview_image' => $previewImage,
+            'paragraph' => $paragraph,
+            'url' => \APP_URL . '/article/' . $post['uuid'],
+        ]);
+    }
+
     private function show(): void
     {
         Request::get();
@@ -64,6 +137,7 @@ class Articles
             'can_edit' => $canEdit,
         ]);
     }
+
     private function update(): void
     {
         Request::put();

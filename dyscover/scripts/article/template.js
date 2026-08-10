@@ -3,6 +3,7 @@ import { API } from "./api.js";
 import { Select } from "./select.js";
 import { Menu } from "./menu.js";
 import { WebSelector } from "./web-selector.js";
+import { ArticleHelp } from "./article-help.js";
 import { Media } from "./media.js";
 export class Template {
     static list = new Map();
@@ -23,7 +24,8 @@ export class Template {
         let table = document.querySelector("." + Template.className);
         let templateId;
         if (!table) {
-            templateId = await WebSelector.init("dyscover", "template");
+            const picked = await WebSelector.init("Dyscover", "template");
+            templateId = picked?.url;
             if (!templateId) return;
             table = Template.create(templateId);
             const content = Select.container();
@@ -137,19 +139,26 @@ export class Template {
     async open() {
         try {
             this.fields = await API.getTemplate(this.templateId);
-            const box = new Box("Template fields");
+            if (!Array.isArray(this.fields) || !this.fields.length) {
+                Alert.error("No fields found for this template");
+                return;
+            }
+            const box = new Box("Template fields", {
+                variant: "template",
+                headerLayout: "creator",
+                help: ArticleHelp.template,
+            });
             await box.create();
             box.footer((footer) => {
                 footer.innerHTML = `
-                    <button class="button add">
-                        Add field
-                    </button>
-                    <button class="button delete">
-                        Delete template
-                    </button>
+                    <button type="button" class="button button-secondary template-cancel-btn">Cancel</button>
+                    <button type="button" class="button add">Apply fields</button>
+                    <button type="button" class="button delete">Delete template</button>
                 `;
-                footer.querySelector(".add").onclick = () => {
-                    this.addFields();
+                footer.querySelector(".template-cancel-btn").onclick = () =>
+                    box.close();
+                footer.querySelector(".add").onclick = async () => {
+                    await this.addFields(box.container);
                 };
                 footer.querySelector(".delete").onclick = async () => {
                     const confirm = await Alert.confirm("Delete template");
@@ -159,6 +168,7 @@ export class Template {
                 };
             });
             box.body((body) => {
+                body.classList.add("template-fields-body");
                 this.fields.forEach((field) => {
                     this.renderField(body, field);
                 });
@@ -168,25 +178,42 @@ export class Template {
         }
     }
     renderField(body, field) {
-        const id = field.name.toLowerCase();
+        const slug = String(field.name || "")
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-");
+        const row = document.createElement("label");
+        row.className = "template-field-row";
+        row.htmlFor = `template-field-${field.id || slug}`;
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
-        checkbox.className = id;
-        const label = document.createElement("label");
-        label.textContent = field.name.replace(/-/g, " ");
-        body.append(checkbox, label, document.createElement("br"));
-        const exists = this.element.querySelector(`[data-field="${id}"]`);
+        checkbox.id = `template-field-${field.id || slug}`;
+        checkbox.className = "template-field-check";
+        checkbox.dataset.fieldId = String(field.id || "");
+        checkbox.dataset.fieldSlug = slug;
+        const meta = document.createElement("span");
+        meta.className = "template-field-meta";
+        meta.innerHTML = `
+            <strong>${field.name.replace(/-/g, " ")}</strong>
+            <small>${String(field.type || "text").replace(/-/g, " ")}</small>`;
+        row.append(checkbox, meta);
+        body.appendChild(row);
+        const exists = this.element.querySelector(`[data-field="${slug}"]`);
         if (exists) {
             checkbox.checked = true;
         }
     }
-    async addFields() {
+    async addFields(container) {
         for (const field of this.fields) {
-            const checkbox = document.querySelector("." + field.name.toLowerCase());
+            const slug = String(field.name || "")
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, "-");
+            const checkbox = container.querySelector(
+                `[data-field-slug="${slug}"]`,
+            );
             if (!checkbox) continue;
             if (checkbox.checked) {
                 const exists = this.element.querySelector(
-                    `[data-field="${field.name.toLowerCase()}"]`,
+                    `[data-field="${slug}"]`,
                 );
                 if (!exists) {
                     await this.createField(field);
@@ -197,9 +224,10 @@ export class Template {
         }
     }
     removeField(field) {
-        const rows = this.tbody.querySelectorAll(
-            `[data-field="${field.toLowerCase()}"]`,
-        );
+        const slug = String(field || "")
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-");
+        const rows = this.tbody.querySelectorAll(`[data-field="${slug}"]`);
         rows.forEach((row) => row.remove());
     }
     async createField(field) {
@@ -241,15 +269,20 @@ export class Template {
     async selectImage() {
         const option = await Alert.select("Select source", ["Dyscover", "URL"]);
         if (!option) return null;
-        return await WebSelector.init(option.toLowerCase(), "image");
+        const picked = await WebSelector.init(option, "image");
+        return picked?.url || null;
     }
     insertRow(row, field) {
+        const slug = String(field || "")
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-");
         const names = this.fields.map((f) => f.name);
         const index = names.indexOf(field);
         for (let i = index + 1; i < names.length; i++) {
-            const next = this.tbody.querySelector(
-                `[data-field="${names[i].toLowerCase()}"]`,
-            );
+            const nextSlug = String(names[i] || "")
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, "-");
+            const next = this.tbody.querySelector(`[data-field="${nextSlug}"]`);
             if (next) {
                 this.tbody.insertBefore(row, next);
                 return;
@@ -257,9 +290,14 @@ export class Template {
         }
         this.tbody.appendChild(row);
     }
+    fieldSlug(field) {
+        return String(field || "")
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-");
+    }
     textRow(field, definition = false) {
         const row = document.createElement("tr");
-        row.dataset.field = field.toLowerCase();
+        row.dataset.field = this.fieldSlug(field);
         if (definition) {
             const td = document.createElement("td");
             td.colSpan = 2;
@@ -282,7 +320,7 @@ export class Template {
     }
     imageRow(field, url, large = false) {
         const row = document.createElement("tr");
-        row.dataset.field = field.toLowerCase();
+        row.dataset.field = this.fieldSlug(field);
         const td = document.createElement("td");
         td.colSpan = 2;
         if (large) {
@@ -299,7 +337,7 @@ export class Template {
     }
     doubleImageRow(field, url1, url2) {
         const row = document.createElement("tr");
-        row.dataset.field = field.toLowerCase();
+        row.dataset.field = this.fieldSlug(field);
         const td = document.createElement("td");
         td.colSpan = 2;
         const img1 = document.createElement("img");
@@ -317,7 +355,7 @@ export class Template {
     }
     doubleColumnRow(field, rows = [["<br>", "<br>"]]) {
         const row = document.createElement("tr");
-        row.dataset.field = field.toLowerCase();
+        row.dataset.field = this.fieldSlug(field);
         const left = this.editableList(false);
         const right = this.editableList(false);
         rows.forEach(([l, r]) => {

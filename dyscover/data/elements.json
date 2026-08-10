@@ -10,11 +10,6 @@
         "icon": "save"
     },
     {
-        "title": "Generate",
-        "class": "Generate",
-        "icon": "aperture"
-    },
-    {
         "title": "Replace",
         "class": "ReplaceText",
         "icon": "search"

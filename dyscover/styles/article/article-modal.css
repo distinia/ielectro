@@ -1,0 +1,131 @@
+@import "../creator-center/modal.css";
+
+.selector-results-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    min-height: 220px;
+}
+
+.selector-empty {
+    margin: 2rem auto;
+    text-align: center;
+    color: #64748b;
+    font-size: 0.92rem;
+}
+
+.selector-result-row {
+    width: 100%;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    background: #fff;
+    text-align: left;
+    font: inherit;
+}
+
+.selector-type-badge {
+    display: inline-block;
+    margin-left: 0.45rem;
+    padding: 0.12rem 0.45rem;
+    border-radius: 999px;
+    background: rgba(21, 101, 192, 0.1);
+    color: #1565c0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: capitalize;
+    vertical-align: middle;
+}
+
+.select-item-footer--search {
+    gap: 0.75rem;
+}
+
+.select-item-footer--search .selector-search-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    text-transform: none;
+}
+
+.select-item-footer--search .selector-add-btn {
+    flex: 0 0 auto;
+    min-width: 7rem;
+}
+
+.find-replace-body {
+    display: grid;
+    gap: 1rem;
+    min-height: auto;
+}
+
+.find-replace-label {
+    display: grid;
+    gap: 0.4rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #475569;
+}
+
+.find-replace-label .input {
+    width: 100%;
+    margin: 0;
+    text-transform: none;
+}
+
+.template-fields-body {
+    display: grid;
+    gap: 0.55rem;
+    min-height: auto;
+}
+
+.template-field-row {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.92);
+    cursor: pointer;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.template-field-row:hover {
+    border-color: rgba(21, 101, 192, 0.25);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+}
+
+.template-field-check {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: #1565c0;
+}
+
+.template-field-meta {
+    display: grid;
+    gap: 0.15rem;
+}
+
+.template-field-meta strong {
+    color: #0f172a;
+    font-size: 0.95rem;
+}
+
+.template-field-meta small {
+    color: #64748b;
+    font-size: 0.78rem;
+    text-transform: capitalize;
+}
+
+.select-item-footer .button-secondary {
+    background: #f1f5f9;
+    color: #334155;
+    box-shadow: none;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.select-item-footer .button.delete {
+    background: linear-gradient(135deg, #ef5350, #c62828);
+}

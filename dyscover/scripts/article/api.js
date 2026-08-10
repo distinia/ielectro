@@ -1,9 +1,9 @@
 import { Api } from "../core/api.js";
 import { App, Request } from "../core/index.js";
+import { PostResolver } from "./post-resolver.js";
 
 const TOOLBAR_ACTIONS = {
     Save: "save",
-    Generate: "generate-ai",
     ReplaceText: "replace",
     FormatText: "format",
     Heading: "heading",
@@ -58,10 +58,6 @@ export class API {
         return list.map((item) => API.normalizeElement(item)).filter(Boolean);
     }
 
-    static async generateAI() {
-        return await Request.get(`${Api.origin}/data/Destenia.json`);
-    }
-
     static async saveArticle(content) {
         const uuid = App.urlLastPart().replace(/\.html$/i, "");
         const res = await Request.put(Api.article(uuid), { content });
@@ -95,6 +91,18 @@ export class API {
             updated: row.updated_at || row.updated || row.created_at || null,
             media: row.media || row.preview_image || "",
         }));
+    }
+
+    static async searchLinkPosts(term) {
+        const [articles, documents] = await Promise.all([
+            API.search("article", term),
+            API.search("document", term),
+        ]);
+        return [...articles, ...documents].sort((a, b) =>
+            String(a.title || "").localeCompare(String(b.title || ""), undefined, {
+                sensitivity: "base",
+            }),
+        );
     }
 
     static async getTemplate(idOrTitle) {
@@ -131,25 +139,69 @@ export class API {
         return Api.list(res);
     }
 
-    static async getArticlePreview(file) {
-        const uuid = String(file || "").replace(/\.html$/i, "");
-        const res = await Request.get(Api.article(uuid));
+    static async getArticlePreview(uuidOrSlug) {
+        let raw = String(uuidOrSlug || "").replace(/\.html$/i, "").split("#")[0];
+        raw = decodeURIComponent(raw).trim();
+        if (!PostResolver.isUuid(raw)) {
+            const resolved = await API.resolveArticleUuid(raw);
+            if (!resolved) {
+                throw new Error("Article not found");
+            }
+            raw = resolved;
+        }
+        const res = await Request.get(Api.articlePreview(raw));
         const record = Api.record(res);
         if (!record) {
             throw new Error("Article not found");
         }
-        const text =
-            record.description ||
-            String(record.content || "")
-                .replace(/<[^>]+>/g, " ")
-                .replace(/\s+/g, " ")
-                .trim()
-                .slice(0, 280);
         const preview = record.preview_image || "";
         return {
-            text,
+            id: record.id || "",
+            uuid: record.uuid || raw,
+            title: record.title || "",
+            text: record.paragraph || record.description || "",
             status: !!preview,
             url: preview,
+            articleUrl: record.url || `${Api.origin}/article/${raw}`,
         };
     }
+
+    static async resolveArticleUuid(slugOrUuid) {
+        const raw = decodeURIComponent(String(slugOrUuid || ""))
+            .trim()
+            .split("#")[0];
+        if (PostResolver.isUuid(raw)) {
+            return raw;
+        }
+        const variants = Array.from(
+            new Set([
+                raw,
+                raw.replace(/_/g, " "),
+                raw.replace(/-/g, " "),
+            ]),
+        ).filter(Boolean);
+        for (const term of variants) {
+            try {
+                const res = await Request.get(
+                    `${Api.base}/explore/articles/${encodeURIComponent(term)}`,
+                );
+                const articles = Api.list(res);
+                const normalized = term.replace(/_/g, " ").toLowerCase();
+                const slugKey = raw.toLowerCase();
+                const match = articles.find((row) => {
+                    const title = String(row.title || "").toLowerCase();
+                    return (
+                        title === normalized ||
+                        title.replace(/\s+/g, "_") === slugKey ||
+                        title.replace(/\s+/g, "-") === slugKey
+                    );
+                });
+                if (match?.uuid) {
+                    return String(match.uuid);
+                }
+            } catch {}
+        }
+        return "";
+    }
 }
+

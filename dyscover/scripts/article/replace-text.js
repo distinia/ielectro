@@ -1,62 +1,88 @@
-import { Alert } from "../core/index.js";
+import { Alert, Box } from "../core/index.js";
 import { Select } from "./select.js";
+import { ArticleHelp } from "./article-help.js";
+
 export class ReplaceText {
     static list = new Map();
+
     constructor() {
-        this.box = document.querySelector(".find-replace");
+        this.box = document.querySelector(".find-replace-panel");
         if (this.box) {
             this.closeEditing();
             return;
         }
-        this.create();
+        void this.create();
     }
+
     static init() {
         const instance = new ReplaceText();
         if (instance.box) {
             ReplaceText.list.set(instance.box, instance);
         }
     }
-    create() {
-        const main = document.querySelector("main");
-        if (!main) return;
-        this.box = document.createElement("div");
-        this.box.className = "find-replace";
-        const inputFind = document.createElement("input");
-        inputFind.className = "find-input";
-        inputFind.placeholder = "Enter text to find";
-        const inputReplace = document.createElement("input");
-        inputReplace.className = "replace-input";
-        inputReplace.placeholder = "Enter text to replace";
-        const button = document.createElement("button");
-        button.className = "replace-all-button";
-        button.textContent = "Replace All";
-        this.box.appendChild(inputFind);
-        this.box.appendChild(document.createElement("br"));
-        this.box.appendChild(inputReplace);
-        this.box.appendChild(document.createElement("br"));
-        this.box.appendChild(button);
-        main.prepend(this.box);
-        button.addEventListener("click", () => this.replaceAll());
+
+    async create() {
+        this.modal = new Box("Find and replace", {
+            variant: "article",
+            headerLayout: "creator",
+            help: ArticleHelp.replace,
+        });
+        await this.modal.create();
+        this.box = this.modal.container;
+        this.box.classList.add("find-replace-panel");
+        this.modal.body((body) => {
+            body.classList.add("find-replace-body");
+            body.innerHTML = `
+                <label class="find-replace-label">
+                    <span>Find</span>
+                    <input class="input find-input" type="search"
+                        placeholder="Text to find"
+                        autocapitalize="off" autocomplete="off" spellcheck="false">
+                </label>
+                <label class="find-replace-label">
+                    <span>Replace with</span>
+                    <input class="input replace-input" type="text"
+                        placeholder="Replacement text"
+                        autocapitalize="off" autocomplete="off" spellcheck="false">
+                </label>
+            `;
+        });
+        this.modal.footer((footer) => {
+            footer.innerHTML = `
+                <button type="button" class="button button-secondary replace-cancel-btn">Cancel</button>
+                <button type="button" class="button replace-all-button">Replace all</button>
+            `;
+            footer.querySelector(".replace-cancel-btn").onclick = () =>
+                this.closeEditing();
+            footer.querySelector(".replace-all-button").onclick = () =>
+                this.replaceAll();
+        });
     }
+
     closeEditing() {
         if (!this.box) return;
         ReplaceText.list.delete(this.box);
-        this.box.remove();
+        this.modal?.close();
         this.box = null;
+        this.modal = null;
     }
+
     content() {
         return Select.container();
     }
+
     find(text) {
         const content = this.content();
         if (!content) return false;
+        const regex = new RegExp(this.escape(text), "i");
         const contentText = content.textContent || content.innerText;
-        if (!contentText.includes(text)) {
+        if (!regex.test(contentText)) {
             Alert.error("No occurrences found");
             return false;
         }
         return true;
     }
+
     textNodes(element) {
         const nodes = [];
         const walk = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
@@ -64,6 +90,7 @@ export class ReplaceText {
         while ((node = walk.nextNode())) nodes.push(node);
         return nodes;
     }
+
     validNode(node) {
         let parent = node.parentElement;
         while (parent) {
@@ -72,9 +99,11 @@ export class ReplaceText {
         }
         return true;
     }
+
     escape(text) {
         return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     }
+
     replaceAll() {
         if (!this.box) return;
         const find = this.box.querySelector(".find-input").value;
@@ -86,7 +115,7 @@ export class ReplaceText {
         if (!this.find(find)) return;
         const content = this.content();
         const nodes = this.textNodes(content).filter((n) => this.validNode(n));
-        const regex = new RegExp(this.escape(find), "g");
+        const regex = new RegExp(this.escape(find), "gi");
         let count = 0;
         nodes.forEach((node) => {
             const matches = node.textContent.match(regex);

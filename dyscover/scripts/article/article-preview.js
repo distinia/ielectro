@@ -1,10 +1,14 @@
 import { API } from "./api.js";
+import { PostResolver } from "./post-resolver.js";
+
 export class ArticlePreview {
     static list = new Map();
+
     constructor(link) {
         if (!link) return;
         this.link = link;
         this.url = this.link.url;
+        this.uuid = PostResolver.parseUuidFromUrl(this.url);
         this.element = null;
         this.timer = null;
         this.hovering = false;
@@ -12,23 +16,35 @@ export class ArticlePreview {
         this.loaded = false;
         this.loading = false;
         this.text = "";
+        this.title = "";
+        this.postId = "";
         this.image = null;
         this.imageExist = false;
-        this.heightIsBigger = false;
+        this.isVerticalImage = false;
         if (!this.isValid()) {
             return;
         }
         ArticlePreview.list.set(this.link.element, this);
     }
+
+    kind() {
+        const explicit = this.link.element?.dataset?.postType;
+        if (explicit === "document") return "document";
+        if (explicit === "article") return "article";
+        return PostResolver.linkKind(this.url);
+    }
+
     isValid() {
         if (/Mobi|Android/i.test(navigator.userAgent)) {
             return false;
         }
-        if (!this.url) {
+        if (!this.url || !PostResolver.isDyscoverUrl(this.url)) {
             return false;
         }
-        return this.url.startsWith("https://dyscover.ielectro.com/article/");
+        const kind = this.kind();
+        return kind === "article" || kind === "document";
     }
+
     startEditing() {
         if (this.showEvent) {
             this.link.element.removeEventListener("mouseenter", this.showEvent);
@@ -36,19 +52,32 @@ export class ArticlePreview {
         if (this.hideEvent) {
             this.link.element.removeEventListener("mouseleave", this.hideEvent);
         }
+        if (this.clickEvent) {
+            this.link.element.removeEventListener("click", this.clickEvent);
+        }
         clearTimeout(this.timer);
         this.hovering = false;
         this.hide();
     }
+
     closeEditing() {
+        if (this.kind() === "document") {
+            this.clickEvent = (e) => {
+                e.preventDefault();
+                void PostResolver.openOverlay(
+                    this.link.element.dataset.postId,
+                    this.url,
+                );
+            };
+            this.link.element.addEventListener("click", this.clickEvent);
+            return;
+        }
+
         this.showEvent = () => {
             this.hovering = true;
             clearTimeout(this.timer);
             this.timer = setTimeout(() => {
-                if (!this.hovering) {
-                    return;
-                }
-                if (this.isOpen) {
+                if (!this.hovering || this.isOpen) {
                     return;
                 }
                 if (this.loaded) {
@@ -56,33 +85,47 @@ export class ArticlePreview {
                     return;
                 }
                 this.show();
-            }, 200);
+            }, 220);
         };
         this.hideEvent = () => {
             this.hovering = false;
             clearTimeout(this.timer);
-            this.hide();
+            this.timer = setTimeout(() => this.hide(), 120);
         };
         this.link.element.addEventListener("mouseenter", this.showEvent);
         this.link.element.addEventListener("mouseleave", this.hideEvent);
     }
+
     async show() {
         if (this.loading || this.loaded) {
             return;
         }
         this.loading = true;
         try {
-            const file = this.url.split("/").pop() + '.html';
-            const data = await API.getArticlePreview(file);
+            let uuid = this.uuid;
+            if (!PostResolver.isUuid(uuid)) {
+                uuid = await API.resolveArticleUuid(uuid);
+            }
+            if (!PostResolver.isUuid(uuid)) {
+                return;
+            }
+            const data = await API.getArticlePreview(uuid);
             if (!this.hovering) {
-                this.loading = false;
                 return;
             }
             this.text = data.text;
+            this.title = data.title;
+            this.uuid = data.uuid || uuid;
+            this.postId = String(data.id || this.link.element.dataset.postId || "");
             this.imageExist = data.status;
-            if (this.imageExist) {
-                this.image = data.url;
-                await this.checkImage();
+            this.image = data.url;
+            if (data.articleUrl && !PostResolver.isUuid(PostResolver.parseUuidFromUrl(this.url))) {
+                const hash = this.url.includes("#") ? this.url.slice(this.url.indexOf("#")) : "";
+                this.url = data.articleUrl + hash;
+                this.link.element.href = this.url;
+            }
+            if (this.imageExist && this.image) {
+                await this.measureImage();
             }
             this.loaded = true;
             this.create();
@@ -92,6 +135,19 @@ export class ArticlePreview {
             this.loading = false;
         }
     }
+
+    measureImage() {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.src = this.image;
+            img.onload = () => {
+                this.isVerticalImage = img.height > img.width * 1.05;
+                resolve();
+            };
+            img.onerror = () => resolve();
+        });
+    }
+
     hide() {
         if (!this.isOpen || !this.element) {
             return;
@@ -100,82 +156,100 @@ export class ArticlePreview {
         this.element = null;
         this.isOpen = false;
     }
-    checkImage() {
-        return new Promise((resolve) => {
-            const img = new Image();
-            img.src = this.image;
-            img.onload = () => {
-                this.heightIsBigger = img.height >= img.width;
-                resolve();
-            };
-            img.onerror = () => resolve();
+
+    position() {
+        const rect = this.link.element.getBoundingClientRect();
+        const width = this.isVerticalImage ? Math.min(400, window.innerWidth - 24) : Math.min(330, window.innerWidth - 24);
+        const height = this.element?.offsetHeight || 320;
+        let x = rect.left + rect.width / 2 - width / 2;
+        let y = rect.top + window.scrollY - height - 14;
+        if (y < window.scrollY + 8) {
+            y = rect.bottom + window.scrollY + 14;
+        }
+        x = Math.max(12, Math.min(x, window.innerWidth - width - 12));
+        this.element.style.left = `${x}px`;
+        this.element.style.top = `${y}px`;
+        this.element.style.width = `${width}px`;
+    }
+
+    bindBoxHover() {
+        this.element.addEventListener("mouseenter", () => {
+            this.hovering = true;
+            clearTimeout(this.timer);
+        });
+        this.element.addEventListener("mouseleave", () => {
+            this.hovering = false;
+            this.hide();
         });
     }
-    position(width, height) {
-        const rect = this.link.element.getBoundingClientRect();
-        let x = rect.left + window.scrollX;
-        let y = rect.bottom + window.scrollY + 10;
-        if (height > window.innerHeight - rect.bottom - 10) {
-            y = rect.top + window.scrollY - height - 10;
-        }
-        if (width > window.innerWidth - rect.left) {
-            x = rect.right + window.scrollX - width;
-        }
-        this.element.style.left = x + "px";
-        this.element.style.top = y + "px";
+
+    async openLinkedPost(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        await PostResolver.openOverlay(
+            this.postId || this.link.element.dataset.postId,
+            this.url,
+        );
     }
+
     create() {
         if (!this.hovering) {
             return;
         }
         this.hide();
-        this.element = document.createElement("a");
+        this.element = document.createElement("div");
         this.element.className = "article-box";
-        this.element.href = this.url;
-        const text = document.createElement("div");
-        text.className = "article-text";
+        if (this.isVerticalImage) {
+            this.element.classList.add("is-vertical");
+        }
+        this.element.setAttribute("role", "tooltip");
+
+        const body = document.createElement("div");
+        body.className = "article-box-body";
         const paragraph = document.createElement("p");
-        paragraph.innerHTML = this.text;
-        let width;
-        let height;
-        if (this.heightIsBigger) {
-            this.element.style.flexDirection = "row";
-            text.style.width = "220px";
-            paragraph.style.maxHeight = "225px";
-            width = 400;
-            height = 255;
+        if (this.title) {
+            paragraph.innerHTML = `<b>${this.escapeHtml(this.title)}</b> ${this.text}`;
         } else {
-            this.element.style.flexDirection = "column";
-            text.style.width = "330px";
-            paragraph.style.maxHeight = "160px";
-            width = 330;
-            height = this.imageExist ? 341 : 160;
+            paragraph.innerHTML = this.text;
         }
-        if (this.imageExist) {
-            const image = document.createElement("div");
-            image.className = "article-image";
-            if (this.heightIsBigger) {
-                image.style.width = "180px";
-                image.style.height = "255px";
+        body.appendChild(paragraph);
+
+        if (this.imageExist && this.image) {
+            const media = document.createElement("button");
+            media.type = "button";
+            media.className = "article-box-media";
+            media.style.backgroundImage = `url('${this.image}')`;
+            media.setAttribute("aria-label", "Open article");
+            media.addEventListener("click", (e) => this.openLinkedPost(e));
+            if (this.isVerticalImage) {
+                this.element.append(body, media);
             } else {
-                image.style.width = "330px";
-                image.style.height = "181px";
+                this.element.append(media, body);
             }
-            image.style.background = `url('${this.image}') center/cover`;
-            image.style.borderBottom = "1px solid #ddd";
-            this.element.appendChild(image);
+        } else {
+            this.element.appendChild(body);
         }
-        text.appendChild(paragraph);
-        this.element.appendChild(text);
+
         document.body.appendChild(this.element);
-        this.position(width, height);
+        this.bindBoxHover();
+        this.position();
         this.isOpen = true;
         requestAnimationFrame(() => {
             if (this.element) {
-                this.element.style.opacity = "1";
+                this.element.classList.add("is-visible");
+                this.position();
             }
         });
     }
+
+    escapeHtml(value) {
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+    }
+
     delete() {
         this.startEditing();
         ArticlePreview.list.delete(this.link.element);

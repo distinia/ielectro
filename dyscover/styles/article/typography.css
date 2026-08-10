@@ -28,10 +28,16 @@
 }
 
 .sub-heading {
-    font-size: 1.22rem;
-    color: #475569;
-    margin-bottom: 0.85rem;
-    font-weight: 600;
+    font-size: 1.35rem;
+    color: #1e3a5f;
+    margin-top: 1.75rem;
+    margin-bottom: 0.95rem;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    border-left: 4px solid rgba(21, 101, 192, 0.55);
+    padding-left: 0.75rem;
+    background: linear-gradient(90deg, rgba(21, 101, 192, 0.08), transparent 72%);
+    border-radius: 0 8px 8px 0;
 }
 
 .center {

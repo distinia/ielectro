@@ -23,6 +23,9 @@ export class Api {
     static article = (uuid) =>
         `${Api.base}/articles/${encodeURIComponent(uuid)}`;
 
+    static articlePreview = (uuid) =>
+        `${Api.base}/articles/${encodeURIComponent(uuid)}/preview`;
+
     static user = (idOrUsername) =>
         `${Api.base}/users/${encodeURIComponent(idOrUsername)}`;
     static userId(id) {

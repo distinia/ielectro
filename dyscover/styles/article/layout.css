@@ -90,6 +90,10 @@ body.article-page main {
     background: linear-gradient(90deg, #1565c0, #64b5f6 70%, transparent);
 }
 
+body.article-page.is-editing .article-header {
+    display: none;
+}
+
 .article-scroll {
     flex: 1 1 auto;
     min-height: 0;

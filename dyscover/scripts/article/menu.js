@@ -1,5 +1,23 @@
+import { Icons } from "../core/index.js";
+
+const MENU_ICONS = {
+    "Add row up": "arrow-up",
+    "Add row down": "arrow-down",
+    "Delete row": "trash-2",
+    "Add column left": "arrow-left",
+    "Add column right": "arrow-right",
+    "Delete column": "columns-2",
+    "Delete table": "table-2",
+    Open: "settings-2",
+    Delete: "trash-2",
+    Replace: "refresh-cw",
+    "Change Position": "move-horizontal",
+    "Set As Cover": "image",
+};
+
 export class Menu {
     static current = null;
+
     constructor(instance) {
         if (!instance) return;
         this.instance = instance;
@@ -7,6 +25,7 @@ export class Menu {
         this.actions = instance.menuActions || [];
         this.element = null;
     }
+
     startEditing() {
         if (!this.instanceElement) return;
         this.contextHandler = (e) => {
@@ -28,6 +47,7 @@ export class Menu {
         this.instanceElement.addEventListener("contextmenu", this.contextHandler);
         document.addEventListener("click", this.clickHandler);
     }
+
     open(x, y) {
         this.hide();
         Menu.current = this;
@@ -40,7 +60,8 @@ export class Menu {
             }
             const option = document.createElement("div");
             option.className = "menuOption";
-            option.textContent = action.name;
+            const iconName = MENU_ICONS[action.name] || "circle";
+            option.innerHTML = `<i data-icon="${iconName}"></i><span>${action.name}</span>`;
             option.addEventListener("click", () => {
                 action.action.call(this.instance);
                 this.hide();
@@ -48,6 +69,7 @@ export class Menu {
             this.element.appendChild(option);
         });
         document.body.appendChild(this.element);
+        void Icons.load(this.element);
         this.element.style.left = x + "px";
         this.element.style.top = y + "px";
         requestAnimationFrame(() => {
@@ -56,6 +78,7 @@ export class Menu {
             }
         });
     }
+
     hide() {
         if (!this.element) return;
         if (Menu.current === this) {
@@ -72,6 +95,7 @@ export class Menu {
             { once: true },
         );
     }
+
     closeEditing() {
         if (this.contextHandler) {
             this.instanceElement.removeEventListener(

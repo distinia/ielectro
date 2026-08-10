@@ -1,6 +1,6 @@
 import { Alert } from "../core/index.js";
 import { Select } from "./select.js";
-import { GenerateArticle } from "./generate-article.js";
+import { ElementTree } from "./element-tree.js";
 import { Paragraph } from "./paragraph.js";
 import { Caption } from "./caption.js";
 export class List {
@@ -80,7 +80,7 @@ export class List {
         element.classList.add(obj.element);
         obj.items?.forEach(item => {
             const li = document.createElement("li");
-            GenerateArticle.addChildren(li, item);
+            ElementTree.addChildren(li, item);
             element.append(li);
         });
         return new List(element);
@@ -88,7 +88,7 @@ export class List {
     export() {
         return {
             element: List.classMap[this.tag],
-            items: [...this.element.querySelectorAll(":scope > li")].map(li => GenerateArticle.exportChildren(li))
+            items: [...this.element.querySelectorAll(":scope > li")].map(li => ElementTree.exportChildren(li))
         };
     }
     startEditing() {
@@ -103,6 +103,18 @@ export class List {
             }
         };
         this.keydownEvent = (e) => {
+            if (e.key === "Enter") {
+                const li = e.target.closest("li");
+                if (li && li.closest("ul, ol") === this.element) {
+                    const text = li.innerText.replace(/\u200B/g, "").trim();
+                    if (!text) {
+                        e.preventDefault();
+                        li.remove();
+                        this.exitToParagraph();
+                        return;
+                    }
+                }
+            }
             if (e.key !== "Backspace") {
                 return;
             }
@@ -133,8 +145,8 @@ export class List {
             this.element.removeEventListener("keydown", this.keydownEvent);
         }
     }
-    delete() {
-        const items = [...this.element.querySelectorAll("li")];
+    exitToParagraph() {
+        const items = [...this.element.querySelectorAll(":scope > li")];
         const html = items.map((li) => li.innerHTML).join("<br>");
         const paragraph = Paragraph.create(html || "<br>");
         this.closeEditing();
@@ -144,5 +156,8 @@ export class List {
         instance.startEditing();
         Select.cursorToEnd(paragraph);
         return instance;
+    }
+    delete() {
+        return this.exitToParagraph();
     }
 }

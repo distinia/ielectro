@@ -4,24 +4,17 @@ use Nesh\Query;
 use Nesh\Request;
 use Nesh\Response;
 use Nesh\Routing;
+use Nesh\Validate;
 class Explore
 {
     public function index(): void
     {
         Request::get();
         if (Routing::segment(3) === 'all') {
-            $term = trim((string) Routing::segment(2));
-            if ($term === '') {
-                Response::badRequest('Missing search term');
-            }
-            Response::success(ExploreSearch::all($term));
+            Response::success(ExploreSearch::all(self::searchTerm(2)));
             return;
         }
-        $term = Routing::slug(2);
-        if ($term === null) {
-            Response::badRequest('Missing search term');
-        }
-        Response::success(ExploreSearch::all($term));
+        Response::success(ExploreSearch::all(self::searchTerm(2)));
     }
     public function recents(): void
     {
@@ -65,17 +58,31 @@ class Explore
     }
     private function term(): string
     {
-        $term = trim((string) Routing::segment(3));
-        if ($term === '') {
+        return self::searchTerm(3);
+    }
+    private static function searchTerm(int $index): string
+    {
+        $raw = trim((string) Routing::segment($index));
+        if ($raw === '') {
             Response::badRequest('Missing search term');
         }
-        return $term;
+        if (Validate::uuid(strtolower($raw))) {
+            return strtolower($raw);
+        }
+        $slug = Routing::slug($index);
+        if ($slug !== null) {
+            return $slug;
+        }
+        return $raw;
     }
 }
 class ExploreSearch
 {
     public static function all(string $term): array
     {
+        if (Validate::uuid(strtolower($term))) {
+            return self::allByUuid(strtolower($term));
+        }
         return [
             'articles' => self::posts('article', $term),
             'images' => self::posts('image', $term),
@@ -85,6 +92,40 @@ class ExploreSearch
             'templates' => self::posts('template', $term),
             'users' => self::users($term),
         ];
+    }
+    public static function allByUuid(string $uuid): array
+    {
+        $result = [
+            'articles' => [],
+            'images' => [],
+            'videos' => [],
+            'audios' => [],
+            'documents' => [],
+            'templates' => [],
+            'users' => [],
+        ];
+        $row = self::fetchPostByUuid($uuid);
+        if (!$row) {
+            return $result;
+        }
+        $mapped = PostData::mapRows([$row]);
+        $post = $mapped[0] ?? null;
+        if (!$post) {
+            return $result;
+        }
+        $bucket = match ((string) ($row['type'] ?? '')) {
+            'article' => 'articles',
+            'image' => 'images',
+            'video' => 'videos',
+            'audio' => 'audios',
+            'document' => 'documents',
+            'template' => 'templates',
+            default => null,
+        };
+        if ($bucket !== null) {
+            $result[$bucket] = [$post];
+        }
+        return $result;
     }
     public static function recents(): array
     {
@@ -109,6 +150,10 @@ class ExploreSearch
     }
     public static function posts(string $type, string $term): array
     {
+        if (Validate::uuid(strtolower($term))) {
+            $row = self::fetchPostByUuid(strtolower($term), $type);
+            return $row ? PostData::mapRows([$row]) : [];
+        }
         $like = '%' . $term . '%';
         $normalizedTag = mb_strtolower(ltrim(trim($term), '#'));
         $tagSql = '';
@@ -144,6 +189,34 @@ class ExploreSearch
             $params
         );
         return PostData::mapRows($rows);
+    }
+    private static function fetchPostByUuid(string $uuid, ?string $type = null): ?array
+    {
+        $params = [strtolower($uuid)];
+        $typeSql = '';
+        if ($type !== null) {
+            $typeSql = ' AND p.type = ?';
+            $params[] = $type;
+        }
+        $row = Query::fetch(
+            "SELECT
+                p.*,
+                du.account_id,
+                s.views,
+                s.likes,
+                s.comments,
+                s.shares,
+                s.bookmarks
+            FROM ielectro_dyscover.dyscover_posts p
+            INNER JOIN ielectro_dyscover.dyscover_users du ON du.id = p.user_id
+            LEFT JOIN ielectro_dyscover.dyscover_post_statistics s ON s.post_id = p.id
+            WHERE p.uuid = ?
+            AND p.status = 'active'
+            AND p.visibility = 'public'{$typeSql}
+            LIMIT 1",
+            $params
+        );
+        return is_array($row) ? $row : null;
     }
     public static function users(string $term): array
     {

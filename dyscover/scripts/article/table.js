@@ -1,7 +1,7 @@
 import { Alert } from "../core/index.js";
 import { Select } from "./select.js";
 import { Menu } from "./menu.js";
-import { GenerateArticle } from "./generate-article.js";
+import { ElementTree } from "./element-tree.js";
 import { Paragraph } from "./paragraph.js";
 export class Table {
     static list = new Map();
@@ -50,7 +50,7 @@ export class Table {
     }
     static async init() {
         const range = Select.cursor();
-        const parent = Select.tag();
+        const parent = Select.block(range);
         if (!range || !parent) {
             return;
         }
@@ -95,12 +95,12 @@ export class Table {
         const element = Table.create(obj.rows.length, obj.headers.length);
         const headers = element.querySelectorAll("th");
         obj.headers.forEach((cell, i) => {
-            GenerateArticle.addChildren(headers[i], cell);
+            ElementTree.addChildren(headers[i], cell);
         });
         const rows = element.querySelectorAll("tbody tr");
         obj.rows.forEach((row, i) => {
             row.forEach((cell, j) => {
-                GenerateArticle.addChildren(rows[i].cells[j], cell);
+                ElementTree.addChildren(rows[i].cells[j], cell);
             });
         });
         return new Table(element);
@@ -108,8 +108,8 @@ export class Table {
     export() {
         return {
             element: Table.className,
-            headers: [...this.element.querySelectorAll("thead th")].map(th => GenerateArticle.exportChildren(th)),
-            rows: [...this.element.querySelectorAll("tbody tr")].map(row => [...row.cells].map(cell => GenerateArticle.exportChildren(cell)))
+            headers: [...this.element.querySelectorAll("thead th")].map(th => ElementTree.exportChildren(th)),
+            rows: [...this.element.querySelectorAll("tbody tr")].map(row => [...row.cells].map(cell => ElementTree.exportChildren(cell)))
         };
     }
     startEditing() {
@@ -137,14 +137,23 @@ export class Table {
     }
     position() {
         const range = Select.cursor();
-        const element = Select.tag(range);
+        const element = Select.block(range);
         if (!element) {
             return null;
         }
         const rowElement = element.closest("tr");
-        const cellElement = element.closest("td");
+        const cellElement = element.closest("td, th");
         if (!rowElement || !cellElement) {
             return null;
+        }
+        const bodyRow = rowElement.closest("tbody")
+            ? rowElement
+            : this.tbody.rows[0];
+        if (!bodyRow || bodyRow.parentElement !== this.tbody) {
+            return {
+                row: 0,
+                column: Array.from(this.thead.rows[0].cells).indexOf(cellElement),
+            };
         }
         return {
             row: Array.from(this.tbody.rows).indexOf(rowElement),
@@ -189,6 +198,7 @@ export class Table {
             this.tbody.rows[i].insertCell(position.column).innerHTML = "<br>";
         }
         const th = document.createElement("th");
+        th.innerHTML = "<br>";
         this.thead.rows[0].insertBefore(
             th,
             this.thead.rows[0].cells[position.column],
@@ -202,6 +212,7 @@ export class Table {
             this.tbody.rows[i].insertCell(position.column + 1).innerHTML = "<br>";
         }
         const th = document.createElement("th");
+        th.innerHTML = "<br>";
         this.thead.rows[0].insertBefore(
             th,
             this.thead.rows[0].cells[position.column + 1],

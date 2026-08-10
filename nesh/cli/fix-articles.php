@@ -41,6 +41,8 @@ $stats = [
     'urls_unresolved' => 0,
     'templates_fixed' => 0,
     'templates_missing' => 0,
+    'preview_images_updated' => 0,
+    'preview_images_missing' => 0,
 ];
 
 foreach ($files as $file) {
@@ -65,6 +67,10 @@ foreach ($files as $file) {
     $stats['templates_missing'] += $templatesMissing;
 }
 
+[$previewUpdated, $previewMissing] = syncPreviewImages($userId, $files);
+$stats['preview_images_updated'] = $previewUpdated;
+$stats['preview_images_missing'] = $previewMissing;
+
 echo 'Article cleanup completed.' . PHP_EOL;
 echo '  Files processed: ' . $stats['files'] . PHP_EOL;
 echo '  Sections removed: ' . $stats['sections_removed'] . PHP_EOL;
@@ -73,6 +79,44 @@ echo '  URLs replaced: ' . $stats['urls_replaced'] . PHP_EOL;
 echo '  URLs unresolved: ' . $stats['urls_unresolved'] . PHP_EOL;
 echo '  Template attributes fixed: ' . $stats['templates_fixed'] . PHP_EOL;
 echo '  Template attributes unresolved: ' . $stats['templates_missing'] . PHP_EOL;
+echo '  Preview images updated: ' . $stats['preview_images_updated'] . PHP_EOL;
+echo '  Preview images missing: ' . $stats['preview_images_missing'] . PHP_EOL;
+
+function syncPreviewImages(int $userId, array $files): array
+{
+    require_once dirname(__DIR__, 2) . '/dyscover/api/article-content.php';
+
+    $updated = 0;
+    $missing = 0;
+
+    foreach ($files as $file) {
+        $basename = basename($file, '.html');
+        if (!preg_match('/^[0-9a-f-]{36}$/i', $basename)) {
+            continue;
+        }
+        $html = (string) file_get_contents($file);
+        $cover = \Dyscover\ArticleContent::extractCoverImage($html);
+        if ($cover === '') {
+            $missing++;
+            continue;
+        }
+        $rows = Query::execute(
+            'UPDATE ielectro_dyscover.dyscover_posts
+            SET preview_image = ?
+            WHERE user_id = ?
+            AND uuid = ?
+            AND type = \'article\'',
+            [$cover, $userId, strtolower($basename)]
+        );
+        if ($rows > 0) {
+            $updated++;
+        } else {
+            $missing++;
+        }
+    }
+
+    return [$updated, $missing];
+}
 
 function buildTemplateMap(int $userId): array
 {
@@ -168,15 +212,21 @@ function buildArticleMap(int $userId): array
 
     $map = [];
     foreach ($rows as $row) {
-        $legacy = legacyBasename((string) $row['title']);
+        $title = trim((string) $row['title']);
+        $legacy = legacyBasename($title);
         if ($legacy === '') {
             continue;
         }
 
         $url = APP_URL . '/article/' . $row['uuid'];
-        foreach (legacySlugVariants($legacy) as $key) {
+        $keys = array_merge(
+            legacySlugVariants($legacy),
+            [$title, str_replace('_', ' ', $legacy)]
+        );
+        foreach ($keys as $key) {
             $map[$key] = $url;
             $map[strtolower($key)] = $url;
+            $map[rawurlencode($key)] = $url;
         }
     }
 
@@ -199,24 +249,103 @@ function legacySlugVariants(string $legacy): array
     ]));
 }
 
+function stripUnresolvedArticleLinks(
+    string $html,
+    array $articleMap,
+    int $userId,
+    int &$unresolved
+): array {
+    $stripped = 0;
+    $html = preg_replace_callback(
+        '~<a\b([^>]*?)href="https://dyscover\.ielectro\.com/article/([^"\'<>?]+)"([^>]*)>(.*?)</a>~is',
+        static function (array $matches) use ($articleMap, $userId, &$unresolved, &$stripped): string {
+            $slug = rawurldecode($matches[2]);
+            $replacedCount = 0;
+            $localUnresolved = 0;
+            $resolved = resolveArticleUrl(
+                $slug,
+                $articleMap,
+                $userId,
+                $replacedCount,
+                $localUnresolved
+            );
+            if ($resolved !== null) {
+                return $matches[0];
+            }
+            $unresolved++;
+            $stripped++;
+            return $matches[4];
+        },
+        $html
+    ) ?? $html;
+
+    return [$html, $stripped];
+}
+
 function resolveArticleUrl(
     string $slug,
     array $articleMap,
+    int $userId,
     int &$replaced,
     int &$unresolved
 ): ?string {
+    $fragment = '';
+    if (str_contains($slug, '#')) {
+        [$slug, $fragment] = explode('#', $slug, 2);
+    }
+
     $slug = rawurldecode($slug);
     $slug = preg_replace('/\.(php|html)$/i', '', $slug) ?? $slug;
+
+    if (\Nesh\Validate::uuid(strtolower($slug))) {
+        $url = APP_URL . '/article/' . strtolower($slug);
+        if ($fragment !== '') {
+            $url .= '#' . $fragment;
+        }
+        return $url;
+    }
 
     foreach (legacySlugVariants(str_replace('-', '_', $slug)) as $key) {
         if (isset($articleMap[$key])) {
             $replaced++;
-            return $articleMap[$key];
+            $url = $articleMap[$key];
+            if ($fragment !== '') {
+                $url .= '#' . $fragment;
+            }
+            return $url;
         }
         if (isset($articleMap[strtolower($key)])) {
             $replaced++;
-            return $articleMap[strtolower($key)];
+            $url = $articleMap[strtolower($key)];
+            if ($fragment !== '') {
+                $url .= '#' . $fragment;
+            }
+            return $url;
         }
+    }
+
+    $titleGuess = str_replace(['_', '-'], ' ', $slug);
+    $row = Query::fetch(
+        "SELECT uuid
+        FROM ielectro_dyscover.dyscover_posts
+        WHERE user_id = ?
+        AND type = 'article'
+        AND status IN ('active', 'hidden')
+        AND (
+            LOWER(title) = LOWER(?)
+            OR LOWER(REPLACE(title, ' ', '_')) = LOWER(?)
+            OR LOWER(REPLACE(title, ' ', '-')) = LOWER(?)
+        )
+        LIMIT 1",
+        [$userId, $titleGuess, str_replace('-', '_', $slug), str_replace('_', '-', $slug)]
+    );
+    if ($row && !empty($row['uuid'])) {
+        $replaced++;
+        $url = APP_URL . '/article/' . $row['uuid'];
+        if ($fragment !== '') {
+            $url .= '#' . $fragment;
+        }
+        return $url;
     }
 
     $unresolved++;
@@ -303,26 +432,29 @@ function replaceUrls(string $html, array $map, array $articleMap, int $userId): 
 
     $html = preg_replace_callback(
         '#https://dyscover\.ielectro\.com/content/article/([^"\s>?]+?)(?:\.(?:php|html))?(?:\?[^"\s>]*)?#i',
-        function (array $matches) use ($articleMap, &$replaced, &$unresolved): string {
-            return resolveArticleUrl($matches[1], $articleMap, $replaced, $unresolved)
+        function (array $matches) use ($articleMap, $userId, &$replaced, &$unresolved): string {
+            return resolveArticleUrl($matches[1], $articleMap, $userId, $replaced, $unresolved)
                 ?? $matches[0];
         },
         $html
     ) ?? $html;
 
     $html = preg_replace_callback(
-        '~https://dyscover\.ielectro\.com/article/([^"\s<>?#]+)~i',
-        function (array $matches) use ($articleMap, &$replaced, &$unresolved): string {
+        '~https://dyscover\.ielectro\.com/article/([^"\'<>?]+)~i',
+        function (array $matches) use ($articleMap, $userId, &$replaced, &$unresolved): string {
             $slug = rawurldecode($matches[1]);
-            if (\Nesh\Validate::uuid(strtolower($slug))) {
+            if (\Nesh\Validate::uuid(strtolower(strtok($slug, '#') ?: $slug))) {
                 return $matches[0];
             }
 
-            return resolveArticleUrl($slug, $articleMap, $replaced, $unresolved)
+            return resolveArticleUrl($slug, $articleMap, $userId, $replaced, $unresolved)
                 ?? $matches[0];
         },
         $html
     ) ?? $html;
+
+    [$html, $stripped] = stripUnresolvedArticleLinks($html, $articleMap, $userId, $unresolved);
+    $replaced += $stripped;
 
     $html = preg_replace_callback(
         '#https://dyscover\.ielectro\.com/assets/users/' . $userId . '/(images|videos|audios|documents)/([0-9a-f-]{36})_([^"\s>?]+?)(?:\?[^"\s>]*)?#i',

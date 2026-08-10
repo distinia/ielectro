@@ -1,5 +1,5 @@
 import { Select } from "./select.js";
-import { GenerateArticle } from "./generate-article.js";
+import { ElementTree } from "./element-tree.js";
 export class Paragraph {
     static list = new Map();
     static tag = "p";
@@ -19,13 +19,13 @@ export class Paragraph {
     static generate(obj) {
         const element = document.createElement(Paragraph.tag);
         element.classList.add(Paragraph.className);        
-        GenerateArticle.addChildren(element, obj.children);
+        ElementTree.addChildren(element, obj.children);
         return new Paragraph(element);
     }
     export() {
         return {
             element: Paragraph.className,
-            children: GenerateArticle.exportChildren(this.element)
+            children: ElementTree.exportChildren(this.element)
         };
     }
     static newLine(parent, element) {

@@ -14,6 +14,7 @@
     font-family: inherit;
     max-width: 100%;
     border-color: var(--border-subtle);
+    text-transform: none;
 }
 .select {
     margin: 8px 0;
@@ -55,6 +56,7 @@
     border-color: var(--border-subtle);
     resize: none;
     min-height: 120px;
+    text-transform: none;
 }
 .input:hover,
 .select:hover,

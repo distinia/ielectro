@@ -1,11 +1,10 @@
-import { Api } from "../core/api.js";
-import { App, Alert, Card, Request } from "../core/index.js";
+import { Alert } from "../core/index.js";
 import { Select } from "./select.js";
 import { Menu } from "./menu.js";
 import { WebSelector } from "./web-selector.js";
 import { Editor } from "./editor.js";
-import { getArticleState } from "./state.js";
-import { GenerateArticle } from "./generate-article.js";
+import { PostResolver } from "./post-resolver.js";
+import { ElementTree } from "./element-tree.js";
 import { Paragraph } from "./paragraph.js";
 export class Media {
     static list = new Map();
@@ -24,6 +23,7 @@ export class Media {
         this.type = this.detectType();
         this.url = this.detectURL();
         this.previewHandler = this.openPreview.bind(this);
+        this.previewNodesList = [];
         this.setMenu();
         Media.list.set(this.element, this);
     }
@@ -44,9 +44,9 @@ export class Media {
         const option = await Alert.select("Select source", ["Dyscover", "URL"]);
         if (!option) return;
         const type = variant.includes("image") ? "image" : variant;
-        const url = await WebSelector.init(option.toLowerCase(), type);
-        if (!url) return;
-        const element = Media.create(variant, url);
+        const picked = await WebSelector.init(option, type);
+        if (!picked?.url) return;
+        const element = Media.create(variant, picked.url, picked.postId);
         if (!element) return;
         const instance = new Media(element);
         instance.insert(parent, range);
@@ -57,7 +57,7 @@ export class Media {
         const element = Media.create(obj.element, obj.url);
         const instance = new Media(element);
         if (obj.element === Media.classMap.image) {
-            GenerateArticle.addChildren(instance.element.querySelector("figcaption"), obj.children);
+            ElementTree.addChildren(instance.element.querySelector("figcaption"), obj.children);
         }
         return instance;
     }
@@ -67,14 +67,17 @@ export class Media {
             url: this.url
         };
         if (this.variant === Media.classMap.image) {
-            data.children = GenerateArticle.exportChildren(this.element.querySelector("figcaption"));
+            data.children = ElementTree.exportChildren(this.element.querySelector("figcaption"));
         }
         return data;
     }
     startEditing() {
         this.element.contentEditable = false;
-        this.element.removeEventListener("click", this.previewHandler);
+        this.unbindPreview();
         if (this.variant === Media.classMap.image) {
+            this.element.querySelector("figcaption")?.setAttribute("contenteditable", "true");
+        }
+        if (this.variant === Media.classMap.video) {
             this.element.querySelector("figcaption")?.setAttribute("contenteditable", "true");
         }
         this.menu?.startEditing();
@@ -84,44 +87,89 @@ export class Media {
         if (this.variant === Media.classMap.image) {
             this.element.querySelector("figcaption")?.setAttribute("contenteditable", "false");
         }
-        const role = getArticleState();
-        if (role === "user" || role === "editor") {
-            this.element.addEventListener("click", this.previewHandler);
+        if (this.variant === Media.classMap.video) {
+            this.element.querySelector("figcaption")?.setAttribute("contenteditable", "false");
+        }
+        if (!Editor.current?.isEditing) {
+            this.bindPreview();
         }
         this.menu?.closeEditing();
     }
-    async openPreview() {
-        if (Editor.current?.isEditing) return;
-        try {
-            const url = new URL(this.url);
-            if (url.hostname !== "dyscover.ielectro.com") {
-                return;
-            }
-            const parts = url.pathname.split("/").filter(Boolean);
-            const id = Number(parts[parts.length - 1]);
-            if (!id) return;
-            const res = await Request.get(Api.post(id));
-            if (!res) return;
-            const card = new Card(App.enrichPost(Api.record(res) || {}));
-            await card.openOverlay();
-        } catch {}
-    }
-    static create(variant, url) {
-        switch (variant) {
-            case this.classMap.image:
-                return this.createImage(url);
-            case this.classMap.imageTable:
-                return this.createImageTable(url);
-            case this.classMap.imageTemplate:
-                return this.createTemplateImage(url);
-            case this.classMap.iconImage:
-                return this.createIcon(url);
-            case this.classMap.video:
-                return this.createVideo(url);
-            case this.classMap.audio:
-                return this.createAudio(url);
+    previewNodes() {
+        if (this.variant === Media.classMap.image) {
+            const img = this.element.querySelector("img");
+            return img ? [img] : [];
         }
-        return null;
+        if (this.variant === Media.classMap.video) {
+            const video = this.element.querySelector("video");
+            return video ? [video] : [];
+        }
+        if (this.variant === Media.classMap.audio) {
+            return [this.element];
+        }
+        if (this.element.tagName === "IMG") {
+            return [this.element];
+        }
+        return [];
+    }
+    bindPreview() {
+        this.unbindPreview();
+        const nodes = this.previewNodes();
+        if (!nodes.length) {
+            return;
+        }
+        this.previewNodesList = nodes;
+        nodes.forEach((node) => {
+            node.classList.add("media-openable");
+            node.addEventListener("click", this.previewHandler);
+        });
+        if (this.element !== nodes[0]) {
+            this.element.classList.add("media-openable");
+        }
+    }
+    unbindPreview() {
+        (this.previewNodesList || []).forEach((node) => {
+            node.classList.remove("media-openable");
+            node.removeEventListener("click", this.previewHandler);
+        });
+        this.previewNodesList = [];
+        this.element.classList.remove("media-openable");
+    }
+    async openPreview(e) {
+        if (Editor.current?.isEditing) return;
+        e.preventDefault();
+        e.stopPropagation();
+        await PostResolver.openOverlay(
+            this.element.dataset.postId,
+            this.url,
+        );
+    }
+    static create(variant, url, postId = "") {
+        let element = null;
+        switch (variant) {
+            case Media.classMap.image:
+                element = Media.createImage(url);
+                break;
+            case Media.classMap.imageTable:
+                element = Media.createImageTable(url);
+                break;
+            case Media.classMap.imageTemplate:
+                element = Media.createTemplateImage(url);
+                break;
+            case Media.classMap.iconImage:
+                element = Media.createIcon(url);
+                break;
+            case Media.classMap.video:
+                element = Media.createVideo(url);
+                break;
+            case Media.classMap.audio:
+                element = Media.createAudio(url);
+                break;
+        }
+        if (element && postId) {
+            element.dataset.postId = String(postId);
+        }
+        return element;
     }
     static createImage(url) {
         const figure = document.createElement("figure");
@@ -161,14 +209,20 @@ export class Media {
         return img;
     }
     static createVideo(url) {
+        const figure = document.createElement("figure");
+        figure.classList.add(Media.classMap.video, "video-wide");
+        figure.contentEditable = false;
         const video = document.createElement("video");
-        video.classList.add(this.classMap.video);
         video.src = url;
         video.controls = true;
         video.loading = "lazy";
-        video.preload = "none";
-        video.contentEditable = false;
-        return video;
+        video.preload = "metadata";
+        video.playsInline = true;
+        const caption = document.createElement("figcaption");
+        caption.textContent = "Video";
+        figure.appendChild(video);
+        figure.appendChild(caption);
+        return figure;
     }
     static createAudio(url) {
         const audio = document.createElement("audio");
@@ -222,6 +276,9 @@ export class Media {
     detectURL() {
         if (this.variant === Media.classMap.image) {
             return this.element.querySelector("img")?.src || "";
+        }
+        if (this.variant === Media.classMap.video) {
+            return this.element.querySelector("video")?.src || this.element.src || "";
         }
         return this.element.src || "";
     }
@@ -280,20 +337,27 @@ export class Media {
     async replace() {
         const option = await Alert.select("Select source", ["Dyscover", "URL"]);
         if (!option) return;
-        const url = await WebSelector.init(option.toLowerCase(), this.type);
-        if (!url) return;
+        const picked = await WebSelector.init(option, this.type);
+        if (!picked?.url) return;
         switch (this.variant) {
             case Media.classMap.image:
-                this.element.querySelector("img").src = url;
+                this.element.querySelector("img").src = picked.url;
+                break;
+            case Media.classMap.video:
+                this.element.querySelector("video").src = picked.url;
                 break;
             default:
-                this.element.src = url;
+                this.element.src = picked.url;
                 break;
         }
-        this.url = url;
+        if (picked.postId) {
+            this.element.dataset.postId = String(picked.postId);
+        }
+        this.url = picked.url;
     }
     delete() {
         this.menu?.closeEditing();
+        this.unbindPreview();
         Media.list.delete(this.element);
         this.element.remove();
     }

@@ -49,9 +49,6 @@
 .creator-table thead tr,
 .tabs thead tr {
     background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 42%, #1565c0 100%);
-    box-shadow:
-        0 8px 24px rgba(21, 101, 192, 0.24),
-        inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
 .creator-table th,

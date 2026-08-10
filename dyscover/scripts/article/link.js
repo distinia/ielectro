@@ -2,10 +2,12 @@ import { Alert } from "../core/index.js";
 import { Select } from "./select.js";
 import { WebSelector } from "./web-selector.js";
 import { ArticlePreview } from "./article-preview.js";
+
 export class Link {
     static list = new Map();
     static tag = "a";
     static className = "link";
+
     constructor(element) {
         if (!element) return;
         this.element = element;
@@ -14,6 +16,7 @@ export class Link {
         this.preview = new ArticlePreview(this);
         Link.list.set(this.element, this);
     }
+
     static async init() {
         const range = Select.cursor();
         const element = Select.element(range);
@@ -49,8 +52,9 @@ export class Link {
             "URL",
         ]);
         if (!option) return;
-        let url = await WebSelector.init(option.toLowerCase(), "article");
-        if (!url) return;
+        const picked = await WebSelector.init(option, "link");
+        if (!picked?.url) return;
+        let url = picked.url;
         if (!/^https?:\/\//i.test(url)) {
             url = "https://" + url;
         }
@@ -62,7 +66,7 @@ export class Link {
         } catch {
             return;
         }
-        const link = Link.create(url, text);
+        const link = Link.create(url, text, picked.postId, picked.postType);
         if (!link) return;
         range.deleteContents();
         range.insertNode(link);
@@ -70,7 +74,8 @@ export class Link {
         instance.startEditing();
         Select.cursorToEnd(instance.element);
     }
-    static create(url, text) {
+
+    static create(url, text, postId = "", postType = "") {
         if (!url || !text) {
             return null;
         }
@@ -80,25 +85,36 @@ export class Link {
         element.textContent = text;
         element.target = "_blank";
         element.rel = "noopener noreferrer";
+        if (postId) {
+            element.dataset.postId = String(postId);
+        }
+        if (postType) {
+            element.dataset.postType = postType;
+        }
         return element;
     }
+
     generate(obj) {
         const element = Link.create(obj.url, obj.text);
         return new Link(element);
     }
+
     export() {
         return {
             element: Link.className,
             text: this.element.textContent,
-            url: this.element.href
+            url: this.element.href,
         };
     }
+
     startEditing() {
         this.preview?.startEditing();
     }
+
     closeEditing() {
         this.preview?.closeEditing();
     }
+
     delete() {
         const fragment = document
             .createRange()
