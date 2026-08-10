@@ -18,6 +18,7 @@ import { Legend } from "./legend.js";
 import { Percentage } from "./percentage.js";
 import { Media } from "./media.js";
 import { Template } from "./template.js";
+import { getArticleState } from "./state.js";
 export class Editor {
     constructor() {
         this.elements = [Paragraph, Heading, Center, Bold, Italic, Caption, Link, List, Table, Legend, Percentage, Media, Template];
@@ -53,6 +54,20 @@ export class Editor {
             }
             el.classList.add("paragraph");
         });
+        container.querySelectorAll("figure.video").forEach((el) => {
+            if (
+                el.classList.contains("video-left") ||
+                el.classList.contains("video-right")
+            ) {
+                return;
+            }
+            el.classList.remove("video-wide");
+            el.classList.add("video-right");
+        });
+        container.querySelectorAll("figure.video video, video.video").forEach((video) => {
+            video.removeAttribute("controls");
+            video.controls = false;
+        });
     }
 
     loadElements() {
@@ -87,6 +102,7 @@ export class Editor {
             this.instruments = await API.getElements();
             this.create();
             this.events();
+            this.bindEscapeEdit();
             this.pasteElements();
         } catch (e) {
             Alert.error(e?.text || "Failed to load instruments");
@@ -154,6 +170,38 @@ export class Editor {
             }
         });
     }
+    bindEscapeEdit() {
+        if (Editor._escapeBound) {
+            return;
+        }
+        Editor._escapeBound = true;
+        document.addEventListener("keydown", (e) => {
+            if (e.key !== "Escape") {
+                return;
+            }
+            if (getArticleState() !== "editor" || !Editor.current) {
+                return;
+            }
+            if (
+                document.querySelector(
+                    ".prompt-container, .dysc-overlay, .post-overlay",
+                )
+            ) {
+                return;
+            }
+            const target = e.target;
+            if (
+                target instanceof HTMLElement &&
+                target.closest("input, textarea, select") &&
+                !target.closest(".content")
+            ) {
+                return;
+            }
+            e.preventDefault();
+            void Editor.toggleEditing();
+        });
+    }
+
     static async toggleEditing() {
         const editButton = document.querySelector(".index-edit-button");
         if (!Editor.current) return;

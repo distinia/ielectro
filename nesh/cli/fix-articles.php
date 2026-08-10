@@ -2,7 +2,9 @@
 
 use Dyscover\PostAssets;
 use Nesh\App;
+use Nesh\File;
 use Nesh\Query;
+use Nesh\Video;
 
 global $argv;
 
@@ -43,6 +45,8 @@ $stats = [
     'templates_missing' => 0,
     'preview_images_updated' => 0,
     'preview_images_missing' => 0,
+    'video_previews_updated' => 0,
+    'video_previews_missing' => 0,
 ];
 
 foreach ($files as $file) {
@@ -71,6 +75,10 @@ foreach ($files as $file) {
 $stats['preview_images_updated'] = $previewUpdated;
 $stats['preview_images_missing'] = $previewMissing;
 
+[$videoPreviewUpdated, $videoPreviewMissing] = syncVideoPreviews($userId, $app);
+$stats['video_previews_updated'] = $videoPreviewUpdated;
+$stats['video_previews_missing'] = $videoPreviewMissing;
+
 echo 'Article cleanup completed.' . PHP_EOL;
 echo '  Files processed: ' . $stats['files'] . PHP_EOL;
 echo '  Sections removed: ' . $stats['sections_removed'] . PHP_EOL;
@@ -81,6 +89,90 @@ echo '  Template attributes fixed: ' . $stats['templates_fixed'] . PHP_EOL;
 echo '  Template attributes unresolved: ' . $stats['templates_missing'] . PHP_EOL;
 echo '  Preview images updated: ' . $stats['preview_images_updated'] . PHP_EOL;
 echo '  Preview images missing: ' . $stats['preview_images_missing'] . PHP_EOL;
+echo '  Video previews updated: ' . $stats['video_previews_updated'] . PHP_EOL;
+echo '  Video previews missing: ' . $stats['video_previews_missing'] . PHP_EOL;
+
+function syncVideoPreviews(int $userId, App $app): array
+{
+    $updated = 0;
+    $missing = 0;
+    $videosDir = $app->paths['assets'] . '/users/' . $userId . '/videos';
+    if (!is_dir($videosDir)) {
+        return [0, 0];
+    }
+
+    $rows = Query::fetchAll(
+        "SELECT id, uuid, extension, preview_image
+        FROM ielectro_dyscover.dyscover_posts
+        WHERE user_id = ?
+        AND type = 'video'
+        AND status IN ('active', 'hidden')",
+        [$userId]
+    );
+
+    foreach ($rows as $row) {
+        $postId = (int) $row['id'];
+        $uuid = strtolower((string) $row['uuid']);
+        $extension = (string) ($row['extension'] ?: 'mp4');
+        if ($uuid === '') {
+            $missing++;
+            continue;
+        }
+
+        $previewPath = $videosDir . '/' . $uuid . '_preview.jpg';
+        $expectedUrl = \APP_URL
+            . '/assets/users/' . $userId
+            . '/videos/' . $uuid . '_preview.jpg';
+
+        if (is_file($previewPath)) {
+            if ((string) ($row['preview_image'] ?? '') !== $expectedUrl) {
+                Query::execute(
+                    'UPDATE ielectro_dyscover.dyscover_posts
+                    SET preview_image = ?
+                    WHERE id = ?',
+                    [$expectedUrl, $postId]
+                );
+                $updated++;
+            }
+            continue;
+        }
+
+        $videoPath = $videosDir . '/' . $uuid . '.' . $extension;
+        if (!is_file($videoPath)) {
+            $missing++;
+            continue;
+        }
+
+        try {
+            $video = Video::open($videoPath);
+            $video->thumbnail();
+            $thumbPath = $video->thumbnailPath();
+            if ($thumbPath === null || !is_file($thumbPath)) {
+                $missing++;
+                continue;
+            }
+            File::makeDirectory($videosDir);
+            if (!File::copyPath($thumbPath, $previewPath, true)) {
+                $missing++;
+                continue;
+            }
+            if (is_file($thumbPath)) {
+                unlink($thumbPath);
+            }
+            Query::execute(
+                'UPDATE ielectro_dyscover.dyscover_posts
+                SET preview_image = ?
+                WHERE id = ?',
+                [$expectedUrl, $postId]
+            );
+            $updated++;
+        } catch (\Throwable) {
+            $missing++;
+        }
+    }
+
+    return [$updated, $missing];
+}
 
 function syncPreviewImages(int $userId, array $files): array
 {

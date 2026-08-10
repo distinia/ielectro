@@ -210,11 +210,10 @@ export class Media {
     }
     static createVideo(url) {
         const figure = document.createElement("figure");
-        figure.classList.add(Media.classMap.video, "video-wide");
+        figure.classList.add(Media.classMap.video, "video-right");
         figure.contentEditable = false;
         const video = document.createElement("video");
         video.src = url;
-        video.controls = true;
         video.loading = "lazy";
         video.preload = "metadata";
         video.playsInline = true;
@@ -300,7 +299,7 @@ export class Media {
                 range.insertNode(this.element);
                 break;
             case Media.classMap.video:
-                Paragraph.newLine(parent, this.element);
+                parent.parentNode.insertBefore(this.element, parent);
                 break;
         }
     }
@@ -327,11 +326,19 @@ export class Media {
             this.menu = new Menu(this);
             return;
         }
-        this.menuActions = [
-            { name: "Replace", action: this.replace },
-            { name: "Set As Cover", action: this.setAsCover },
-            { name: "Delete", action: this.delete },
-        ];
+        if (this.variant === Media.classMap.video) {
+            this.menuActions = [
+                { name: "Replace", action: this.replace },
+                { name: "Change Position", action: this.changePosition },
+                { name: "Delete", action: this.delete },
+            ];
+        } else {
+            this.menuActions = [
+                { name: "Replace", action: this.replace },
+                { name: "Set As Cover", action: this.setAsCover },
+                { name: "Delete", action: this.delete },
+            ];
+        }
         this.menu = new Menu(this);
     }
     async replace() {
@@ -371,12 +378,19 @@ export class Media {
         Alert.success("Image set as article cover");
     }
     changePosition() {
-        if (this.element.classList.contains("image-left")) {
-            this.element.classList.replace("image-left", "image-right");
-            return;
-        }
-        if (this.element.classList.contains("image-right")) {
-            this.element.classList.replace("image-right", "image-left");
+        const pairs = [
+            ["image-left", "image-right"],
+            ["video-left", "video-right"],
+        ];
+        for (const [left, right] of pairs) {
+            if (this.element.classList.contains(left)) {
+                this.element.classList.replace(left, right);
+                return;
+            }
+            if (this.element.classList.contains(right)) {
+                this.element.classList.replace(right, left);
+                return;
+            }
         }
     }
 }

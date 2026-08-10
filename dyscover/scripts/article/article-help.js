@@ -10,7 +10,7 @@ export const ArticleHelp = {
         <p><strong>Insert media</strong> from your Dyscover library or an external URL.</p>
         <ul>
             <li>Search by title or tag in the footer field.</li>
-            <li>Pick a result, then press <strong>Add</strong>.</li>
+            <li>Premi <strong>+</strong> per inserire il media selezionato.</li>
             <li>While reading, click media to open its post.</li>
         </ul>`,
     template: `

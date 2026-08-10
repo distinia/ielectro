@@ -321,7 +321,8 @@ class PostData
         if (!$row || $row['status'] !== 'active') {
             Response::notFound('Post not found');
         }
-        return self::map($row);
+        $rows = Accounts::attachUsernames([$row]);
+        return self::map($rows[0]);
     }
     public static function requireOwned(?int $id): array
     {

@@ -78,7 +78,10 @@ export class WebSelector {
                     <input class="input selector-search-input" type="search"
                         placeholder="Search by title or tag"
                         autocapitalize="off" autocomplete="off" spellcheck="false">
-                    <button type="button" class="button selector-add-btn">Add</button>
+                    <button type="button" class="button selector-add-btn creator-footer-btn"
+                        aria-label="Add" title="Add">
+                        <span class="selector-add-mark" aria-hidden="true">+</span>
+                    </button>
                 `;
                 footer.querySelector(".selector-add-btn").onclick = () => {
                     const selected = this.box.container.querySelector(
@@ -117,6 +120,10 @@ export class WebSelector {
         });
     }
 
+    isMediaPicker() {
+        return ["image", "video", "audio", "document"].includes(this.type);
+    }
+
     async renderResults(body, term) {
         body.innerHTML = `<p class="selector-empty">Searching…</p>`;
         try {
@@ -126,14 +133,17 @@ export class WebSelector {
             return;
         }
         body.innerHTML = "";
+        body.classList.toggle("selector-results-body--grid", this.isMediaPicker());
         if (!this.results.length) {
             body.innerHTML = `<p class="selector-empty">No results for “${term}”</p>`;
             return;
         }
         this.results.forEach((result) => {
-            const row = this.createRow(result);
-            body.appendChild(row);
-            this.bindItem(row);
+            const item = this.isMediaPicker()
+                ? this.createMediaCard(result)
+                : this.createRow(result);
+            body.appendChild(item);
+            this.bindItem(item);
         });
     }
 
@@ -147,22 +157,198 @@ export class WebSelector {
     createRow(result) {
         const el = document.createElement("button");
         el.type = "button";
-        el.className = "search-row selector-result-row";
-        const media = result.media
-            ? `${result.media}?t=${new Date(result.updated || Date.now()).getTime()}`
-            : "";
+        el.className = "search-row selector-result-row selector-result-item";
+        const preview = this.previewUrl(result);
+        const assetUrl = this.assetUrl(result);
         const title = result.title || "Untitled";
         const typeLabel = String(result.type || this.type).replace(/-/g, " ");
         el.innerHTML = `
-            <div class="search-image" style="background-image:url('${media}')"></div>
+            <div class="search-image" style="background-image:url('${preview}')"></div>
             <div class="search-text">
                 <b>${title}</b>
                 <span class="selector-type-badge">${typeLabel}</span>
             </div>`;
         el.dataset.postId = String(result.id || "");
         el.dataset.postType = String(result.type || "");
-        el.dataset.value = this.resolveValue(result, media);
+        el.dataset.value = this.resolveValue(result, assetUrl);
         return el;
+    }
+
+    static cacheBust(url, result) {
+        if (!url) return "";
+        const stamp = new Date(
+            result.updated || result.updated_at || Date.now(),
+        ).getTime();
+        return `${url}${String(url).includes("?") ? "&" : "?"}t=${stamp}`;
+    }
+
+    static isVideoFile(url) {
+        return /\.(mp4|webm|mov|m4v|ogv)(\?|$)/i.test(String(url || ""));
+    }
+
+    static isDefaultPreview(url) {
+        return /\/assets\/brand\/default-post\.jpg/i.test(String(url || ""));
+    }
+
+    static videoPreviewCandidates(result) {
+        const list = [];
+        const push = (url) => {
+            const value = String(url || "").trim();
+            if (!value || WebSelector.isVideoFile(value)) {
+                return;
+            }
+            if (WebSelector.isDefaultPreview(value)) {
+                return;
+            }
+            if (!list.includes(value)) {
+                list.push(value);
+            }
+        };
+        push(result.preview_image);
+        push(result.preview);
+        const uuid = String(result.uuid || "");
+        const userId = Number(result.user_id) || 0;
+        if (uuid && userId) {
+            push(
+                `${Api.origin}/assets/users/${userId}/videos/${uuid}_preview.jpg`,
+            );
+        }
+        const media = String(result.media || "");
+        if (media) {
+            push(
+                media.replace(/\.(mp4|webm|mov|m4v|ogv)(\?.*)?$/i, "_preview.jpg"),
+            );
+        }
+        return list.map((url) => WebSelector.cacheBust(url, result));
+    }
+
+    videoSource(result) {
+        const media = String(result.media || "").trim();
+        if (media && WebSelector.isVideoFile(media)) {
+            return WebSelector.cacheBust(media, result);
+        }
+        return "";
+    }
+
+    previewUrl(result) {
+        const type = String(result.type || this.type).toLowerCase();
+        if (type === "video") {
+            const candidates = WebSelector.videoPreviewCandidates(result);
+            return candidates[0] || "";
+        }
+        if (type === "document" || type === "audio") {
+            const preview = result.preview_image || result.preview || "";
+            if (preview && !/\.(mp3|wav|ogg|m4a|pdf|html)(\?|$)/i.test(preview)) {
+                return WebSelector.cacheBust(preview, result);
+            }
+        }
+        const source =
+            result.media || result.preview_image || result.preview || "";
+        return WebSelector.cacheBust(source, result);
+    }
+
+    assetUrl(result) {
+        const type = String(result.type || this.type).toLowerCase();
+        if (type === "video" || type === "audio") {
+            return WebSelector.cacheBust(result.media || "", result);
+        }
+        return this.previewUrl(result);
+    }
+
+    createMediaCard(result) {
+        const el = document.createElement("div");
+        const type = String(result.type || this.type).toLowerCase();
+        el.className = `selector-media-card selector-result-item selector-media-card--${type}`;
+        el.setAttribute("role", "button");
+        el.tabIndex = 0;
+        const preview = this.previewUrl(result);
+        const assetUrl = this.assetUrl(result);
+        const title = result.title || "Untitled";
+
+        const visual = document.createElement("div");
+        visual.className = "selector-media-visual";
+        if (type === "video") {
+            this.setVideoVisual(visual, result, title);
+        } else if (preview) {
+            visual.style.backgroundImage = `url("${preview}")`;
+        } else {
+            visual.classList.add(`selector-media-visual--${type}`);
+        }
+
+        const label = document.createElement("p");
+        label.className = "selector-media-title";
+        label.textContent = title;
+        label.title = title;
+
+        el.append(visual, label);
+        el.dataset.postId = String(result.id || "");
+        el.dataset.postType = String(result.type || "");
+        el.dataset.value = this.resolveValue(result, assetUrl);
+        return el;
+    }
+
+    setVideoVisual(visual, result, title) {
+        const candidates = WebSelector.videoPreviewCandidates(result);
+        const videoSrc = this.videoSource(result);
+
+        const showPlaceholder = () => {
+            visual.innerHTML = "";
+            visual.classList.add("selector-media-visual--video");
+        };
+
+        const showVideo = () => {
+            visual.innerHTML = "";
+            visual.classList.remove("selector-media-visual--video");
+            const video = document.createElement("video");
+            video.className = "selector-media-thumb";
+            video.muted = true;
+            video.playsInline = true;
+            video.preload = "metadata";
+            video.setAttribute("aria-label", title);
+            video.src = videoSrc;
+            video.addEventListener(
+                "loadeddata",
+                () => {
+                    try {
+                        video.currentTime = 0.1;
+                    } catch {
+                        /* ignore seek errors */
+                    }
+                },
+                { once: true },
+            );
+            video.addEventListener("error", showPlaceholder, { once: true });
+            visual.appendChild(video);
+        };
+
+        if (!candidates.length) {
+            if (videoSrc) {
+                showVideo();
+            } else {
+                showPlaceholder();
+            }
+            return;
+        }
+
+        const img = document.createElement("img");
+        img.className = "selector-media-thumb";
+        img.alt = title;
+        img.loading = "lazy";
+        let index = 0;
+        const tryNext = () => {
+            if (index >= candidates.length) {
+                if (videoSrc) {
+                    showVideo();
+                } else {
+                    showPlaceholder();
+                }
+                return;
+            }
+            img.src = candidates[index++];
+        };
+        img.addEventListener("error", tryNext);
+        visual.appendChild(img);
+        tryNext();
     }
 
     resolveValue(result, media) {
@@ -202,10 +388,17 @@ export class WebSelector {
     }
 
     bindItem(item) {
-        item.onclick = () => {
-            const all = this.box.container.querySelectorAll(".selector-result-row");
+        const select = () => {
+            const all = this.box.container.querySelectorAll(".selector-result-item");
             all.forEach((el) => el.classList.remove(this.selectedClass));
             item.classList.add(this.selectedClass);
+        };
+        item.onclick = select;
+        item.onkeydown = (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                select();
+            }
         };
     }
 

@@ -89,7 +89,8 @@ export class API {
         return Api.list(res).map((row) => ({
             ...row,
             updated: row.updated_at || row.updated || row.created_at || null,
-            media: row.media || row.preview_image || "",
+            media: row.media || "",
+            preview_image: row.preview_image || row.preview || "",
         }));
     }
 
