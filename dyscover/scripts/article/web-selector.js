@@ -63,7 +63,7 @@ export class WebSelector {
                             this.type === "article"
                                 ? result.url
                                 : this.type === "template"
-                                    ? result.title
+                                    ? String(result.id)
                                     : `${result.media}?t=${new Date(result.updated).getTime()}`;
                         body.appendChild(el);
                         this.bindItem(el);

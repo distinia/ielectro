@@ -7,13 +7,19 @@
 }
 
 .tab-content.post-preview-grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.15rem;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
     padding: 0.25rem 0 1rem;
 }
 
+.search-page .post-preview {
+    aspect-ratio: 4 / 5;
+    min-height: 230px;
+    border-radius: 16px;
+}
+
 .tab-content#users.active {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 0.85rem;
 }
 

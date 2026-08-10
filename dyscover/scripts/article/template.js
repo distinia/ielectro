@@ -10,7 +10,7 @@ export class Template {
     constructor(element) {
         if (!element) return;
         this.element = element;
-        this.title = element.dataset.title || "";
+        this.templateId = element.dataset.template || "";
         this.tbody = element.querySelector("tbody");
         this.menuActions = [
             { name: "Open", action: this.open },
@@ -21,11 +21,11 @@ export class Template {
     }
     static async init() {
         let table = document.querySelector("." + Template.className);
-        let title;
+        let templateId;
         if (!table) {
-            title = await WebSelector.init("dyscover", "template");
-            if (!title) return;
-            table = Template.create(title);
+            templateId = await WebSelector.init("dyscover", "template");
+            if (!templateId) return;
+            table = Template.create(templateId);
             const content = Select.container();
             if (!content) return;
             const titleElement = content.querySelector(".title");
@@ -38,10 +38,10 @@ export class Template {
         const instance = new Template(table);
         instance.open();
     }
-    static create(title) {
+    static create(templateId) {
         const table = document.createElement("table");
         table.classList.add(Template.className);
-        table.dataset.title = title;
+        table.dataset.template = String(templateId);
         table.contentEditable = false;
         const thead = document.createElement("thead");
         const tr = document.createElement("tr");
@@ -61,7 +61,7 @@ export class Template {
         return table;
     }
     static generate(obj) {
-        const element = Template.create(obj.title);
+        const element = Template.create(obj.template || obj.title);
         const instance = new Template(element);
         obj.fields?.forEach(field=>{
             let result = null;
@@ -116,7 +116,7 @@ export class Template {
         });
         return {
             element: Template.className,
-            title: this.element.dataset.title || "",
+            template: this.element.dataset.template || "",
             fields
         };
     }
@@ -136,7 +136,7 @@ export class Template {
     }
     async open() {
         try {
-            this.fields = await API.getTemplate(this.title.replace(/ /g, "_"));
+            this.fields = await API.getTemplate(this.templateId);
             const box = new Box("Template fields");
             await box.create();
             box.footer((footer) => {

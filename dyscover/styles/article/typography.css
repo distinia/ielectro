@@ -1,10 +1,13 @@
 .title {
     margin: 0;
+    width: 100%;
     color: #0f172a;
-    font-size: clamp(2rem, 4.5vw, 2.85rem);
-    letter-spacing: -0.035em;
-    line-height: 1.08;
+    font-size: clamp(2rem, 3.6vw, 2.95rem);
+    letter-spacing: -0.04em;
+    line-height: 1.06;
     font-weight: 800;
+    text-align: left;
+    text-wrap: balance;
 }
 
 .heading,

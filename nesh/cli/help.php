@@ -11,6 +11,7 @@ GLOBAL COMMANDS
   db --all <database>       Set the same database for every application that uses one.
   db <application> <db>     Change the database for one application.
   version                   Display the framework version.
+  dyscover-user <id>        Migrate legacy Dyscover user assets into posts.
   help                      Display this help page.
 APPLICATION COMMANDS
   <application> build       Execute database migrations.

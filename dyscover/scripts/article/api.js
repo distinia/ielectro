@@ -97,10 +97,14 @@ export class API {
         }));
     }
 
-    static async getTemplate(title) {
-        const name = String(title || "")
-            .trim()
-            .replace(/ /g, "_");
+    static async getTemplate(idOrTitle) {
+        const raw = String(idOrTitle || "").trim();
+        if (/^\d+$/.test(raw)) {
+            const res = await Request.get(Api.templateFields(raw));
+            return Api.list(res);
+        }
+
+        const name = raw.replace(/ /g, "_");
         if (!name) {
             throw new Error("Missing template name");
         }

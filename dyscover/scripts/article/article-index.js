@@ -59,19 +59,7 @@ export class Index {
                 : "";
         }
 
-        let hint = this.sidebar.querySelector(".index-edit-hint");
-        if (getArticleState() === "editor") {
-            if (!hint) {
-                hint = document.createElement("p");
-                hint.className = "index-edit-hint";
-                hint.textContent = "Click the pencil to edit this article.";
-                this.sidebar
-                    .querySelector(".index-sidebar-header")
-                    ?.after(hint);
-            }
-        } else if (hint) {
-            hint.remove();
-        }
+        this.sidebar?.querySelector(".index-edit-hint")?.remove();
         await Icons.load(this.sidebar);
         if (this.box && !this.sidebar.contains(this.box)) {
             const content = this.sidebar.querySelector(".index-sidebar-content");

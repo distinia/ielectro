@@ -1,4 +1,8 @@
 body.article-page {
+    --article-topbar-py: 0.65rem;
+    --article-topbar-pb: 0.75rem;
+    --article-topbar-min-h: 3.85rem;
+
     display: block;
     min-height: 100vh;
     overflow: hidden;
@@ -16,6 +20,11 @@ body.article-page.has-navbar {
     padding-left: 88px;
 }
 
+body.article-page main {
+    padding: 0;
+    overflow: hidden;
+}
+
 .article-shell {
     min-height: 100vh;
     width: 100%;
@@ -27,11 +36,11 @@ body.article-page.has-navbar {
 .article-stage {
     display: flex;
     align-items: stretch;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 0;
-    width: min(100%, 1320px);
+    width: 100%;
     min-height: 100vh;
-    margin: 0 auto;
+    margin: 0;
 }
 
 *[contenteditable="true"] {
@@ -42,7 +51,6 @@ body.article-page.has-navbar {
 .article-main-content {
     flex: 1 1 auto;
     min-width: 0;
-    max-width: 920px;
     display: flex;
     flex-direction: column;
     height: 100vh;
@@ -55,9 +63,31 @@ body.article-page.has-navbar {
 
 .article-header {
     flex-shrink: 0;
-    padding: clamp(1.25rem, 2.5vw, 2rem) clamp(1.5rem, 3vw, 2.5rem) 0.5rem;
-    border-bottom: 1px solid rgba(15, 23, 42, 0.06);
-    background: linear-gradient(180deg, #fff 0%, #fafbfd 100%);
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    min-height: var(--article-topbar-min-h);
+    padding: var(--article-topbar-py) clamp(1.5rem, 3vw, 2.5rem) var(--article-topbar-pb);
+    border-bottom: 1px solid rgba(15, 23, 42, 0.07);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 1) 0%, rgba(248, 250, 252, 0.98) 100%);
+    position: relative;
+}
+
+.article-header .title {
+    font-size: clamp(1.45rem, 2.4vw, 2rem);
+    line-height: 1.15;
+}
+
+.article-header::after {
+    content: "";
+    position: absolute;
+    left: clamp(1.5rem, 3vw, 2.5rem);
+    bottom: 0;
+    width: min(12rem, 40%);
+    height: 3px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #1565c0, #64b5f6 70%, transparent);
 }
 
 .article-scroll {
@@ -70,9 +100,9 @@ body.article-page.has-navbar {
 .content {
     padding: clamp(1.25rem, 2.5vw, 2.25rem) clamp(1.5rem, 3vw, 2.5rem)
         clamp(2rem, 4vw, 3rem);
-    margin: 0 auto;
+    margin: 0;
     width: 100%;
-    max-width: 760px;
+    max-width: none;
 }
 
 .content * {

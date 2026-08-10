@@ -6,10 +6,10 @@ body:has(.search-page) {
 }
 
 .search-page {
-    width: 100%;
-    max-width: 1180px;
+    width: min(98vw, 1720px);
+    max-width: 100%;
     margin: 0 auto;
-    padding: 0 1.25rem 3rem;
+    padding: 0 0.65rem 3rem;
 }
 
 .search-sticky {
@@ -56,7 +56,7 @@ body:has(.search-page) {
 }
 
 .search-input {
-    width: min(620px, 100%);
+    width: min(920px, 100%);
     padding: 1rem 1.35rem 1rem 1.15rem;
     font-size: 1.02rem;
     border: 1px solid rgba(30, 136, 229, 0.15);
