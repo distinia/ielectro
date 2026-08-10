@@ -1,10 +1,41 @@
 import { Api } from "../core/api.js";
-import { App, Mention, Request } from "../core/index.js";
+import { App, Icons, Mention, Request } from "../core/index.js";
 
 export class Informations {
     constructor(page) {
         this.page = page;
         this.init();
+    }
+
+    static normalizeWebsiteUrl(raw) {
+        const value = String(raw || "").trim();
+        if (!value) {
+            return { href: "", label: "" };
+        }
+        const href = /^https?:\/\//i.test(value) ? value : `https://${value}`;
+        const label = value
+            .replace(/^https?:\/\//i, "")
+            .replace(/^www\./i, "")
+            .replace(/\/$/, "");
+        return { href, label: label || value };
+    }
+
+    static renderWebsite(website) {
+        const wrap = document.querySelector(".profile-website-wrap");
+        const link = document.querySelector(".profile-website");
+        const labelEl = document.querySelector(".profile-website-label");
+        if (!wrap || !link || !labelEl) return;
+        const { href, label } = Informations.normalizeWebsiteUrl(website);
+        if (!href) {
+            wrap.hidden = true;
+            link.removeAttribute("href");
+            labelEl.textContent = "";
+            return;
+        }
+        wrap.hidden = false;
+        link.href = href;
+        labelEl.textContent = label;
+        Icons.load(wrap).catch(() => {});
     }
 
     static async refresh(page) {
@@ -28,10 +59,9 @@ export class Informations {
             const user = Api.record(res) || {};
             const avatar = document.querySelector(".avatar");
             if (avatar) {
-                avatar.src = App.bustAvatarUrl(
-                    this.page.userId,
-                    user.avatar || "",
-                );
+                avatar.src =
+                    user.avatar ||
+                    App.userAvatarUrl(this.page.userId, user.username);
             }
             const usernameEl = document.querySelector(".username");
             if (usernameEl) usernameEl.textContent = user.username || "";
@@ -44,11 +74,13 @@ export class Informations {
             const followingEl = document.querySelector(".followings-number");
             if (followingEl) followingEl.textContent = user.following ?? 0;
             this.page.bio = user.biography || "";
+            this.page.website = user.website || "";
             Mention.renderInto(
                 document.querySelector(".biography"),
                 this.page.bio,
                 "No biography yet.",
             );
+            Informations.renderWebsite(this.page.website);
             document.title = `@${user.username} - iElectro Dyscover`;
         } catch {
             Mention.renderInto(

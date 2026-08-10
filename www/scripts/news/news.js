@@ -41,7 +41,7 @@ export class News {
             return;
         }
         const when = Nesh.Html.escape(item.published_at || item.created_at || "");
-        this.list.innerHTML = `<article class="news-article"><header class="news-article-header"><a class="news-back" href="/news">← Back to all news</a><h1 class="news-article-title">${Nesh.Html.escape(item.title)}</h1><div class="news-article-meta"><span>${when}</span></div></header>${item.image ? `<div class="news-article-cover"><img src="${Nesh.Html.escape(item.image)}" alt="${Nesh.Html.escape(item.title)}"></div>` : ""}<div class="news-article-body">${this.asParagraphs(item.body)}</div></article>`;
+        this.list.innerHTML = `<article class="news-article"><header class="news-article-header"><a class="news-back" href="/news">← Back to all news</a><h1 class="news-article-title">${Nesh.Html.escape(item.title)}</h1><div class="news-article-meta"><span>${when}</span></div></header>${item.image ? `<div class="news-article-cover"><img src="${Nesh.Html.escape(item.image)}" alt="${Nesh.Html.escape(item.title)}" loading="lazy"></div>` : ""}<div class="news-article-body">${this.asParagraphs(item.body)}</div></article>`;
         this.hideNext();
     }
     async renderList() {
@@ -59,7 +59,7 @@ export class News {
         const when = Nesh.Html.escape(item.published_at || item.created_at || "");
         const preview = this.previewText(item.body || "");
         const image = item.image
-            ? `<img class="news-summary-image" src="${Nesh.Html.escape(item.image)}" alt="${Nesh.Html.escape(item.title)}">`
+            ? `<img class="news-summary-image" src="${Nesh.Html.escape(item.image)}" alt="${Nesh.Html.escape(item.title)}" loading="lazy">`
             : "";
         return `<article class="card news-summary-card">${image}<div><h3 class="card-title">${Nesh.Html.escape(item.title)}</h3><p class="card-description">${preview}</p><div class="news-meta">${when}</div><a class="button button-primary" href="/news/${item.id}">Open</a></div></article>`;
     }

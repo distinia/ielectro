@@ -53,6 +53,13 @@
     aspect-ratio: unset;
 }
 
+.post-box-media .post-preview-image,
+.post-box-media .post-preview-video,
+.post-box-media img,
+.post-box-media video {
+    object-fit: contain;
+}
+
 .post-box-panel {
     flex: 0 0 min(520px, 42vw);
     min-width: 360px;

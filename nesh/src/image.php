@@ -27,6 +27,19 @@ class Image extends File
         }
         return $image;
     }
+    public static function uploadTo(
+        array $file,
+        string $directory,
+        ?string $name = null,
+        bool $overwrite = false
+    ): static {
+        $image = parent::uploadTo($file, $directory, $name, $overwrite);
+        if (!$image->verify()) {
+            $image->delete();
+            Response::badRequest('Invalid image');
+        }
+        return $image;
+    }
     protected function refreshMetadata(): void
     {
         parent::refreshMetadata();

@@ -4,13 +4,23 @@ trait UsesFfmpeg
 {
     protected static function ffmpegAvailable(): bool
     {
+        static $available = null;
+        if ($available !== null) {
+            return $available;
+        }
         exec('ffmpeg -version', $output, $code);
-        return $code === 0;
+        $available = $code === 0;
+        return $available;
     }
     protected static function ffprobeAvailable(): bool
     {
+        static $available = null;
+        if ($available !== null) {
+            return $available;
+        }
         exec('ffprobe -version', $output, $code);
-        return $code === 0;
+        $available = $code === 0;
+        return $available;
     }
     protected static function ffprobeValue(string $path, string $command): ?string
     {

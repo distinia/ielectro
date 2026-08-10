@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_posts` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` BIGINT UNSIGNED NOT NULL,
-  `uuid` CHAR(16) NOT NULL,
+  `uuid` CHAR(36) NOT NULL,
   `type` ENUM('article','image','video','audio','document','template') NOT NULL,
   `title` VARCHAR(255) DEFAULT NULL,
   `description` TEXT DEFAULT NULL,

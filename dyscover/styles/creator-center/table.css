@@ -1,18 +1,57 @@
 .creator-table .table-wrapper {
-    max-height: 68vh;
+    max-height: 78vh;
     overflow: auto;
-    border-radius: 18px;
-    border: 1px solid var(--border-subtle);
-    background: rgba(255, 255, 255, 0.92);
-    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    border-radius: 20px;
+    border: 1px solid rgba(15, 23, 42, 0.07);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.96) 100%);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.9) inset,
+        0 16px 48px rgba(15, 23, 42, 0.07);
+    scrollbar-width: thin;
+    scrollbar-color: rgba(30, 136, 229, 0.35) transparent;
+}
+
+.creator-table .table-wrapper::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.creator-table .table-wrapper::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgba(30, 136, 229, 0.28);
 }
 
 .creator-table table,
 .tabs table {
     width: 100%;
     border-collapse: separate;
-    border-spacing: 0 0.45rem;
+    border-spacing: 0 0.55rem;
     background: transparent;
+    padding: 0.45rem 0.35rem 0.65rem;
+    table-layout: fixed;
+}
+
+.creator-table th:nth-child(2),
+.creator-table td:nth-child(2),
+.tabs th:nth-child(2),
+.tabs td:nth-child(2) {
+    width: 50%;
+}
+
+.creator-table thead,
+.tabs thead {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+}
+
+.creator-table thead tr,
+.tabs thead tr {
+    background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 42%, #1565c0 100%);
+    box-shadow:
+        0 8px 24px rgba(21, 101, 192, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
 .creator-table th,
@@ -20,51 +59,57 @@
     position: sticky;
     top: 0;
     z-index: 2;
-    padding: 0.85rem 1rem;
+    padding: 0.9rem 1.1rem;
     text-align: left;
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.95);
-    background: var(--primary-gradient);
+    color: rgba(255, 255, 255, 0.98);
+    background: transparent;
     border: none;
+    white-space: nowrap;
 }
 
 .creator-table th:first-child,
 .tabs th:first-child {
-    border-radius: 12px 0 0 12px;
+    border-radius: 14px 0 0 14px;
     text-align: center;
-    width: 3rem;
+    width: 3.25rem;
 }
 
 .creator-table th:last-child,
 .tabs th:last-child {
-    border-radius: 0 12px 12px 0;
+    border-radius: 0 14px 14px 0;
 }
 
 .creator-table td,
 .tabs td {
-    padding: 0.9rem 1rem;
-    background: rgba(255, 255, 255, 0.96);
-    border-top: 1px solid rgba(15, 23, 42, 0.04);
-    border-bottom: 1px solid rgba(15, 23, 42, 0.04);
-    font-size: 0.88rem;
+    padding: 1rem 1.1rem;
+    background: #fff;
+    border-top: 1px solid rgba(15, 23, 42, 0.05);
+    border-bottom: 1px solid rgba(15, 23, 42, 0.05);
+    font-size: 0.9rem;
     color: var(--text-color);
-    transition: background 0.15s ease, box-shadow 0.15s ease;
+    transition:
+        background 0.16s ease,
+        box-shadow 0.16s ease,
+        transform 0.12s ease;
+    vertical-align: middle;
 }
 
 .creator-table td:first-child,
 .tabs td:first-child {
-    border-left: 1px solid rgba(15, 23, 42, 0.04);
-    border-radius: 14px 0 0 14px;
+    border-left: 1px solid rgba(15, 23, 42, 0.05);
+    border-radius: 16px 0 0 16px;
     text-align: center;
+    width: 3.25rem;
 }
 
 .creator-table td:last-child,
 .tabs td:last-child {
-    border-right: 1px solid rgba(15, 23, 42, 0.04);
-    border-radius: 0 14px 14px 0;
+    border-right: 1px solid rgba(15, 23, 42, 0.05);
+    border-radius: 0 16px 16px 0;
 }
 
 .creator-table .item-row,
@@ -73,17 +118,72 @@
 }
 
 .creator-table .item-row:hover td,
-.tabs .item-row:hover td,
+.tabs .item-row:hover td {
+    background: rgba(30, 136, 229, 0.05);
+    box-shadow:
+        inset 0 0 0 1px rgba(30, 136, 229, 0.1),
+        0 4px 14px rgba(30, 136, 229, 0.06);
+}
+
 .creator-table .item-row.row-selected td,
 .tabs .item-row.row-selected td {
-    background: rgba(30, 136, 229, 0.08);
-    box-shadow: inset 0 0 0 1px rgba(30, 136, 229, 0.12);
+    background: rgba(30, 136, 229, 0.1);
+    box-shadow:
+        inset 3px 0 0 var(--blue-mid),
+        inset 0 0 0 1px rgba(30, 136, 229, 0.16);
 }
 
 .creator-table .item-name,
 .tabs .item-name {
     font-weight: 700;
+    font-size: 0.94rem;
     color: var(--text-color);
+    letter-spacing: -0.01em;
+}
+
+.creator-table .item-name-inner,
+.tabs .item-name-inner {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-width: 0;
+}
+
+.creator-table .item-name-text,
+.tabs .item-name-text {
+    min-width: 0;
+}
+
+.creator-table .item-archived-mark,
+.tabs .item-archived-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 1.55rem;
+    height: 1.55rem;
+    border-radius: 8px;
+    color: #b45309;
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.22);
+}
+
+.creator-table .item-archived-mark i,
+.creator-table .item-archived-mark .icon-image,
+.tabs .item-archived-mark i,
+.tabs .item-archived-mark .icon-image {
+    width: 0.85rem;
+    height: 0.85rem;
+}
+
+.creator-table .item-row--archived td,
+.tabs .item-row--archived td {
+    background: rgba(245, 158, 11, 0.04);
+}
+
+.creator-table .item-row--archived .item-name-text,
+.tabs .item-row--archived .item-name-text {
+    color: var(--text-muted);
 }
 
 .creator-table .item-created,
@@ -92,7 +192,23 @@
 .tabs .item-updated {
     color: var(--text-muted);
     font-size: 0.82rem;
+    font-variant-numeric: tabular-nums;
     white-space: nowrap;
+}
+
+.creator-table .input-check,
+.tabs .input-check {
+    width: 1.05rem;
+    height: 1.05rem;
+    accent-color: var(--blue-mid);
+    cursor: pointer;
+}
+
+.creator-table th .th-label,
+.tabs th .th-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
 }
 
 .creator-table .sort,
@@ -100,23 +216,93 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
     margin-left: 0.35rem;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
     cursor: pointer;
-    opacity: 0.85;
+    vertical-align: middle;
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.12s ease,
+        box-shadow 0.15s ease;
+}
+
+.creator-table .sort:hover,
+.tabs .sort:hover {
+    background: rgba(255, 255, 255, 0.24);
+    border-color: rgba(255, 255, 255, 0.42);
+    transform: translateY(-1px);
+}
+
+.creator-table .sort:active,
+.tabs .sort:active {
+    transform: scale(0.94);
+}
+
+.creator-table .sort.is-active,
+.tabs .sort.is-active {
+    background: rgba(255, 255, 255, 0.92);
+    border-color: rgba(255, 255, 255, 0.95);
+    color: var(--blue-mid);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+}
+
+.creator-table .sort svg,
+.creator-table .sort .icon-image,
+.tabs .sort svg,
+.tabs .sort .icon-image {
+    width: 0.9rem;
+    height: 0.9rem;
+    stroke: currentColor;
+    transition: transform 0.15s ease;
+}
+
+.creator-table .sort.is-asc svg,
+.creator-table .sort.is-asc .icon-image,
+.tabs .sort.is-asc svg,
+.tabs .sort.is-asc .icon-image {
+    transform: rotate(180deg);
 }
 
 .creator-table .table-empty-row td,
 .tabs .table-empty-row td {
-    border-radius: 16px;
-    padding: 2rem 1rem;
+    border-radius: 18px;
+    padding: 2.5rem 1rem;
+    background: rgba(248, 250, 252, 0.85);
+    box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.05);
 }
 
 @media (max-width: 768px) {
+    .creator-table table,
+    .tabs table {
+        padding: 0.45rem 0.35rem 0.65rem;
+        border-spacing: 0 0.4rem;
+    }
+
     .creator-table td,
     .tabs td,
     .creator-table th,
     .tabs th {
-        padding: 0.7rem 0.65rem;
+        padding: 0.75rem 0.7rem;
         font-size: 0.8rem;
+    }
+
+    .creator-table .item-created,
+    .creator-table .item-updated,
+    .tabs .item-created,
+    .tabs .item-updated {
+        font-size: 0.75rem;
+    }
+
+    .creator-table .sort,
+    .tabs .sort {
+        width: 1.55rem;
+        height: 1.55rem;
     }
 }

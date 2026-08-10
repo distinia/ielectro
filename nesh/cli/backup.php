@@ -1,6 +1,6 @@
 <?php
-new Backup();
-class Backup
+use Nesh\File;
+new Backup();class Backup
 {
     public function __construct()
     {
@@ -26,10 +26,8 @@ class Backup
     }
     private function backup(string $application): void
     {
-        $backupDirectory = $application.'/storage/backups';
-        if (!is_dir($backupDirectory)) {
-            mkdir($backupDirectory, 0777, true);
-        }
+        $backupDirectory = File::tempDir() . DIRECTORY_SEPARATOR . 'backups';
+        File::makeDirectory($backupDirectory);
         $name = date('Ymd-His');
         $zipFile = $backupDirectory.'/'.$name.'.zip';
         $zip = new ZipArchive();
@@ -39,7 +37,7 @@ class Backup
         }
         $this->addDirectory($zip, $application.'/src', 'src');
         $this->addDirectory($zip, $application.'', 'public');
-        $dumpFile = $application . '/storage/database.sql';
+        $dumpFile = File::tempDir() . DIRECTORY_SEPARATOR . basename($application) . '-database.sql';
         $databaseName = 'ielectro_' . basename($application);
         $command = sprintf(
             'mysqldump -h%s -u%s -p%s %s > %s',

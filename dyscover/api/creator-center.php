@@ -25,7 +25,7 @@ class CreatorCenter
             FROM ielectro_dyscover.dyscover_posts
             WHERE user_id = ?
             AND type = ?
-            AND status = 'active'",
+            AND status IN ('active', 'hidden')",
             [$userId, $type]
         );
     }

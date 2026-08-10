@@ -118,7 +118,7 @@ export class Comments {
         const replyClass = isReply ? " post-comment--reply" : "";
         return `<article class="post-comment${replyClass}" data-comment-id="${c.id}">
             <a class="post-comment-avatar-link" href="${profile}">
-                <img class="post-comment-avatar" src="${App.escapeAttr(c.avatar || "")}" alt="">
+                <img class="post-comment-avatar" src="${App.escapeAttr(c.avatar || "")}" alt="" loading="lazy">
             </a>
             <div class="post-comment-shell">
                 <div class="post-comment-content">

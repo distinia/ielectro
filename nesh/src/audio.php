@@ -27,6 +27,19 @@ class Audio extends File
         }
         return $audio;
     }
+    public static function uploadTo(
+        array $file,
+        string $directory,
+        ?string $name = null,
+        bool $overwrite = false
+    ): static {
+        $audio = parent::uploadTo($file, $directory, $name, $overwrite);
+        if (!$audio->verify()) {
+            $audio->delete();
+            Response::badRequest('Invalid audio');
+        }
+        return $audio;
+    }
     protected function refreshMetadata(): void
     {
         parent::refreshMetadata();
@@ -105,8 +118,8 @@ class Audio extends File
     }
     protected function runOutput(string $command, string $extension): void
     {
-        $destination = self::joinPath(TEMP_PATH, Generate::token() . '.' . ltrim($extension, '.'));
-        self::makeDirectory(TEMP_PATH);
+        $destination = self::joinPath(File::tempDir(), Generate::token() . '.' . ltrim($extension, '.'));
+        self::makeDirectory(File::tempDir());
         if (!self::runFfmpeg($command . ' ' . escapeshellarg($destination))) {
             Response::error('Audio processing failed');
         }
@@ -124,6 +137,27 @@ class Audio extends File
     public function compress(int $bitrate = 128): static
     {
         return $this->convert($this->extension() ?? 'mp3', $bitrate);
+    }
+    public function tryCompress(int $bitrate = 128): bool
+    {
+        if (!self::ffmpegAvailable()) {
+            return false;
+        }
+        $format = $this->extension() ?? 'mp3';
+        $command =
+            'ffmpeg -y -i ' . escapeshellarg($this->path) . ' ' .
+            '-c:a ' . ($format === 'mp3' ? 'libmp3lame' : 'aac') . ' ' .
+            '-b:a ' . (int) $bitrate . 'k';
+        $destination = self::joinPath(
+            File::tempDir(),
+            Generate::token() . '.' . ltrim($format, '.')
+        );
+        self::makeDirectory(File::tempDir());
+        if (!self::runFfmpeg($command . ' ' . escapeshellarg($destination))) {
+            return false;
+        }
+        $this->replaceWith($destination);
+        return true;
     }
     public function trim(int $start, int $duration): static
     {

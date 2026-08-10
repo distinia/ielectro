@@ -45,7 +45,7 @@ class NewsPanel {
         }
         node.innerHTML = filtered
             .map((row) => {
-                const image = row.image ? `<div class="admin-row-thumb"><img src="${App.esc(row.image)}" alt="${App.esc(row.title)}"></div>` : '';
+                const image = row.image ? `<div class="admin-row-thumb"><img src="${App.esc(row.image)}" alt="${App.esc(row.title)}" loading="lazy"></div>` : '';
                 return `
         <article class="admin-row admin-row-with-thumb">
             ${image}
@@ -152,7 +152,7 @@ class NewsPanel {
                             </div>
                         </div>
                     </div>
-                    ${item.image ? `<div class="admin-cover"><img src="${App.esc(item.image)}" alt=""></div>` : ''}
+                    ${item.image ? `<div class="admin-cover"><img src="${App.esc(item.image)}" alt="" loading="lazy"></div>` : ''}
                     <div class="admin-view-section">
                         <h2>Body</h2>
                         <div class="admin-prose">${App.esc(item.body || '').replaceAll('\n', '<br>')}</div>

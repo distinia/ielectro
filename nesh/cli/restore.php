@@ -1,4 +1,5 @@
 <?php
+use Nesh\File;
 new Restore();
 class Restore
 {
@@ -30,7 +31,7 @@ class Restore
         if (!str_ends_with($backup, '.zip')) {
             $backup .= '.zip';
         }
-        $zipFile = $application.'/storage/backups/'.$backup;
+        $zipFile = File::tempDir() . DIRECTORY_SEPARATOR . 'backups' . DIRECTORY_SEPARATOR . $backup;
         if (!file_exists($zipFile)) {
             echo "Backup '{$backup}' not found.".PHP_EOL;
             exit(1);

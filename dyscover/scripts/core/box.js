@@ -5,6 +5,10 @@ export class Box {
         this.title = title;
         this.variant = options.variant || "";
         this.help = options.help || "";
+        this.hideFooter = options.hideFooter ?? false;
+        this.headerActions = options.headerActions || "";
+        this.hideTitle = options.hideTitle ?? false;
+        this.headerLayout = options.headerLayout || "default";
     }
     async create() {
         this.container = document.createElement("div");
@@ -18,17 +22,33 @@ export class Box {
                     <div class="select-item-help-box" role="tooltip">${this.help}</div>
                 </div>`
             : "";
-        this.container.innerHTML = `
-            <div class="select-item-box${variantClass}">
-                <div class="select-item-header">
+        const closeHtml = `<div class="select-item-close-box" role="button" tabindex="0" aria-label="Close"><span class="select-item-close-mark" aria-hidden="true">×</span></div>`;
+        const footerHtml = this.hideFooter
+            ? ""
+            : `<div class="select-item-footer"></div>`;
+        const headerHtml =
+            this.headerLayout === "creator"
+                ? `<div class="select-item-header select-item-header--creator">
+                    ${closeHtml}
                     <div class="select-item-title">${this.title}</div>
                     <div class="select-item-header-actions">
+                        ${this.headerActions}
                         ${helpHtml}
-                        <div class="select-item-close-box" role="button" tabindex="0" aria-label="Close"><i data-icon="circle-x"></i></div>
                     </div>
-                </div>
+                </div>`
+                : `<div class="select-item-header">
+                    ${this.hideTitle ? "" : `<div class="select-item-title">${this.title}</div>`}
+                    <div class="select-item-header-actions">
+                        ${this.headerActions}
+                        ${helpHtml}
+                        ${closeHtml}
+                    </div>
+                </div>`;
+        this.container.innerHTML = `
+            <div class="select-item-box${variantClass}">
+                ${headerHtml}
                 <div class="select-item-body"></div>
-                <div class="select-item-footer"></div>
+                ${footerHtml}
             </div>`;
         document.body.appendChild(this.container);
         this.box = this.container.querySelector(".select-item-box");

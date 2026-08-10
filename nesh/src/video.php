@@ -30,6 +30,19 @@ class Video extends File
         }
         return $video;
     }
+    public static function uploadTo(
+        array $file,
+        string $directory,
+        ?string $name = null,
+        bool $overwrite = false
+    ): static {
+        $video = parent::uploadTo($file, $directory, $name, $overwrite);
+        if (!$video->verify()) {
+            $video->delete();
+            Response::badRequest('Invalid video');
+        }
+        return $video;
+    }
     protected function refreshMetadata(): void
     {
         parent::refreshMetadata();
@@ -142,8 +155,8 @@ class Video extends File
     }
     protected function runOutput(string $command, string $extension): void
     {
-        $destination = self::joinPath(TEMP_PATH, Generate::token() . '.' . ltrim($extension, '.'));
-        self::makeDirectory(TEMP_PATH);
+        $destination = self::joinPath(File::tempDir(), Generate::token() . '.' . ltrim($extension, '.'));
+        self::makeDirectory(File::tempDir());
         if (!self::runFfmpeg($command . ' ' . escapeshellarg($destination))) {
             Response::error('Video processing failed');
         }
@@ -163,6 +176,26 @@ class Video extends File
     {
         return $this->convert('mp4', 'libx264', $quality);
     }
+    public function tryCompress(int $quality = 28): bool
+    {
+        if (!self::ffmpegAvailable()) {
+            return false;
+        }
+        $command =
+            'ffmpeg -y -i ' . escapeshellarg($this->path) . ' ' .
+            '-c:v libx264 -crf ' . (int) $quality . ' ' .
+            '-preset medium -c:a aac -b:a 128k';
+        $destination = self::joinPath(
+            File::tempDir(),
+            Generate::token() . '.mp4'
+        );
+        self::makeDirectory(File::tempDir());
+        if (!self::runFfmpeg($command . ' ' . escapeshellarg($destination))) {
+            return false;
+        }
+        $this->replaceWith($destination);
+        return true;
+    }
     public function resize(int $width, int $height, int $quality = 23): static
     {
         $command =
@@ -175,14 +208,14 @@ class Video extends File
     }
     public function thumbnail(int $second = 1, string $format = 'jpg'): static
     {
-        $destination = self::joinPath(TEMP_PATH, Generate::token() . '.' . ltrim($format, '.'));
-        self::makeDirectory(TEMP_PATH);
+        $destination = self::joinPath(File::tempDir(), Generate::token() . '.' . ltrim($format, '.'));
+        self::makeDirectory(File::tempDir());
         $command =
             'ffmpeg -y -ss ' . (int) $second . ' ' .
             '-i ' . escapeshellarg($this->path) . ' ' .
             '-frames:v 1';
         if (!self::runFfmpeg($command . ' ' . escapeshellarg($destination))) {
-            Response::error('Unable to create thumbnail');
+            return $this;
         }
         $this->thumbnailPath = $destination;
         return $this;
@@ -228,7 +261,7 @@ class Video extends File
         if (!self::ffmpegAvailable()) {
             return false;
         }
-        $list = self::joinPath(TEMP_PATH, 'merge.txt');
+        $list = self::joinPath(File::tempDir(), 'merge.txt');
         $content = '';
         foreach ($paths as $path) {
             $real = realpath($path);

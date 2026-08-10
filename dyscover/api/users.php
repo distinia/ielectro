@@ -390,7 +390,15 @@ class UserPosts
         if ($id === null) {
             Response::badRequest('Missing user id');
         }
-        Response::success(PostData::listByUser($id));
+        $includeArchived = in_array(
+            strtolower(trim((string) Request::value('include_archived', ''))),
+            ['1', 'true', 'yes', 'on'],
+            true
+        );
+        if ($includeArchived && $id !== User::id()) {
+            Response::forbidden();
+        }
+        Response::success(PostData::listByUser($id, $includeArchived));
     }
 }
 class UserEngagement

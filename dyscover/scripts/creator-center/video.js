@@ -3,6 +3,7 @@ import { Image } from "./image.js";
 export class Video extends Image {
     static type = "video";
     static table = ".video-table";
+    static list = new Map();
     static tab = ".video-tab";
     static accept = "video/*";
     static uploadLabel = "video";

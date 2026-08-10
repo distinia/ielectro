@@ -138,6 +138,15 @@ class Dyscover
                 : $baseUrl,
         ];
     }
+    public static function rewriteMentionUsername(
+        string $oldUsername,
+        string $newUsername
+    ): void {
+        if (!class_exists(\Dyscover\PostMentions::class, true)) {
+            return;
+        }
+        \Dyscover\PostMentions::rewriteUsername($oldUsername, $newUsername);
+    }
 }
 class Dominions
 {

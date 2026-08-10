@@ -76,7 +76,7 @@ export class UsersList {
                     : "users-list-action";
             li.innerHTML = `
                 <button type="button" class="users-list-link">
-                    <img class="users-list-avatar" src="${avatar}" alt="">
+                    <img class="users-list-avatar" src="${avatar}" alt="" loading="lazy">
                     <span class="users-list-name">${user.username}</span>
                 </button>
                 ${label ? `<button type="button" class="${actionClass}">${label}</button>` : ""}`;

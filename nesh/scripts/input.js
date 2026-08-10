@@ -4,6 +4,17 @@ export default class Input {
             !(input instanceof HTMLTextAreaElement)) {
             return;
         }
+        if (
+            input instanceof HTMLInputElement &&
+            (input.type === "file" ||
+                input.type === "checkbox" ||
+                input.type === "radio" ||
+                input.type === "button" ||
+                input.type === "submit" ||
+                input.type === "search")
+        ) {
+            return;
+        }
         switch (input.name) {
             case "username":
                 input.value = input.value

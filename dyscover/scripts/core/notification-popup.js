@@ -149,7 +149,7 @@ export class NotificationPopup {
         inner.className = "notify-popup-inner";
         inner.innerHTML = `
             <span class="notify-popup-avatar-wrap avatar">
-                <img class="notify-popup-avatar" src="${App.escapeAttr(avatar)}" alt="">
+                <img class="notify-popup-avatar" src="${App.escapeAttr(avatar)}" alt="" loading="lazy">
             </span>
             <span class="notify-popup-body">
                 <p class="notify-popup-msg">${message}</p>

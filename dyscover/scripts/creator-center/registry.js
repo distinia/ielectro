@@ -18,7 +18,7 @@ export class CreatorRegistry {
         if (!userId) {
             throw new Error("Missing user id");
         }
-        const res = await Request.get(Api.userPosts(userId));
+        const res = await Request.get(Api.userPosts(userId, true));
         CreatorRegistry.posts = Api.list(res);
         CreatorRegistry.loaded = true;
         for (const Class of CreatorRegistry.classes) {
@@ -36,11 +36,20 @@ export class CreatorRegistry {
         Search.instance?.apply();
     }
 
+    static activeType() {
+        const section = document.querySelector(".section.active-section");
+        if (!section) return "article";
+        for (const Class of CreatorRegistry.classes) {
+            if (section.classList.contains(`${Class.type}-section`)) {
+                return Class.type;
+            }
+        }
+        return "article";
+    }
+
     static activeClass() {
-        const hint = document.querySelector(".upload-hint.is-active");
-        const type = hint?.dataset.type;
-        if (!type) return null;
-        return CreatorRegistry.classes.find((Class) => Class.type === type);
+        const type = CreatorRegistry.activeType();
+        return CreatorRegistry.classes.find((Class) => Class.type === type) || null;
     }
 }
 

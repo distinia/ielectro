@@ -91,6 +91,13 @@
     height: 20px;
     color: #fff;
 }
+
+.select-item-close-mark {
+    font-size: 1.35rem;
+    line-height: 1;
+    font-weight: 400;
+    color: inherit;
+}
 .select-item-body {
     flex: 1 1 auto;
     height: 70vh;

@@ -275,6 +275,9 @@ class Update
         $update = [];
         $params = [];
         $emailChanged = false;
+        $usernameChanged = false;
+        $oldUsername = '';
+        $newUsername = '';
         foreach (self::FIELDS as $field => $config) {
             if (!array_key_exists($field, $input)) {
                 continue;
@@ -284,6 +287,11 @@ class Update
             $this->unique($field, $value, $config);
             if ($value === $account[$config['column']]) {
                 continue;
+            }
+            if ($field === 'username') {
+                $usernameChanged = true;
+                $oldUsername = (string) $account['username'];
+                $newUsername = (string) $value;
             }
             $update[] = "{$config['column']} = ?";
             $params[] = $value;
@@ -307,6 +315,9 @@ class Update
         WHERE id = ?",
             $params
         );
+        if ($usernameChanged) {
+            Dyscover::rewriteMentionUsername($oldUsername, $newUsername);
+        }
         if ($emailChanged) {
             EmailVerification::send(Identity::id());
         }

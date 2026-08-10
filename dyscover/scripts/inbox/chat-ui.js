@@ -366,7 +366,7 @@ export class ChatUI {
         const bodyText = Mention.linkify(m.body || "").replace(/\n/g, "<br>");
         if (url) {
             if (kind === "image") {
-                media = `<div class="chat-msg-media"><a href="${App.escapeAttr(url)}" target="_blank" rel="noopener"><img src="${App.escapeAttr(url)}" alt=""></a></div>`;
+                media = `<div class="chat-msg-media"><a href="${App.escapeAttr(url)}" target="_blank" rel="noopener"><img src="${App.escapeAttr(url)}" alt="" loading="lazy"></a></div>`;
             } else if (kind === "video") {
                 media = `<div class="chat-msg-media"><video controls preload="metadata"><source src="${App.escapeAttr(url)}"></video></div>`;
             } else if (kind === "audio") {

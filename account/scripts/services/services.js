@@ -34,7 +34,7 @@ export class ServicesDashboard {
 
     avatarHtml(profile, placeholderIcon = "user") {
         if (profile.avatar) {
-            return `<div class="services-avatar-wrap"><img class="services-avatar" src="${Nesh.Html.escape(profile.avatar)}" alt="" width="88" height="88"></div>`;
+            return `<div class="services-avatar-wrap"><img class="services-avatar" src="${Nesh.Html.escape(profile.avatar)}" alt="" width="88" height="88" loading="lazy"></div>`;
         }
         return `<div class="services-avatar-wrap"><div class="services-avatar services-avatar--placeholder" aria-hidden="true"><i data-icon="${placeholderIcon}"></i></div></div>`;
     }
@@ -51,7 +51,7 @@ export class ServicesDashboard {
     brandHeader(service, statusHtml) {
         const logo = this.logoUrl(service);
         return `<header class="services-card-head">
-            <img class="services-card-logo" src="${Nesh.Html.escape(logo)}" alt="${Nesh.Html.escape(service.name)}" width="40" height="40">
+            <img class="services-card-logo" src="${Nesh.Html.escape(logo)}" alt="${Nesh.Html.escape(service.name)}" width="40" height="40" loading="lazy">
             <div class="services-card-brand-text">
                 <h2 class="services-card-title">${Nesh.Html.escape(service.name)}</h2>
                 ${statusHtml}

@@ -1,4 +1,5 @@
 import { Alert, Auth } from "../core/index.js";
+import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
 import { API } from "./api.js";
 import { Editor } from "./editor.js";
 import { setArticleState } from "./state.js";
@@ -15,7 +16,10 @@ export class Article {
             const title = document.querySelector(".title");
             const content = document.querySelector(".content");
             if (title) title.textContent = res.title;
-            if (content) content.innerHTML = res.content;
+            if (content) {
+                content.innerHTML = Nesh.LazyMedia.enrichHtml(res.content || "");
+                Nesh.LazyMedia.apply(content);
+            }
             document.body.dataset.uuid = res.uuid;
             new Editor();
             await this.editAuthorization(res);

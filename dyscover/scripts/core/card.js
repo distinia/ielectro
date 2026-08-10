@@ -78,11 +78,11 @@ export class Card {
         if (type === "video" && this.item?.media) {
             const videoSrc = this.mediaUrl(this.item.media);
             if (videoSrc && !/\.html(\?|$)/i.test(videoSrc)) {
-                return `<video class="post-preview-video" src="${videoSrc}" muted playsinline preload="metadata"></video>`;
+                return `<video class="post-preview-video" src="${videoSrc}" muted playsinline preload="metadata" loading="lazy"></video>`;
             }
         }
         if (src) {
-            return `<img class="post-preview-image" src="${src}" alt="${this.item.title || ""}">`;
+            return `<img class="post-preview-image" src="${src}" alt="${this.item.title || ""}" loading="lazy">`;
         }
         const icon =
             type === "audio"
@@ -142,7 +142,7 @@ export class Card {
         const type = String(this.item?.type || "article").toLowerCase();
         const src = this.previewImageUrl();
         if (src) {
-            return `<img class="post-preview-image" src="${src}" alt="${this.item?.title || ""}">`;
+            return `<img class="post-preview-image" src="${src}" alt="${this.item?.title || ""}" loading="lazy">`;
         }
         const icon =
             type === "article"
@@ -160,13 +160,19 @@ export class Card {
         const type = String(this.item?.type || "article");
         if (type === "video") {
             const url = this.media();
-            return `<div class="post-media post-media-video"><video autoplay loop muted playsinline preload="metadata" src="${url}"></video></div>`;
+            return `<div class="post-media post-media-video"><video controls autoplay loop muted playsinline preload="metadata" src="${url}"></video></div>`;
         }
         if (type === "audio") {
             return `<div class="post-media post-media-audio"><audio controls preload="metadata" src="${this.media()}"></audio></div>`;
         }
         if (type === "document") {
-            return `<div class="post-media post-media-doc"><iframe src="${this.media()}" title="${this.item?.title}"></iframe></div>`;
+            return `<div class="post-media post-media-doc"><iframe src="${this.media()}" title="${this.item?.title}" loading="lazy"></iframe></div>`;
+        }
+        if (type === "image") {
+            const url = this.media();
+            if (url && !/\.html(\?|$)/i.test(url)) {
+                return `<div class="post-media post-media-image"><img class="post-preview-image" src="${url}" alt="${this.item?.title || ""}" loading="lazy"></div>`;
+            }
         }
         const visual = this.overlayMediaVisual();
         const articleClass = type === "article" ? " post-media-article" : "";
@@ -183,12 +189,13 @@ export class Card {
         const comments = Number(d.comments) || 0;
         const shares = Number(d.shares) || 0;
         const bookmarks = Number(d.bookmarks) || 0;
+        const allowComments = d.allow_comments !== false;
         return `
       <article class="post-box post-box-horizontal">
         <div class="post-box-media">${this.mediaBlock()}</div>
         <div class="post-box-panel">
           <header class="post-header">
-            <a class="post-avatar" href="${profile}"><img src="${avatar}" alt=""></a>
+            <a class="post-avatar" href="${profile}"><img src="${avatar}" alt="" loading="lazy"></a>
             <div class="post-header-meta">
               <a class="post-username" href="${profile}">${d.username || "unknown"}</a>
               <span class="post-title-link">${d.title || "unknown"}</span>
@@ -199,18 +206,18 @@ export class Card {
               <span class="post-caption-text">${Mention.linkify(d.description || d.title || "")}</span>
             </div>
             <div class="post-tags">${this.tags()}</div>
-            <div class="post-comments-inline"><div class="post-comments-list"></div></div>
+            ${allowComments ? '<div class="post-comments-inline"><div class="post-comments-list"></div></div>' : ""}
           </div>
-          <div class="post-panel-footer">
+          <div class="post-panel-footer${allowComments ? "" : " post-panel-footer--no-comments"}">
             <div class="post-actions">
               <div class="post-action-btn post-action-with-count post-action-like" data-action="like" aria-label="Like">
                 <i data-icon="heart"></i>
                 <span class="post-action-count" data-stat="likes">${likes}</span>
               </div>
-              <div class="post-action-btn post-action-with-count" data-action="comment" aria-label="Comment">
+              ${allowComments ? `<div class="post-action-btn post-action-with-count" data-action="comment" aria-label="Comment">
                 <i data-icon="message-circle"></i>
                 <span class="post-action-count" data-stat="comments">${comments}</span>
-              </div>
+              </div>` : ""}
               ${isArticle ? `<a href="${articleUrl}" class="post-action-btn" data-action="visit" aria-label="Visit page"><i data-icon="globe"></i></a>` : ""}
               <div class="post-action-btn post-action-with-count post-action-repost" data-action="repost" aria-label="Repost">
                 <i data-icon="repeat"></i>
@@ -229,10 +236,10 @@ export class Card {
               <span class="post-date">${this.formatDate(d.created_at)}</span>
               <span class="post-views-line">${this.viewsLineHtml(d)}</span>
             </div>
-            <div class="post-comment-compose post-comment-compose-inline">
+            ${allowComments ? `<div class="post-comment-compose post-comment-compose-inline">
               <input class="post-comment-input" placeholder="Add a comment…" maxlength="4000">
               <button type="button" class="post-comment-send-btn" aria-label="Send"><i data-icon="send"></i></button>
-            </div>
+            </div>` : ""}
           </div>
         </div>
       </article>`;
@@ -244,7 +251,9 @@ export class Card {
         this._mount = mount;
         this.syncActionState(mount);
         this.bindActions(mount);
-        await this._comments.bindInline(mount);
+        if (this.item.allow_comments !== false) {
+            await this._comments.bindInline(mount);
+        }
         await Icons.load(mount);
         mount.querySelectorAll(".post-avatar img, .post-preview-avatar").forEach(
             (img) => App.wireAvatarImg(img),
@@ -273,7 +282,7 @@ export class Card {
             ${this.previewVisual()}
             <div class="post-preview-header">
                 <div class="post-preview-user">
-                    <img class="post-preview-avatar" src="${avatar}" alt="">
+                    <img class="post-preview-avatar" src="${avatar}" alt="" loading="lazy">
                     <span class="post-preview-username">${d.username || "unknown"}</span>
                 </div>
             </div>

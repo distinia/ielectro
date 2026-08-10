@@ -326,4 +326,14 @@ class ActivityNotify
     {
         self::push($followedId, $followerId, 'follow', null, null);
     }
+    public static function onMention(int $postId, int $actorId, int $mentionedUserId): void
+    {
+        self::push(
+            $mentionedUserId,
+            $actorId,
+            'mention',
+            $postId,
+            self::postTitle($postId)
+        );
+    }
 }

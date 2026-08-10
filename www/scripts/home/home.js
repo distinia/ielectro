@@ -30,7 +30,7 @@ export class Home {
         const title = Nesh.Html.escape(item.title || "");
         const body = Nesh.Html.escape(item.body || "");
         const image = item.image
-            ? `<div class="news-media-col"><img class="news-slide-image" src="${Nesh.Html.escape(item.image)}" alt="${title || "News image"}"></div>`
+            ? `<div class="news-media-col"><img class="news-slide-image" src="${Nesh.Html.escape(item.image)}" alt="${title || "News image"}" loading="lazy"></div>`
             : "";
         return `<article class="carousel-slide${active ? " active" : ""}">${image}<div class="news-text-col"><div class="news-slide-date">${when}</div><h3 class="news-slide-title">${title}</h3><p class="news-slide-text">${body}</p><div class="cta-left"><a class="button button-primary" href="/news/${item.id}">Read article</a></div></div></article>`;
     }

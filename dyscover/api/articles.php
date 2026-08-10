@@ -21,6 +21,7 @@ class Articles
     private function show(): void
     {
         Request::get();
+        Identity::required();
         $uuid = trim((string) Routing::segment(2));
         if (!Validate::required($uuid)) {
             Response::badRequest('Missing article uuid');

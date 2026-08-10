@@ -129,6 +129,7 @@ export class Media {
         figure.contentEditable = false;
         const img = document.createElement("img");
         img.src = url;
+        img.loading = "lazy";
         const caption = document.createElement("figcaption");
         caption.textContent = "Text";
         figure.appendChild(img);
@@ -139,6 +140,7 @@ export class Media {
         const img = document.createElement("img");
         img.classList.add(this.classMap.imageTable);
         img.src = url;
+        img.loading = "lazy";
         img.contentEditable = false;
         return img;
     }
@@ -146,12 +148,14 @@ export class Media {
         const img = document.createElement("img");
         img.classList.add(this.classMap.imageTemplate);
         img.src = url;
+        img.loading = "lazy";
         img.contentEditable = false;
         return img;
     }
     static createIcon(url) {
         const img = document.createElement("img");
         img.src = url;
+        img.loading = "lazy";
         img.classList.add(this.classMap.iconImage);
         img.contentEditable = false;
         return img;
@@ -161,6 +165,8 @@ export class Media {
         video.classList.add(this.classMap.video);
         video.src = url;
         video.controls = true;
+        video.loading = "lazy";
+        video.preload = "none";
         video.contentEditable = false;
         return video;
     }
@@ -169,6 +175,7 @@ export class Media {
         audio.classList.add(this.classMap.audio);
         audio.src = url;
         audio.controls = true;
+        audio.preload = "none";
         audio.contentEditable = false;
         return audio;
     }

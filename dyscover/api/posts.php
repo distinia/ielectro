@@ -85,6 +85,7 @@ class Posts
         }
         $description = trim((string) ($input['description'] ?? ''));
         $visibility = trim((string) ($input['visibility'] ?? 'public'));
+        $allowComments = PostData::parseBool($input['allow_comments'] ?? null, true);
         $extension = '';
         $previewImage = '';
         $html = null;
@@ -102,6 +103,16 @@ class Posts
         }
         if ($type === 'article') {
             $html = '<p class="paragraph">Start here...</p>';
+            $coverFile = Request::file('media');
+            if ($coverFile) {
+                PostAssets::assertMediaSize('image', $coverFile);
+                $previewImage = PostAssets::storeArticleCover(
+                    $coverFile,
+                    $userId,
+                    $uuid,
+                    false
+                );
+            }
         } elseif ($type === 'template') {
             $input['fields'] = self::parseTemplateFields($input['fields'] ?? null);
             if (!is_array($input['fields'])) {
@@ -123,9 +134,9 @@ class Posts
         Query::execute(
             "INSERT INTO ielectro_dyscover.dyscover_posts(
                 user_id, uuid, type, title, description,
-                extension, preview_image, visibility, status
+                extension, preview_image, visibility, allow_comments, status
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'active')",
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')",
             [
                 $userId,
                 $uuid,
@@ -135,6 +146,7 @@ class Posts
                 $extension,
                 $previewImage,
                 $visibility,
+                $allowComments ? 1 : 0,
             ]
         );
         $id = Query::lastId();
@@ -150,6 +162,7 @@ class Posts
         if (array_key_exists('tags', $input)) {
             PostTags::sync($id, $input['tags']);
         }
+        PostMentions::sync($id, $description, $userId);
         Response::created(['id' => $id, 'uuid' => $uuid]);
     }
     private static function parseTemplateFields(mixed $fields): ?array
@@ -172,12 +185,17 @@ class Posts
         $updated = false;
         $fields = [];
         $params = [];
+        $descriptionSync = null;
         foreach (['title', 'description', 'visibility'] as $field) {
             if (!array_key_exists($field, $input)) {
                 continue;
             }
+            $value = trim((string) $input[$field]);
+            if ($field === 'description') {
+                $descriptionSync = $value;
+            }
             $fields[] = "{$field} = ?";
-            $params[] = trim((string) $input[$field]);
+            $params[] = $value;
             $updated = true;
         }
         if ($fields) {
@@ -186,6 +204,24 @@ class Posts
                 'UPDATE ielectro_dyscover.dyscover_posts SET ' . implode(', ', $fields) . ' WHERE id = ?',
                 $params
             );
+        }
+        if (array_key_exists('allow_comments', $input)) {
+            Query::execute(
+                'UPDATE ielectro_dyscover.dyscover_posts SET allow_comments = ? WHERE id = ?',
+                [PostData::parseBool($input['allow_comments'], true) ? 1 : 0, $postId]
+            );
+            $updated = true;
+        }
+        if (array_key_exists('status', $input)) {
+            $status = trim((string) $input['status']);
+            if (!Validate::in($status, ['active', 'hidden'])) {
+                Response::badRequest('Invalid status');
+            }
+            Query::execute(
+                'UPDATE ielectro_dyscover.dyscover_posts SET status = ? WHERE id = ?',
+                [$status, $postId]
+            );
+            $updated = true;
         }
         if (array_key_exists('html', $input)) {
             if ($type !== 'article') {
@@ -196,16 +232,30 @@ class Posts
         }
         $mediaFile = Request::file('media');
         if ($mediaFile) {
-            if (!PostAssets::isMediaType($type)) {
-                Response::badRequest('Media is only valid for media posts');
+            if ($type === 'article') {
+                PostAssets::assertMediaSize('image', $mediaFile);
+                $previewImage = PostAssets::storeArticleCover(
+                    $mediaFile,
+                    $userId,
+                    $uuid,
+                    true
+                );
+                Query::execute(
+                    'UPDATE ielectro_dyscover.dyscover_posts SET preview_image = ? WHERE id = ?',
+                    [$previewImage, $postId]
+                );
+                $updated = true;
+            } elseif (PostAssets::isMediaType($type)) {
+                PostAssets::assertMediaSize($type, $mediaFile);
+                $processed = PostAssets::storeMedia($type, $mediaFile, $userId, $uuid, true);
+                Query::execute(
+                    'UPDATE ielectro_dyscover.dyscover_posts SET extension = ?, preview_image = ? WHERE id = ?',
+                    [$processed['extension'], $processed['preview_image'], $postId]
+                );
+                $updated = true;
+            } else {
+                Response::badRequest('Media is only valid for media posts and articles');
             }
-            PostAssets::assertMediaSize($type, $mediaFile);
-            $processed = PostAssets::storeMedia($type, $mediaFile, $userId, $uuid, true);
-            Query::execute(
-                'UPDATE ielectro_dyscover.dyscover_posts SET extension = ?, preview_image = ? WHERE id = ?',
-                [$processed['extension'], $processed['preview_image'], $postId]
-            );
-            $updated = true;
         }
         if (array_key_exists('fields', $input)) {
             if ($type !== 'template') {
@@ -239,18 +289,23 @@ class Posts
             PostTags::sync($postId, $input['tags']);
             $updated = true;
         }
+        if ($descriptionSync !== null) {
+            PostMentions::sync($postId, $descriptionSync, User::id());
+        }
         if (!$updated) {
             Response::badRequest('Nothing to update');
         }
-        Response::success(PostData::one($postId));
+        Response::success(PostData::oneOwned($postId));
     }
     private function delete(): void
     {
         Request::delete();
         $post = PostData::requireOwned(Routing::id());
+        $postId = (int) $post['id'];
+        PostAssets::deleteForPost($post);
         Query::execute(
-            "UPDATE ielectro_dyscover.dyscover_posts SET status = 'hidden' WHERE id = ?",
-            [(int) $post['id']]
+            'DELETE FROM ielectro_dyscover.dyscover_posts WHERE id = ?',
+            [$postId]
         );
         Response::success('Post deleted');
     }
@@ -277,7 +332,7 @@ class PostData
             'SELECT * FROM ielectro_dyscover.dyscover_posts WHERE id = ? LIMIT 1',
             [$id]
         );
-        if (!$row || $row['status'] !== 'active') {
+        if (!$row || !in_array($row['status'], ['active', 'hidden'], true)) {
             Response::notFound('Post not found');
         }
         if ((int) $row['user_id'] !== User::id()) {
@@ -285,12 +340,30 @@ class PostData
         }
         return $row;
     }
-    public static function listByUser(int $userId): array
+    public static function oneOwned(int $id): array
     {
+        if ($id <= 0) {
+            Response::badRequest('Missing post id');
+        }
+        $row = self::fetchRow('p.id = ?', [$id]);
+        if (!$row || !in_array($row['status'], ['active', 'hidden'], true)) {
+            Response::notFound('Post not found');
+        }
+        if ((int) $row['user_id'] !== User::id()) {
+            Response::forbidden();
+        }
+        $rows = Accounts::attachUsernames([$row]);
+        return self::map($rows[0]);
+    }
+    public static function listByUser(int $userId, bool $includeArchived = false): array
+    {
+        $statusSql = $includeArchived
+            ? "AND p.status IN ('active', 'hidden')"
+            : "AND p.status = 'active'";
         $rows = Query::fetchAll(
             self::selectSql() . "
             WHERE p.user_id = ?
-            AND p.status = 'active'
+            {$statusSql}
             ORDER BY p.published_at DESC, p.id DESC",
             [$userId]
         );
@@ -365,6 +438,8 @@ class PostData
             'media' => $media,
             'url' => $url,
             'visibility' => $row['visibility'],
+            'status' => $row['status'] ?? 'active',
+            'allow_comments' => (bool) ($row['allow_comments'] ?? true),
             'likes' => (int) ($row['likes'] ?? 0),
             'comments' => (int) ($row['comments'] ?? 0),
             'shares' => (int) ($row['shares'] ?? 0),
@@ -415,6 +490,17 @@ class PostData
             FROM ielectro_dyscover.dyscover_posts p
             INNER JOIN ielectro_dyscover.dyscover_users du ON du.id = p.user_id
             LEFT JOIN ielectro_dyscover.dyscover_post_statistics s ON s.post_id = p.id";
+    }
+    public static function parseBool(mixed $value, bool $default = true): bool
+    {
+        if ($value === null || $value === '') {
+            return $default;
+        }
+        if (is_bool($value)) {
+            return $value;
+        }
+        $normalized = strtolower(trim((string) $value));
+        return in_array($normalized, ['1', 'true', 'yes', 'on'], true);
     }
 }
 class PostEngagement
@@ -560,6 +646,13 @@ class PostComments
     {
         Request::post();
         $postId = $this->postId();
+        $post = Query::fetch(
+            'SELECT allow_comments FROM ielectro_dyscover.dyscover_posts WHERE id = ? LIMIT 1',
+            [$postId]
+        );
+        if (!$post || !(bool) ($post['allow_comments'] ?? true)) {
+            Response::forbidden('Comments are disabled for this post');
+        }
         $body = trim((string) Request::value('body'));
         if (!Validate::required($body)) {
             Response::badRequest('Empty comment');
@@ -891,7 +984,7 @@ class PostAssets
     public static function requireUuid(mixed $value): string
     {
         $uuid = strtolower(trim((string) $value));
-        if (!preg_match('/^[0-9a-f]{16}$/', $uuid)) {
+        if (!Validate::uuid($uuid)) {
             Response::badRequest('Invalid uuid');
         }
         return $uuid;
@@ -928,6 +1021,37 @@ class PostAssets
             Response::error('Unable to save article');
         }
     }
+    public static function deleteForPost(array $post): void
+    {
+        $userId = (int) ($post['user_id'] ?? 0);
+        $uuid = trim((string) ($post['uuid'] ?? ''));
+        $type = trim((string) ($post['type'] ?? ''));
+        if ($userId <= 0 || $uuid === '') {
+            return;
+        }
+        match ($type) {
+            'article' => self::deleteArticleAssets($userId, $uuid),
+            'template' => self::clearMediaAssets(self::mediaDir($userId, 'template'), $uuid),
+            'image', 'video', 'audio', 'document' => self::clearMediaAssets(
+                self::mediaDir($userId, $type),
+                $uuid
+            ),
+            default => null,
+        };
+    }
+    private static function deleteArticleAssets(int $userId, string $uuid): void
+    {
+        $path = self::articlePath($userId, $uuid);
+        if (is_file($path)) {
+            unlink($path);
+        }
+        $dir = self::mediaDir($userId, 'article');
+        foreach (glob($dir . '/' . $uuid . '_cover.*') ?: [] as $coverPath) {
+            if (is_file($coverPath)) {
+                unlink($coverPath);
+            }
+        }
+    }
     public static function storeTemplatePreview(
         array $file,
         int $userId,
@@ -941,6 +1065,25 @@ class PostAssets
         }
         $stored = self::storeImage($file, $uuid, $dir, $userId);
         return self::mediaUrl($userId, 'template', $uuid, $stored['extension']);
+    }
+    public static function storeArticleCover(
+        array $file,
+        int $userId,
+        string $uuid,
+        bool $overwrite
+    ): string {
+        $dir = self::mediaDir($userId, 'article');
+        File::makeDirectory($dir);
+        if ($overwrite) {
+            foreach (glob($dir . '/' . $uuid . '_cover.*') ?: [] as $path) {
+                if (is_file($path)) {
+                    unlink($path);
+                }
+            }
+        }
+        $image = Image::uploadTo($file, $dir, $uuid . '_cover', true);
+        $extension = $image->extension() ?? 'jpg';
+        return self::mediaUrl($userId, 'article', $uuid . '_cover', $extension);
     }
     public static function storeMedia(
         string $type,
@@ -980,8 +1123,7 @@ class PostAssets
         string $dir,
         int $userId
     ): array {
-        $image = Image::upload($file, $uuid, false);
-        $image->compress(80)->save($dir);
+        $image = Image::uploadTo($file, $dir, $uuid, true);
         $extension = $image->extension() ?? 'jpg';
         return [
             'extension' => $extension,
@@ -994,12 +1136,7 @@ class PostAssets
         string $dir,
         int $userId
     ): array {
-        $video = Video::upload($file, $uuid, false);
-        if (self::ffmpegReady()) {
-            $video->compress()->save($dir);
-        } else {
-            $video->save($dir);
-        }
+        $video = Video::uploadTo($file, $dir, $uuid, true);
         $extension = $video->extension() ?? 'mp4';
         $previewImage = self::ffmpegReady()
             ? self::saveVideoPreview($video, $dir, $uuid, $userId)
@@ -1011,12 +1148,7 @@ class PostAssets
     }
     private static function storeAudio(array $file, string $uuid, string $dir): array
     {
-        $audio = Audio::upload($file, $uuid, false);
-        if (self::ffmpegReady()) {
-            $audio->compress()->save($dir);
-        } else {
-            $audio->save($dir);
-        }
+        $audio = Audio::uploadTo($file, $dir, $uuid, true);
         return [
             'extension' => $audio->extension() ?? 'mp3',
             'preview_image' => '',
@@ -1024,8 +1156,7 @@ class PostAssets
     }
     private static function storeDocument(array $file, string $uuid, string $dir): array
     {
-        $pdf = Pdf::upload($file, $uuid, false);
-        $pdf->save($dir);
+        $pdf = Pdf::uploadTo($file, $dir, $uuid, true);
         return [
             'extension' => $pdf->extension() ?? 'pdf',
             'preview_image' => '',
@@ -1037,7 +1168,11 @@ class PostAssets
         string $uuid,
         int $userId
     ): string {
-        $video->thumbnail();
+        try {
+            $video->thumbnail();
+        } catch (\Throwable) {
+            return '';
+        }
         $thumbPath = $video->thumbnailPath();
         if ($thumbPath === null || !is_file($thumbPath)) {
             return '';
@@ -1177,5 +1312,125 @@ class PostTags
         }
         Query::execute('INSERT INTO ielectro_dyscover.dyscover_tags(name) VALUES(?)', [$name]);
         return Query::lastId();
+    }
+}
+class PostMentions
+{
+    public static function parse(string $text): array
+    {
+        if ($text === '') {
+            return [];
+        }
+        if (!preg_match_all('/@([a-zA-Z0-9_]{2,32})/', $text, $matches)) {
+            return [];
+        }
+        return array_values(array_unique($matches[1]));
+    }
+    public static function dyscoverUserIdForUsername(string $username): ?int
+    {
+        $account = Accounts::findByUsername($username);
+        if (!$account) {
+            return null;
+        }
+        $row = Query::fetch(
+            'SELECT id FROM ielectro_dyscover.dyscover_users WHERE account_id = ? LIMIT 1',
+            [(int) $account['id']]
+        );
+        return $row ? (int) $row['id'] : null;
+    }
+    public static function sync(int $postId, string $description, int $actorId): void
+    {
+        $newUserIds = [];
+        foreach (self::parse($description) as $username) {
+            $userId = self::dyscoverUserIdForUsername($username);
+            if ($userId !== null && $userId > 0) {
+                $newUserIds[] = $userId;
+            }
+        }
+        $newUserIds = array_values(array_unique($newUserIds));
+        $existingRows = Query::fetchAll(
+            'SELECT user_id FROM ielectro_dyscover.dyscover_post_mentions WHERE post_id = ?',
+            [$postId]
+        );
+        $existingUserIds = array_map(
+            static fn(array $row): int => (int) $row['user_id'],
+            $existingRows
+        );
+        Query::execute(
+            'DELETE FROM ielectro_dyscover.dyscover_post_mentions WHERE post_id = ?',
+            [$postId]
+        );
+        foreach ($newUserIds as $userId) {
+            Query::execute(
+                'INSERT IGNORE INTO ielectro_dyscover.dyscover_post_mentions(post_id, user_id) VALUES(?, ?)',
+                [$postId, $userId]
+            );
+        }
+        foreach (array_diff($newUserIds, $existingUserIds) as $userId) {
+            ActivityNotify::onMention($postId, $actorId, $userId);
+        }
+    }
+    public static function rewriteUsername(string $oldUsername, string $newUsername): void
+    {
+        $oldUsername = trim($oldUsername);
+        $newUsername = trim($newUsername);
+        if (
+            $oldUsername === ''
+            || $newUsername === ''
+            || strcasecmp($oldUsername, $newUsername) === 0
+        ) {
+            return;
+        }
+        $pattern = '/@' . preg_quote($oldUsername, '/') . '(?![a-zA-Z0-9_])/i';
+        $replace = static function (string $text) use ($pattern, $newUsername): string {
+            return preg_replace($pattern, '@' . $newUsername, $text) ?? $text;
+        };
+        $like = '%@' . $oldUsername . '%';
+        $posts = Query::fetchAll(
+            "SELECT id, description
+            FROM ielectro_dyscover.dyscover_posts
+            WHERE description LIKE ? AND status = 'active'",
+            [$like]
+        );
+        foreach ($posts as $post) {
+            $description = (string) $post['description'];
+            $updated = $replace($description);
+            if ($updated !== $description) {
+                Query::execute(
+                    'UPDATE ielectro_dyscover.dyscover_posts SET description = ? WHERE id = ?',
+                    [$updated, (int) $post['id']]
+                );
+            }
+        }
+        $comments = Query::fetchAll(
+            "SELECT id, body
+            FROM ielectro_dyscover.dyscover_post_comments
+            WHERE body LIKE ? AND status = 'active'",
+            [$like]
+        );
+        foreach ($comments as $comment) {
+            $body = (string) $comment['body'];
+            $updated = $replace($body);
+            if ($updated !== $body) {
+                Query::execute(
+                    'UPDATE ielectro_dyscover.dyscover_post_comments SET body = ? WHERE id = ?',
+                    [$updated, (int) $comment['id']]
+                );
+            }
+        }
+        $users = Query::fetchAll(
+            'SELECT id, biography FROM ielectro_dyscover.dyscover_users WHERE biography LIKE ?',
+            [$like]
+        );
+        foreach ($users as $user) {
+            $biography = (string) $user['biography'];
+            $updated = $replace($biography);
+            if ($updated !== $biography) {
+                Query::execute(
+                    'UPDATE ielectro_dyscover.dyscover_users SET biography = ? WHERE id = ?',
+                    [$updated, (int) $user['id']]
+                );
+            }
+        }
     }
 }

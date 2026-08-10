@@ -1,13 +1,14 @@
 import { App } from "../core/app.js";
-import { Alert, Icons, Request, Api } from "../core/index.js";
+import { Alert, Icons } from "../core/index.js";
 import { CreatorRegistry } from "./registry.js";
+import { refreshCreatorStats } from "./creator-stats.js";
 import { Search } from "./search.js";
 import { Table } from "./table.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     App.runPage(async () => {
         await CreatorRegistry.loadAll();
-        await loadStats();
+        await refreshCreatorStats();
         new Table();
         new Search();
         document.querySelector(".action-buttons .create")?.addEventListener("click", () => {
@@ -26,6 +27,40 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             await selected[0].edit();
         });
+        document.querySelector(".action-buttons .archive")?.addEventListener("click", async () => {
+            const Class = CreatorRegistry.activeClass();
+            if (!Class) return;
+            const selected = Class.getSelected();
+            if (!selected.length) {
+                return Alert.error("Select at least one item");
+            }
+            const isArchived = (post) => post.isArchived();
+            const allArchived = selected.every(isArchived);
+            const allActive = selected.every((post) => !isArchived(post));
+            let message;
+            if (selected.length === 1) {
+                const post = selected[0];
+                message = isArchived(post)
+                    ? `Restore "${post.title || "this item"}"? It will be visible again on your profile and feeds.`
+                    : `Archive "${post.title || "this item"}"? It will be hidden from your profile and feeds.`;
+            } else if (allArchived) {
+                message = `Restore ${selected.length} selected items? They will be visible again on your profile and feeds.`;
+            } else if (allActive) {
+                message = `Archive ${selected.length} selected items? They will be hidden from your profile and feeds.`;
+            } else {
+                message = `Toggle archive status for ${selected.length} selected items?`;
+            }
+            const ok = await Alert.confirm(message);
+            if (!ok) return;
+            let changed = 0;
+            for (const post of selected) {
+                if (await post.archive({ skipConfirm: true })) changed += 1;
+            }
+            if (changed) {
+                await CreatorRegistry.reload();
+                await refreshCreatorStats();
+            }
+        });
         document.querySelector(".action-buttons .delete")?.addEventListener("click", async () => {
             const Class = CreatorRegistry.activeClass();
             if (!Class) return;
@@ -35,8 +70,8 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             const ok = await Alert.confirm(
                 selected.length === 1
-                    ? `Delete "${selected[0].title || "this item"}"?`
-                    : `Delete ${selected.length} selected items?`,
+                    ? `Delete "${selected[0].title || "this item"}" permanently? Files and data will be removed.`
+                    : `Delete ${selected.length} selected items permanently? Files and data will be removed.`,
             );
             if (!ok) return;
             let deleted = 0;
@@ -44,36 +79,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (await post.delete({ skipConfirm: true })) deleted += 1;
             }
             if (deleted) {
-                Alert.success(deleted === 1 ? "Deleted" : `${deleted} items deleted`);
                 await CreatorRegistry.reload();
-                await loadStats();
+                await refreshCreatorStats();
             }
         });
         await Icons.load(document.body);
     });
 });
-
-async function loadStats() {
-    const mount = document.querySelector(".number-elements");
-    if (!mount) return;
-    try {
-        const res = await Request.get(Api.creatorCenter);
-        const data = Api.record(res) || {};
-        const labels = [
-            ["articles", "Articles"],
-            ["images", "Images"],
-            ["videos", "Videos"],
-            ["audios", "Audios"],
-            ["documents", "Docs"],
-            ["templates", "Templates"],
-        ];
-        mount.innerHTML = labels
-            .map(
-                ([key, label]) =>
-                    `<span class="creator-stat-pill"><strong>${Number(data[key] || 0)}</strong> ${label}</span>`,
-            )
-            .join("");
-    } catch {
-        mount.innerHTML = "";
-    }
-}

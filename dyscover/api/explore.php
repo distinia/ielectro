@@ -110,6 +110,19 @@ class ExploreSearch
     public static function posts(string $type, string $term): array
     {
         $like = '%' . $term . '%';
+        $normalizedTag = mb_strtolower(ltrim(trim($term), '#'));
+        $tagSql = '';
+        $params = [$type, $like, $like];
+        if ($normalizedTag !== '') {
+            $tagSql = ' OR EXISTS (
+                SELECT 1
+                FROM ielectro_dyscover.dyscover_post_tags pt
+                INNER JOIN ielectro_dyscover.dyscover_tags t ON t.id = pt.tag_id
+                WHERE pt.post_id = p.id
+                AND t.name LIKE ?
+            )';
+            $params[] = '%' . $normalizedTag . '%';
+        }
         $rows = Query::fetchAll(
             "SELECT
                 p.*,
@@ -125,10 +138,10 @@ class ExploreSearch
             WHERE p.type = ?
             AND p.status = 'active'
             AND p.visibility = 'public'
-            AND (p.title LIKE ? OR p.description LIKE ?)
+            AND (p.title LIKE ? OR p.description LIKE ?{$tagSql})
             ORDER BY p.published_at DESC
             LIMIT 30",
-            [$type, $like, $like]
+            $params
         );
         return PostData::mapRows($rows);
     }

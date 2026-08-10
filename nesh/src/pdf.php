@@ -25,6 +25,19 @@ class Pdf extends File
         }
         return $pdf;
     }
+    public static function uploadTo(
+        array $file,
+        string $directory,
+        ?string $name = null,
+        bool $overwrite = false
+    ): static {
+        $pdf = parent::uploadTo($file, $directory, $name, $overwrite);
+        if (!$pdf->verify()) {
+            $pdf->delete();
+            Response::badRequest('Invalid PDF');
+        }
+        return $pdf;
+    }
     protected function refreshMetadata(): void
     {
         parent::refreshMetadata();

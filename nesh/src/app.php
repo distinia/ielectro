@@ -36,11 +36,6 @@ class App
             'assets'   => ROOT_PATH . '/' . $folder . '/assets',
             'pages'    => ROOT_PATH . '/' . $folder . '/pages',
             'data'     => ROOT_PATH . '/' . $folder . '/data',
-            'storage'  => ROOT_PATH . '/' . $folder . '/storage',
-            'cache'    => ROOT_PATH . '/' . $folder . '/storage/cache',
-            'logs'     => ROOT_PATH . '/' . $folder . '/storage/logs',
-            'temp'     => ROOT_PATH . '/' . $folder . '/storage/temp',
-            'backups'  => ROOT_PATH . '/' . $folder . '/storage/backups',
             'database' => ROOT_PATH . '/' . $folder . '/database',
         ];
 
@@ -86,23 +81,11 @@ class App
         if (!defined('APP_ASSETS')) {
             define('APP_ASSETS', $this->paths['assets']);
         }
-
-        if (!defined('APP_CACHE')) {
-            define('APP_CACHE', $this->paths['cache']);
-        }
-
-        if (!defined('APP_LOGS')) {
-            define('APP_LOGS', $this->paths['logs']);
-        }
-
-        if (!defined('APP_TEMP')) {
-            define('APP_TEMP', $this->paths['temp']);
-        }
     }
 
     private function boot(): void
     {
-        $boot = $this->paths['storage'] . '/.booted';
+        $boot = $this->paths['root'] . '/.booted';
 
         if (is_file($boot)) {
             return;

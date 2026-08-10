@@ -3,6 +3,7 @@ import { Image } from "./image.js";
 export class Document extends Image {
     static type = "document";
     static table = ".document-table";
+    static list = new Map();
     static tab = ".document-tab";
     static accept = "application/pdf,.pdf";
     static uploadLabel = "document";

@@ -7,53 +7,19 @@
 </head>
 <body class="creator-page">
 <div class="manager-container">
-    <header class="creator-hero">
-        <div class="creator-hero-text">
-            <h1>Creator Center</h1>
-            <p>Publish articles, media, and templates from one place.</p>
-        </div>
+    <header class="creator-toolbar">
+        <h1>Creator Center</h1>
         <div class="creator-stats number-elements"></div>
+        <div class="creator-toolbar-actions">
+            <div class="action-buttons">
+                <button type="button" class="button action-btn create" aria-label="Create" title="Create"><i data-icon="circle-plus"></i></button>
+                <button type="button" class="button action-btn edit" aria-label="Edit" title="Edit"><i data-icon="pencil"></i></button>
+                <button type="button" class="button action-btn archive" aria-label="Archive" title="Archive"><i data-icon="archive"></i></button>
+                <button type="button" class="button action-btn delete" aria-label="Delete" title="Delete permanently"><i data-icon="trash"></i></button>
+            </div>
+            <input type="search" class="input search-item" placeholder="Search your content…">
+        </div>
     </header>
-    <div class="manager-actions">
-        <div class="action-buttons">
-            <button type="button" class="button create"><i data-icon="circle-plus"></i> Create</button>
-            <button type="button" class="button edit"><i data-icon="pencil"></i> Edit</button>
-            <button type="button" class="button delete"><i data-icon="trash"></i> Delete</button>
-        </div>
-        <input type="search" class="input search-item" placeholder="Search your content…">
-    </div>
-    <div class="creator-upload-hints">
-        <div class="upload-hint is-active" data-type="article">
-            <i data-icon="globe"></i>
-            <strong>Articles</strong>
-            <span>Title, description, and tags</span>
-        </div>
-        <div class="upload-hint" data-type="image">
-            <i data-icon="image"></i>
-            <strong>Images</strong>
-            <span>Upload JPG, PNG, WebP</span>
-        </div>
-        <div class="upload-hint" data-type="video">
-            <i data-icon="video"></i>
-            <strong>Videos</strong>
-            <span>Upload MP4 and other video files</span>
-        </div>
-        <div class="upload-hint" data-type="audio">
-            <i data-icon="music"></i>
-            <strong>Audio</strong>
-            <span>Upload MP3 and audio tracks</span>
-        </div>
-        <div class="upload-hint" data-type="document">
-            <i data-icon="file-text"></i>
-            <strong>Documents</strong>
-            <span>Upload PDF documents</span>
-        </div>
-        <div class="upload-hint" data-type="template">
-            <i data-icon="layout-template"></i>
-            <strong>Templates</strong>
-            <span>Structured fields + preview image</span>
-        </div>
-    </div>
     <div class="tabs creator-table">
         <div class="section article-section active-section">
             <div class="table-wrapper">

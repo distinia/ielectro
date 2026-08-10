@@ -14,6 +14,7 @@ export class ProfilePage {
         this.reposts = [];
         this.mentioned = [];
         this.bio = "";
+        this.website = "";
         this.mainFilter = "posts";
         this.typeFilter = "article";
         ProfilePage.instance = this;

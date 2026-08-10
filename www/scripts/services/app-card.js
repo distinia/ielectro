@@ -14,7 +14,7 @@ export class AppCard {
         element.innerHTML = `
             <div class="service-panel__content">
                 <div class="service-panel__brand">
-                    <img class="service-panel__logo" src="${Nesh.Html.escape(logo)}" alt="${Nesh.Html.escape(this.app.name || "iElectro service")}">
+                    <img class="service-panel__logo" src="${Nesh.Html.escape(logo)}" alt="${Nesh.Html.escape(this.app.name || "iElectro service")}" loading="lazy">
                     <span class="service-panel__tag">iElectro Platform</span>
                 </div>
                 <h2 class="service-panel__title">${Nesh.Html.escape(this.app.name || "")}</h2>
@@ -25,12 +25,12 @@ export class AppCard {
                 ${images.length ? `
                     <div class="service-panel__frame">
                         <div class="media-carousel" data-images='${Nesh.Html.escape(JSON.stringify(images))}'>
-                            <img src="${Nesh.Html.escape(images[0])}" alt="${Nesh.Html.escape(this.app.name || "")}">
+                            <img src="${Nesh.Html.escape(images[0])}" alt="${Nesh.Html.escape(this.app.name || "")}" loading="lazy">
                             <button type="button" class="carousel-btn prev" aria-label="Previous screenshot">‹</button>
                             <button type="button" class="carousel-btn next" aria-label="Next screenshot">›</button>
                         </div>
                     </div>
-                ` : `<div class="service-panel__frame service-panel__frame--empty"><img class="service-panel__logo service-panel__logo--large" src="${Nesh.Html.escape(logo)}" alt=""></div>`}
+                ` : `<div class="service-panel__frame service-panel__frame--empty"><img class="service-panel__logo service-panel__logo--large" src="${Nesh.Html.escape(logo)}" alt="" loading="lazy"></div>`}
             </div>
         `;
         return element;

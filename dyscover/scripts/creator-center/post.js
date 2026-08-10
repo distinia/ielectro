@@ -3,7 +3,6 @@ import { App, Alert, Card, EmptyState, Icons, Request } from "../core/index.js";
 
 export class Post {
     static type = "";
-    static list = new Map();
     static table = "";
 
     constructor(element, item = {}) {
@@ -38,6 +37,7 @@ export class Post {
             tbody.appendChild(post.loadRow());
         });
         this.bindTable(table);
+        Icons.load(tbody);
     }
 
     static async loadTable() {
@@ -54,49 +54,24 @@ export class Post {
         const checkAll = table.querySelector(".check-all");
         if (checkAll) {
             checkAll.onchange = () => {
-                if (checkAll.checked) {
-                    const rows = Array.from(this.list.values());
-                    rows.forEach((entry, index) => {
-                        entry.setChecked(index === 0);
-                    });
-                    if (rows[0]) {
-                        this.selectExclusive(rows[0]);
-                    }
-                } else {
-                    this.list.forEach((post) => post.setChecked(false));
-                }
+                this.list.forEach((post) => post.setChecked(checkAll.checked));
+                this.syncCheckAll(table);
             };
         }
         this.list.forEach((post) => {
             post.element.addEventListener("click", (event) => {
                 if (event.target.closest("input, label, button, a")) return;
-                this.selectExclusive(post);
+                post.view();
             });
             const checkbox = post.element.querySelector("input[type='checkbox']");
             checkbox?.addEventListener("click", (event) => {
                 event.stopPropagation();
             });
             checkbox?.addEventListener("change", (event) => {
-                if (event.target.checked) {
-                    this.selectExclusive(post);
-                } else {
-                    post.setChecked(false);
-                    this.syncCheckAll(table);
-                }
-            });
-            post.element.addEventListener("dblclick", (event) => {
-                if (event.target.closest("input, label, button, a")) return;
-                post.view();
+                post.setChecked(event.target.checked);
+                this.syncCheckAll(table);
             });
         });
-    }
-
-    static selectExclusive(activePost) {
-        this.list.forEach((entry) => {
-            entry.setChecked(entry === activePost);
-        });
-        const table = activePost.element?.closest("table");
-        this.syncCheckAll(table);
     }
 
     static syncCheckAll(table) {
@@ -135,22 +110,38 @@ export class Post {
     }
 
     loadRow() {
-        this.element.className = "item-row";
+        const archived = String(this.item.status || "active") === "hidden";
+        this.element.className = archived
+            ? "item-row item-row--archived"
+            : "item-row";
         this.element.innerHTML = `
             <td><input type="checkbox" class="input-check row-check"></td>
-            <td class="item-name">${App.escapeHtml(this.item.title || "Untitled")}</td>
+            <td class="item-name">${this.nameCellHtml()}</td>
             <td class="item-created">${App.escapeHtml(this.item.created_at || "—")}</td>
             <td class="item-updated">${App.escapeHtml(this.item.updated_at || "—")}</td>
         `;
         return this.element;
     }
 
+    nameCellHtml() {
+        const archived = String(this.item.status || "active") === "hidden";
+        const title = App.escapeHtml(this.item.title || "Untitled");
+        const badge = archived
+            ? `<span class="item-archived-mark" title="Archived"><i data-icon="archive"></i></span>`
+            : "";
+        return `<span class="item-name-inner">${badge}<span class="item-name-text">${title}</span></span>`;
+    }
+
     static create() {
-        new this(null, {}).box("POST");
+        import("./creator-editor.js").then(({ CreatorEditor }) => {
+            CreatorEditor.open(new this(null, {}), "POST");
+        });
     }
 
     edit() {
-        this.box("PUT");
+        import("./creator-editor.js").then(({ CreatorEditor }) => {
+            CreatorEditor.open(this, "PUT");
+        });
     }
 
     async view() {
@@ -158,10 +149,41 @@ export class Post {
         await card.openOverlay();
     }
 
+    isArchived() {
+        return String(this.item.status || "active") === "hidden";
+    }
+
+    async archive(options = {}) {
+        const wasArchived = this.isArchived();
+        const nextStatus = wasArchived ? "active" : "hidden";
+        if (!options.skipConfirm) {
+            const confirm = await Alert.confirm(
+                wasArchived
+                    ? `Restore "${this.title || "this item"}"? It will be visible again on your profile and feeds.`
+                    : `Archive "${this.title || "this item"}"? It will be hidden from your profile and feeds.`,
+            );
+            if (!confirm) return false;
+        }
+        if (!this.id) {
+            Alert.error("Missing item id");
+            return false;
+        }
+        try {
+            await Request.patch(Api.post(this.id), { status: nextStatus });
+            this.item.status = nextStatus;
+            this.loadRow();
+            await Icons.load(this.element);
+            return true;
+        } catch (e) {
+            Alert.error(typeof e === "object" && e?.text ? e.text : "Archive failed");
+            return false;
+        }
+    }
+
     async delete(options = {}) {
         if (!options.skipConfirm) {
             const confirm = await Alert.confirm(
-                `Delete "${this.title || "this item"}"?`,
+                `Delete "${this.title || "this item"}" permanently? Files and data will be removed.`,
             );
             if (!confirm) return false;
         }

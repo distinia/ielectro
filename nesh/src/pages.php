@@ -50,9 +50,7 @@ class Pages
                 foreach ($lines as &$line) {
                     $line = "\t" . $line;
                 }
-                $spinner = "\t" . '<div id="page-boot-spinner" class="page-spinner-overlay" role="status" aria-label="Loading">'
-                    . '<div class="page-spinner"><div class="page-spinner__ring"></div></div></div>';
-                return "<body class=\"page-is-loading\">\n" . $spinner . "\n" . implode("\n", $lines) . "\n</body>";
+                return "<body>\n" . implode("\n", $lines) . "\n</body>";
             },
             $html,
             1

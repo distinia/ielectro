@@ -2,6 +2,12 @@
 namespace Nesh;
 class File
 {
+    private const VIDEO_EXTENSIONS = [
+        'mp4', 'webm', 'mov', 'avi', 'mkv', 'm4v', 'ogv', 'mpeg', 'mpg', '3gp',
+    ];
+    private const AUDIO_EXTENSIONS = [
+        'mp3', 'wav', 'ogg', 'm4a', 'aac', 'flac', 'opus', 'webm', 'weba',
+    ];
     protected string $path;
     protected ?string $filename = null;
     protected ?string $extension = null;
@@ -25,7 +31,21 @@ class File
         ?string $name = null,
         bool $overwrite = false
     ): static {
-        return new static(self::storeUpload($file, APP_TEMP, $name, $overwrite));
+        return new static(self::storeUpload($file, self::tempDir(), $name, $overwrite));
+    }
+    public static function uploadTo(
+        array $file,
+        string $directory,
+        ?string $name = null,
+        bool $overwrite = false
+    ): static {
+        return new static(self::storeUpload($file, $directory, $name, $overwrite));
+    }
+    public static function tempDir(): string
+    {
+        $directory = rtrim(sys_get_temp_dir(), '/\\') . DIRECTORY_SEPARATOR . 'nesh';
+        self::makeDirectory($directory);
+        return $directory;
     }
     protected static function storeUpload(
         array $file,
@@ -204,9 +224,8 @@ class File
     }
     public function temp(): string
     {
-        self::makeDirectory(APP_TEMP);
         $extension = $this->extension !== null ? '.' . $this->extension : '';
-        return self::joinPath(APP_TEMP, Generate::token() . $extension);
+        return self::joinPath(self::tempDir(), Generate::token() . $extension);
     }
     public static function create(string $path, string $content = ''): bool
     {
@@ -333,11 +352,21 @@ class File
     }
     public static function isVideo(string $path): bool
     {
-        return str_starts_with(self::mimeOf($path) ?? '', 'video/');
+        $mime = self::mimeOf($path) ?? '';
+        if (str_starts_with($mime, 'video/')) {
+            return true;
+        }
+        $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        return in_array($extension, self::VIDEO_EXTENSIONS, true);
     }
     public static function isAudio(string $path): bool
     {
-        return str_starts_with(self::mimeOf($path) ?? '', 'audio/');
+        $mime = self::mimeOf($path) ?? '';
+        if (str_starts_with($mime, 'audio/')) {
+            return true;
+        }
+        $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        return in_array($extension, self::AUDIO_EXTENSIONS, true);
     }
     public static function isPdf(string $path): bool
     {

@@ -41,7 +41,6 @@ define('UPLOAD_ALLOWED', 'jpg,jpeg,png,gif,webp,avif,svg,pdf');
 @ini_set('post_max_size', '256M');
 @ini_set('max_execution_time', '300');
 # Cache
-define('CACHE_PREFIX', 'ielectro_');
 define('CACHE_LIFETIME', 3600);
 # API
 define('API_VERSION', 'v1');

@@ -13,25 +13,33 @@ export class BiographyEditor {
         overlay.body((body) => {
             body.innerHTML = `
         <form class="profile-edit-form">
-          <div class="profile-edit-avatar">
-            <div class="profile-avatar-crop" hidden>
-              <img class="profile-avatar-crop-image" alt="">
+          <div class="profile-edit-layout">
+            <aside class="profile-edit-avatar">
+              <div class="profile-avatar-crop" hidden>
+                <img class="profile-avatar-crop-image" alt="">
+              </div>
+              <div class="profile-edit-avatar-ring profile-avatar-current">
+                <img class="profile-edit-avatar-preview" src="${App.escapeAttr(avatarSrc)}" alt="">
+              </div>
+              <label class="profile-edit-avatar-btn">
+                <span>Change photo</span>
+                <input type="file" class="profile-edit-avatar-input" accept="image/*" hidden>
+              </label>
+              <p class="profile-edit-avatar-hint" hidden>Drag to reposition your photo inside the circle.</p>
+            </aside>
+            <div class="profile-edit-fields">
+              <div class="profile-edit-field">
+                <label for="profile-bio">Biography</label>
+                <textarea id="profile-bio" name="biography" class="bio-input profile-edit-bio" data-preserve-case="true" maxlength="2000" rows="5" placeholder="Write something about you…">${App.escapeHtml(page.bio || "")}</textarea>
+              </div>
+              <div class="profile-edit-field">
+                <label for="profile-website">Website</label>
+                <input id="profile-website" name="website" type="url" class="profile-edit-website" maxlength="255" placeholder="https://example.com" value="${App.escapeAttr(page.website || "")}">
+              </div>
+              <div class="bio-actions">
+                <button type="submit" class="profile-btn profile-btn-primary">Save profile</button>
+              </div>
             </div>
-            <div class="profile-edit-avatar-ring profile-avatar-current">
-              <img class="profile-edit-avatar-preview" src="${App.escapeAttr(avatarSrc)}" alt="">
-            </div>
-            <label class="profile-edit-avatar-btn">
-              <span>Change photo</span>
-              <input type="file" class="profile-edit-avatar-input" accept="image/*" hidden>
-            </label>
-            <p class="profile-edit-avatar-hint" hidden>Drag to reposition your photo inside the circle.</p>
-          </div>
-          <div class="profile-edit-field">
-            <label for="profile-bio">Biography</label>
-            <textarea id="profile-bio" name="biography" class="bio-input profile-edit-bio" data-preserve-case="true" maxlength="2000" rows="5" placeholder="Write something about you…">${page.bio || ""}</textarea>
-          </div>
-          <div class="bio-actions">
-            <button type="submit" class="profile-btn profile-btn-primary">Save profile</button>
           </div>
         </form>`;
 
@@ -68,6 +76,9 @@ export class BiographyEditor {
                     const text =
                         body.querySelector(".profile-edit-bio")?.value.trim() ||
                         "";
+                    const website =
+                        body.querySelector(".profile-edit-website")?.value.trim() ||
+                        "";
                     const submitBtn = body.querySelector(
                         'button[type="submit"]',
                     );
@@ -96,15 +107,17 @@ export class BiographyEditor {
                         }
                         await Request.patch(Api.user(page.userId), {
                             biography: text,
+                            website,
                         });
                         page.bio = text;
+                        page.website = website;
                         Mention.renderInto(
                             document.querySelector(".biography"),
                             page.bio,
                             "No biography yet.",
                         );
+                        Informations.renderWebsite(page.website);
                         await Informations.refresh(page);
-                        Alert.success("Profile updated");
                         overlay.close();
                     } catch (err) {
                         Alert.error(

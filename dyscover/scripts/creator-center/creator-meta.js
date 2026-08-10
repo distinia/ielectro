@@ -1,5 +1,7 @@
 import { Api } from "../core/api.js";
 import { Alert, Request } from "../core/index.js";
+import { Icons } from "../core/nesh.js";
+import { CreatorModal } from "./creator-modal.js";
 
 function escapeHtml(value) {
     return String(value ?? "")
@@ -30,20 +32,34 @@ export class CreatorMeta {
             .join(" ");
         return `
                 <div class="creator-field">
-                    <label for="creator-title">Title</label>
                     <input id="creator-title" class="input" name="title" data-preserve-case="true" placeholder="Give your content a title" value="${escapeHtml(title)}" required>
                 </div>
                 <div class="creator-field">
-                    <label for="creator-description">Description</label>
                     <textarea id="creator-description" class="textarea" name="description" data-preserve-case="true" placeholder="Short summary for feeds and search">${escapeHtml(description)}</textarea>
                 </div>
                 <div class="creator-field tags-field">
-                    <label for="creator-tags">Tags</label>
                     <div class="tags-input-wrap">
                         <input id="creator-tags" class="input tags-input" name="tags" placeholder="#news #tutorial" value="${escapeHtml(tagValue)}" autocomplete="off">
                         <ul class="tags-suggestions" hidden></ul>
                     </div>
-                    <span class="hint">Type # to add tags. Existing tags autocomplete from the server.</span>
+                </div>`;
+    }
+
+    static optionsHtml({
+        type = "article",
+        typeLocked = false,
+        allowComments = true,
+    } = {}) {
+        return `
+                <div class="creator-field creator-type-field">
+                    ${CreatorModal.typeSelectHtml(type, { locked: typeLocked })}
+                </div>
+                <div class="creator-option-row">
+                    <span>Allow comments</span>
+                    <label class="creator-switch">
+                        <input type="checkbox" name="allow_comments" value="1"${allowComments ? " checked" : ""}>
+                        <span class="creator-switch-ui" aria-hidden="true"></span>
+                    </label>
                 </div>`;
     }
 
@@ -117,8 +133,13 @@ export class CreatorMeta {
         submitBtn.dataset.busy = "1";
         submitBtn.disabled = true;
         submitBtn.classList.add("is-loading");
-        const label = submitBtn.textContent?.trim() || "Save";
-        submitBtn.innerHTML = `<span class="creator-btn-spinner" aria-hidden="true"></span><span>${label}</span>`;
+        const label =
+            submitBtn.dataset.label ||
+            submitBtn.getAttribute("aria-label") ||
+            submitBtn.textContent?.trim() ||
+            "Save";
+        const icon = submitBtn.dataset.icon || "";
+        submitBtn.innerHTML = `<span class="creator-btn-spinner" aria-hidden="true"></span>`;
         try {
             return await task();
         } catch (e) {
@@ -127,7 +148,12 @@ export class CreatorMeta {
         } finally {
             submitBtn.disabled = false;
             submitBtn.classList.remove("is-loading");
-            submitBtn.textContent = label;
+            if (icon) {
+                submitBtn.innerHTML = `<i data-icon="${icon}"></i>`;
+                await Icons.load(submitBtn);
+            } else {
+                submitBtn.textContent = label;
+            }
             submitBtn.dataset.busy = "0";
         }
     }

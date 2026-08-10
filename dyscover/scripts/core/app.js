@@ -2,7 +2,6 @@ import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
 import { Request } from "./nesh.js";
 import { Api } from "./api.js";
 import { Navbar } from "./navbar.js";
-import { Spinner } from "./spinner.js";
 export class App {
     static scrollLocked = false;
     static userIdCache = new Map();
@@ -24,14 +23,9 @@ export class App {
     }
 
     static async runPage(pageInit) {
-        Spinner.showPage();
-        try {
-            if (!(await App.boot())) return false;
-            if (pageInit) await pageInit();
-            return true;
-        } finally {
-            Spinner.hidePage();
-        }
+        if (!(await App.boot())) return false;
+        if (pageInit) await pageInit();
+        return true;
     }
     async init() {
         Nesh.Input.enablePlainTextPaste();
@@ -40,19 +34,16 @@ export class App {
         Nesh.Input.bind();
 
         const authed = await App.authenticated();
-        const articleGuest = App.page() === "article" && !authed;
 
-        if (!App.isPublicPage() && !authed) {
+        if (!authed) {
             window.location.href =
                 "https://account.ielectro.com/login?service=dyscover";
             App.blocked = true;
             return;
         }
 
-        if (authed || !articleGuest) {
-            new Navbar();
-            document.body.classList.add("has-navbar");
-        }
+        new Navbar();
+        document.body.classList.add("has-navbar");
 
         await Nesh.Icons.load(document.body);
     }
@@ -64,10 +55,6 @@ export class App {
             .filter(Boolean);
         if (!parts.length) return "home";
         return parts[0];
-    }
-
-    static isPublicPage() {
-        return App.page() === "article";
     }
 
     static async authenticated() {
@@ -186,9 +173,13 @@ export class App {
         return App.peerAvatarUrl(username);
     }
 
-    static bustAvatarUrl(userId, explicit = "") {
+    static bustAvatarUrl(userId, explicit = "", version = null) {
         const base = App.userAvatarUrl(userId, "", explicit).split("?")[0];
-        return `${base}?t=${Date.now()}`;
+        const token =
+            version != null && String(version) !== ""
+                ? String(version)
+                : Date.now();
+        return `${base}?t=${token}`;
     }
 
     static refreshAvatarImages(userId, explicit = "") {

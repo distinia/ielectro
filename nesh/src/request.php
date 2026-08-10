@@ -150,7 +150,24 @@ class Request
     }
     public static function file(string $key): ?array
     {
-        return $_FILES[$key] ?? null;
+        $file = $_FILES[$key] ?? null;
+        if ($file === null) {
+            return null;
+        }
+        $error = (int) ($file['error'] ?? UPLOAD_ERR_NO_FILE);
+        if ($error === UPLOAD_ERR_NO_FILE) {
+            return null;
+        }
+        if ($error !== UPLOAD_ERR_OK) {
+            $message = match ($error) {
+                UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE =>
+                    'File exceeds the upload size limit',
+                UPLOAD_ERR_PARTIAL => 'Upload interrupted, try again',
+                default => 'Upload failed',
+            };
+            Response::badRequest($message);
+        }
+        return $file;
     }
     public static function ip(): string
     {

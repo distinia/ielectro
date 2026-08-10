@@ -9,14 +9,12 @@ export class Actions {
 
     async follow(onDone) {
         await Request.post(Api.userFollowers(this.page.userId));
-        Alert.success("Followed");
         await Informations.refresh(this.page);
         if (onDone) await onDone();
     }
 
     async followUser(targetUserId, onDone) {
         await Request.post(Api.userFollowers(targetUserId));
-        Alert.success("Followed");
         await Informations.refresh(this.page);
         if (onDone) await onDone();
     }
@@ -25,7 +23,6 @@ export class Actions {
         const confirm = await Alert.confirm("Unfollow this user?");
         if (!confirm) return;
         await Request.delete(Api.userFollowers(this.page.userId));
-        Alert.success("Unfollowed");
         await Informations.refresh(this.page);
         if (onDone) await onDone();
     }
@@ -34,7 +31,6 @@ export class Actions {
         const confirm = await Alert.confirm("Unfollow this user?");
         if (!confirm) return;
         await Request.delete(Api.userFollowers(targetUserId));
-        Alert.success("Unfollowed");
         if (onDone) await onDone();
     }
 
@@ -44,7 +40,6 @@ export class Actions {
         await Request.delete(
             Api.userFollowerOne(this.page.userId, followerUserId),
         );
-        Alert.success("Follower removed");
         await Informations.refresh(this.page);
         if (onDone) await onDone();
     }

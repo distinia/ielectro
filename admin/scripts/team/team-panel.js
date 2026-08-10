@@ -141,7 +141,7 @@ export default class TeamPanel {
             node.innerHTML = `
                 <div class="admin-view-card">
                     <div class="admin-view-header">
-                        ${item.avatar ? `<img class="admin-avatar" src="${App.esc(item.avatar)}" alt="">` : `<div class="admin-avatar admin-avatar-fallback">${App.esc((item.title || '?').slice(0, 1))}</div>`}
+                        ${item.avatar ? `<img class="admin-avatar" src="${App.esc(item.avatar)}" alt="" loading="lazy">` : `<div class="admin-avatar admin-avatar-fallback">${App.esc((item.title || '?').slice(0, 1))}</div>`}
                         <div>
                             <h1>${App.esc(item.title)}</h1>
                             <p class="admin-muted">${App.esc(item.body || '')}</p>

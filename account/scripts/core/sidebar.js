@@ -52,7 +52,7 @@ export class Sidebar {
             "logout",
         );
 
-        return `<nav class="sidebar"><img src="https://account.ielectro.com/assets/brand/logo.png" class="logo" alt="iElectro"><ul>${links}${logout}</ul></nav>`;
+        return `<nav class="sidebar"><img src="https://account.ielectro.com/assets/brand/logo.png" class="logo" alt="iElectro" loading="lazy"><ul>${links}${logout}</ul></nav>`;
     }
 
     highlight(page) {

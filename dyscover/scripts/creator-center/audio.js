@@ -3,6 +3,7 @@ import { Image } from "./image.js";
 export class Audio extends Image {
     static type = "audio";
     static table = ".audio-table";
+    static list = new Map();
     static tab = ".audio-tab";
     static accept = "audio/*";
     static uploadLabel = "audio";

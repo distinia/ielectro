@@ -41,7 +41,10 @@ export class Api {
     }
     static userFollowers = (id) => Api.userResource(id, "followers");
     static userFollowing = (id) => Api.userResource(id, "following");
-    static userPosts = (id) => Api.userResource(id, "posts");
+    static userPosts = (id, includeArchived = false) => {
+        const base = Api.userResource(id, "posts");
+        return includeArchived ? `${base}?include_archived=1` : base;
+    };
     static userLikes = (id) => Api.userResource(id, "likes");
     static userBookmarks = (id) => Api.userResource(id, "bookmarks");
     static userReposts = (id) => Api.userResource(id, "reposts");

@@ -35,22 +35,17 @@ export class Search {
         if (!term) return;
 
         const active = this.activeClass();
-        CreatorRegistry.classes.forEach((Class) => {
-            const scope = Class === active;
-            Class.list.forEach((post) => {
-                if (!post.element) return;
-                if (!scope) {
-                    post.element.style.display = "none";
-                    return;
-                }
-                const title = String(post.title || post.item?.title || "").toLowerCase();
-                const description = String(post.item?.description || "").toLowerCase();
-                const tags = (Array.isArray(post.item?.tags) ? post.item.tags : [])
-                    .join(" ")
-                    .toLowerCase();
-                const haystack = `${title} ${description} ${tags}`;
-                post.element.style.display = haystack.includes(term) ? "" : "none";
-            });
+        if (!active) return;
+
+        active.list.forEach((post) => {
+            if (!post.element) return;
+            const title = String(post.title || post.item?.title || "").toLowerCase();
+            const description = String(post.item?.description || "").toLowerCase();
+            const tags = (Array.isArray(post.item?.tags) ? post.item.tags : [])
+                .join(" ")
+                .toLowerCase();
+            const haystack = `${title} ${description} ${tags}`;
+            post.element.style.display = haystack.includes(term) ? "" : "none";
         });
     }
 }

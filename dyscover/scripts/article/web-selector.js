@@ -114,16 +114,16 @@ export class WebSelector {
                 selectClass = "selected-link";
                 break;
             case "image":
-                tag = `<img src="${media}">`;
+                tag = `<img src="${media}" loading="lazy">`;
                 break;
             case "video":
-                tag = `<video src="${media}" controls></video>`;
+                tag = `<video src="${media}" controls loading="lazy" preload="none"></video>`;
                 break;
             case "audio":
-                tag = `<audio src="${media}" controls></audio>`;
+                tag = `<audio src="${media}" controls preload="none"></audio>`;
                 break;
             case "document":
-                tag = `<iframe src="${media}"></iframe>`;
+                tag = `<iframe src="${media}" loading="lazy"></iframe>`;
                 break;
         }
         return { tag, boxClass, selectClass };
