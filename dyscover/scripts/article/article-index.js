@@ -2,6 +2,7 @@ import { Icons } from "../core/index.js";
 import { getArticleState } from "./state.js";
 import { Heading } from "./heading.js";
 import { Editor } from "./editor.js";
+import { EditorHelp } from "./editor-help.js";
 
 export class Index {
     constructor() {
@@ -25,11 +26,13 @@ export class Index {
         await this.buildSidebar();
     }
 
-    async closeEditing() {
-        await this.refresh();
+    async startEditing() {
+        this.headings = [];
+        this.buildList();
+        await this.buildSidebar();
     }
 
-    async startEditing() {
+    async closeEditing() {
         await this.refresh();
     }
 
@@ -44,12 +47,25 @@ export class Index {
     async buildSidebar() {
         if (!this.sidebar) return;
         this.editButton = this.sidebar.querySelector(".index-edit-button");
+        const helpButton = this.sidebar.querySelector(".index-help-button");
+        const modeButton = this.sidebar.querySelector(".index-mode-button");
+        const isEditor = getArticleState() === "editor";
+        const isEditing = !!Editor.current?.isEditing;
+        const isTextMode = !!Editor.current?.isTextMode;
+
+        if (helpButton) {
+            helpButton.classList.toggle("is-visible", isEditor);
+            helpButton.onclick = isEditor ? () => EditorHelp.open() : null;
+            helpButton.title = isTextMode
+                ? "Text editor guide"
+                : "Graphic editor guide";
+        }
+
         if (this.editButton) {
-            const isEditor = getArticleState() === "editor";
             this.editButton.classList.toggle("is-visible", isEditor);
             this.editButton.classList.toggle(
                 "is-active",
-                isEditor && !!Editor.current?.isEditing,
+                isEditor && isEditing,
             );
             this.editButton.onclick = isEditor
                 ? () => Editor.toggleEditing()
@@ -57,6 +73,29 @@ export class Index {
             this.editButton.title = isEditor
                 ? "Edit article"
                 : "";
+        }
+
+        if (modeButton) {
+            modeButton.classList.toggle("is-visible", isEditor && isEditing);
+            modeButton.classList.toggle("is-text-mode", isTextMode);
+            modeButton.onclick =
+                isEditor && isEditing
+                    ? () => Editor.toggleEditorMode()
+                    : null;
+            modeButton.title = isTextMode
+                ? "Graphic editor"
+                : "Text editor";
+            modeButton.setAttribute(
+                "aria-label",
+                isTextMode ? "Switch to graphic editor" : "Switch to text editor",
+            );
+            const icon = modeButton.querySelector("i");
+            if (icon) {
+                icon.setAttribute(
+                    "data-icon",
+                    isTextMode ? "layout-template" : "file-text",
+                );
+            }
         }
 
         this.sidebar?.querySelector(".index-edit-hint")?.remove();
@@ -74,6 +113,10 @@ export class Index {
         if (!this.list) return;
         this.list.innerHTML = "";
         this.currentList = null;
+
+        if (Editor.current?.isEditing) {
+            return;
+        }
 
         const topItem = document.createElement("li");
         topItem.innerHTML = `

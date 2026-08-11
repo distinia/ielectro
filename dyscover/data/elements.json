@@ -15,11 +15,6 @@
         "icon": "search"
     },
     {
-        "title": "Format",
-        "class": "FormatText",
-        "icon": "card-sim"
-    },
-    {
         "title": "Heading",
         "class": "Heading",
         "icon": "heading-1",
@@ -73,7 +68,7 @@
         "title": "Link",
         "class": "link",
         "icon": "link",
-        "regex": "\\[(.*?)\\]\\((.*?)\\)",
+        "regex": "\\[\\[(.*?)\\|(.*?)\\]\\]",
         "element": "link",
         "childrenAllowed": false,
         "text": "",

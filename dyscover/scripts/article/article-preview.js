@@ -46,6 +46,13 @@ export class ArticlePreview {
     }
 
     startEditing() {
+        this.unbindListeners();
+        clearTimeout(this.timer);
+        this.hovering = false;
+        this.hide();
+    }
+
+    unbindListeners() {
         if (this.showEvent) {
             this.link.element.removeEventListener("mouseenter", this.showEvent);
         }
@@ -55,12 +62,41 @@ export class ArticlePreview {
         if (this.clickEvent) {
             this.link.element.removeEventListener("click", this.clickEvent);
         }
-        clearTimeout(this.timer);
-        this.hovering = false;
-        this.hide();
+        this.unbindViewportListeners();
+    }
+
+    bindViewportListeners() {
+        if (this.viewportHandler) {
+            return;
+        }
+        this.viewportHandler = () => {
+            if (this.isOpen) {
+                this.position();
+            }
+        };
+        window.addEventListener("scroll", this.viewportHandler, true);
+        window.addEventListener("resize", this.viewportHandler);
+    }
+
+    unbindViewportListeners() {
+        if (!this.viewportHandler) {
+            return;
+        }
+        window.removeEventListener("scroll", this.viewportHandler, true);
+        window.removeEventListener("resize", this.viewportHandler);
+        this.viewportHandler = null;
+    }
+
+    isPointerOverLink() {
+        return this.link.element.matches(":hover");
+    }
+
+    shouldStayOpen() {
+        return this.hovering || this.isPointerOverLink();
     }
 
     closeEditing() {
+        this.unbindListeners();
         if (this.kind() === "document") {
             this.clickEvent = (e) => {
                 e.preventDefault();
@@ -110,15 +146,15 @@ export class ArticlePreview {
                 return;
             }
             const data = await API.getArticlePreview(uuid);
-            if (!this.hovering) {
+            if (!this.shouldStayOpen()) {
                 return;
             }
-            this.text = data.text;
-            this.title = data.title;
+            this.text = data.text || "";
+            this.title = data.title || "";
             this.uuid = data.uuid || uuid;
             this.postId = String(data.id || this.link.element.dataset.postId || "");
-            this.imageExist = data.status;
-            this.image = data.url;
+            this.imageExist = !!data.url;
+            this.image = data.url || "";
             if (data.articleUrl && !PostResolver.isUuid(PostResolver.parseUuidFromUrl(this.url))) {
                 const hash = this.url.includes("#") ? this.url.slice(this.url.indexOf("#")) : "";
                 this.url = data.articleUrl + hash;
@@ -126,6 +162,9 @@ export class ArticlePreview {
             }
             if (this.imageExist && this.image) {
                 await this.measureImage();
+            }
+            if (!this.shouldStayOpen()) {
+                return;
             }
             this.loaded = true;
             this.create();
@@ -152,24 +191,49 @@ export class ArticlePreview {
         if (!this.isOpen || !this.element) {
             return;
         }
+        this.unbindViewportListeners();
         this.element.remove();
         this.element = null;
         this.isOpen = false;
     }
 
     position() {
-        const rect = this.link.element.getBoundingClientRect();
-        const width = this.isVerticalImage ? Math.min(400, window.innerWidth - 24) : Math.min(330, window.innerWidth - 24);
-        const height = this.element?.offsetHeight || 320;
-        let x = rect.left + rect.width / 2 - width / 2;
-        let y = rect.top + window.scrollY - height - 14;
-        if (y < window.scrollY + 8) {
-            y = rect.bottom + window.scrollY + 14;
+        if (!this.element || !this.link.element) {
+            return;
         }
-        x = Math.max(12, Math.min(x, window.innerWidth - width - 12));
+        const rect = this.link.element.getBoundingClientRect();
+        const width = this.isVerticalImage
+            ? Math.min(400, window.innerWidth - 24)
+            : Math.min(330, window.innerWidth - 24);
+        const height = this.element.offsetHeight || 320;
+        const margin = 14;
+        const padding = 12;
+
+        let x = rect.left + rect.width / 2 - width / 2;
+        x = Math.max(padding, Math.min(x, window.innerWidth - width - padding));
+
+        const spaceAbove = rect.top - padding;
+        const spaceBelow = window.innerHeight - rect.bottom - padding;
+        let top;
+        let placement = "above";
+
+        if (spaceAbove >= height + margin || spaceAbove >= spaceBelow) {
+            top = rect.top - height - margin;
+            placement = "above";
+        } else {
+            top = rect.bottom + margin;
+            placement = "below";
+        }
+
+        top = Math.max(
+            padding,
+            Math.min(top, window.innerHeight - height - padding),
+        );
+
         this.element.style.left = `${x}px`;
-        this.element.style.top = `${y}px`;
+        this.element.style.top = `${top}px`;
         this.element.style.width = `${width}px`;
+        this.element.dataset.placement = placement;
     }
 
     bindBoxHover() {
@@ -193,7 +257,7 @@ export class ArticlePreview {
     }
 
     create() {
-        if (!this.hovering) {
+        if (!this.shouldStayOpen()) {
             return;
         }
         this.hide();
@@ -207,20 +271,21 @@ export class ArticlePreview {
         const body = document.createElement("div");
         body.className = "article-box-body";
         const paragraph = document.createElement("p");
-        if (this.title) {
-            paragraph.innerHTML = `<b>${this.escapeHtml(this.title)}</b> ${this.text}`;
-        } else {
-            paragraph.innerHTML = this.text;
-        }
+        paragraph.innerHTML = this.text;
         body.appendChild(paragraph);
 
         if (this.imageExist && this.image) {
             const media = document.createElement("button");
             media.type = "button";
             media.className = "article-box-media";
-            media.style.backgroundImage = `url('${this.image}')`;
             media.setAttribute("aria-label", "Open article");
             media.addEventListener("click", (e) => this.openLinkedPost(e));
+            const img = document.createElement("img");
+            img.className = "article-box-media-img";
+            img.src = this.image;
+            img.alt = this.title || "";
+            img.loading = "lazy";
+            media.appendChild(img);
             if (this.isVerticalImage) {
                 this.element.append(body, media);
             } else {
@@ -234,20 +299,13 @@ export class ArticlePreview {
         this.bindBoxHover();
         this.position();
         this.isOpen = true;
+        this.bindViewportListeners();
         requestAnimationFrame(() => {
             if (this.element) {
-                this.element.classList.add("is-visible");
                 this.position();
+                this.element.classList.add("is-visible");
             }
         });
-    }
-
-    escapeHtml(value) {
-        return String(value)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;");
     }
 
     delete() {

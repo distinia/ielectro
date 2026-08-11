@@ -42,7 +42,7 @@ export class Article {
             /* guest or unauthorized */
         } finally {
             await Editor.current.index.refresh();
-            Editor.current?.activateElements();
+            await Editor.current?.activateElements();
         }
     }
 }

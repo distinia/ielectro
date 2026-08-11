@@ -40,8 +40,57 @@
     border-radius: 0 8px 8px 0;
 }
 
+.caption {
+    display: block;
+    margin: 0 0 1.35rem;
+    padding: 0.75rem 1rem;
+    border-left: 3px solid rgba(21, 101, 192, 0.35);
+    border-radius: 0 10px 10px 0;
+    background: linear-gradient(90deg, rgba(21, 101, 192, 0.06), transparent 85%);
+    font-style: italic;
+    color: #475569;
+    font-size: 0.96rem;
+    line-height: 1.6;
+}
+
+.number-list,
+.point-list {
+    line-height: 1.7;
+    margin: 1.25em 0;
+    padding-left: 1.65em;
+    color: #1e293b;
+}
+
+.number-list li,
+.point-list li {
+    margin-bottom: 0.55em;
+    padding-left: 0.25em;
+    font-size: 1.02rem;
+}
+
+.number-list li::marker {
+    color: #1565c0;
+    font-weight: 700;
+}
+
+.point-list li::marker {
+    color: #42a5f5;
+}
+
+.bold {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.italic {
+    font-style: italic;
+    color: #334155;
+}
+
 .center {
     text-align: center;
+    margin: 1.25em 0;
+    padding: 0.35rem 0;
 }
 
 .center img {
@@ -68,20 +117,6 @@
     text-decoration: underline;
 }
 
-.number-list,
-.point-list {
-    line-height: 1.65;
-    margin: 1.2em 0;
-    padding-left: 1.5em;
-    color: #1e293b;
-}
-
-.number-list li,
-.point-list li {
-    margin-bottom: 0.5em;
-    font-size: 1.02rem;
-}
-
 table .number-list li,
 table .point-list li {
     font-size: 0.95rem;
@@ -93,16 +128,4 @@ table .point-list li {
 
 .point-list {
     list-style-type: disc;
-}
-
-.bold {
-    font-weight: 600;
-}
-
-.caption {
-    font-style: italic;
-    color: #64748b;
-    font-size: 0.98rem;
-    line-height: 1.55;
-    margin-bottom: 1.25rem;
 }

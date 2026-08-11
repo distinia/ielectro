@@ -1,14 +1,68 @@
 const SIDEBAR_HTML = `
     <div class="index-sidebar-header">
-        <button type="button" class="index-edit-button" aria-label="Edit article">
-            <i data-icon="pencil"></i>
-        </button>
-        <h4>Index</h4>
+        <div class="index-sidebar-actions">
+            <button type="button" class="index-help-button" aria-label="Editor guide" title="Editor guide">
+                <span aria-hidden="true">?</span>
+            </button>
+            <button type="button" class="index-edit-button" aria-label="Edit article">
+                <i data-icon="pencil"></i>
+            </button>
+            <button type="button" class="index-mode-button" aria-label="Switch editor mode" title="Text editor">
+                <i data-icon="file-text"></i>
+            </button>
+        </div>
+        <h4 class="index-sidebar-title">Index</h4>
     </div>
     <div class="index-sidebar-content">
         <ul class="list" aria-label="Table of contents"></ul>
     </div>
 `;
+
+function upgradeSidebarHeader(sidebar) {
+    const header = sidebar.querySelector(".index-sidebar-header");
+    if (!header) {
+        return;
+    }
+
+    const title = header.querySelector("h4");
+    if (title) {
+        title.classList.add("index-sidebar-title");
+    }
+
+    let actions = header.querySelector(".index-sidebar-actions");
+    const editButton = header.querySelector(".index-edit-button");
+
+    if (!actions) {
+        actions = document.createElement("div");
+        actions.className = "index-sidebar-actions";
+        header.insertBefore(actions, title || null);
+        if (editButton) {
+            actions.appendChild(editButton);
+        }
+    } else if (editButton && editButton.parentElement !== actions) {
+        actions.prepend(editButton);
+    }
+
+    if (!header.querySelector(".index-mode-button")) {
+        const modeButton = document.createElement("button");
+        modeButton.type = "button";
+        modeButton.className = "index-mode-button";
+        modeButton.setAttribute("aria-label", "Switch editor mode");
+        modeButton.title = "Text editor";
+        modeButton.innerHTML = `<i data-icon="file-text"></i>`;
+        actions.appendChild(modeButton);
+    }
+
+    if (!header.querySelector(".index-help-button")) {
+        const helpButton = document.createElement("button");
+        helpButton.type = "button";
+        helpButton.className = "index-help-button";
+        helpButton.setAttribute("aria-label", "Editor guide");
+        helpButton.title = "Editor guide";
+        helpButton.innerHTML = `<span aria-hidden="true">?</span>`;
+        actions.prepend(helpButton);
+    }
+}
 
 export function ensureArticleChrome() {
     document.body.classList.add("article-page");
@@ -65,6 +119,8 @@ export function ensureArticleChrome() {
         sidebar.className = "article-index-sidebar";
         sidebar.setAttribute("aria-label", "Article index");
         sidebar.innerHTML = SIDEBAR_HTML;
+    } else {
+        upgradeSidebarHeader(sidebar);
     }
 
     if (!document.querySelector(".article-stage")) {

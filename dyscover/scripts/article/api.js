@@ -5,7 +5,6 @@ import { PostResolver } from "./post-resolver.js";
 const TOOLBAR_ACTIONS = {
     Save: "save",
     ReplaceText: "replace",
-    FormatText: "format",
     Heading: "heading",
     Subheading: "subheading",
     Center: "center",
@@ -156,13 +155,16 @@ export class API {
             throw new Error("Article not found");
         }
         const preview = record.preview_image || "";
+        const image = PostResolver.isRenderablePreview(preview)
+            ? preview
+            : "";
         return {
             id: record.id || "",
             uuid: record.uuid || raw,
             title: record.title || "",
             text: record.paragraph || record.description || "",
-            status: !!preview,
-            url: preview,
+            status: !!image,
+            url: image,
             articleUrl: record.url || `${Api.origin}/article/${raw}`,
         };
     }

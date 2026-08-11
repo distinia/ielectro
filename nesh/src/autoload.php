@@ -17,7 +17,7 @@ define('DB_PORT', 3310);
 define('DB_CHARSET', 'utf8mb4');
 # Session
 define('SESSION_NAME', 'ielectro_session');
-define('SESSION_LIFETIME', 86400);
+define('SESSION_LIFETIME', 60 * 60 * 24 * 180); // 180 days (~6 months)
 # Cookies
 define('COOKIE_DOMAIN', '.ielectro.com');
 define('COOKIE_PATH', '/');
@@ -25,7 +25,7 @@ define('COOKIE_SECURE', true);
 define('COOKIE_HTTPONLY', true);
 define('COOKIE_SAMESITE', 'Lax');
 # Security
-define('JWT_EXPIRES', 86400);
+define('JWT_EXPIRES', 60 * 60 * 24 * 180); // 180 days (~6 months)
 define('CSRF_TOKEN_LENGTH', 64);
 # Mail
 define('MAIL_PORT', 587);

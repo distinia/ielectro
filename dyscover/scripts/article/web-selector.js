@@ -2,6 +2,7 @@ import { Api } from "../core/api.js";
 import { Alert, Box } from "../core/index.js";
 import { API } from "./api.js";
 import { ArticleHelp } from "./article-help.js";
+import { PostResolver } from "./post-resolver.js";
 
 const TYPE_LABELS = {
     link: "link",
@@ -162,8 +163,11 @@ export class WebSelector {
         const assetUrl = this.assetUrl(result);
         const title = result.title || "Untitled";
         const typeLabel = String(result.type || this.type).replace(/-/g, " ");
+        const visual = preview
+            ? `<div class="search-image"><img class="search-image-thumb" src="${WebSelector.escapeAttr(preview)}" alt="" loading="lazy"></div>`
+            : `<div class="search-image search-image--empty"></div>`;
         el.innerHTML = `
-            <div class="search-image" style="background-image:url('${preview}')"></div>
+            ${visual}
             <div class="search-text">
                 <b>${title}</b>
                 <span class="selector-type-badge">${typeLabel}</span>
@@ -180,6 +184,26 @@ export class WebSelector {
             result.updated || result.updated_at || Date.now(),
         ).getTime();
         return `${url}${String(url).includes("?") ? "&" : "?"}t=${stamp}`;
+    }
+
+    static escapeAttr(value) {
+        return String(value || "")
+            .replace(/&/g, "&amp;")
+            .replace(/"/g, "&quot;")
+            .replace(/</g, "&lt;");
+    }
+
+    static pickPreviewSource(result) {
+        for (const url of [
+            result.preview_image,
+            result.preview,
+            result.media,
+        ]) {
+            if (PostResolver.isRenderablePreview(url)) {
+                return String(url).trim();
+            }
+        }
+        return "";
     }
 
     static isVideoFile(url) {
@@ -242,8 +266,16 @@ export class WebSelector {
                 return WebSelector.cacheBust(preview, result);
             }
         }
-        const source =
-            result.media || result.preview_image || result.preview || "";
+        const source = WebSelector.pickPreviewSource(result);
+        if (!source) {
+            if (type === "article" || this.type === "link") {
+                return WebSelector.cacheBust(
+                    `${Api.origin}/assets/brand/default-post.jpg`,
+                    result,
+                );
+            }
+            return "";
+        }
         return WebSelector.cacheBust(source, result);
     }
 

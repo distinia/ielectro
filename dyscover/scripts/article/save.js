@@ -1,5 +1,6 @@
 import { Alert } from "../core/index.js";
 import { API } from "./api.js";
+import { Editor } from "./editor.js";
 import { Select } from "./select.js";
 export class Save {
     static list = new Map();
@@ -9,7 +10,11 @@ export class Save {
     static async init() {
         const editingContainer = Select.container();
         if (!editingContainer) return;
-        const content = editingContainer.innerHTML;
+        if (Editor.current?.isTextMode) {
+            await Editor.current.applySourceToContent();
+        }
+        const content =
+            Editor.current?.content?.innerHTML ?? editingContainer.innerHTML;
         const result = await Alert.confirm("Do you want to save changes");
         if (!result) return;
         const instance = new Save(content);

@@ -18,10 +18,18 @@
             </article>
             <aside class="article-index-sidebar" aria-label="Article index">
                 <div class="index-sidebar-header">
-                    <button type="button" class="index-edit-button" aria-label="Edit article">
-                        <i data-icon="pencil"></i>
-                    </button>
-                    <h4>Index</h4>
+                    <div class="index-sidebar-actions">
+                        <button type="button" class="index-help-button" aria-label="Editor guide" title="Editor guide">
+                            <span aria-hidden="true">?</span>
+                        </button>
+                        <button type="button" class="index-edit-button" aria-label="Edit article">
+                            <i data-icon="pencil"></i>
+                        </button>
+                        <button type="button" class="index-mode-button" aria-label="Switch editor mode" title="Text editor">
+                            <i data-icon="file-text"></i>
+                        </button>
+                    </div>
+                    <h4 class="index-sidebar-title">Index</h4>
                 </div>
                 <div class="index-sidebar-content">
                     <ul class="list" aria-label="Table of contents"></ul>

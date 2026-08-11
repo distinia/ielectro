@@ -278,6 +278,8 @@ export class Card {
         const profile = `https://dyscover.ielectro.com/users/${encodeURIComponent(d.username || "")}`;
         const panel = document.createElement("div");
         panel.className = "post-preview";
+        const title = App.escapeHtml(d.title || "");
+        const titleAttr = App.escapeAttr(d.title || "");
         panel.innerHTML = `
             ${this.previewVisual()}
             <div class="post-preview-header">
@@ -288,7 +290,7 @@ export class Card {
             </div>
             <div class="post-preview-type">
                 <span class="post-preview-icon" title="${type}"><i data-icon="${this.typeIcon(type)}"></i></span>
-                 <span class="post-preview-title">${d.title || ""}</span>
+                 <span class="post-preview-title" title="${titleAttr}">${title}</span>
             </div>`;
         panel.addEventListener("click", (e) => {
             if (e.target.closest(".post-preview-user")) return;

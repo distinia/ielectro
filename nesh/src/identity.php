@@ -38,9 +38,16 @@ class Identity
 
         Query::execute(
             'UPDATE ' . Schema::ACCOUNT_SESSIONS . '
-            SET last_activity = NOW()
+            SET last_activity = NOW(),
+                expires_at = DATE_ADD(NOW(), INTERVAL ? SECOND)
             WHERE id = ?',
-            [$identity['session_id']]
+            [SESSION_LIFETIME, $identity['session_id']]
+        );
+
+        Cookie::set(
+            'session_token',
+            $token,
+            time() + SESSION_LIFETIME
         );
 
         self::$identity = $identity;

@@ -46,6 +46,7 @@ export class Table {
         ];
         this.menu = new Menu(this);
         this.rowsStyle();
+        this.syncCellLabels();
         Table.list.set(this.element, this);
     }
     static async init() {
@@ -127,12 +128,23 @@ export class Table {
                 element.contentEditable = false;
             });
         }
+        this.syncCellLabels();
         this.menu.closeEditing();
     }
     rowsStyle() {
         [...this.tbody.rows].forEach((row, i) => {
             row.classList.toggle("row-even", i % 2 === 1);
             row.classList.toggle("row-odd", i % 2 === 0);
+        });
+        this.syncCellLabels();
+    }
+    syncCellLabels() {
+        const headers = [...(this.thead?.rows[0]?.cells || [])];
+        [...(this.tbody?.rows || [])].forEach((row) => {
+            [...row.cells].forEach((cell, index) => {
+                const label = headers[index]?.innerText?.trim() || `Column ${index + 1}`;
+                cell.dataset.label = label;
+            });
         });
     }
     position() {
@@ -204,6 +216,7 @@ export class Table {
             this.thead.rows[0].cells[position.column],
         );
         this.columns++;
+        this.syncCellLabels();
     }
     addColumnRight() {
         const position = this.position();
@@ -218,6 +231,7 @@ export class Table {
             this.thead.rows[0].cells[position.column + 1],
         );
         this.columns++;
+        this.syncCellLabels();
     }
     removeColumn() {
         const position = this.position();
@@ -231,6 +245,7 @@ export class Table {
             this.tbody.rows[i].deleteCell(position.column);
         }
         this.columns--;
+        this.syncCellLabels();
     }
     delete() {
         this.closeEditing();

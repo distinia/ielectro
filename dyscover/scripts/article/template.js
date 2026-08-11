@@ -276,7 +276,7 @@ export class Template {
         const slug = String(field || "")
             .toLowerCase()
             .replace(/[^a-z0-9]+/g, "-");
-        const names = this.fields.map((f) => f.name);
+        const names = (this.fields || []).map((f) => f.name);
         const index = names.indexOf(field);
         for (let i = index + 1; i < names.length; i++) {
             const nextSlug = String(names[i] || "")
@@ -329,6 +329,9 @@ export class Template {
         const img = document.createElement("img");
         img.src = url;
         img.classList.add("template-image");
+        if (large) {
+            img.classList.add("template-large-image");
+        }
         img.style.width = large ? "100%" : "50%";
         td.appendChild(img);
         new Media(img);
@@ -342,10 +345,10 @@ export class Template {
         td.colSpan = 2;
         const img1 = document.createElement("img");
         img1.src = url1;
-        img1.classList.add("template-image");
+        img1.classList.add("template-image", "template-first-image");
         const img2 = document.createElement("img");
         img2.src = url2;
-        img2.classList.add("template-image");
+        img2.classList.add("template-image", "template-second-image");
         td.appendChild(img1);
         td.appendChild(img2);
         new Media(img1);

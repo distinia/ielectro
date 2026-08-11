@@ -70,6 +70,20 @@ export class PostResolver {
         return null;
     }
 
+    static isRenderablePreview(url) {
+        const value = String(url || "").trim();
+        if (!value) {
+            return false;
+        }
+        if (/\.html(\?|#|$)/i.test(value)) {
+            return false;
+        }
+        if (/\/articles\/[^/?#]+\.html/i.test(value)) {
+            return false;
+        }
+        return true;
+    }
+
     static async resolvePost(postId, url) {
         if (postId) {
             try {

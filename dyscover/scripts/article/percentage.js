@@ -15,6 +15,12 @@ export class Percentage {
         ];
         this.menu = new Menu(this);
         Percentage.list.set(this.element, this);
+        if (!element.dataset.percentage && element.dataset.value) {
+            element.dataset.percentage = Percentage.formatDisplay(
+                element.dataset.value,
+                this.width,
+            );
+        }
     }
     static async init() {
         const range = Select.cursor();
@@ -37,11 +43,21 @@ export class Percentage {
         instance.startEditing();
         Select.cursorToEnd(instance.element);
     }
+    static formatDisplay(value, width) {
+        const raw = String(value || "").trim();
+        if (raw.includes("/")) {
+            return raw;
+        }
+        const rounded = Math.round(Number(width) || 0);
+        return `${rounded}%`;
+    }
+
     static create(width, value) {
         const element = document.createElement("div");
         element.className = Percentage.className;
         element.contentEditable = false;
         element.dataset.value = value;
+        element.dataset.percentage = Percentage.formatDisplay(value, width);
         const bar = document.createElement("div");
         bar.classList.add("percentage-value");
         bar.style.width = width + "%";
@@ -93,6 +109,7 @@ export class Percentage {
         this.value = value;
         this.width = width;
         this.element.dataset.value = value;
+        this.element.dataset.percentage = Percentage.formatDisplay(value, width);
         const bar = this.element.querySelector(".percentage-value");
         if (bar) {
             bar.style.width = width + "%";

@@ -88,6 +88,10 @@
     color: #fff;
 }
 
+.post-preview-icon {
+    flex-shrink: 0;
+}
+
 .post-preview-icon i,
 .post-preview-icon svg {
     width: 22px;
@@ -99,8 +103,7 @@
 }
 
 .post-preview-title {
-    display: flex;
-    align-items: center;
+    flex: 1;
     min-width: 0;
     font-weight: 600;
     font-size: 0.88rem;

@@ -74,10 +74,10 @@ class Articles
         $html = (string) file_get_contents($path);
         $cover = ArticleContent::extractCoverImage($html);
         $paragraph = ArticleContent::extractFirstParagraph($html);
-        $previewImage = (string) ($post['preview_image'] ?? '');
-        if ($previewImage === '' || $previewImage === PostAssets::defaultPreview()) {
-            $previewImage = $cover !== '' ? $cover : PostAssets::defaultPreview();
-        }
+        $previewImage = Articles::resolvePreviewImage(
+            (string) ($post['preview_image'] ?? ''),
+            $cover
+        );
         if ($paragraph === '') {
             $paragraph = htmlspecialchars((string) ($post['description'] ?? ''), ENT_QUOTES, 'UTF-8');
         }
@@ -89,6 +89,22 @@ class Articles
             'paragraph' => $paragraph,
             'url' => \APP_URL . '/article/' . $post['uuid'],
         ]);
+    }
+
+    public static function resolvePreviewImage(string $previewImage, string $cover): string
+    {
+        if (
+            $previewImage !== ''
+            && $previewImage !== PostAssets::defaultPreview()
+            && !preg_match('/\.html(\?|#|$)/i', $previewImage)
+            && !preg_match('~/articles/[^/?#]+\.html~i', $previewImage)
+        ) {
+            return $previewImage;
+        }
+        if ($cover !== '') {
+            return $cover;
+        }
+        return PostAssets::defaultPreview();
     }
 
     private function show(): void
