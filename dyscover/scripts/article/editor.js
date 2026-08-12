@@ -498,6 +498,9 @@ export class Editor {
                 ...Object.values(Class.classMap).map((name) => "." + name),
             );
         }
+        if (Class.templateImageSelectors) {
+            selectors.push(...Class.templateImageSelectors);
+        }
         return selectors;
     }
 

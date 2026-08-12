@@ -16,6 +16,13 @@ export class Media {
         video: "video",
         audio: "audio",
     };
+    static templateImageSelectors = [
+        "img.template-single-image",
+        "img.template-image",
+        "img.template-large-image",
+        "img.template-first-image",
+        "img.template-second-image",
+    ];
     constructor(element) {
         if (!element) return;
         this.element = element;
@@ -26,6 +33,9 @@ export class Media {
         this.previewNodesList = [];
         this.setMenu();
         Media.list.set(this.element, this);
+        if (!Editor.current?.isEditing) {
+            this.bindPreview();
+        }
     }
     static async init() {
         const range = Select.cursor();
@@ -331,9 +341,9 @@ export class Media {
             this.element.classList.contains(Media.classMap.imageTemplate) ||
             this.element.classList.contains("template-single-image") ||
             this.element.classList.contains("template-large-image") ||
-            (this.element.classList.contains("template-image") &&
-                !this.element.classList.contains("template-first-image") &&
-                !this.element.classList.contains("template-second-image"))
+            this.element.classList.contains("template-first-image") ||
+            this.element.classList.contains("template-second-image") ||
+            this.element.classList.contains("template-image")
         ) {
             return Media.classMap.imageTemplate;
         }

@@ -282,22 +282,28 @@ export class Template {
         let result = null;
         switch (type) {
             case "single-image": {
-                const url = await this.selectImage();
-                if (!url) return;
-                result = this.imageRow(field.name, url, false);
+                const picked = await this.selectImage();
+                if (!picked?.url) return;
+                result = this.imageRow(field.name, picked.url, false, picked.postId);
                 break;
             }
             case "large-image": {
-                const url = await this.selectImage();
-                if (!url) return;
-                result = this.imageRow(field.name, url, true);
+                const picked = await this.selectImage();
+                if (!picked?.url) return;
+                result = this.imageRow(field.name, picked.url, true, picked.postId);
                 break;
             }
             case "double-image": {
-                const url1 = await this.selectImage();
-                const url2 = await this.selectImage();
-                if (!url1 || !url2) return;
-                result = this.doubleImageRow(field.name, url1, url2);
+                const picked1 = await this.selectImage();
+                const picked2 = await this.selectImage();
+                if (!picked1?.url || !picked2?.url) return;
+                result = this.doubleImageRow(
+                    field.name,
+                    picked1.url,
+                    picked2.url,
+                    picked1.postId,
+                    picked2.postId,
+                );
                 break;
             }
             case "definition":
@@ -329,7 +335,11 @@ export class Template {
         const option = await Alert.select("Select source", ["Dyscover", "URL"]);
         if (!option) return null;
         const picked = await WebSelector.init(option, "image");
-        return picked?.url || null;
+        if (!picked?.url) return null;
+        return {
+            url: picked.url,
+            postId: picked.postId || "",
+        };
     }
     insertRow(row, field) {
         const slug = String(field || "")
@@ -377,26 +387,35 @@ export class Template {
         row.appendChild(td);
         return { row };
     }
-    imageRow(field, url, large = false) {
+    imageRow(field, url, large = false, postId = "") {
         const row = document.createElement("tr");
         row.dataset.field = this.fieldSlug(field);
         const td = document.createElement("td");
         td.colSpan = 2;
-        const img = large
-            ? Media.createTemplateLargeImage(url)
-            : Media.createTemplateSingleImage(url);
+        const img = Media.create(
+            large ? "template-large-image" : Media.classMap.imageTemplate,
+            url,
+            postId,
+        );
         td.appendChild(img);
         new Media(img);
         row.appendChild(td);
         return { row };
     }
-    doubleImageRow(field, url1, url2) {
+    doubleImageRow(field, url1, url2, postId1 = "", postId2 = "") {
         const row = document.createElement("tr");
         row.dataset.field = this.fieldSlug(field);
         const td = document.createElement("td");
         td.colSpan = 2;
         td.append(...Media.createTemplateDoubleImage(url1, url2).childNodes);
-        td.querySelectorAll("img").forEach((img) => new Media(img));
+        const imgs = td.querySelectorAll("img");
+        if (postId1 && imgs[0]) {
+            imgs[0].dataset.postId = String(postId1);
+        }
+        if (postId2 && imgs[1]) {
+            imgs[1].dataset.postId = String(postId2);
+        }
+        imgs.forEach((img) => new Media(img));
         row.appendChild(td);
         return { row };
     }

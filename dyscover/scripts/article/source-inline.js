@@ -64,15 +64,19 @@ export class SourceInline {
             return `{{percent|${value}}}`;
         }
         if (el.classList.contains("template-large-image")) {
-            return `{{template-large-image|${el.getAttribute("src") || ""}}}`;
+            const postId = el.dataset.postId ? `|${el.dataset.postId}` : "";
+            return `{{template-large-image|${el.getAttribute("src") || ""}${postId}}}`;
         }
         if (
             el.classList.contains("template-single-image") ||
+            el.classList.contains("template-first-image") ||
+            el.classList.contains("template-second-image") ||
             (el.classList.contains("template-image") &&
                 !el.classList.contains("template-first-image") &&
                 !el.classList.contains("template-second-image"))
         ) {
-            return `{{template-single-image|${el.getAttribute("src") || ""}}}`;
+            const postId = el.dataset.postId ? `|${el.dataset.postId}` : "";
+            return `{{template-single-image|${el.getAttribute("src") || ""}${postId}}}`;
         }
         if (el.classList.contains("icon-image")) {
             return `{{icon-image|${el.getAttribute("src") || ""}}}`;
@@ -438,20 +442,45 @@ export class SourceInline {
             }
             case "template-image":
             case "template-single-image":
-                return Media.createTemplateSingleImage(macro.parts[1] || "");
+                return Media.create(
+                    Media.classMap.imageTemplate,
+                    macro.parts[1] || "",
+                    macro.parts[2] || "",
+                );
             case "template-large-image":
             case "large-image":
-                return Media.createTemplateLargeImage(macro.parts[1] || "");
+                return Media.create(
+                    "template-large-image",
+                    macro.parts[1] || "",
+                    macro.parts[2] || "",
+                );
             case "template-double-image":
             case "double-image": {
                 const [url1, url2] = Media.parseDoubleImageUrls(macro.parts[1]);
+                const [postId1, postId2] = Media.parseDoubleImageUrls(
+                    macro.parts[2] || "",
+                );
                 if (!url1) {
                     return null;
                 }
                 if (!url2) {
-                    return Media.createTemplateSingleImage(url1);
+                    return Media.create(
+                        Media.classMap.imageTemplate,
+                        url1,
+                        postId1 || "",
+                    );
                 }
-                return Media.createTemplateDoubleImage(url1, url2);
+                const fragment = Media.createTemplateDoubleImage(url1, url2);
+                const imgs = [...fragment.childNodes].filter(
+                    (node) => node.tagName === "IMG",
+                );
+                if (postId1 && imgs[0]) {
+                    imgs[0].dataset.postId = String(postId1);
+                }
+                if (postId2 && imgs[1]) {
+                    imgs[1].dataset.postId = String(postId2);
+                }
+                return fragment;
             }
             case "percent": {
                 const value = macro.parts[1] || "0";

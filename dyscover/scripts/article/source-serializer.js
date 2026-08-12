@@ -279,7 +279,7 @@ export class SourceSerializer {
 
         const rowImgs = this.templateImages(row);
         if (rowImgs.length >= 2) {
-            return `{{template-double-image|${rowImgs[0].src} ;; ${rowImgs[1].src}}}`;
+            return this.serializeTemplateDoubleImage(rowImgs);
         }
         if (rowImgs.length === 1) {
             return this.serializeTemplateImage(rowImgs[0]);
@@ -293,7 +293,7 @@ export class SourceSerializer {
     static serializeTemplateWideCell(cell) {
         const imgs = this.templateImages(cell);
         if (imgs.length >= 2) {
-            return `{{template-double-image|${imgs[0].src} ;; ${imgs[1].src}}}`;
+            return this.serializeTemplateDoubleImage(imgs);
         }
         if (imgs.length === 1) {
             return this.serializeTemplateImage(imgs[0]);
@@ -336,6 +336,16 @@ export class SourceSerializer {
         );
     }
 
+    static serializeTemplateDoubleImage(imgs) {
+        const urls = imgs.map((img) => img.src).join(" ;; ");
+        const postIds = imgs
+            .map((img) => img.dataset.postId || "")
+            .filter(Boolean);
+        const postSuffix =
+            postIds.length >= 2 ? `|${postIds.join(" ;; ")}` : "";
+        return `{{template-double-image|${urls}${postSuffix}}}`;
+    }
+
     static serializeTemplateImage(img) {
         const url =
             img.getAttribute("src") ||
@@ -345,10 +355,12 @@ export class SourceSerializer {
         if (!url) {
             return "";
         }
+        const postId = img.dataset.postId || "";
+        const postSuffix = postId ? `|${postId}` : "";
         if (img.classList.contains("template-large-image")) {
-            return `{{template-large-image|${url}}}`;
+            return `{{template-large-image|${url}${postSuffix}}}`;
         }
-        return `{{template-single-image|${url}}}`;
+        return `{{template-single-image|${url}${postSuffix}}}`;
     }
 
     static serializeTemplateList(container) {
