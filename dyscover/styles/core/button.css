@@ -65,8 +65,8 @@
 }
 .btn:hover {
     transform: translateY(-2px);
-    background: var(--secondary-gradient);
-    box-shadow: 0 8px 18px rgba(46, 125, 50, 0.28);
+    background: var(--primary-gradient);
+    box-shadow: 0 8px 18px rgba(21, 101, 192, 0.28);
     color: white;
 }
 @media only screen and (max-width: 600px) {

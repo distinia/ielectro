@@ -11,21 +11,15 @@
     padding: 1.1rem 1rem 0.75rem;
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     gap: 0.75rem;
 }
 
-.conversations-title-wrap h2 {
+.conversations-title {
     margin: 0;
     font-size: 1.35rem;
     font-weight: 700;
     letter-spacing: -0.03em;
-}
-
-.conversations-subtitle {
-    margin: 0.2rem 0 0;
-    font-size: 0.82rem;
-    color: var(--text-muted);
 }
 
 .new-conversation-btn {
@@ -33,10 +27,10 @@
     font-weight: 700;
     padding: 0.5rem 0.85rem;
     border-radius: 999px;
-    background: var(--secondary-gradient);
+    background: var(--primary-gradient);
     color: #fff;
     border: none;
-    box-shadow: 0 4px 14px rgba(30, 136, 229, 0.28);
+    box-shadow: 0 4px 14px rgba(21, 101, 192, 0.28);
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
@@ -99,6 +93,26 @@
     flex: 1;
 }
 
+.conversation-info .chat-avatar-wrap {
+    width: 44px;
+    height: 44px;
+    margin-right: 0;
+    flex-shrink: 0;
+}
+
+.conversation-card .btn-ghost,
+.conversation-card .delete-btn {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0.4rem;
+    border-radius: 8px;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.55;
+    flex-shrink: 0;
+}
+
 .conversation-details {
     min-width: 0;
 }
@@ -123,18 +137,6 @@
 
 .conversation-card.active .conversation-details p:last-child {
     color: rgba(13, 71, 161, 0.75);
-}
-
-.conversation-card .delete-btn {
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    padding: 0.4rem;
-    border-radius: 8px;
-    cursor: pointer;
-    color: inherit;
-    opacity: 0.55;
-    flex-shrink: 0;
 }
 
 .conversation-card .delete-btn:hover {

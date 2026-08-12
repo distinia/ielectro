@@ -43,7 +43,6 @@ final class Schema
     public const DYSCOVER_INBOX_MEMBERS = self::DYSCOVER . '.dyscover_inbox_members';
     public const DYSCOVER_INBOX_MESSAGES = self::DYSCOVER . '.dyscover_inbox_messages';
     public const DYSCOVER_INBOX_MESSAGE_READS = self::DYSCOVER . '.dyscover_inbox_message_reads';
-    public const DYSCOVER_INBOX_MESSAGE_REACTIONS = self::DYSCOVER . '.dyscover_inbox_message_reactions';
-    public const DYSCOVER_INBOX_TYPING = self::DYSCOVER . '.dyscover_inbox_typing';
+    public const DYSCOVER_INBOX_MESSAGE_HIDES = self::DYSCOVER . '.dyscover_inbox_message_hides';
     public const DYSCOVER_ACTIVITY = self::DYSCOVER . '.dyscover_activity';
 }

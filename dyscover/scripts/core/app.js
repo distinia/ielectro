@@ -93,12 +93,12 @@ export class App {
 
     static profileUsername() {
         const page = App.page();
-        if (page === "users" || page === "u") {
+        if (page === "users") {
             const slug = decodeURIComponent(App.urlLastPart() || "").replace(
                 /^@/,
                 "",
             );
-            if (!slug || slug === "users" || slug === "u") {
+            if (!slug || slug === "users") {
                 return "";
             }
             return slug;
@@ -265,7 +265,7 @@ export class App {
             return ex;
         }
         if (App.peerAvatarCache[key]) return App.peerAvatarCache[key];
-        const built = `https://account.ielectro.com/u/${encodeURIComponent(raw || key)}/avatar.png`;
+        const built = `${Api.origin}/assets/default-user/avatar.png`;
         App.peerAvatarCache[key] = built;
         return built;
     }
@@ -313,6 +313,10 @@ export class App {
             msg_kind: row.type || row.msg_kind || "text",
             attachment_url: row.attachment || row.attachment_url || "",
             created_at: row.created_at || null,
+            read_by_peer: Boolean(row.read_by_peer),
+            read_at: row.read_at || null,
+            redacted: Boolean(row.redacted),
+            reply_to: row.reply_to || null,
         };
     }
 }

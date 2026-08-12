@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_inbox_messages` (
   `type` ENUM('text','image','video','audio','file','post') DEFAULT 'text',
   `body` TEXT DEFAULT NULL,
   `attachment` TEXT DEFAULT NULL,
+  `redacted` TINYINT(1) NOT NULL DEFAULT 0,
   `post_id` BIGINT UNSIGNED DEFAULT NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -84,37 +85,18 @@ CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_inbox_message_reads` (
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_inbox_message_reactions` (
+CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_inbox_message_hides` (
   `message_id` BIGINT UNSIGNED NOT NULL,
   `user_id` BIGINT UNSIGNED NOT NULL,
-  `emoji` VARCHAR(20) NOT NULL,
-  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `hidden_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`message_id`, `user_id`),
-  KEY `idx_reactions_user` (`user_id`),
-  CONSTRAINT `dyscover_message_reactions_ibfk_1`
+  KEY `idx_message_hides_user` (`user_id`),
+  CONSTRAINT `dyscover_inbox_message_hides_ibfk_1`
     FOREIGN KEY (`message_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_inbox_messages` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `dyscover_message_reactions_ibfk_2`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
-);
-CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_inbox_typing` (
-  `chat_id` BIGINT UNSIGNED NOT NULL,
-  `user_id` BIGINT UNSIGNED NOT NULL,
-  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`chat_id`, `user_id`),
-  KEY `idx_typing_updated` (`updated_at`),
-  KEY `idx_typing_user` (`user_id`),
-  CONSTRAINT `dyscover_inbox_typing_ibfk_1`
-    FOREIGN KEY (`chat_id`)
-    REFERENCES `ielectro_dyscover`.`dyscover_inbox_chats` (`id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT `dyscover_inbox_typing_ibfk_2`
+  CONSTRAINT `dyscover_inbox_message_hides_ibfk_2`
     FOREIGN KEY (`user_id`)
     REFERENCES `ielectro_dyscover`.`dyscover_users` (`id`)
     ON DELETE CASCADE

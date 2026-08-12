@@ -40,12 +40,7 @@ export class Share {
             body.querySelector('[data-action="copy"]')?.addEventListener("click", async () => {
                 try {
                     await navigator.clipboard.writeText(this.shareLink());
-                    try {
-                        await Request.post(Api.postShares(this.item.id));
-                        this.card.recordShare();
-                    } catch {
-                        /* share count stays unchanged */
-                    }
+                    await this.recordShareOnce();
                     overlay.close();
                 } catch {
                     Alert.error("Could not copy link");
@@ -59,46 +54,93 @@ export class Share {
         });
     }
 
+    loadShareUsers(term, me) {
+        if (term) {
+            return Request.get(Api.exploreSearchAll(term)).then((res) => {
+                const payload = Api.record(res) || {};
+                return (Array.isArray(payload.users) ? payload.users : []).filter(
+                    (u) => u.username && u.username !== me,
+                );
+            });
+        }
+        return App.resolveSelfUserId().then((selfId) => {
+            if (!selfId) return [];
+            return Request.get(Api.userFollowing(selfId)).then((res) => Api.list(res));
+        });
+    }
+
     async openInboxPicker() {
         const me = await Auth.username();
         const list = new UsersList({
             title: "Send to inbox",
-            hint: "Pick someone to share this post with.",
-            onSelect: (user) => this.sendTo(user.username),
-            loadUsers: async (term) => {
-                if (term) {
-                    const res = await Request.get(Api.exploreSearchAll(term));
-                    const payload = Api.record(res) || {};
-                    return (Array.isArray(payload.users) ? payload.users : []).filter(
-                        (u) => u.username && u.username !== me,
-                    );
-                }
-                const selfId = await App.resolveSelfUserId();
-                if (!selfId) return [];
-                const res = await Request.get(Api.userFollowing(selfId));
-                return Api.list(res);
-            },
+            hint: "Select one or more people to share this post with.",
+            multiSelect: true,
+            submitLabel: "Send",
+            onSubmit: (users) => this.sendToMany(users),
+            loadUsers: (term) => this.loadShareUsers(term, me),
         });
         await list.open();
     }
 
-    async sendTo(username) {
-        if (!username) return;
-        try {
-            const participantId = await App.resolveUserId(username);
-            if (!participantId) throw new Error("User not found");
-            const threadRes = await Request.post(Api.inbox, {
-                participant_id: participantId,
-            });
-            const threadId = Number(Api.record(threadRes)?.id);
-            if (!threadId) throw new Error("Missing thread");
-            await Request.post(Api.inboxMessages(threadId), {
-                body: encodePostMessage(this.item),
-                type: "post",
-            });
+    async sendToMany(users) {
+        const usernames = [
+            ...new Set(
+                (Array.isArray(users) ? users : [])
+                    .map((user) =>
+                        typeof user === "string" ? user : user?.username || "",
+                    )
+                    .filter(Boolean),
+            ),
+        ];
+        if (!usernames.length) return;
+        let sent = 0;
+        for (const username of usernames) {
+            try {
+                await this.sendTo(username, { quiet: true, keepOpen: true });
+                sent += 1;
+            } catch {
+                /* continue with remaining recipients */
+            }
+        }
+        if (sent > 0) {
+            await this.recordShareOnce();
             UsersList.active?.close();
-        } catch (e) {
-            Alert.error(Api.message(e) || "Send failed");
+            Alert.success(
+                sent === 1 ? "Post sent" : `Post sent to ${sent} people`,
+            );
+        } else {
+            Alert.error("Send failed");
+        }
+    }
+
+    async sendTo(username, opts = {}) {
+        if (!username) return;
+        const participantId = await App.resolveUserId(username);
+        if (!participantId) throw new Error("User not found");
+        const threadRes = await Request.post(Api.inbox, {
+            participant_id: participantId,
+        });
+        const threadId = Number(Api.record(threadRes)?.id);
+        if (!threadId) throw new Error("Missing thread");
+        await Request.post(Api.inboxMessages(threadId), {
+            body: encodePostMessage(this.item),
+            type: "post",
+        });
+        if (!opts.keepOpen) {
+            await this.recordShareOnce();
+            UsersList.active?.close();
+            if (!opts.quiet) {
+                Alert.success("Post sent");
+            }
+        }
+    }
+
+    async recordShareOnce() {
+        try {
+            await Request.post(Api.postShares(this.item.id));
+            this.card.recordShare();
+        } catch {
+            /* share count stays unchanged */
         }
     }
 }

@@ -165,3 +165,44 @@
 .users-list-empty {
     padding: 1rem 0.5rem;
 }
+
+.users-list-footer {
+    margin-top: 0.85rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.users-list-submit {
+    width: 100%;
+}
+
+.users-list-check {
+    width: 1.1rem;
+    height: 1.1rem;
+    border-radius: 50%;
+    border: 2px solid rgba(15, 23, 42, 0.18);
+    flex-shrink: 0;
+    position: relative;
+}
+
+.users-list-item.is-selected .users-list-link {
+    background: rgba(30, 136, 229, 0.1);
+    border-color: rgba(30, 136, 229, 0.28);
+}
+
+.users-list-item.is-selected .users-list-check {
+    border-color: var(--blue-mid);
+    background: var(--blue-mid);
+}
+
+.users-list-item.is-selected .users-list-check::after {
+    content: "";
+    position: absolute;
+    left: 0.22rem;
+    top: 0.08rem;
+    width: 0.28rem;
+    height: 0.48rem;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}

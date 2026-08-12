@@ -61,7 +61,7 @@ export class Navbar {
             if (nav === "home") {
                 active = page === "home";
             } else if (nav === "users") {
-                active = page === "users" || page === "user";
+                active = page === "users";
             } else {
                 active = nav === page;
             }
@@ -106,10 +106,9 @@ export class Navbar {
             const activityCount = Api.list(activityRes).filter(
                 (item) => !item.read,
             ).length;
-            const inboxCount = Api.list(inboxRes).reduce(
-                (sum, item) => sum + (Number(item.unread) || 0),
-                0,
-            );
+            const inboxCount = Api.list(inboxRes).filter(
+                (item) => Number(item.unread) > 0,
+            ).length;
             this.applyBadge(
                 this.nav.querySelector('[data-badge="inbox"]'),
                 inboxCount,

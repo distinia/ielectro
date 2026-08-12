@@ -10,6 +10,7 @@ use Nesh\Response;
 use Nesh\Routing;
 use Nesh\Validate;
 use Nesh\Video;
+
 class Inbox
 {
     public function index(): void
@@ -68,8 +69,8 @@ class Inbox
         Request::delete();
         $chatId = Routing::id();
         InboxAccess::requireMember((int) $chatId, User::id());
+        InboxAssets::deleteChatFiles((int) $chatId);
         Query::execute('DELETE FROM ielectro_dyscover.dyscover_inbox_messages WHERE chat_id = ?', [$chatId]);
-        Query::execute('DELETE FROM ielectro_dyscover.dyscover_inbox_typing WHERE chat_id = ?', [$chatId]);
         Query::execute('DELETE FROM ielectro_dyscover.dyscover_inbox_members WHERE chat_id = ?', [$chatId]);
         Query::execute('DELETE FROM ielectro_dyscover.dyscover_inbox_chats WHERE id = ?', [$chatId]);
         Response::success('Inbox deleted');
@@ -92,7 +93,7 @@ class InboxMessages
         $chatId = Routing::id();
         InboxAccess::requireMember((int) $chatId, User::id());
         InboxReads::markChatRead((int) $chatId, User::id());
-        Response::success(InboxData::messages((int) $chatId));
+        Response::success(InboxData::messages((int) $chatId, User::id()));
     }
     private function create(): void
     {
@@ -102,18 +103,25 @@ class InboxMessages
         $body = trim((string) Request::value('body'));
         $type = trim((string) Request::value('type', 'text'));
         $attachment = trim((string) Request::value('attachment'));
+        $replyToId = (int) Request::value('reply_to_id');
         if ($body === '' && $attachment === '') {
             Response::badRequest('Missing message');
         }
         if (!Validate::in($type, ['text', 'image', 'video', 'audio', 'file', 'post'])) {
             $type = $attachment !== '' ? 'file' : 'text';
         }
+        if ($replyToId > 0) {
+            InboxData::requireMessageInChat($replyToId, (int) $chatId);
+        } else {
+            $replyToId = 0;
+        }
         $messageId = InboxData::createMessage(
             (int) $chatId,
             User::id(),
             $type,
             $body !== '' ? $body : null,
-            $attachment !== '' ? $attachment : null
+            $attachment !== '' ? $attachment : null,
+            $replyToId > 0 ? $replyToId : null
         );
         Response::created(['id' => $messageId]);
     }
@@ -136,12 +144,14 @@ class InboxMessages
     private function delete(): void
     {
         Request::delete();
+        $chatId = (int) Routing::id();
         $messageId = (int) Routing::segment(4);
-        Query::execute(
-            'DELETE FROM ielectro_dyscover.dyscover_inbox_messages
-            WHERE id = ? AND sender_id = ?',
-            [$messageId, User::id()]
-        );
+        InboxAccess::requireMember($chatId, User::id());
+        $scope = trim((string) Request::value('scope', 'everyone'));
+        if (!Validate::in($scope, ['everyone', 'me'])) {
+            $scope = 'everyone';
+        }
+        InboxData::deleteMessage($chatId, $messageId, User::id(), $scope);
         Response::success('Message deleted');
     }
 }
@@ -202,30 +212,194 @@ class InboxData
             'type' => $row['type'],
             'created_at' => $row['created_at'],
             'updated_at' => $row['updated_at'],
-            'messages' => self::messages($chatId),
+            'messages' => self::messages($chatId, User::id()),
         ];
     }
-    public static function messages(int $chatId): array
+    public static function messages(int $chatId, int $viewerId): array
     {
+        $peerId = self::peerId($chatId, $viewerId);
         $rows = Query::fetchAll(
-            "SELECT m.id, m.sender_id, m.type, m.body, m.attachment, m.created_at, du.account_id
+            "SELECT m.id, m.sender_id, m.type, m.body, m.attachment, m.created_at, m.redacted,
+                m.reply_to_id, du.account_id,
+                rm.body AS reply_body,
+                rm.type AS reply_type,
+                rm.attachment AS reply_attachment,
+                rm.redacted AS reply_redacted,
+                rdu.account_id AS reply_account_id,
+                CASE
+                    WHEN m.sender_id = ?
+                    AND ? > 0
+                    AND EXISTS (
+                        SELECT 1
+                        FROM ielectro_dyscover.dyscover_inbox_message_reads r
+                        WHERE r.message_id = m.id AND r.user_id = ?
+                    ) THEN 1
+                    ELSE 0
+                END AS read_by_peer,
+                (
+                    SELECT r.read_at
+                    FROM ielectro_dyscover.dyscover_inbox_message_reads r
+                    WHERE r.message_id = m.id AND r.user_id = ?
+                    LIMIT 1
+                ) AS read_at
             FROM ielectro_dyscover.dyscover_inbox_messages m
             INNER JOIN ielectro_dyscover.dyscover_users du ON du.id = m.sender_id
+            LEFT JOIN ielectro_dyscover.dyscover_inbox_messages rm ON rm.id = m.reply_to_id
+            LEFT JOIN ielectro_dyscover.dyscover_users rdu ON rdu.id = rm.sender_id
             WHERE m.chat_id = ?
+            AND NOT EXISTS (
+                SELECT 1
+                FROM ielectro_dyscover.dyscover_inbox_message_hides h
+                WHERE h.message_id = m.id AND h.user_id = ?
+            )
             ORDER BY m.created_at ASC, m.id ASC",
-            [$chatId]
+            [$viewerId, $peerId, $peerId, $peerId, $chatId, $viewerId]
         );
         $rows = Accounts::attachUsernames($rows);
-        return array_map(fn(array $row): array => [
-            'id' => (int) $row['id'],
-            'sender_id' => (int) $row['sender_id'],
-            'username' => $row['username'],
-            'avatar' => Avatar::url((int) $row['sender_id']),
-            'type' => $row['type'],
-            'body' => $row['body'] ?? '',
-            'attachment' => $row['attachment'] ?? '',
-            'created_at' => $row['created_at'],
-        ], $rows);
+        $replyRows = [];
+        foreach ($rows as $index => $row) {
+            if (!empty($row['reply_account_id'])) {
+                $replyRows[] = [
+                    'index' => $index,
+                    'account_id' => (int) $row['reply_account_id'],
+                ];
+            }
+        }
+        if ($replyRows) {
+            $replyRows = Accounts::attachUsernames($replyRows);
+            foreach ($replyRows as $replyRow) {
+                $rows[(int) $replyRow['index']]['reply_username'] = $replyRow['username'] ?? '';
+            }
+        }
+        return array_map(function (array $row) use ($viewerId): array {
+            $senderId = (int) $row['sender_id'];
+            $redacted = (int) ($row['redacted'] ?? 0) === 1;
+            $isMine = $senderId === $viewerId;
+            $body = $row['body'] ?? '';
+            $attachment = $row['attachment'] ?? '';
+            if ($redacted && !$isMine) {
+                $body = '';
+                $attachment = '';
+            }
+            $message = [
+                'id' => (int) $row['id'],
+                'sender_id' => $senderId,
+                'username' => $row['username'],
+                'avatar' => Avatar::url($senderId),
+                'type' => $row['type'],
+                'body' => $body,
+                'attachment' => $attachment,
+                'created_at' => $row['created_at'],
+                'read_by_peer' => (int) ($row['read_by_peer'] ?? 0) === 1,
+                'read_at' => $row['read_at'] ?? null,
+                'redacted' => $redacted && !$isMine,
+                'reply_to' => self::mapReply($row),
+            ];
+            return $message;
+        }, $rows);
+    }
+    private static function mapReply(array $row): ?array
+    {
+        $replyId = (int) ($row['reply_to_id'] ?? 0);
+        if ($replyId <= 0) {
+            return null;
+        }
+        $replyRedacted = (int) ($row['reply_redacted'] ?? 0) === 1;
+        $body = $row['reply_body'] ?? '';
+        $type = $row['reply_type'] ?? 'text';
+        if ($replyRedacted) {
+            $body = '';
+        }
+        return [
+            'id' => $replyId,
+            'username' => $row['reply_username'] ?? '',
+            'type' => $type,
+            'body' => $body,
+            'attachment' => $replyRedacted ? '' : ($row['reply_attachment'] ?? ''),
+            'redacted' => $replyRedacted,
+            'preview' => $replyRedacted
+                ? 'Message unavailable'
+                : self::preview($body, $type),
+        ];
+    }
+    public static function requireMessageInChat(int $messageId, int $chatId): void
+    {
+        if (!Query::exists(
+            'SELECT 1 FROM ielectro_dyscover.dyscover_inbox_messages
+            WHERE id = ? AND chat_id = ? LIMIT 1',
+            [$messageId, $chatId]
+        )) {
+            Response::badRequest('Invalid reply target');
+        }
+    }
+    public static function deleteMessage(
+        int $chatId,
+        int $messageId,
+        int $userId,
+        string $scope
+    ): void {
+        $row = Query::fetch(
+            'SELECT id, sender_id, attachment, chat_id
+            FROM ielectro_dyscover.dyscover_inbox_messages
+            WHERE id = ? AND chat_id = ?
+            LIMIT 1',
+            [$messageId, $chatId]
+        );
+        if (!$row) {
+            Response::notFound('Message not found');
+        }
+        if ($scope === 'everyone') {
+            if ((int) $row['sender_id'] !== $userId) {
+                Response::forbidden();
+            }
+            self::deleteMessageFiles((string) ($row['attachment'] ?? ''));
+            Query::execute(
+                'DELETE FROM ielectro_dyscover.dyscover_inbox_messages WHERE id = ?',
+                [$messageId]
+            );
+            return;
+        }
+        Query::execute(
+            'INSERT IGNORE INTO ielectro_dyscover.dyscover_inbox_message_hides(message_id, user_id)
+            VALUES(?, ?)',
+            [$messageId, $userId]
+        );
+        if ((int) $row['sender_id'] === $userId) {
+            Query::execute(
+                'UPDATE ielectro_dyscover.dyscover_inbox_messages
+                SET redacted = 1, body = NULL, attachment = NULL
+                WHERE id = ?',
+                [$messageId]
+            );
+        }
+    }
+    private static function deleteMessageFiles(string $attachment): void
+    {
+        $attachment = trim($attachment);
+        if ($attachment === '') {
+            return;
+        }
+        $path = parse_url($attachment, PHP_URL_PATH);
+        if (!is_string($path) || !str_contains($path, '/assets/')) {
+            return;
+        }
+        $relative = substr($path, strpos($path, '/assets/') + strlen('/assets/'));
+        $full = \APP_ASSETS . '/' . ltrim($relative, '/');
+        if (is_file($full)) {
+            @unlink($full);
+        }
+    }
+    public static function peerId(int $chatId, int $userId): int
+    {
+        $row = Query::fetch(
+            'SELECT user_id
+            FROM ielectro_dyscover.dyscover_inbox_members
+            WHERE chat_id = ? AND user_id != ?
+            LIMIT 1',
+            [$chatId, $userId]
+        );
+
+        return (int) ($row['user_id'] ?? 0);
     }
     public static function directChat(int $userA, int $userB): ?array
     {
@@ -256,13 +430,14 @@ class InboxData
         int $senderId,
         string $type,
         ?string $body,
-        ?string $attachment
+        ?string $attachment,
+        ?int $replyToId = null
     ): int {
         Query::execute(
             'INSERT INTO ielectro_dyscover.dyscover_inbox_messages(
-                chat_id, sender_id, type, body, attachment
-            ) VALUES (?, ?, ?, ?, ?)',
-            [$chatId, $senderId, $type, $body, $attachment]
+                chat_id, sender_id, reply_to_id, type, body, attachment
+            ) VALUES (?, ?, ?, ?, ?, ?)',
+            [$chatId, $senderId, $replyToId, $type, $body, $attachment]
         );
         $messageId = Query::lastId();
         Query::execute(
@@ -280,6 +455,7 @@ class InboxData
             'image' => 'Photo',
             'video' => 'Video',
             'audio' => 'Audio',
+            'post' => 'Post',
             default => 'Attachment',
         };
     }
@@ -327,6 +503,11 @@ class InboxUpload
     {
         Request::post();
         $userId = User::id();
+        $chatId = (int) Request::value('chat_id');
+        if ($chatId <= 0) {
+            Response::badRequest('Missing chat_id');
+        }
+        InboxAccess::requireMember($chatId, $userId);
         $file = Request::file('file')
             ?? Request::file('attachment')
             ?? Request::file('media');
@@ -340,9 +521,9 @@ class InboxUpload
             str_starts_with($mime, 'audio/') => 'audio',
             default => 'file',
         };
-        $dir = \APP_ASSETS . '/users/' . $userId . '/inbox';
+        $dir = InboxAssets::chatDir($userId, $chatId);
         File::makeDirectory($dir);
-        $name = substr(Generate::token(8), 0, 16);
+        $name = Generate::uuid();
         if ($kind === 'image') {
             $asset = Image::upload($file, $name, true);
             $asset->fit(1920, 1920)->save($dir);
@@ -361,9 +542,40 @@ class InboxUpload
             Response::error('Unable to save attachment');
         }
         Response::success([
-            'url' => \APP_URL . '/assets/users/' . $userId . '/inbox/' . $filename,
+            'url' => InboxAssets::fileUrl($userId, $chatId, $filename),
             'type' => $kind,
             'msg_kind' => $kind,
         ]);
+    }
+}
+class InboxAssets
+{
+    public static function chatDir(int $userId, int $chatId): string
+    {
+        return \APP_ASSETS . '/users/' . $userId . '/inbox/' . $chatId;
+    }
+
+    public static function fileUrl(int $userId, int $chatId, string $filename): string
+    {
+        return \APP_URL
+            . '/assets/users/' . $userId
+            . '/inbox/' . $chatId
+            . '/' . ltrim($filename, '/');
+    }
+
+    public static function deleteChatFiles(int $chatId): void
+    {
+        $rows = Query::fetchAll(
+            'SELECT user_id
+            FROM ielectro_dyscover.dyscover_inbox_members
+            WHERE chat_id = ?',
+            [$chatId]
+        );
+        foreach ($rows as $row) {
+            $dir = self::chatDir((int) $row['user_id'], $chatId);
+            if (is_dir($dir)) {
+                File::deleteDirectory($dir);
+            }
+        }
     }
 }

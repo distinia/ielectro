@@ -56,7 +56,8 @@ export class Api {
         `${Api.base}/users/${Api.userId(userId)}/followers/${Api.userId(followerId)}`;
 
     static inbox = `${Api.base}/inbox`;
-    static inboxUpload = `${Api.base}/inbox/upload`;
+    static inboxUpload = (chatId) =>
+        `${Api.base}/inbox/upload?chat_id=${encodeURIComponent(String(chatId))}`;
     static inboxOne = (id) => `${Api.base}/inbox/${id}`;
     static inboxMessages = (id) => `${Api.base}/inbox/${id}/messages`;
     static inboxMessage = (inboxId, messageId) =>

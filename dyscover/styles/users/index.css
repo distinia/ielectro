@@ -1,1 +1,7 @@
-@import "../user/index.css";
+@import "../core/index.css";
+@import "page.css";
+@import "header.css";
+@import "statistics.css";
+@import "biography.css";
+@import "tabs.css";
+@import "followers.css";
