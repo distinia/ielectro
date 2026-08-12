@@ -3,6 +3,7 @@ import { Italic } from "./italic.js";
 import { Link } from "./link.js";
 import { Legend } from "./legend.js";
 import { Media } from "./media.js";
+import { Percentage } from "./percentage.js";
 import { yieldToMain } from "./source-yield.js";
 export class SourceInline {
     static collapseWhitespace(text) {
@@ -55,8 +56,29 @@ export class SourceInline {
             const text = el.querySelector(".legend-text")?.textContent || "";
             return `{{legend|${color}|${text}}}`;
         }
+        if (el.classList.contains("percentage")) {
+            const value =
+                el.dataset.value ||
+                el.dataset.percentage ||
+                el.textContent.trim();
+            return `{{percent|${value}}}`;
+        }
+        if (el.classList.contains("template-large-image")) {
+            return `{{template-large-image|${el.getAttribute("src") || ""}}}`;
+        }
+        if (
+            el.classList.contains("template-single-image") ||
+            (el.classList.contains("template-image") &&
+                !el.classList.contains("template-first-image") &&
+                !el.classList.contains("template-second-image"))
+        ) {
+            return `{{template-single-image|${el.getAttribute("src") || ""}}}`;
+        }
         if (el.classList.contains("icon-image")) {
-            return `{{icon|${el.getAttribute("src") || ""}}}`;
+            return `{{icon-image|${el.getAttribute("src") || ""}}}`;
+        }
+        if (el.classList.contains("image-table")) {
+            return `{{image-table|${el.getAttribute("src") || ""}}}`;
         }
         if (el.classList.contains("audio")) {
             return `{{audio|${el.getAttribute("src") || ""}}}`;
@@ -333,6 +355,61 @@ export class SourceInline {
         return parts.map((part) => part.replace(/\\\|/g, "|"));
     }
 
+    static isSingleCompleteMacro(text) {
+        const trimmed = String(text || "").trim();
+        const macro = this.readMacro(trimmed, 0);
+        return !!(macro && macro.end === trimmed.length);
+    }
+
+    static splitTableCells(line) {
+        const inner = String(line || "")
+            .trim()
+            .replace(/^\|/, "")
+            .replace(/\|$/, "");
+        const cells = [];
+        let current = "";
+        let i = 0;
+
+        while (i < inner.length) {
+            if (inner.startsWith("\\|", i)) {
+                current += "|";
+                i += 2;
+                continue;
+            }
+            if (inner.startsWith("{{", i)) {
+                const end = inner.indexOf("}}", i + 2);
+                if (end === -1) {
+                    current += inner.slice(i);
+                    break;
+                }
+                current += inner.slice(i, end + 2);
+                i = end + 2;
+                continue;
+            }
+            if (inner.startsWith("[[", i)) {
+                const end = inner.indexOf("]]", i + 2);
+                if (end === -1) {
+                    current += inner.slice(i);
+                    break;
+                }
+                current += inner.slice(i, end + 2);
+                i = end + 2;
+                continue;
+            }
+            if (inner[i] === "|") {
+                cells.push(current.trim());
+                current = "";
+                i++;
+                continue;
+            }
+            current += inner[i];
+            i++;
+        }
+
+        cells.push(current.trim());
+        return cells.map((cell) => cell.replace(/\\n/g, "\n"));
+    }
+
     static createMacroNode(macro) {
         switch (macro.type) {
             case "legend": {
@@ -341,7 +418,46 @@ export class SourceInline {
                 return Legend.create(color, text);
             }
             case "icon":
+            case "icon-image":
                 return Media.create("icon-image", macro.parts[1] || "");
+            case "image-table":
+                return Media.create("image-table", macro.parts[1] || "");
+            case "image": {
+                if (macro.parts[2]) {
+                    const figure = Media.create(
+                        Media.classMap.image,
+                        macro.parts[1] || "",
+                    );
+                    const figcaption = figure.querySelector("figcaption");
+                    if (figcaption) {
+                        figcaption.textContent = macro.parts[2];
+                    }
+                    return figure;
+                }
+                return Media.createTemplateSingleImage(macro.parts[1] || "");
+            }
+            case "template-image":
+            case "template-single-image":
+                return Media.createTemplateSingleImage(macro.parts[1] || "");
+            case "template-large-image":
+            case "large-image":
+                return Media.createTemplateLargeImage(macro.parts[1] || "");
+            case "template-double-image":
+            case "double-image": {
+                const [url1, url2] = Media.parseDoubleImageUrls(macro.parts[1]);
+                if (!url1) {
+                    return null;
+                }
+                if (!url2) {
+                    return Media.createTemplateSingleImage(url1);
+                }
+                return Media.createTemplateDoubleImage(url1, url2);
+            }
+            case "percent": {
+                const value = macro.parts[1] || "0";
+                const width = Percentage.calculate(value) || 0;
+                return Percentage.create(width, value);
+            }
             case "audio":
                 return Media.create("audio", macro.parts[1] || "");
             default:

@@ -533,7 +533,7 @@ final class UserMigrate
     {
         $fields = [];
         $allowed = [
-            'image', 'large-image', 'double-image', 'definition', 'text',
+            'single-image', 'large-image', 'double-image', 'definition', 'text',
             'double-column', 'double-column-extended',
         ];
 
@@ -548,6 +548,15 @@ final class UserMigrate
             }
 
             $type = strtolower(str_replace(' ', '-', trim((string) ($field['type'] ?? 'text'))));
+            if ($type === 'image') {
+                $type = 'single-image';
+            }
+            $lowerName = mb_strtolower($name);
+            if (preg_match('/(^|\s)logo(\s|$)/u', $lowerName)) {
+                $type = 'single-image';
+            } elseif (preg_match('/(^|\s)map(\s|$)/u', $lowerName)) {
+                $type = 'large-image';
+            }
             if (!in_array($type, $allowed, true)) {
                 $type = 'text';
             }

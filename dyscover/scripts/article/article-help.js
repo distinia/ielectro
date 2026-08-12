@@ -62,7 +62,7 @@ export const ArticleHelp = {
                 <tr><td>Number list</td><td><code>1. item</code></td></tr>
                 <tr><td>Image</td><td><code>{{image|url|caption}}</code></td></tr>
                 <tr><td>Table image</td><td><code>{{image-table|url}}</code></td></tr>
-                <tr><td>Icon</td><td><code>{{icon|url}}</code></td></tr>
+                <tr><td>Icon</td><td><code>{{icon-image|url}}</code></td></tr>
                 <tr><td>Video</td><td><code>{{video|url|caption}}</code></td></tr>
                 <tr><td>Audio</td><td><code>{{audio|url}}</code></td></tr>
                 <tr><td>Percentage</td><td><code>{{percent|50%}}</code></td></tr>
@@ -73,16 +73,16 @@ export const ArticleHelp = {
         <p><strong>Template</strong> — use the numeric template ID:</p>
         <pre class="article-help-pre">{{template|123
 | _title = Infobox title
-| image-flag = {{image|https://.../flag.png}}
-| image-map = {{large-image|https://.../map.png}}
-| flags = {{double-image|https://.../a.png ;; https://.../b.png}}
+| image-flag = {{template-single-image|https://.../flag.png}}
+| image-map = {{template-large-image|https://.../map.png}}
+| flags = {{template-double-image|https://.../a.png ;; https://.../b.png}}
 | anthem = - Anthem name
 - {{audio|https://.../anthem.mp3}}
 | formation = **Formation**
 - Treaty ;; 1 November 2020
 - Expansion ;; 15 November 2021
 | capital-city = Capital name
-| constituencies = - {{icon|https://.../icon.png}} [[Country|https://...]]
+| constituencies = - {{icon-image|https://.../icon.png}} [[Country|https://...]]
 }}</pre>
         <ul>
             <li><code>**Section**</code> on the first line creates a section header row (e.g. Formation).</li>

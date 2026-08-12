@@ -89,6 +89,30 @@ export class SourceParser {
         return defs;
     }
 
+    static normalizeFieldSlug(value) {
+        const raw = String(value || "").trim();
+        if (raw === "_title") {
+            return "_title";
+        }
+        return raw
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "");
+    }
+
+    static resolveFieldRaw(fields, slug) {
+        if (!fields || slug == null) {
+            return null;
+        }
+        const target = SourceParser.normalizeFieldSlug(slug);
+        for (const [key, value] of Object.entries(fields)) {
+            if (SourceParser.normalizeFieldSlug(key) === target) {
+                return value;
+            }
+        }
+        return null;
+    }
+
     static splitBlocks(source) {
         const text = String(source || "").replace(/\r/g, "");
         const blocks = [];
@@ -318,16 +342,15 @@ export class SourceParser {
                 return figure;
             }
             case "template-image":
-                return Media.create(
-                    Media.classMap.imageTemplate,
-                    macro.parts[1] || "",
-                );
+            case "template-single-image":
+                return Media.createTemplateSingleImage(macro.parts[1] || "");
             case "image-table":
                 return Media.create(
                     Media.classMap.imageTable,
                     macro.parts[1] || "",
                 );
             case "icon":
+            case "icon-image":
                 return Media.create(
                     Media.classMap.iconImage,
                     macro.parts[1] || "",
@@ -346,28 +369,21 @@ export class SourceParser {
             }
             case "audio":
                 return Media.create(Media.classMap.audio, macro.parts[1] || "");
+            case "template-large-image":
             case "large-image":
-                return Media.create(
-                    Media.classMap.imageTemplate,
-                    macro.parts[1] || "",
-                );
+                return Media.createTemplateLargeImage(macro.parts[1] || "");
+            case "template-double-image":
             case "double-image": {
-                const [url1, url2] = String(macro.parts[1] || "")
-                    .split(";;")
-                    .map((part) => part.trim());
-                const img1 = Media.create(
-                    Media.classMap.imageTemplate,
-                    url1 || "",
-                );
-                if (!url2) {
-                    return img1;
+                const [url1, url2] = Media.parseDoubleImageUrls(macro.parts[1]);
+                if (!url1) {
+                    const element = Paragraph.create();
+                    await SourceInline.fillElementAsync(element, text);
+                    return element;
                 }
-                const wrap = document.createElement("span");
-                wrap.appendChild(img1);
-                wrap.appendChild(
-                    Media.create(Media.classMap.imageTemplate, url2),
-                );
-                return wrap;
+                if (!url2) {
+                    return Media.createTemplateSingleImage(url1);
+                }
+                return Media.createTemplateDoubleImage(url1, url2);
             }
             case "percent": {
                 const value = macro.parts[1] || "0";
@@ -389,13 +405,7 @@ export class SourceParser {
             .split("\n")
             .map((line) => line.trim())
             .filter((line) => line.startsWith("|"))
-            .map((line) =>
-                line
-                    .replace(/^\|/, "")
-                    .replace(/\|$/, "")
-                    .split("|")
-                    .map((cell) => cell.trim().replace(/\\n/g, "\n")),
-            );
+            .map((line) => SourceInline.splitTableCells(line));
 
         const separator = (cells) =>
             cells.length > 0 && cells.every((cell) => /^:?-{3,}:?$/.test(cell));
@@ -451,7 +461,7 @@ export class SourceParser {
             return;
         }
 
-        if (value.startsWith("{{")) {
+        if (SourceInline.isSingleCompleteMacro(value)) {
             const macro = await this.parseMacroBlock(value);
             if (
                 macro?.classList?.contains(Media.classMap.imageTable) ||
@@ -500,18 +510,53 @@ export class SourceParser {
             }
         }
 
+        const appliedSlugs = new Set();
+
         for (let fieldIndex = 0; fieldIndex < defs.length; fieldIndex++) {
             const def = defs[fieldIndex];
             const slug = instance.fieldSlug(def.name);
-            const raw = fields[slug];
+            const raw = this.resolveFieldRaw(fields, slug);
             if (raw == null || raw === "") {
                 continue;
             }
+            appliedSlugs.add(this.normalizeFieldSlug(slug));
             await this.applyTemplateField(instance, def, raw);
             await yieldToMain();
         }
 
+        for (const [key, raw] of Object.entries(fields)) {
+            if (key === "_title" || raw == null || raw === "") {
+                continue;
+            }
+            const normalized = this.normalizeFieldSlug(key);
+            if (appliedSlugs.has(normalized)) {
+                continue;
+            }
+            const def = defs.find(
+                (entry) => this.normalizeFieldSlug(entry.name) === normalized,
+            );
+            if (def) {
+                appliedSlugs.add(normalized);
+                await this.applyTemplateField(instance, def, raw);
+                await yieldToMain();
+                continue;
+            }
+            if (
+                /^image-row-\d+$/.test(normalized) ||
+                this.extractImageUrl(raw)
+            ) {
+                await this.applyOrphanImageField(
+                    instance,
+                    defs,
+                    raw,
+                    appliedSlugs,
+                );
+                await yieldToMain();
+            }
+        }
+
         table.querySelectorAll("img").forEach((img) => {
+            Media.applyTemplateImageLayout(img);
             if (!Media.list.has(img)) {
                 new Media(img);
             }
@@ -535,7 +580,8 @@ export class SourceParser {
             if (!currentKey) {
                 return;
             }
-            fields[currentKey] = currentValue.join("\n").trim();
+            fields[this.normalizeFieldSlug(currentKey)] =
+                currentValue.join("\n").trim();
             currentValue = [];
         };
 
@@ -558,6 +604,26 @@ export class SourceParser {
 
         flush();
         return fields;
+    }
+
+    static async applyOrphanImageField(instance, defs, raw, appliedSlugs) {
+        const media = this.parseTemplateMediaValue(raw);
+        if (!this.extractImageUrl(raw)) {
+            return;
+        }
+        const imageTypes = new Set(["single-image", "image", "large-image", "double-image"]);
+        const def = defs.find((entry) => {
+            const type = this.normalizeFieldType(entry);
+            if (!imageTypes.has(type)) {
+                return false;
+            }
+            return !appliedSlugs.has(this.normalizeFieldSlug(entry.name));
+        });
+        if (!def) {
+            return;
+        }
+        appliedSlugs.add(this.normalizeFieldSlug(def.name));
+        await this.applyTemplateField(instance, def, raw);
     }
 
     static looksLikeDoubleColumn(content) {
@@ -594,12 +660,63 @@ export class SourceParser {
     }
 
     static normalizeFieldType(def) {
-        return String(def?.type || "text")
+        const name = String(def?.name || "").toLowerCase();
+        if (/\blogo\b/.test(name)) {
+            return "single-image";
+        }
+        if (/\bmap\b/.test(name)) {
+            return "large-image";
+        }
+        const type = String(def?.type || "text")
             .trim()
             .replace(/_/g, "-");
+        if (type === "image") {
+            return "single-image";
+        }
+        return type;
     }
 
-    static applyImageField(instance, def, media) {
+    static isLargeImageMacro(value) {
+        const macro = SourceParser.readTemplateImageMacro(String(value || "").trim());
+        if (!macro) {
+            return false;
+        }
+        return macro.type === "template-large-image" || macro.type === "large-image";
+    }
+
+    static readTemplateImageMacro(value) {
+        const trimmed = String(value || "").trim();
+        if (!trimmed) {
+            return null;
+        }
+        const direct = SourceInline.readMacro(trimmed, 0);
+        if (direct) {
+            return direct;
+        }
+        const inlineIndex = trimmed.indexOf("{{");
+        if (inlineIndex >= 0) {
+            return SourceInline.readMacro(trimmed, inlineIndex);
+        }
+        return null;
+    }
+
+    static extractImageUrl(value) {
+        const media = SourceParser.parseTemplateMediaValue(value);
+        const url = String(media?.urls?.[0] || "").trim();
+        if (!url || url.startsWith("{{")) {
+            return "";
+        }
+        if (/^https?:\/\//i.test(url)) {
+            return url;
+        }
+        const macro = SourceParser.readTemplateImageMacro(value);
+        if (macro?.parts?.[1]) {
+            return macro.parts[1];
+        }
+        return "";
+    }
+
+    static applyImageField(instance, def, media, raw = "") {
         const urls = Array.isArray(media?.urls) ? media.urls : [];
         if (media?.type === "double-image") {
             const [url1, url2] = urls;
@@ -610,15 +727,17 @@ export class SourceParser {
             instance.insertRow(row.row, def.name);
             return true;
         }
-        const url = urls[0];
-        if (!url) {
-            return false;
+        let url = String(urls[0] || "").trim();
+        if (!url || url.startsWith("{{")) {
+            const recovered = this.extractImageUrl(raw);
+            if (!recovered) {
+                return false;
+            }
+            url = recovered;
         }
-        const row = instance.imageRow(
-            def.name,
-            url,
-            media.type === "large-image" || def.type === "large-image",
-        );
+        const fieldType = SourceParser.normalizeFieldType(def);
+        const isLarge = fieldType === "large-image";
+        const row = instance.imageRow(def.name, url, isLarge);
         instance.insertRow(row.row, def.name);
         return true;
     }
@@ -632,10 +751,15 @@ export class SourceParser {
         }
 
         switch (def.type) {
-            case "image":
+            case "single-image":
+            case "image": {
+                const media = this.parseTemplateMediaValue(value);
+                this.applyImageField(instance, def, media, value);
+                break;
+            }
             case "large-image": {
                 const media = this.parseTemplateMediaValue(value);
-                this.applyImageField(instance, def, media);
+                this.applyImageField(instance, def, media, value);
                 break;
             }
             case "double-image": {
@@ -643,7 +767,7 @@ export class SourceParser {
                 this.applyImageField(instance, def, {
                     ...media,
                     type: "double-image",
-                });
+                }, value);
                 break;
             }
             case "double-column":
@@ -656,7 +780,7 @@ export class SourceParser {
                 if (!pairs.length) {
                     break;
                 }
-                const row = instance.doubleColumnRow(def.name, pairs);
+                const row = await this.fillDoubleColumnRow(instance, def.name, pairs);
                 instance.insertRow(row.row, def.name);
                 break;
             }
@@ -676,9 +800,27 @@ export class SourceParser {
         if (header) {
             this.insertTemplateSectionHeader(instance, def, header);
         }
+
+        const media = this.parseTemplateMediaValue(content);
+        if (media.type === "double-image" || def.type === "double-image") {
+            if (this.applyImageField(instance, def, { ...media, type: "double-image" }, content)) {
+                return;
+            }
+        }
+        if (
+            media.type === "single-image" ||
+            media.type === "large-image" ||
+            media.type === "image" ||
+            media.type === "double-image"
+        ) {
+            if (this.applyImageField(instance, def, media, content)) {
+                return;
+            }
+        }
+
         if (this.looksLikeDoubleColumn(content)) {
             const pairs = this.parseDoubleColumnValue(content);
-            const row = instance.doubleColumnRow(def.name, pairs);
+            const row = await this.fillDoubleColumnRow(instance, def.name, pairs);
             instance.insertRow(row.row, def.name);
             return;
         }
@@ -698,23 +840,24 @@ export class SourceParser {
 
         const media = this.parseTemplateMediaValue(content);
         if (media.type === "double-image" || def.type === "double-image") {
-            if (this.applyImageField(instance, def, { ...media, type: "double-image" })) {
+            if (this.applyImageField(instance, def, { ...media, type: "double-image" }, content)) {
                 return;
             }
         }
         if (
-            media.type === "image" ||
+            media.type === "single-image" ||
             media.type === "large-image" ||
-            content.startsWith("{{")
+            media.type === "image" ||
+            media.type === "double-image"
         ) {
-            if (this.applyImageField(instance, def, media)) {
+            if (this.applyImageField(instance, def, media, content)) {
                 return;
             }
         }
 
         if (this.looksLikeDoubleColumn(content)) {
             const pairs = this.parseDoubleColumnValue(content);
-            const row = instance.doubleColumnRow(def.name, pairs);
+            const row = await this.fillDoubleColumnRow(instance, def.name, pairs);
             instance.insertRow(row.row, def.name);
             return;
         }
@@ -725,6 +868,59 @@ export class SourceParser {
             content,
         );
         instance.insertRow(row.row, def.name);
+    }
+
+    static async fillDoubleColumnRow(instance, field, pairs) {
+        const row = document.createElement("tr");
+        row.dataset.field = instance.fieldSlug(field);
+        const left = document.createElement("ul");
+        left.classList.add("template-cell-info");
+        const right = document.createElement("ul");
+        right.classList.add("template-cell-info");
+
+        for (const [leftText, rightText] of pairs) {
+            left.appendChild(
+                await this.fillTemplateListItem(leftText === "<br>" ? "" : leftText),
+            );
+            right.appendChild(
+                await this.fillTemplateListItem(
+                    rightText === "<br>" ? "" : rightText,
+                ),
+            );
+            await yieldToMain(0);
+        }
+
+        const tdLeft = document.createElement("td");
+        const tdRight = document.createElement("td");
+        tdLeft.appendChild(left);
+        tdRight.appendChild(right);
+        row.append(tdLeft, tdRight);
+        return { row };
+    }
+
+    static async fillTemplateListItem(text) {
+        const li = document.createElement("li");
+        const trimmed = String(text || "").trim();
+        if (!trimmed) {
+            li.innerHTML = "<br>";
+            return li;
+        }
+        if (SourceInline.isSingleCompleteMacro(trimmed)) {
+            const node = await this.parseTemplateListItem(trimmed);
+            if (node) {
+                if (node.childNodes?.length > 1) {
+                    [...node.childNodes].forEach((child) => li.appendChild(child));
+                } else {
+                    li.appendChild(node);
+                }
+            }
+        } else {
+            await SourceInline.fillElementAsync(li, trimmed);
+        }
+        if (!li.childNodes.length) {
+            li.innerHTML = "<br>";
+        }
+        return li;
     }
 
     static parseDoubleColumnValue(value) {
@@ -747,40 +943,53 @@ export class SourceParser {
 
     static parseTemplateMediaValue(value) {
         const trimmed = String(value || "").trim();
-        for (const candidate of [trimmed, trimmed.split("\n")[0]?.trim()]) {
-            if (!candidate) {
-                continue;
-            }
-            const macro = SourceInline.readMacro(candidate, 0);
+        const candidates = trimmed
+            .split("\n")
+            .map((line) => line.trim().replace(/^-\s*/, ""))
+            .filter(Boolean);
+        if (!candidates.length) {
+            candidates.push(trimmed);
+        }
+
+        for (const candidate of candidates) {
+            const macro = SourceParser.readTemplateImageMacro(candidate);
             if (macro) {
                 switch (macro.type) {
-                    case "image":
+                    case "template-single-image":
                     case "template-image":
-                        return { type: "image", urls: [macro.parts[1] || ""] };
+                    case "image":
+                        return {
+                            type: "single-image",
+                            urls: [macro.parts[1] || ""],
+                        };
+                    case "template-large-image":
                     case "large-image":
                         return {
                             type: "large-image",
                             urls: [macro.parts[1] || ""],
                         };
+                    case "template-double-image":
                     case "double-image":
                         return {
                             type: "double-image",
-                            urls: String(macro.parts[1] || "")
-                                .split(";;")
-                                .map((part) => part.trim()),
+                            urls: Media.parseDoubleImageUrls(macro.parts[1]),
                         };
                     default:
                         break;
                 }
             }
+            if (/^https?:\/\//i.test(candidate)) {
+                return { type: "single-image", urls: [candidate] };
+            }
+            if (candidate.includes(";;") && !candidate.startsWith("{{")) {
+                return {
+                    type: "double-image",
+                    urls: candidate.split(";;").map((part) => part.trim()),
+                };
+            }
         }
-        const firstLine = trimmed.split("\n")[0]?.trim() || "";
-        if (firstLine.includes(";;") && !firstLine.startsWith("{{")) {
-            return {
-                type: "double-image",
-                urls: firstLine.split(";;").map((part) => part.trim()),
-            };
-        }
+
+        const firstLine = candidates[0] || "";
         return { type: null, urls: [firstLine] };
     }
 
@@ -791,26 +1000,7 @@ export class SourceParser {
         list.replaceChildren();
         const items = SourceInline.parseListItems(value);
         for (const item of items) {
-            const li = document.createElement("li");
-            const trimmed = String(item || "").trim();
-            if (trimmed.startsWith("{{")) {
-                const node = await this.parseTemplateListItem(trimmed);
-                if (node) {
-                    if (node.childNodes?.length > 1) {
-                        [...node.childNodes].forEach((child) =>
-                            li.appendChild(child),
-                        );
-                    } else {
-                        li.appendChild(node);
-                    }
-                }
-            } else {
-                await SourceInline.fillElementAsync(li, trimmed);
-            }
-            if (!li.childNodes.length) {
-                li.innerHTML = "<br>";
-            }
-            list.appendChild(li);
+            list.appendChild(await this.fillTemplateListItem(item));
             await yieldToMain(0);
         }
         if (!list.childNodes.length) {
@@ -825,22 +1015,12 @@ export class SourceParser {
         if (!macro) {
             return null;
         }
-        if (macro.type === "double-image") {
-            const [url1, url2] = String(macro.parts[1] || "")
-                .split(";;")
-                .map((part) => part.trim());
+        if (macro.type === "template-double-image" || macro.type === "double-image") {
+            const [url1, url2] = Media.parseDoubleImageUrls(macro.parts[1]);
             if (!url1 || !url2) {
                 return await this.parseMacroBlock(text.trim());
             }
-            const fragment = document.createDocumentFragment();
-            const img1 = document.createElement("img");
-            img1.src = url1;
-            img1.classList.add("template-image", "template-first-image");
-            const img2 = document.createElement("img");
-            img2.src = url2;
-            img2.classList.add("template-image", "template-second-image");
-            fragment.append(img1, img2);
-            return fragment;
+            return Media.createTemplateDoubleImage(url1, url2);
         }
         return await this.parseMacroBlock(text.trim());
     }

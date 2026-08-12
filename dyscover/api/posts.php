@@ -1018,9 +1018,158 @@ class PostAssets
     {
         $path = self::articlePath($userId, $uuid);
         File::makeDirectory(dirname($path));
+        $html = self::normalizeArticleHtml($html);
         if (file_put_contents($path, $html) === false) {
             Response::error('Unable to save article');
         }
+    }
+
+    public static function normalizeArticleHtml(string $html): string
+    {
+        $html = preg_replace(
+            '/(<th\b[^>]*\bcolspan="2"[^>]*)\sstyle="text-align:\s*left;?"([^>]*>)/i',
+            '$1$2',
+            $html
+        ) ?? $html;
+
+        $html = preg_replace(
+            '/(<th\b[^>]*)\sstyle="text-align:\s*left;?"(\s[^>]*\bcolspan="2"[^>]*>)/i',
+            '$1$2',
+            $html
+        ) ?? $html;
+
+        return self::syncTemplateImageClasses($html);
+    }
+
+    public static function syncTemplateImageClasses(string $html): string
+    {
+        return preg_replace_callback(
+            '/(<table\b(?=[^>]*\bclass="[^"]*\btemplate\b)[^>]*\bdata-template="(\d+)"[^>]*>)([\s\S]*?)(<\/table>)/i',
+            static function (array $match): string {
+                $fields = self::templateFieldMap((int) $match[2]);
+                if (!$fields) {
+                    return $match[0];
+                }
+
+                $body = preg_replace_callback(
+                    '/(<tr\b[^>]*\bdata-field="([^"]+)"[^>]*>)([\s\S]*?)(<\/tr>)/i',
+                    static function (array $rowMatch) use ($fields): string {
+                        $field = $fields[$rowMatch[2]] ?? null;
+                        if ($field === null) {
+                            return $rowMatch[0];
+                        }
+
+                        $large = $field === 'large-image';
+                        $single = $field === 'single-image';
+                        if (!$large && !$single) {
+                            return $rowMatch[0];
+                        }
+
+                        return self::fixTemplateRowImageClasses($rowMatch[0], $large);
+                    },
+                    $match[3]
+                ) ?? $match[3];
+
+                return $match[1] . $body . $match[4];
+            },
+            $html
+        ) ?? $html;
+    }
+
+    /** @return array<string, string> */
+    private static function templateFieldMap(int $templateId): array
+    {
+        if ($templateId <= 0) {
+            return [];
+        }
+
+        $rows = Query::fetchAll(
+            'SELECT name, type
+            FROM ielectro_dyscover.dyscover_template_fields
+            WHERE template_id = ?
+            ORDER BY position ASC',
+            [$templateId]
+        );
+
+        $fields = [];
+        foreach ($rows as $row) {
+            $name = trim((string) ($row['name'] ?? ''));
+            if ($name === '') {
+                continue;
+            }
+            $slug = self::templateFieldSlug($name);
+            $fields[$slug] = self::normalizeTemplateFieldType(
+                $name,
+                (string) ($row['type'] ?? 'text')
+            );
+        }
+
+        return $fields;
+    }
+
+    private static function templateFieldSlug(string $name): string
+    {
+        $slug = mb_strtolower($name);
+        $slug = preg_replace('/[^a-z0-9]+/', '-', $slug) ?? $slug;
+
+        return trim($slug, '-');
+    }
+
+    private static function normalizeTemplateFieldType(string $name, string $type): string
+    {
+        $type = str_replace('_', '-', strtolower(trim($type)));
+        if ($type === 'image') {
+            $type = 'single-image';
+        }
+
+        $lowerName = mb_strtolower($name);
+        if (preg_match('/(^|\s)logo(\s|$)/u', $lowerName)) {
+            return 'single-image';
+        }
+        if (preg_match('/(^|\s)map(\s|$)/u', $lowerName)) {
+            return 'large-image';
+        }
+
+        return $type;
+    }
+
+    private static function fixTemplateRowImageClasses(string $rowHtml, bool $large): string
+    {
+        return preg_replace_callback(
+            '/(<img\b)([^>]*>)/i',
+            static function (array $imgMatch) use ($large): string {
+                $attrs = $imgMatch[2];
+                if (
+                    preg_match('/\bclass="([^"]*)"/i', $attrs, $classMatch)
+                ) {
+                    $classes = preg_split('/\s+/', trim($classMatch[1])) ?: [];
+                    if (
+                        in_array('template-first-image', $classes, true)
+                        || in_array('template-second-image', $classes, true)
+                    ) {
+                        return $imgMatch[0];
+                    }
+
+                    $classes = array_values(array_diff($classes, [
+                        'template-image',
+                        'template-large-image',
+                        'template-single-image',
+                    ]));
+                    $classes[] = $large ? 'template-large-image' : 'template-single-image';
+                    $attrs = preg_replace(
+                        '/\bclass="[^"]*"/i',
+                        'class="' . trim(implode(' ', array_unique($classes))) . '"',
+                        $attrs,
+                        1
+                    ) ?? $attrs;
+                }
+
+                $attrs = preg_replace('/\sstyle="[^"]*\bwidth\s*:[^"]*"/i', '', $attrs) ?? $attrs;
+
+                return $imgMatch[1] . $attrs;
+            },
+            $rowHtml
+        ) ?? $rowHtml;
     }
     public static function deleteForPost(array $post): void
     {

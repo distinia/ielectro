@@ -1,4 +1,4 @@
-import { Alert, Icons, Spinner } from "../core/index.js";
+import { Alert, Icons } from "../core/index.js";
 import { API } from "./api.js";
 import { Select } from "./select.js";
 import { Index } from "./article-index.js";
@@ -153,7 +153,9 @@ export class Editor {
                 }
             });
         });
-        root.querySelectorAll("img.template-image, img.icon-image").forEach((element) => {
+        root.querySelectorAll(
+            "img.template-single-image, img.template-image, img.template-large-image, img.icon-image",
+        ).forEach((element) => {
             if (Media.list.has(element)) {
                 if (editing) {
                     Media.list.get(element)?.startEditing?.();
@@ -187,11 +189,17 @@ export class Editor {
         Editor.hydrateBlock(node);
 
         if (node.classList.contains(Template.className)) {
-            if (!Template.list.has(node)) {
-                new Template(node);
+            const instance = Template.list.get(node) || new Template(node);
+            if (editing && instance.templateId) {
+                API.getTemplate(instance.templateId)
+                    .then((fields) => {
+                        instance.fields = fields;
+                        instance.syncImageClassesFromFields();
+                    })
+                    .catch(() => {});
             }
             node.querySelectorAll(
-                "img.template-image, img.icon-image, audio.audio",
+                "img.template-single-image, img.template-image, img.template-large-image, img.icon-image, audio.audio",
             ).forEach((element) => {
                 if (!Media.list.has(element)) {
                     new Media(element);
@@ -201,7 +209,7 @@ export class Editor {
                 }
             });
             if (editing) {
-                Template.list.get(node)?.startEditing?.();
+                instance.startEditing?.();
             }
             return;
         }
@@ -702,8 +710,8 @@ export class Editor {
         overlay.className = "article-editor-transition";
         overlay.setAttribute("role", "status");
         overlay.setAttribute("aria-live", "polite");
-        overlay.setAttribute("aria-label", "Switching editor mode");
-        overlay.innerHTML = Spinner.html(true);
+        overlay.setAttribute("aria-label", "Loading");
+        overlay.innerHTML = `<div class="article-editor-transition__bar" aria-hidden="true"><div class="article-editor-transition__bar-fill"></div></div>`;
         scroll.appendChild(overlay);
         Editor._transitionOverlay = overlay;
         document.body.classList.add("article-mode-switching");
@@ -715,18 +723,36 @@ export class Editor {
         document.body.classList.remove("article-mode-switching");
     }
 
+    static async runModeTransition(task) {
+        if (Editor._modeSwitching) {
+            return task?.();
+        }
+        Editor._modeSwitching = true;
+        Editor.showModeTransition();
+        await yieldToMain();
+        await new Promise((resolve) => {
+            requestAnimationFrame(() => requestAnimationFrame(resolve));
+        });
+        try {
+            return await task?.();
+        } finally {
+            Editor.hideModeTransition();
+            Editor._modeSwitching = false;
+        }
+    }
+
     static updateModeTransitionProgress(index, total) {
         const overlay = Editor._transitionOverlay;
         if (!overlay || !total) {
             return;
         }
-        let label = overlay.querySelector(".article-editor-transition__label");
-        if (!label) {
-            label = document.createElement("p");
-            label.className = "article-editor-transition__label";
-            overlay.appendChild(label);
+        const fill = overlay.querySelector(".article-editor-transition__bar-fill");
+        if (!fill) {
+            return;
         }
-        label.textContent = `Converting section ${index + 1} of ${total}…`;
+        overlay.classList.add("is-progress");
+        const pct = Math.min(100, Math.round(((index + 1) / total) * 100));
+        fill.style.width = `${pct}%`;
     }
 
     static async toggleEditorMode() {
@@ -820,10 +846,7 @@ export class Editor {
         if (!this.isEditing || this.isTextMode || Editor._modeSwitching) {
             return;
         }
-        Editor._modeSwitching = true;
-        Editor.showModeTransition();
-        await yieldToMain();
-        try {
+        await Editor.runModeTransition(async () => {
             this.ensureSourceEditor();
             this.sourceEditor.value = await SourceSerializer.fromContainerAsync(
                 this.content,
@@ -833,50 +856,45 @@ export class Editor {
             this.box?.classList.remove("is-visible");
             ReplaceText.suspendForTextMode();
             await this.activateElements();
-        } finally {
-            Editor.hideModeTransition();
-            Editor._modeSwitching = false;
-        }
+        });
     }
 
     async enterGraphicMode() {
         if (!this.isTextMode || Editor._modeSwitching) {
             return;
         }
-        Editor._modeSwitching = true;
-        Editor.showModeTransition();
-        await yieldToMain();
-        try {
-            if (this.sourceEditor && this.content) {
-                await this.applySourceToContent({ editing: this.isEditing });
+        await Editor.runModeTransition(async () => {
+            try {
+                if (this.sourceEditor && this.content) {
+                    await this.applySourceToContent({ editing: this.isEditing });
+                }
+                this.isTextMode = false;
+                document.body.classList.remove("is-text-editing");
+                if (this.isEditing && this.box) {
+                    this.box.classList.add("is-visible");
+                }
+                ReplaceText.resumeFromTextMode();
+                if (this.isEditing) {
+                    this.bindLazyBlockEditing();
+                    await this.setLinkEditing(true);
+                }
+            } catch {
+                /* applySourceToContent already surfaced the error */
             }
-            this.isTextMode = false;
-            document.body.classList.remove("is-text-editing");
-            if (this.isEditing && this.box) {
-                this.box.classList.add("is-visible");
-            }
-            ReplaceText.resumeFromTextMode();
-            if (this.isEditing) {
-                this.bindLazyBlockEditing();
-                await this.setLinkEditing(true);
-            }
-        } catch {
-            /* applySourceToContent already surfaced the error */
-        } finally {
-            Editor.hideModeTransition();
-            Editor._modeSwitching = false;
-        }
+        });
     }
 
     async syncTextToGraphic() {
         if (!this.isTextMode) {
             return;
         }
-        if (this.sourceEditor && this.content) {
-            await this.applySourceToContent({ editing: this.isEditing });
-        }
-        this.isTextMode = false;
-        document.body.classList.remove("is-text-editing");
+        await Editor.runModeTransition(async () => {
+            if (this.sourceEditor && this.content) {
+                await this.applySourceToContent({ editing: this.isEditing });
+            }
+            this.isTextMode = false;
+            document.body.classList.remove("is-text-editing");
+        });
     }
     async startEditing() {
         if (this.isEditing) return;

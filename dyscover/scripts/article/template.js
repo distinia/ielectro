@@ -74,8 +74,9 @@ export class Template {
                 case "definition":
                     result = instance.textRow(field.name, true);
                     break;
+                case "single-image":
                 case "image":
-                    result = instance.imageRow(field.name, field.url);
+                    result = instance.imageRow(field.name, field.url, false);
                     break;
                 case "large-image":
                     result = instance.imageRow(field.name, field.url, true);
@@ -98,12 +99,15 @@ export class Template {
         const fields = [];
         this.element.querySelectorAll("tbody tr[data-field]").forEach(row=>{
             const label = row.querySelector(".template-cell-label")?.innerText || row.dataset.field;
-            const images = [...row.querySelectorAll("img")].map(img=>img.src);
+            const images = [...row.querySelectorAll("img")].map((img) => ({
+                src: img.src,
+                large: img.classList.contains("template-large-image"),
+            }));
             if (images.length) {
                 fields.push({
                     name: label,
-                    type: images.length > 1 ? "double-image" : "image",
-                    urls: images
+                    type: images.length > 1 ? "double-image" : images[0].large ? "large-image" : "single-image",
+                    urls: images.map((img) => img.src),
                 });
                 return;
             }
@@ -143,6 +147,7 @@ export class Template {
                 Alert.error("No fields found for this template");
                 return;
             }
+            this.syncImageClassesFromFields();
             const box = new Box("Template fields", {
                 variant: "template",
                 headerLayout: "creator",
@@ -159,6 +164,9 @@ export class Template {
                     box.close();
                 footer.querySelector(".add").onclick = async () => {
                     await this.addFields(box.container);
+                    this.syncImageClassesFromFields();
+                    this.startEditing();
+                    box.close();
                 };
                 footer.querySelector(".delete").onclick = async () => {
                     const confirm = await Alert.confirm("Delete template");
@@ -223,6 +231,45 @@ export class Template {
             this.removeField(field.name);
         }
     }
+    normalizeFieldType(field) {
+        const name = String(field?.name || "").toLowerCase();
+        if (/\blogo\b/.test(name)) {
+            return "single-image";
+        }
+        if (/\bmap\b/.test(name)) {
+            return "large-image";
+        }
+        const type = String(field?.type || "text")
+            .trim()
+            .replace(/_/g, "-");
+        if (type === "image") {
+            return "single-image";
+        }
+        return type;
+    }
+    syncImageClassesFromFields() {
+        if (!Array.isArray(this.fields)) {
+            return;
+        }
+        for (const field of this.fields) {
+            const type = this.normalizeFieldType(field);
+            if (type !== "single-image" && type !== "large-image") {
+                continue;
+            }
+            const slug = this.fieldSlug(field.name);
+            this.element
+                .querySelectorAll(`tbody tr[data-field="${slug}"] img`)
+                .forEach((img) => {
+                    if (
+                        img.classList.contains("template-first-image") ||
+                        img.classList.contains("template-second-image")
+                    ) {
+                        return;
+                    }
+                    Media.setTemplateImageSize(img, type === "large-image");
+                });
+        }
+    }
     removeField(field) {
         const slug = String(field || "")
             .toLowerCase()
@@ -231,13 +278,19 @@ export class Template {
         rows.forEach((row) => row.remove());
     }
     async createField(field) {
+        const type = this.normalizeFieldType(field);
         let result = null;
-        switch (field.type) {
-            case "image":
+        switch (type) {
+            case "single-image": {
+                const url = await this.selectImage();
+                if (!url) return;
+                result = this.imageRow(field.name, url, false);
+                break;
+            }
             case "large-image": {
                 const url = await this.selectImage();
                 if (!url) return;
-                result = this.imageRow(field.name, url, field.type === "large-image");
+                result = this.imageRow(field.name, url, true);
                 break;
             }
             case "double-image": {
@@ -259,11 +312,17 @@ export class Template {
             case "double-column-extended":
                 result = this.doubleColumnRow(field.name, [["<br>", "<br>"]]);
                 break;
+            default:
+                result = this.textRow(field.name);
+                break;
         }
         if (!result) return;
         this.insertRow(result.row, field.name);
         result.row.querySelectorAll("img").forEach((img) => {
             new Media(img);
+        });
+        result.row.querySelectorAll(".template-cell-info").forEach((element) => {
+            element.contentEditable = true;
         });
     }
     async selectImage() {
@@ -323,16 +382,9 @@ export class Template {
         row.dataset.field = this.fieldSlug(field);
         const td = document.createElement("td");
         td.colSpan = 2;
-        if (large) {
-            td.style.padding = "0";
-        }
-        const img = document.createElement("img");
-        img.src = url;
-        img.classList.add("template-image");
-        if (large) {
-            img.classList.add("template-large-image");
-        }
-        img.style.width = large ? "100%" : "50%";
+        const img = large
+            ? Media.createTemplateLargeImage(url)
+            : Media.createTemplateSingleImage(url);
         td.appendChild(img);
         new Media(img);
         row.appendChild(td);
@@ -343,16 +395,8 @@ export class Template {
         row.dataset.field = this.fieldSlug(field);
         const td = document.createElement("td");
         td.colSpan = 2;
-        const img1 = document.createElement("img");
-        img1.src = url1;
-        img1.classList.add("template-image", "template-first-image");
-        const img2 = document.createElement("img");
-        img2.src = url2;
-        img2.classList.add("template-image", "template-second-image");
-        td.appendChild(img1);
-        td.appendChild(img2);
-        new Media(img1);
-        new Media(img2);
+        td.append(...Media.createTemplateDoubleImage(url1, url2).childNodes);
+        td.querySelectorAll("img").forEach((img) => new Media(img));
         row.appendChild(td);
         return { row };
     }

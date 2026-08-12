@@ -218,7 +218,7 @@ CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_template_fields` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `template_id` BIGINT UNSIGNED NOT NULL,
   `name` VARCHAR(255) NOT NULL,
-  `type` ENUM('image', 'large-image', 'double-image', 'definition', 'text', 'double-column', 'double-column-extended') NOT NULL,
+  `type` ENUM('single-image', 'large-image', 'double-image', 'definition', 'text', 'double-column', 'double-column-extended') NOT NULL,
   `position` INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `idx_template_fields_template` (`template_id`),

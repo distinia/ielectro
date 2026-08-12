@@ -238,7 +238,7 @@ body.article-page.is-editing .article-index-sidebar .index-sidebar-header h4 {
 }
 
 .article-index-sidebar .list > li {
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.35rem;
     border-radius: 10px;
     padding: 0.15rem 0.25rem;
     transition: background 0.18s ease;
@@ -279,9 +279,17 @@ body.article-page.is-editing .article-index-sidebar .index-sidebar-header h4 {
 
 .article-index-sidebar .list ul {
     list-style: none;
-    margin: 0.25rem 0 0.35rem;
+    margin: 0.35rem 0 0.15rem;
     padding-left: 1.15rem;
     border-left: 2px solid rgba(21, 101, 192, 0.14);
+}
+
+.article-index-sidebar .list ul > li {
+    margin-bottom: 0.35rem;
+}
+
+.article-index-sidebar .list ul > li:last-child {
+    margin-bottom: 0;
 }
 
 .article-index-sidebar .list ul .link {

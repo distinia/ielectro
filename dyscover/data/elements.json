@@ -131,7 +131,7 @@
         "url": ""
     },
     {
-        "element": "template-image",
+        "element": "template-single-image",
         "childrenAllowed": false,
         "url": "",
         "width": ""
@@ -191,7 +191,7 @@
             },
             {
                 "name": "",
-                "type": "image",
+                "type": "single-image",
                 "url": ""
             },
             {

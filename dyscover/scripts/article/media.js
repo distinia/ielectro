@@ -11,7 +11,7 @@ export class Media {
     static classMap = {
         image: "image",
         imageTable: "image-table",
-        imageTemplate: "template-image",
+        imageTemplate: "template-single-image",
         iconImage: "icon-image",
         video: "video",
         audio: "audio",
@@ -154,7 +154,15 @@ export class Media {
                 element = Media.createImageTable(url);
                 break;
             case Media.classMap.imageTemplate:
-                element = Media.createTemplateImage(url);
+            case "single-image":
+                element = Media.createTemplateSingleImage(url);
+                break;
+            case "large-image":
+            case "template-large-image":
+                element = Media.createTemplateLargeImage(url);
+                break;
+            case "template-image":
+                element = Media.createTemplateSingleImage(url);
                 break;
             case Media.classMap.iconImage:
                 element = Media.createIcon(url);
@@ -192,13 +200,93 @@ export class Media {
         img.contentEditable = false;
         return img;
     }
-    static createTemplateImage(url) {
+    static createTemplateSingleImage(url) {
         const img = document.createElement("img");
-        img.classList.add(this.classMap.imageTemplate);
+        img.classList.add("template-single-image");
         img.src = url;
         img.loading = "lazy";
         img.contentEditable = false;
         return img;
+    }
+    static createTemplateLargeImage(url) {
+        const img = document.createElement("img");
+        img.classList.add("template-large-image");
+        img.src = url;
+        img.loading = "lazy";
+        img.contentEditable = false;
+        return img;
+    }
+    static createTemplateImage(url) {
+        return Media.createTemplateSingleImage(url);
+    }
+    static setTemplateImageSize(img, large = false) {
+        if (!img?.classList) {
+            return;
+        }
+        if (
+            img.classList.contains("template-first-image") ||
+            img.classList.contains("template-second-image")
+        ) {
+            img.style.removeProperty("width");
+            return;
+        }
+        img.style.removeProperty("width");
+        img.classList.remove(
+            "template-image",
+            "template-single-image",
+            "template-large-image",
+        );
+        img.classList.add(large ? "template-large-image" : "template-single-image");
+    }
+    static applyTemplateImageLayout(img) {
+        if (!img?.classList) {
+            return;
+        }
+        if (
+            img.classList.contains("template-first-image") ||
+            img.classList.contains("template-second-image")
+        ) {
+            img.style.removeProperty("width");
+            return;
+        }
+        img.style.removeProperty("width");
+        if (img.classList.contains("template-large-image")) {
+            img.classList.remove(
+                "template-image",
+                "template-single-image",
+            );
+            return;
+        }
+        if (
+            img.classList.contains("template-single-image") ||
+            img.classList.contains("template-image")
+        ) {
+            img.classList.remove("template-image", "template-large-image");
+            img.classList.add("template-single-image");
+        }
+    }
+    static applyTemplateSingleImageLayout(img) {
+        Media.applyTemplateImageLayout(img);
+    }
+    static createTemplateDoubleImage(url1, url2) {
+        const fragment = document.createDocumentFragment();
+        const img1 = document.createElement("img");
+        img1.src = url1 || "";
+        img1.classList.add("template-first-image");
+        const img2 = document.createElement("img");
+        img2.src = url2 || "";
+        img2.classList.add("template-second-image");
+        [img1, img2].forEach((img) => {
+            img.loading = "lazy";
+            img.contentEditable = false;
+        });
+        fragment.append(img1, img2);
+        return fragment;
+    }
+    static parseDoubleImageUrls(value) {
+        return String(value || "")
+            .split(";;")
+            .map((part) => part.trim());
     }
     static createIcon(url) {
         const img = document.createElement("img");
@@ -239,7 +327,14 @@ export class Media {
         if (this.element.classList.contains(Media.classMap.imageTable)) {
             return Media.classMap.imageTable;
         }
-        if (this.element.classList.contains(Media.classMap.imageTemplate)) {
+        if (
+            this.element.classList.contains(Media.classMap.imageTemplate) ||
+            this.element.classList.contains("template-single-image") ||
+            this.element.classList.contains("template-large-image") ||
+            (this.element.classList.contains("template-image") &&
+                !this.element.classList.contains("template-first-image") &&
+                !this.element.classList.contains("template-second-image"))
+        ) {
             return Media.classMap.imageTemplate;
         }
         if (this.element.classList.contains(Media.classMap.iconImage)) {

@@ -10,8 +10,8 @@ import { refreshCreatorStats } from "./creator-stats.js";
 const FIELD_TYPES = [
     ["text", "Text"],
     ["definition", "Definition"],
-    ["image", "Image"],
-    ["large-image", "Large image"],
+    ["single-image", "Single image (50%)"],
+    ["large-image", "Large image (100%)"],
     ["double-image", "Double image"],
     ["double-column", "Double column"],
     ["double-column-extended", "Double column extended"],
@@ -271,7 +271,14 @@ export class CreatorEditor {
             event.preventDefault();
             const name = input.value.trim();
             if (!name) return;
-            const card = this.createFieldCard(name, select.value);
+            const lowerName = name.toLowerCase();
+            let type = select.value;
+            if (/\blogo\b/.test(lowerName)) {
+                type = "single-image";
+            } else if (/\bmap\b/.test(lowerName)) {
+                type = "large-image";
+            }
+            const card = this.createFieldCard(name, type);
             list.appendChild(card);
             await Icons.load(card);
             input.value = "";
