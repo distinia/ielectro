@@ -3,7 +3,7 @@
 .env.*
 nesh/ai/config.local.php
 # Dependencies
-# /vendor/
+/vendor/
 /node_modules/
 # Storage
 /storage/
