@@ -442,7 +442,7 @@ export class CreatorEditor {
             data.set("allow_comments", extras.allow_comments ? "1" : "0");
             data.set("fields", JSON.stringify(patchFields));
             if (data.get("preview")?.size) {
-                await Request.patch(Api.post(id), data);
+                await Request.post(Api.post(id), data);
             } else {
                 await Request.patch(Api.post(id), {
                     title,
@@ -465,7 +465,8 @@ export class CreatorEditor {
             data.set("description", String(this.form.description.value || "").trim());
             data.set("tags", JSON.stringify(tags));
             data.set("allow_comments", extras.allow_comments ? "1" : "0");
-            await Request.patch(Api.post(id), data);
+            // POST: PHP does not populate $_FILES on PATCH multipart.
+            await Request.post(Api.post(id), data);
             return;
         }
         await Request.patch(Api.post(id), {

@@ -42,7 +42,14 @@ class Posts
         }
         Routing::method([
             'GET'    => fn() => $this->show(),
-            'POST'   => fn() => $this->create(),
+            'POST'   => function (): void {
+                // PHP only fills $_FILES on POST; FormData updates must use POST.
+                if (Routing::id() !== null && Routing::segment(3) === null) {
+                    $this->update();
+                    return;
+                }
+                $this->create();
+            },
             'PATCH'  => fn() => $this->update(),
             'DELETE' => fn() => $this->delete(),
         ]);
@@ -183,7 +190,11 @@ class Posts
     }
     private function update(): void
     {
-        Request::patch();
+        if (strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? '')) === 'POST') {
+            Request::post();
+        } else {
+            Request::patch();
+        }
         User::requireCanPost();
         $post = PostData::requireOwned(Routing::id());
         $input = Request::body();
