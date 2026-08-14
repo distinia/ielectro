@@ -15,7 +15,6 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: var(--hero-overlay);
 }
 .header::after {
     content: "";

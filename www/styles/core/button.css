@@ -20,7 +20,6 @@
     font-size: 0.92rem;
     letter-spacing: -0.01em;
     cursor: pointer;
-    border: 1px solid transparent;
     margin: 0;
     box-shadow: var(--shadow-sm);
     transition:
