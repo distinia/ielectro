@@ -1,12 +1,10 @@
 import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
 import { Alert } from "../core/alert.js";
 import { Api } from "../core/api.js";
-
 export class DeleteUser {
     constructor(button) {
         this.button = button;
     }
-
     bind() {
         this.button?.addEventListener("click", async () => {
             const confirmed = await Alert.confirm(

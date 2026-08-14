@@ -455,7 +455,6 @@ class Delete
         if (!$account) {
             Response::notFound('Account not found');
         }
-
         Services::delete($accountId);
         \Nesh\File::deleteDirectory(\Nesh\Avatar::assetsDir($accountId));
         Query::execute(
