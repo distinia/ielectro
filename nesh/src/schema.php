@@ -1,29 +1,24 @@
 <?php
 namespace Nesh;
-
 final class Schema
 {
     public const ACCOUNT = 'ielectro_account';
     public const ADMIN = 'ielectro_admin';
     public const DYSCOVER = 'ielectro_dyscover';
     public const DOMINIONS = 'ielectro_dominions';
-
     public const DOMINIONS_USERS = self::DOMINIONS . '.users';
-
     public const ACCOUNTS = self::ACCOUNT . '.accounts';
     public const ACCOUNT_SESSIONS = self::ACCOUNT . '.account_sessions';
     public const ACCOUNT_ACTIVITY = self::ACCOUNT . '.account_activity';
     public const ACCOUNT_EMAIL_VERIFICATIONS = self::ACCOUNT . '.account_email_verifications';
     public const ACCOUNT_PASSWORD_RESETS = self::ACCOUNT . '.account_password_resets';
     public const ACCOUNT_OAUTH_PENDING = self::ACCOUNT . '.account_oauth_pending';
-
     public const ADMIN_CAREERS = self::ADMIN . '.careers';
     public const ADMIN_CAREER_APPLICATIONS = self::ADMIN . '.career_applications';
     public const ADMIN_NEWS = self::ADMIN . '.news';
     public const ADMIN_TEAM = self::ADMIN . '.team';
     public const ADMIN_RATE_LIMITS = self::ADMIN . '.rate_limits';
     public const ADMIN_WWW_PAGE_VIEWS = self::ADMIN . '.www_page_views';
-
     public const DYSCOVER_USERS = self::DYSCOVER . '.dyscover_users';
     public const DYSCOVER_TAGS = self::DYSCOVER . '.dyscover_tags';
     public const DYSCOVER_FOLLOWS = self::DYSCOVER . '.dyscover_follows';

@@ -41,13 +41,11 @@
     border-bottom: 1px solid var(--border-subtle);
     background: rgba(255, 255, 255, 0.92);
 }
-
 .activity-overlay-actions {
     display: flex;
     align-items: center;
     gap: 0.45rem;
 }
-
 .activity-overlay-close {
     border: none;
     background: transparent;
@@ -65,14 +63,12 @@
     background: rgba(30, 136, 229, 0.08);
     color: var(--blue-mid);
 }
-
 .activity-overlay-header h2 {
     margin: 0;
     font-size: 1.15rem;
     font-weight: 800;
     letter-spacing: -0.02em;
 }
-
 .activity-overlay-close i {
     width: 1.25rem;
     height: 1.25rem;

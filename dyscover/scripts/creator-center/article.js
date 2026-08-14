@@ -1,5 +1,4 @@
 import { Post } from "./post.js";
-
 export class Article extends Post {
     static type = "article";
     static table = ".article-table";

@@ -4,11 +4,8 @@
  * @link    http://github.com/dompdf/php-svg-lib
  * @license GNU LGPLv3+ http://www.gnu.org/copyleft/lesser.html
  */
-
 namespace Svg;
-
 use Svg\Tag\AbstractTag;
-
 class Style
 {
     const TYPE_COLOR = 1;
@@ -16,18 +13,14 @@ class Style
     const TYPE_NAME = 3;
     const TYPE_ANGLE = 4;
     const TYPE_NUMBER = 5;
-
     private $_document;
     private $_parentStyle;
-
     public $color;
     public $opacity;
     public $display;
-
     public $fill;
     public $fillOpacity;
     public $fillRule;
-
     public $stroke;
     public $strokeOpacity;
     public $strokeLinecap;
@@ -36,30 +29,25 @@ class Style
     public $strokeWidth;
     public $strokeDasharray;
     public $strokeDashoffset;
-
     public $fontFamily = 'serif';
     public $fontSize = 12;
     public $fontWeight = 'normal';
     public $fontStyle = 'normal';
     public $textAnchor = 'start';
-
     public function __construct($document = null) {
         if ($document !== null) {
             $this->_document = $document;
         }
     }
-
     protected function getStyleMap()
     {
         return array(
             'color'             => array('color', self::TYPE_COLOR),
             'opacity'           => array('opacity', self::TYPE_NUMBER),
             'display'           => array('display', self::TYPE_NAME),
-
             'fill'              => array('fill', self::TYPE_COLOR),
             'fill-opacity'      => array('fillOpacity', self::TYPE_NUMBER),
             'fill-rule'         => array('fillRule', self::TYPE_NAME),
-
             'stroke'            => array('stroke', self::TYPE_COLOR),
             'stroke-dasharray'  => array('strokeDasharray', self::TYPE_NAME),
             'stroke-dashoffset' => array('strokeDashoffset', self::TYPE_NUMBER),
@@ -68,7 +56,6 @@ class Style
             'stroke-miterlimit' => array('strokeMiterlimit', self::TYPE_NUMBER),
             'stroke-opacity'    => array('strokeOpacity', self::TYPE_NUMBER),
             'stroke-width'      => array('strokeWidth', self::TYPE_NUMBER),
-
             'font-family'       => array('fontFamily', self::TYPE_NAME),
             'font-size'         => array('fontSize', self::TYPE_NUMBER),
             'font-weight'       => array('fontWeight', self::TYPE_NAME),
@@ -76,7 +63,6 @@ class Style
             'text-anchor'       => array('textAnchor', self::TYPE_NAME),
         );
     }
-
     /**
      * @param $attributes
      *
@@ -85,13 +71,11 @@ class Style
     public function fromAttributes($attributes)
     {
         $this->fillStyles($attributes);
-
         if (isset($attributes["style"])) {
             $styles = self::parseCssStyle($attributes["style"]);
             $this->fillStyles($styles);
         }
     }
-
     public function inherit(AbstractTag $tag) {
         $group = $tag->getParentGroup();
         if ($group) {
@@ -104,24 +88,17 @@ class Style
             }
         }
     }
-
     public function fromStyleSheets(AbstractTag $tag, $attributes) {
         $class = isset($attributes["class"]) ? preg_split('/\s+/', trim($attributes["class"])) : null;
-
         $stylesheets = $tag->getDocument()->getStyleSheets();
         $outputFormat = \Sabberworm\CSS\OutputFormat::createCompact();
-
         $styles = array();
-
         foreach ($stylesheets as $_sc) {
-
             /** @var \Sabberworm\CSS\RuleSet\DeclarationBlock $_decl */
             foreach ($_sc->getAllDeclarationBlocks() as $_decl) {
-
                 /** @var \Sabberworm\CSS\Property\Selector $_selector */
                 foreach ($_decl->getSelectors() as $_selector) {
                     $_selector = $_selector->getSelector();
-
                     // Match class name
                     if ($class !== null) {
                         foreach ($class as $_class) {
@@ -135,12 +112,10 @@ class Style
                                         $styles[$_rule->getRule()] = $value . "";
                                     }
                                 }
-
                                 break 2;
                             }
                         }
                     }
-
                     // Match tag name
                     if ($_selector === $tag->tagName) {
                         /** @var \Sabberworm\CSS\Rule\Rule $_rule */
@@ -152,16 +127,13 @@ class Style
                                 $styles[$_rule->getRule()] = $value . "";
                             }
                         }
-
                         break;
                     }
                 }
             }
         }
-
         $this->fillStyles($styles);
     }
-
     protected function fillStyles($styles)
     {
         $style_map = $this->getStyleMap();
@@ -183,15 +155,12 @@ class Style
                             $styles["{$from}-opacity"] = $value[3];
                         }
                         break;
-
                     case self::TYPE_NUMBER:
                         $value = ($styles[$from] === null) ? null : (float)$styles[$from];
                         break;
-
                     default:
                         $value = $styles[$from];
                 }
-
                 if ($from === "font-family") {
                     $scheme = \strtolower(parse_url($value, PHP_URL_SCHEME) ?: "");
                     if (
@@ -201,63 +170,49 @@ class Style
                         continue;
                     }
                 }
-
                 if ($value !== null) {
                     $this->$to = $value;
                 }
             }
         }
     }
-
     static function parseColor($color)
     {
         $color = strtolower(trim($color));
-
         $parts = preg_split('/[^,]\s+/', $color, 2);
-
         if (count($parts) == 2) {
             $color = $parts[1];
         } else {
             $color = $parts[0];
         }
-
         if ($color === "none") {
             return "none";
         }
-
         if ($color === "currentcolor") {
             return "currentcolor";
         }
-
         if ($color === "transparent") {
             return [0.0, 0.0, 0.0, 0.0];
         }
-
         // SVG color name
         if (isset(self::$colorNames[$color])) {
             return self::parseHexColor(self::$colorNames[$color]);
         }
-
         // Hex color
         if ($color[0] === "#") {
             return self::parseHexColor($color);
         }
-
         // RGB color
         if (strpos($color, "rgb") !== false) {
             return self::getQuad($color);
         }
-
         // HSL color
         if (strpos($color, "hsl") !== false) {
             $quad = self::getQuad($color, true);
-
             if ($quad == null) {
                 return null;
             }
-
             list($h, $s, $l, $a) = $quad;
-
             $r = $l;
             $g = $l;
             $b = $l;
@@ -271,7 +226,6 @@ class Style
                 $vsf = $v * $sv * $fract;
                 $mid1 = $m + $vsf;
                 $mid2 = $v - $vsf;
-
                 switch ($sextant) {
                     case 0:
                         $r = $v;
@@ -306,7 +260,6 @@ class Style
                 }
             }
             $a = $a * 255;
-
             return array(
                 $r * 255.0,
                 $g * 255.0,
@@ -314,45 +267,35 @@ class Style
                 $a
             );
         }
-
         // Gradient
         if (strpos($color, "url(#") !== false) {
             $i = strpos($color, "(");
             $j = strpos($color, ")");
-
             // Bad url format
             if ($i === false || $j === false) {
                 return null;
             }
-
             //FIXME: gradients not supported?
             return null; // trim(substr($color, $i + 1, $j - $i - 1));
         }
-
         return null;
     }
-
     static function getQuad($color, $percent = false) {
         $i = strpos($color, "(");
         $j = strpos($color, ")");
-
         // Bad color value
         if ($i === false || $j === false) {
             return null;
         }
-
         $quad = preg_split("/\\s*[,\\/]\\s*/", trim(substr($color, $i + 1, $j - $i - 1)));
         if (!isset($quad[3])) {
             $quad[3] = "1";
         }
-
         if (count($quad) != 3 && count($quad) != 4) {
             return null;
         }
-
         foreach (array_keys($quad) as $c) {
             $quad[$c] = trim($quad[$c]);
-
             if ($percent) {
                 if ($quad[$c][strlen($quad[$c]) - 1] === "%") {
                     $quad[$c] = floatval($quad[$c]) / 100;
@@ -367,20 +310,16 @@ class Style
                 }
             }
         }
-
         return $quad;
     }
-
     static function parseHexColor($hex)
     {
         $c = array(0.0, 0.0, 0.0, 1.0);
-
         // #FFFFFF
         if (isset($hex[6])) {
             $c[0] = hexdec(substr($hex, 1, 2));
             $c[1] = hexdec(substr($hex, 3, 2));
             $c[2] = hexdec(substr($hex, 5, 2));
-
             if (isset($hex[7])) {
                 $alpha = substr($hex, 7, 2);
                 if (ctype_xdigit($alpha)) {
@@ -391,17 +330,14 @@ class Style
             $c[0] = hexdec($hex[1] . $hex[1]);
             $c[1] = hexdec($hex[2] . $hex[2]);
             $c[2] = hexdec($hex[3] . $hex[3]);
-
             if (isset($hex[4])) {
                 if (ctype_xdigit($hex[4])) {
                     $c[3] = round(hexdec($hex[4] . $hex[4])/255, 2);
                 }
             }
         }
-
         return $c;
     }
-
     /**
      * Simple CSS parser
      *
@@ -413,15 +349,12 @@ class Style
     {
         $matches = array();
         preg_match_all("/([a-z-]+)\\s*:\\s*([^;$]+)/si", $style, $matches, PREG_SET_ORDER);
-
         $styles = array();
         foreach ($matches as $match) {
             $styles[$match[1]] = $match[2];
         }
-
         return $styles;
     }
-
     static $colorNames = array(
         'antiquewhite'         => '#FAEBD7',
         'aqua'                 => '#00FFFF',

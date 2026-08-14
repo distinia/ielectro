@@ -7,7 +7,6 @@ use Nesh\Routing;
 class Activity
 {
     private const GROUPABLE_TYPES = ['like', 'comment', 'mention'];
-
     public function index(): void
     {
         if (Routing::segment(2) === 'read-all') {
@@ -33,7 +32,6 @@ class Activity
             'GET' => fn() => $this->list(),
         ]);
     }
-
     private function list(): void
     {
         Request::get();
@@ -84,7 +82,6 @@ class Activity
         }
         Response::success($items);
     }
-
     private static function groupKey(array $row): string
     {
         $type = (string) ($row['type'] ?? '');
@@ -94,7 +91,6 @@ class Activity
         }
         return 'single:' . (int) ($row['id'] ?? 0);
     }
-
     private static function mapGroup(array $rows, int $viewerId): array
     {
         usort(
@@ -159,7 +155,6 @@ class Activity
         }
         return $payload;
     }
-
     private function rowFor(int $id): ?array
     {
         return Query::fetch(
@@ -170,7 +165,6 @@ class Activity
             [$id, User::id()]
         );
     }
-
     private function markRead(int $id): void
     {
         Request::patch();
@@ -200,7 +194,6 @@ class Activity
         );
         Response::success('Marked read');
     }
-
     private function markAllRead(): void
     {
         Request::patch();
@@ -212,7 +205,6 @@ class Activity
         );
         Response::success('All marked read');
     }
-
     private function destroy(int $id): void
     {
         Request::delete();
@@ -239,7 +231,6 @@ class Activity
         );
         Response::success('Activity deleted');
     }
-
     private function isGroupableRow(array $row): bool
     {
         $type = (string) ($row['type'] ?? '');

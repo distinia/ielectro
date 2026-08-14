@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\FtpException;
-
 /**
  * @param \FTP\Connection $ftp
  * @param int $size
@@ -19,8 +16,6 @@ function ftp_alloc(\FTP\Connection $ftp, int $size, ?string &$response = null): 
         throw FtpException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \FTP\Connection $ftp
  * @param string $remote_filename
@@ -37,8 +32,6 @@ function ftp_append(\FTP\Connection $ftp, string $remote_filename, string $local
         throw FtpException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \FTP\Connection $ftp
  * @throws FtpException
@@ -52,8 +45,6 @@ function ftp_cdup(\FTP\Connection $ftp): void
         throw FtpException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \FTP\Connection $ftp
  * @param string $directory
@@ -68,8 +59,6 @@ function ftp_chdir(\FTP\Connection $ftp, string $directory): void
         throw FtpException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \FTP\Connection $ftp
  * @param int $permissions
@@ -87,8 +76,6 @@ function ftp_chmod(\FTP\Connection $ftp, int $permissions, string $filename): in
     }
     return $safeResult;
 }
-
-
 /**
  * @param \FTP\Connection $ftp
  * @throws FtpException
@@ -102,8 +89,6 @@ function ftp_close(\FTP\Connection $ftp): void
         throw FtpException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $hostname
  * @param int $port
@@ -121,8 +106,6 @@ function ftp_connect(string $hostname, int $port = 21, int $timeout = 90): \FTP\
     }
     return $safeResult;
 }
-
-
 /**
  * @param \FTP\Connection $ftp
  * @param string $filename
@@ -137,8 +120,6 @@ function ftp_delete(\FTP\Connection $ftp, string $filename): void
         throw FtpException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \FTP\Connection $ftp
  * @param resource $stream
@@ -156,8 +137,6 @@ function ftp_fget(\FTP\Connection $ftp, $stream, string $remote_filename, int $m
         throw FtpException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \FTP\Connection $ftp
  * @param string $remote_filename
@@ -175,8 +154,6 @@ function ftp_fput(\FTP\Connection $ftp, string $remote_filename, $stream, int $m
         throw FtpException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \FTP\Connection $ftp
  * @param string $local_filename
@@ -194,8 +171,6 @@ function ftp_get(\FTP\Connection $ftp, string $local_filename, string $remote_fi
         throw FtpException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \FTP\Connection $ftp
  * @param string $username
@@ -211,8 +186,6 @@ function ftp_login(\FTP\Connection $ftp, string $username, string $password): vo
         throw FtpException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \FTP\Connection $ftp
  * @param string $directory
@@ -229,8 +202,6 @@ function ftp_mkdir(\FTP\Connection $ftp, string $directory): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param \FTP\Connection $ftp
  * @param string $directory
@@ -247,8 +218,6 @@ function ftp_mlsd(\FTP\Connection $ftp, string $directory): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param \FTP\Connection $ftp
  * @param string $remote_filename
@@ -268,8 +237,6 @@ function ftp_nb_put(\FTP\Connection $ftp, string $remote_filename, string $local
     }
     return $safeResult;
 }
-
-
 /**
  * @param \FTP\Connection $ftp
  * @param string $directory
@@ -286,8 +253,6 @@ function ftp_nlist(\FTP\Connection $ftp, string $directory): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param \FTP\Connection $ftp
  * @param bool $enable
@@ -302,8 +267,6 @@ function ftp_pasv(\FTP\Connection $ftp, bool $enable): void
         throw FtpException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \FTP\Connection $ftp
  * @param string $remote_filename
@@ -321,8 +284,6 @@ function ftp_put(\FTP\Connection $ftp, string $remote_filename, string $local_fi
         throw FtpException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \FTP\Connection $ftp
  * @return string
@@ -338,8 +299,6 @@ function ftp_pwd(\FTP\Connection $ftp): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param \FTP\Connection $ftp
  * @param string $from
@@ -355,8 +314,6 @@ function ftp_rename(\FTP\Connection $ftp, string $from, string $to): void
         throw FtpException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \FTP\Connection $ftp
  * @param string $directory
@@ -371,8 +328,6 @@ function ftp_rmdir(\FTP\Connection $ftp, string $directory): void
         throw FtpException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \FTP\Connection $ftp
  * @param string $command
@@ -387,8 +342,6 @@ function ftp_site(\FTP\Connection $ftp, string $command): void
         throw FtpException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \FTP\Connection $ftp
  * @param string $filename
@@ -405,8 +358,6 @@ function ftp_size(\FTP\Connection $ftp, string $filename): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $hostname
  * @param int $port
@@ -424,8 +375,6 @@ function ftp_ssl_connect(string $hostname, int $port = 21, int $timeout = 90): \
     }
     return $safeResult;
 }
-
-
 /**
  * @param \FTP\Connection $ftp
  * @return string

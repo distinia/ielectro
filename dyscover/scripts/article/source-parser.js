@@ -10,11 +10,9 @@ import { Percentage } from "./percentage.js";
 import { Media } from "./media.js";
 import { Template } from "./template.js";
 import { yieldToMain } from "./source-yield.js";
-
 export class SourceParser {
     static templateCache = new Map();
     static BLOCKS_PER_YIELD = 12;
-
     static async toContainer(source, container, onProgress) {
         if (!container) {
             return;
@@ -22,7 +20,6 @@ export class SourceParser {
         const blocks = this.splitBlocks(source);
         const fragment = document.createDocumentFragment();
         let index = 0;
-
         while (index < blocks.length) {
             const batchEnd = Math.min(
                 index + SourceParser.BLOCKS_PER_YIELD,
@@ -39,20 +36,16 @@ export class SourceParser {
                 await yieldToMain();
             }
         }
-
         container.replaceChildren(fragment);
     }
-
     static async toContainerIncremental(source, container, onBlock) {
         if (!container) {
             return;
         }
         container.replaceChildren();
         await yieldToMain(16);
-
         const blocks = this.splitBlocks(source);
         const total = blocks.length;
-
         for (let index = 0; index < total; index++) {
             onBlock?.(null, index, total, "parsing");
             let node;
@@ -76,7 +69,6 @@ export class SourceParser {
             await yieldToMain(16);
         }
     }
-
     static async getTemplateCached(templateId) {
         const key = String(templateId);
         if (!SourceParser.templateCache.has(key)) {
@@ -88,7 +80,6 @@ export class SourceParser {
         }
         return defs;
     }
-
     static normalizeFieldSlug(value) {
         const raw = String(value || "").trim();
         if (raw === "_title") {
@@ -99,7 +90,6 @@ export class SourceParser {
             .replace(/[^a-z0-9]+/g, "-")
             .replace(/^-+|-+$/g, "");
     }
-
     static resolveFieldRaw(fields, slug) {
         if (!fields || slug == null) {
             return null;
@@ -112,13 +102,11 @@ export class SourceParser {
         }
         return null;
     }
-
     static splitBlocks(source) {
         const text = String(source || "").replace(/\r/g, "");
         const blocks = [];
         const lines = text.split("\n");
         let index = 0;
-
         while (index < lines.length) {
             while (index < lines.length && !lines[index].trim()) {
                 index++;
@@ -126,44 +114,36 @@ export class SourceParser {
             if (index >= lines.length) {
                 break;
             }
-
             const line = lines[index];
-
             if (line.startsWith("{{template|")) {
                 const templateBlock = this.readTemplateBlock(lines, index);
                 blocks.push(templateBlock.text);
                 index = templateBlock.end;
                 continue;
             }
-
             if (line.startsWith("|")) {
                 const tableBlock = this.readTableBlock(lines, index);
                 blocks.push(tableBlock.text);
                 index = tableBlock.end;
                 continue;
             }
-
             if (line.startsWith("- ") || /^\d+\.\s/.test(line)) {
                 const listBlock = this.readListBlock(lines, index);
                 blocks.push(listBlock.text);
                 index = listBlock.end;
                 continue;
             }
-
             if (this.isSingleLineBlock(line)) {
                 blocks.push(line.trim());
                 index++;
                 continue;
             }
-
             const paragraphBlock = this.readParagraphBlock(lines, index);
             blocks.push(paragraphBlock.text);
             index = paragraphBlock.end;
         }
-
         return blocks.filter(Boolean);
     }
-
     static isSingleLineBlock(line) {
         return (
             line.startsWith("# ") ||
@@ -173,7 +153,6 @@ export class SourceParser {
             line.startsWith("{{")
         );
     }
-
     static readTemplateBlock(lines, start) {
         const collected = [];
         let index = start;
@@ -187,7 +166,6 @@ export class SourceParser {
         }
         return { text: collected.join("\n"), end: index };
     }
-
     static readTableBlock(lines, start) {
         const collected = [];
         let index = start;
@@ -197,7 +175,6 @@ export class SourceParser {
         }
         return { text: collected.join("\n"), end: index };
     }
-
     static readListBlock(lines, start) {
         const collected = [];
         let index = start;
@@ -219,7 +196,6 @@ export class SourceParser {
         }
         return { text: collected.join("\n"), end: index };
     }
-
     static readParagraphBlock(lines, start) {
         const collected = [lines[start]];
         let index = start + 1;
@@ -245,7 +221,6 @@ export class SourceParser {
         }
         return { text: this.normalizeParagraph(collected), end: index };
     }
-
     static normalizeParagraph(lines) {
         return lines
             .map((line) => String(line || "").trim())
@@ -254,13 +229,11 @@ export class SourceParser {
             .replace(/\s{2,}/g, " ")
             .trim();
     }
-
     static async parseBlock(block) {
         const text = String(block || "").trim();
         if (!text) {
             return null;
         }
-
         if (text.startsWith("{{template|")) {
             return await this.parseTemplate(text);
         }
@@ -293,7 +266,6 @@ export class SourceParser {
         if (text.startsWith("{{")) {
             return await this.parseMacroBlock(text);
         }
-
         const element = Paragraph.create();
         await SourceInline.fillElementAsync(
             element,
@@ -301,7 +273,6 @@ export class SourceParser {
         );
         return element;
     }
-
     static async parseList(text) {
         const lines = text.split("\n");
         const numbered = /^\d+\.\s/.test(lines[0]);
@@ -319,7 +290,6 @@ export class SourceParser {
         }
         return element;
     }
-
     static async parseMacroBlock(text) {
         const macro = SourceInline.readMacro(text, 0);
         if (!macro) {
@@ -327,7 +297,6 @@ export class SourceParser {
             await SourceInline.fillElementAsync(element, text);
             return element;
         }
-
         switch (macro.type) {
             case "image": {
                 const figure = Media.create(
@@ -424,28 +393,23 @@ export class SourceParser {
             }
         }
     }
-
     static async parseTable(text) {
         const rows = text
             .split("\n")
             .map((line) => line.trim())
             .filter((line) => line.startsWith("|"))
             .map((line) => SourceInline.splitTableCells(line));
-
         const separator = (cells) =>
             cells.length > 0 && cells.every((cell) => /^:?-{3,}:?$/.test(cell));
-
         const dataRows = rows.filter((cells, index) => {
             if (index === 0) {
                 return true;
             }
             return cells?.length && !separator(cells);
         });
-
         if (!dataRows.length || !dataRows[0]?.length) {
             return null;
         }
-
         const table = Table.create(dataRows.length - 1, dataRows[0].length);
         const headers = table.querySelectorAll("thead th");
         for (let index = 0; index < dataRows[0].length; index++) {
@@ -454,7 +418,6 @@ export class SourceParser {
                 await yieldToMain(0);
             }
         }
-
         const bodyRows = table.querySelectorAll("tbody tr");
         for (let rowIndex = 0; rowIndex < dataRows.slice(1).length; rowIndex++) {
             const cells = dataRows.slice(1)[rowIndex];
@@ -471,10 +434,8 @@ export class SourceParser {
                 }
             }
         }
-
         return table;
     }
-
     static async fillCell(cell, content) {
         if (!cell) {
             return;
@@ -485,7 +446,6 @@ export class SourceParser {
             cell.innerHTML = "<br>";
             return;
         }
-
         if (SourceInline.isSingleCompleteMacro(value)) {
             const macro = await this.parseMacroBlock(value);
             if (
@@ -497,7 +457,6 @@ export class SourceParser {
                 return;
             }
         }
-
         if (value.includes("\n- ") || value.startsWith("- ")) {
             const list = List.create("ul", "");
             list.replaceChildren();
@@ -509,13 +468,11 @@ export class SourceParser {
             cell.appendChild(list);
             return;
         }
-
         await SourceInline.fillElementAsync(cell, value);
         if (!cell.childNodes.length) {
             cell.innerHTML = "<br>";
         }
     }
-
     static async parseTemplate(text) {
         const openMatch = text.match(/^\{\{template\|(\d+)/);
         if (!openMatch) {
@@ -527,16 +484,13 @@ export class SourceParser {
         const fields = this.parseTemplateFields(text);
         const defs = await SourceParser.getTemplateCached(templateId);
         instance.fields = defs;
-
         if (fields._title) {
             const li = table.querySelector("thead .template-cell-info li");
             if (li) {
                 li.textContent = fields._title;
             }
         }
-
         const appliedSlugs = new Set();
-
         for (let fieldIndex = 0; fieldIndex < defs.length; fieldIndex++) {
             const def = defs[fieldIndex];
             const slug = instance.fieldSlug(def.name);
@@ -548,7 +502,6 @@ export class SourceParser {
             await this.applyTemplateField(instance, def, raw);
             await yieldToMain();
         }
-
         for (const [key, raw] of Object.entries(fields)) {
             if (key === "_title" || raw == null || raw === "") {
                 continue;
@@ -579,7 +532,6 @@ export class SourceParser {
                 await yieldToMain();
             }
         }
-
         table.querySelectorAll("img").forEach((img) => {
             Media.applyTemplateImageLayout(img);
             if (!Media.list.has(img)) {
@@ -591,16 +543,13 @@ export class SourceParser {
                 new Media(audio);
             }
         });
-
         return table;
     }
-
     static parseTemplateFields(text) {
         const fields = {};
         const lines = text.split("\n").slice(1);
         let currentKey = null;
         let currentValue = [];
-
         const flush = () => {
             if (!currentKey) {
                 return;
@@ -609,7 +558,6 @@ export class SourceParser {
                 currentValue.join("\n").trim();
             currentValue = [];
         };
-
         for (const line of lines) {
             if (line.trim() === "}}") {
                 flush();
@@ -626,11 +574,9 @@ export class SourceParser {
                 currentValue.push(line);
             }
         }
-
         flush();
         return fields;
     }
-
     static async applyOrphanImageField(instance, defs, raw, appliedSlugs) {
         const media = this.parseTemplateMediaValue(raw);
         if (!this.extractImageUrl(raw)) {
@@ -650,7 +596,6 @@ export class SourceParser {
         appliedSlugs.add(this.normalizeFieldSlug(def.name));
         await this.applyTemplateField(instance, def, raw);
     }
-
     static looksLikeDoubleColumn(content) {
         return String(content || "")
             .split("\n")
@@ -659,7 +604,6 @@ export class SourceParser {
                 return trimmed.includes(";;");
             });
     }
-
     static splitTemplateSection(value) {
         let content = String(value || "").trim();
         let header = null;
@@ -670,7 +614,6 @@ export class SourceParser {
         }
         return { header, content };
     }
-
     static insertTemplateSectionHeader(instance, def, header) {
         if (!header) {
             return;
@@ -683,7 +626,6 @@ export class SourceParser {
         headerRow.appendChild(th);
         instance.insertRow(headerRow, def.name);
     }
-
     static normalizeFieldType(def) {
         const name = String(def?.name || "").toLowerCase();
         if (/\blogo\b/.test(name)) {
@@ -700,7 +642,6 @@ export class SourceParser {
         }
         return type;
     }
-
     static isLargeImageMacro(value) {
         const macro = SourceParser.readTemplateImageMacro(String(value || "").trim());
         if (!macro) {
@@ -708,7 +649,6 @@ export class SourceParser {
         }
         return macro.type === "template-large-image" || macro.type === "large-image";
     }
-
     static readTemplateImageMacro(value) {
         const trimmed = String(value || "").trim();
         if (!trimmed) {
@@ -724,7 +664,6 @@ export class SourceParser {
         }
         return null;
     }
-
     static extractImageUrl(value) {
         const media = SourceParser.parseTemplateMediaValue(value);
         const url = String(media?.urls?.[0] || "").trim();
@@ -740,7 +679,6 @@ export class SourceParser {
         }
         return "";
     }
-
     static applyImageField(instance, def, media, raw = "") {
         const urls = Array.isArray(media?.urls) ? media.urls : [];
         const postIds = Array.isArray(media?.postIds) ? media.postIds : [];
@@ -778,7 +716,6 @@ export class SourceParser {
         instance.insertRow(row.row, def.name);
         return true;
     }
-
     static async applyTemplateField(instance, def, raw) {
         const fieldType = SourceParser.normalizeFieldType(def);
         def = { ...def, type: fieldType };
@@ -786,7 +723,6 @@ export class SourceParser {
         if (!value) {
             return;
         }
-
         switch (def.type) {
             case "single-image":
             case "image": {
@@ -831,13 +767,11 @@ export class SourceParser {
             }
         }
     }
-
     static async applyDefinitionField(instance, def, value) {
         const { header, content } = this.splitTemplateSection(value);
         if (header) {
             this.insertTemplateSectionHeader(instance, def, header);
         }
-
         const media = this.parseTemplateMediaValue(content);
         if (media.type === "double-image" || def.type === "double-image") {
             if (this.applyImageField(instance, def, { ...media, type: "double-image" }, content)) {
@@ -854,7 +788,6 @@ export class SourceParser {
                 return;
             }
         }
-
         if (this.looksLikeDoubleColumn(content)) {
             const pairs = this.parseDoubleColumnValue(content);
             const row = await this.fillDoubleColumnRow(instance, def.name, pairs);
@@ -868,13 +801,11 @@ export class SourceParser {
         );
         instance.insertRow(row.row, def.name);
     }
-
     static async applyTextField(instance, def, value) {
         const { header, content } = this.splitTemplateSection(value);
         if (header) {
             this.insertTemplateSectionHeader(instance, def, header);
         }
-
         const media = this.parseTemplateMediaValue(content);
         if (media.type === "double-image" || def.type === "double-image") {
             if (this.applyImageField(instance, def, { ...media, type: "double-image" }, content)) {
@@ -891,14 +822,12 @@ export class SourceParser {
                 return;
             }
         }
-
         if (this.looksLikeDoubleColumn(content)) {
             const pairs = this.parseDoubleColumnValue(content);
             const row = await this.fillDoubleColumnRow(instance, def.name, pairs);
             instance.insertRow(row.row, def.name);
             return;
         }
-
         const row = instance.textRow(def.name, false);
         await this.fillTemplateList(
             row.row.querySelector(".template-cell-info"),
@@ -906,7 +835,6 @@ export class SourceParser {
         );
         instance.insertRow(row.row, def.name);
     }
-
     static async fillDoubleColumnRow(instance, field, pairs) {
         const row = document.createElement("tr");
         row.dataset.field = instance.fieldSlug(field);
@@ -914,7 +842,6 @@ export class SourceParser {
         left.classList.add("template-cell-info");
         const right = document.createElement("ul");
         right.classList.add("template-cell-info");
-
         for (const [leftText, rightText] of pairs) {
             left.appendChild(
                 await this.fillTemplateListItem(leftText === "<br>" ? "" : leftText),
@@ -926,7 +853,6 @@ export class SourceParser {
             );
             await yieldToMain(0);
         }
-
         const tdLeft = document.createElement("td");
         const tdRight = document.createElement("td");
         tdLeft.appendChild(left);
@@ -934,7 +860,6 @@ export class SourceParser {
         row.append(tdLeft, tdRight);
         return { row };
     }
-
     static async fillTemplateListItem(text) {
         const li = document.createElement("li");
         const trimmed = String(text || "").trim();
@@ -959,7 +884,6 @@ export class SourceParser {
         }
         return li;
     }
-
     static parseDoubleColumnValue(value) {
         return String(value || "")
             .split("\n")
@@ -977,7 +901,6 @@ export class SourceParser {
             })
             .filter(Boolean);
     }
-
     static parseTemplateMediaValue(value) {
         const trimmed = String(value || "").trim();
         const candidates = trimmed
@@ -987,7 +910,6 @@ export class SourceParser {
         if (!candidates.length) {
             candidates.push(trimmed);
         }
-
         for (const candidate of candidates) {
             const macro = SourceParser.readTemplateImageMacro(candidate);
             if (macro) {
@@ -1031,11 +953,9 @@ export class SourceParser {
                 };
             }
         }
-
         const firstLine = candidates[0] || "";
         return { type: null, urls: [firstLine], postIds: [] };
     }
-
     static async fillTemplateList(list, value) {
         if (!list) {
             return;
@@ -1052,7 +972,6 @@ export class SourceParser {
             list.appendChild(li);
         }
     }
-
     static async parseTemplateListItem(text) {
         const macro = SourceInline.readMacro(text.trim(), 0);
         if (!macro) {

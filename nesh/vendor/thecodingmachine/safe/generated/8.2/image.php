@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\ImageException;
-
 /**
  * @param string $filename
  * @param array|null $image_info
@@ -20,8 +17,6 @@ function getimagesize(string $filename, ?array &$image_info = null): ?array
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $image_type
  * @param bool $include_dot
@@ -38,8 +33,6 @@ function image_type_to_extension(int $image_type, bool $include_dot = true): str
     }
     return $safeResult;
 }
-
-
 /**
  * @param \GdImage $image
  * @param array $affine
@@ -61,8 +54,6 @@ function imageaffine(\GdImage $image, array $affine, ?array $clip = null): \GdIm
     }
     return $safeResult;
 }
-
-
 /**
  * @param array $matrix1
  * @param array $matrix2
@@ -79,8 +70,6 @@ function imageaffinematrixconcat(array $matrix1, array $matrix2): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $type
  * @param array|float $options
@@ -97,8 +86,6 @@ function imageaffinematrixget(int $type, $options): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param \GdImage $image
  * @param bool $enable
@@ -113,8 +100,6 @@ function imagealphablending(\GdImage $image, bool $enable): void
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param bool $enable
@@ -129,8 +114,6 @@ function imageantialias(\GdImage $image, bool $enable): void
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param int $center_x
@@ -151,8 +134,6 @@ function imagearc(\GdImage $image, int $center_x, int $center_y, int $width, int
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param null|resource|string $file
@@ -177,8 +158,6 @@ function imageavif(\GdImage $image, $file = null, int $quality = -1, int $speed 
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param null|resource|string $file
@@ -200,8 +179,6 @@ function imagebmp(\GdImage $image, $file = null, bool $compressed = true): void
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param int $font
@@ -220,8 +197,6 @@ function imagechar(\GdImage $image, int $font, int $x, int $y, string $char, int
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param int $font
@@ -240,8 +215,6 @@ function imagecharup(\GdImage $image, int $font, int $x, int $y, string $char, i
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param int $x
@@ -259,8 +232,6 @@ function imagecolorat(\GdImage $image, int $x, int $y): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param \GdImage $image
  * @param int $color
@@ -275,8 +246,6 @@ function imagecolordeallocate(\GdImage $image, int $color): void
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image1
  * @param \GdImage $image2
@@ -291,8 +260,6 @@ function imagecolormatch(\GdImage $image1, \GdImage $image2): void
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param int $color
@@ -311,8 +278,6 @@ function imagecolorset(\GdImage $image, int $color, int $red, int $green, int $b
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param int $color
@@ -325,8 +290,6 @@ function imagecolorsforindex(\GdImage $image, int $color): array
     $safeResult = \imagecolorsforindex($image, $color);
     return $safeResult;
 }
-
-
 /**
  * @param \GdImage $image
  * @param array $matrix
@@ -343,8 +306,6 @@ function imageconvolution(\GdImage $image, array $matrix, float $divisor, float 
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $dst_image
  * @param \GdImage $src_image
@@ -365,8 +326,6 @@ function imagecopy(\GdImage $dst_image, \GdImage $src_image, int $dst_x, int $ds
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $dst_image
  * @param \GdImage $src_image
@@ -388,8 +347,6 @@ function imagecopymerge(\GdImage $dst_image, \GdImage $src_image, int $dst_x, in
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $dst_image
  * @param \GdImage $src_image
@@ -411,8 +368,6 @@ function imagecopymergegray(\GdImage $dst_image, \GdImage $src_image, int $dst_x
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $dst_image
  * @param \GdImage $src_image
@@ -435,8 +390,6 @@ function imagecopyresampled(\GdImage $dst_image, \GdImage $src_image, int $dst_x
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $dst_image
  * @param \GdImage $src_image
@@ -459,8 +412,6 @@ function imagecopyresized(\GdImage $dst_image, \GdImage $src_image, int $dst_x, 
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $width
  * @param int $height
@@ -477,8 +428,6 @@ function imagecreate(int $width, int $height): \GdImage
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @return \GdImage
@@ -494,8 +443,6 @@ function imagecreatefromavif(string $filename): \GdImage
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @return \GdImage
@@ -511,8 +458,6 @@ function imagecreatefrombmp(string $filename): \GdImage
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @return \GdImage
@@ -528,8 +473,6 @@ function imagecreatefromgd(string $filename): \GdImage
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @return \GdImage
@@ -545,8 +488,6 @@ function imagecreatefromgd2(string $filename): \GdImage
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @param int $x
@@ -566,8 +507,6 @@ function imagecreatefromgd2part(string $filename, int $x, int $y, int $width, in
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @return \GdImage
@@ -583,8 +522,6 @@ function imagecreatefromgif(string $filename): \GdImage
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @return \GdImage
@@ -600,8 +537,6 @@ function imagecreatefromjpeg(string $filename): \GdImage
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @return \GdImage
@@ -617,8 +552,6 @@ function imagecreatefrompng(string $filename): \GdImage
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $data
  * @return \GdImage
@@ -634,8 +567,6 @@ function imagecreatefromstring(string $data): \GdImage
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @return \GdImage
@@ -651,8 +582,6 @@ function imagecreatefromtga(string $filename): \GdImage
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @return \GdImage
@@ -668,8 +597,6 @@ function imagecreatefromwbmp(string $filename): \GdImage
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @return \GdImage
@@ -685,8 +612,6 @@ function imagecreatefromwebp(string $filename): \GdImage
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @return \GdImage
@@ -702,8 +627,6 @@ function imagecreatefromxbm(string $filename): \GdImage
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @return \GdImage
@@ -719,8 +642,6 @@ function imagecreatefromxpm(string $filename): \GdImage
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $width
  * @param int $height
@@ -737,8 +658,6 @@ function imagecreatetruecolor(int $width, int $height): \GdImage
     }
     return $safeResult;
 }
-
-
 /**
  * @param \GdImage $image
  * @param array $rectangle
@@ -755,8 +674,6 @@ function imagecrop(\GdImage $image, array $rectangle): \GdImage
     }
     return $safeResult;
 }
-
-
 /**
  * @param \GdImage $image
  * @param int $mode
@@ -775,8 +692,6 @@ function imagecropauto(\GdImage $image, int $mode = IMG_CROP_DEFAULT, float $thr
     }
     return $safeResult;
 }
-
-
 /**
  * @param \GdImage $image
  * @param int $x1
@@ -795,8 +710,6 @@ function imagedashedline(\GdImage $image, int $x1, int $y1, int $x2, int $y2, in
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @throws ImageException
@@ -810,8 +723,6 @@ function imagedestroy(\GdImage $image): void
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param int $center_x
@@ -830,8 +741,6 @@ function imageellipse(\GdImage $image, int $center_x, int $center_y, int $width,
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param int $x
@@ -848,8 +757,6 @@ function imagefill(\GdImage $image, int $x, int $y, int $color): void
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param int $center_x
@@ -871,8 +778,6 @@ function imagefilledarc(\GdImage $image, int $center_x, int $center_y, int $widt
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param int $center_x
@@ -891,8 +796,6 @@ function imagefilledellipse(\GdImage $image, int $center_x, int $center_y, int $
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param int $x1
@@ -911,8 +814,6 @@ function imagefilledrectangle(\GdImage $image, int $x1, int $y1, int $x2, int $y
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param int $x
@@ -930,8 +831,6 @@ function imagefilltoborder(\GdImage $image, int $x, int $y, int $border_color, i
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param int $filter
@@ -951,8 +850,6 @@ function imagefilter(\GdImage $image, int $filter, int ...$args): void
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param int $mode
@@ -967,8 +864,6 @@ function imageflip(\GdImage $image, int $mode): void
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param float $size
  * @param float $angle
@@ -988,8 +883,6 @@ function imageftbbox(float $size, float $angle, string $font_filename, string $s
     }
     return $safeResult;
 }
-
-
 /**
  * @param \GdImage $image
  * @param float $size
@@ -1013,8 +906,6 @@ function imagefttext(\GdImage $image, float $size, float $angle, int $x, int $y,
     }
     return $safeResult;
 }
-
-
 /**
  * @param \GdImage $image
  * @param float $input_gamma
@@ -1030,8 +921,6 @@ function imagegammacorrect(\GdImage $image, float $input_gamma, float $output_ga
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param null|resource|string $file
@@ -1050,8 +939,6 @@ function imagegd(\GdImage $image, $file = null): void
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param null|resource|string $file
@@ -1076,8 +963,6 @@ function imagegd2(\GdImage $image, $file = null, int $chunk_size = 128, int $mod
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param null|resource|string $file
@@ -1096,8 +981,6 @@ function imagegif(\GdImage $image, $file = null): void
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @return \GdImage
  * @throws ImageException
@@ -1112,8 +995,6 @@ function imagegrabscreen(): \GdImage
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $handle
  * @param bool $client_area
@@ -1130,8 +1011,6 @@ function imagegrabwindow(int $handle, bool $client_area = false): \GdImage
     }
     return $safeResult;
 }
-
-
 /**
  * @param \GdImage $image
  * @param null|resource|string $file
@@ -1153,8 +1032,6 @@ function imagejpeg(\GdImage $image, $file = null, int $quality = -1): void
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param int $effect
@@ -1169,8 +1046,6 @@ function imagelayereffect(\GdImage $image, int $effect): void
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param int $x1
@@ -1189,8 +1064,6 @@ function imageline(\GdImage $image, int $x1, int $y1, int $x2, int $y2, int $col
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $filename
  * @return int
@@ -1206,8 +1079,6 @@ function imageloadfont(string $filename): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param \GdImage $image
  * @param null|resource|string $file
@@ -1232,8 +1103,6 @@ function imagepng(\GdImage $image, $file = null, int $quality = -1, int $filters
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param int $x1
@@ -1252,8 +1121,6 @@ function imagerectangle(\GdImage $image, int $x1, int $y1, int $x2, int $y2, int
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param int|null $resolution_x
@@ -1277,8 +1144,6 @@ function imageresolution(\GdImage $image, ?int $resolution_x = null, ?int $resol
     }
     return $safeResult;
 }
-
-
 /**
  * @param \GdImage $image
  * @param float $angle
@@ -1297,8 +1162,6 @@ function imagerotate(\GdImage $image, float $angle, int $background_color, bool 
     }
     return $safeResult;
 }
-
-
 /**
  * @param \GdImage $image
  * @param bool $enable
@@ -1313,8 +1176,6 @@ function imagesavealpha(\GdImage $image, bool $enable): void
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param int $width
@@ -1333,8 +1194,6 @@ function imagescale(\GdImage $image, int $width, int $height = -1, int $mode = I
     }
     return $safeResult;
 }
-
-
 /**
  * @param \GdImage $image
  * @param \GdImage $brush
@@ -1349,8 +1208,6 @@ function imagesetbrush(\GdImage $image, \GdImage $brush): void
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param int $x1
@@ -1368,8 +1225,6 @@ function imagesetclip(\GdImage $image, int $x1, int $y1, int $x2, int $y2): void
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param int $method
@@ -1384,8 +1239,6 @@ function imagesetinterpolation(\GdImage $image, int $method = IMG_BILINEAR_FIXED
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param int $x
@@ -1402,8 +1255,6 @@ function imagesetpixel(\GdImage $image, int $x, int $y, int $color): void
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param array $style
@@ -1418,8 +1269,6 @@ function imagesetstyle(\GdImage $image, array $style): void
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param int $thickness
@@ -1434,8 +1283,6 @@ function imagesetthickness(\GdImage $image, int $thickness): void
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param \GdImage $tile
@@ -1450,8 +1297,6 @@ function imagesettile(\GdImage $image, \GdImage $tile): void
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param int $font
@@ -1470,8 +1315,6 @@ function imagestring(\GdImage $image, int $font, int $x, int $y, string $string,
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param int $font
@@ -1490,8 +1333,6 @@ function imagestringup(\GdImage $image, int $font, int $x, int $y, string $strin
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @return int
@@ -1507,8 +1348,6 @@ function imagesx(\GdImage $image): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param \GdImage $image
  * @return int
@@ -1524,8 +1363,6 @@ function imagesy(\GdImage $image): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param \GdImage $image
  * @param bool $dither
@@ -1541,8 +1378,6 @@ function imagetruecolortopalette(\GdImage $image, bool $dither, int $num_colors)
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param float $size
  * @param float $angle
@@ -1562,8 +1397,6 @@ function imagettfbbox(float $size, float $angle, string $font_filename, string $
     }
     return $safeResult;
 }
-
-
 /**
  * @param \GdImage $image
  * @param float $size
@@ -1587,8 +1420,6 @@ function imagettftext(\GdImage $image, float $size, float $angle, int $x, int $y
     }
     return $safeResult;
 }
-
-
 /**
  * @param \GdImage $image
  * @param null|resource|string $file
@@ -1610,8 +1441,6 @@ function imagewbmp(\GdImage $image, $file = null, ?int $foreground_color = null)
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param null|resource|string $file
@@ -1633,8 +1462,6 @@ function imagewebp(\GdImage $image, $file = null, int $quality = -1): void
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \GdImage $image
  * @param null|resource|string $filename
@@ -1654,8 +1481,6 @@ function imagexbm(\GdImage $image, $filename, ?int $foreground_color = null): vo
         throw ImageException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $iptc_data
  * @param string $filename
@@ -1673,8 +1498,6 @@ function iptcembed(string $iptc_data, string $filename, int $spool = 0)
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $iptc_block
  * @return array

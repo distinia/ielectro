@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\GnupgException;
-
 /**
  * @param resource $identifier
  * @param string $fingerprint
@@ -19,8 +16,6 @@ function gnupg_adddecryptkey($identifier, string $fingerprint, string $passphras
         throw GnupgException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $identifier
  * @param string $fingerprint
@@ -35,8 +30,6 @@ function gnupg_addencryptkey($identifier, string $fingerprint): void
         throw GnupgException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $identifier
  * @param string $fingerprint
@@ -56,8 +49,6 @@ function gnupg_addsignkey($identifier, string $fingerprint, ?string $passphrase 
         throw GnupgException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $identifier
  * @throws GnupgException
@@ -71,8 +62,6 @@ function gnupg_cleardecryptkeys($identifier): void
         throw GnupgException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $identifier
  * @throws GnupgException
@@ -86,8 +75,6 @@ function gnupg_clearencryptkeys($identifier): void
         throw GnupgException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $identifier
  * @throws GnupgException
@@ -101,8 +88,6 @@ function gnupg_clearsignkeys($identifier): void
         throw GnupgException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $identifier
  * @param string $key
@@ -118,8 +103,6 @@ function gnupg_deletekey($identifier, string $key, bool $allow_secret): void
         throw GnupgException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $identifier
  * @param int $armor
@@ -134,8 +117,6 @@ function gnupg_setarmor($identifier, int $armor): void
         throw GnupgException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $identifier
  * @param int $signmode

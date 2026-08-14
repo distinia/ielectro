@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\PcreException;
-
 /**
  * @param string $pattern
  * @param array $array
@@ -21,8 +18,6 @@ function preg_grep(string $pattern, array $array, int $flags = 0): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $pattern
  * @param string $subject
@@ -42,8 +37,6 @@ function preg_match_all(string $pattern, string $subject, ?array &$matches = nul
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $pattern
  * @param string $subject
@@ -63,8 +56,6 @@ function preg_match(string $pattern, string $subject, ?array &$matches = null, i
     }
     return $safeResult;
 }
-
-
 /**
  * @param array $pattern
  * @param array|string $subject
@@ -84,8 +75,6 @@ function preg_replace_callback_array(array $pattern, $subject, int $limit = -1, 
     }
     return $safeResult;
 }
-
-
 /**
  * @param array|string $pattern
  * @param callable(array):string $callback
@@ -106,8 +95,6 @@ function preg_replace_callback($pattern, callable $callback, $subject, int $limi
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $pattern
  * @param string $subject

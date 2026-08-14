@@ -14,7 +14,7 @@ GLOBAL COMMANDS
   dyscover-user <id>        Migrate legacy Dyscover user assets into posts.
   help                      Display this help page.
 APPLICATION COMMANDS
-  <application> build       Execute database migrations.
+  <application> build       Apply CREATE schema SQL if the database is empty.
   <application> backup      Create a backup.
   <application> backups     List available backups.
   <application> restore     Restore a backup.

@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\OpensslException;
-
 /**
  * @param string $cipher_algo
  * @return int
@@ -19,8 +16,6 @@ function openssl_cipher_iv_length(string $cipher_algo): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $cipher_algo
  * @return int
@@ -36,8 +31,6 @@ function openssl_cipher_key_length(string $cipher_algo): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $input_filename
  * @param string $output_filename
@@ -61,8 +54,6 @@ function openssl_cms_decrypt(string $input_filename, string $output_filename, $c
         throw OpensslException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $input_filename
  * @param string $output_filename
@@ -82,8 +73,6 @@ function openssl_cms_encrypt(string $input_filename, string $output_filename, $c
         throw OpensslException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $input_filename
  * @param array $certificates
@@ -98,8 +87,6 @@ function openssl_cms_read(string $input_filename, array &$certificates): void
         throw OpensslException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $input_filename
  * @param string $output_filename
@@ -124,8 +111,6 @@ function openssl_cms_sign(string $input_filename, string $output_filename, $cert
         throw OpensslException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $input_filename
  * @param int $flags
@@ -163,8 +148,6 @@ function openssl_cms_verify(string $input_filename, int $flags = 0, ?string $cer
         throw OpensslException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \OpenSSLCertificateSigningRequest|string $csr
  * @param string $output_filename
@@ -180,8 +163,6 @@ function openssl_csr_export_to_file($csr, string $output_filename, bool $no_text
         throw OpensslException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \OpenSSLCertificateSigningRequest|string $csr
  * @param null|string $output
@@ -197,8 +178,6 @@ function openssl_csr_export($csr, ?string &$output, bool $no_text = true): void
         throw OpensslException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \OpenSSLCertificateSigningRequest|string $csr
  * @param bool $short_names
@@ -215,8 +194,6 @@ function openssl_csr_get_public_key($csr, bool $short_names = true): \OpenSSLAsy
     }
     return $safeResult;
 }
-
-
 /**
  * @param \OpenSSLCertificateSigningRequest|string $csr
  * @param bool $short_names
@@ -233,8 +210,6 @@ function openssl_csr_get_subject($csr, bool $short_names = true): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param array $distinguished_names
  * @param \OpenSSLAsymmetricKey|null $private_key
@@ -259,8 +234,6 @@ function openssl_csr_new(array $distinguished_names, ?\OpenSSLAsymmetricKey &$pr
     }
     return $safeResult;
 }
-
-
 /**
  * @param \OpenSSLCertificateSigningRequest|string $csr
  * @param \OpenSSLCertificate|null|string $ca_certificate
@@ -290,8 +263,6 @@ function openssl_csr_sign($csr, $ca_certificate, $private_key, int $days, ?array
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $data
  * @param string $cipher_algo
@@ -319,8 +290,6 @@ function openssl_decrypt(string $data, string $cipher_algo, string $passphrase, 
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $public_key
  * @param \OpenSSLAsymmetricKey $private_key
@@ -337,8 +306,6 @@ function openssl_dh_compute_key(string $public_key, \OpenSSLAsymmetricKey $priva
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $data
  * @param string $digest_algo
@@ -356,8 +323,6 @@ function openssl_digest(string $data, string $digest_algo, bool $binary = false)
     }
     return $safeResult;
 }
-
-
 /**
  * @return list
  * @throws OpensslException
@@ -372,8 +337,6 @@ function openssl_get_curve_names(): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $data
  * @param null|string $output
@@ -396,8 +359,6 @@ function openssl_open(string $data, ?string &$output, string $encrypted_key, $pr
         throw OpensslException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $password
  * @param string $salt
@@ -417,8 +378,6 @@ function openssl_pbkdf2(string $password, string $salt, int $key_length, int $it
     }
     return $safeResult;
 }
-
-
 /**
  * @param \OpenSSLCertificate|string $certificate
  * @param string $output_filename
@@ -436,8 +395,6 @@ function openssl_pkcs12_export_to_file($certificate, string $output_filename, $p
         throw OpensslException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \OpenSSLCertificate|string $certificate
  * @param null|string $output
@@ -455,8 +412,6 @@ function openssl_pkcs12_export($certificate, ?string &$output, $private_key, str
         throw OpensslException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $pkcs12
  * @param array|null $certificates
@@ -472,8 +427,6 @@ function openssl_pkcs12_read(string $pkcs12, ?array &$certificates, string $pass
         throw OpensslException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $input_filename
  * @param string $output_filename
@@ -494,8 +447,6 @@ function openssl_pkcs7_decrypt(string $input_filename, string $output_filename, 
         throw OpensslException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $input_filename
  * @param string $output_filename
@@ -514,8 +465,6 @@ function openssl_pkcs7_encrypt(string $input_filename, string $output_filename, 
         throw OpensslException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $data
  * @param array|null $certificates
@@ -530,8 +479,6 @@ function openssl_pkcs7_read(string $data, ?array &$certificates): void
         throw OpensslException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $input_filename
  * @param string $output_filename
@@ -555,8 +502,6 @@ function openssl_pkcs7_sign(string $input_filename, string $output_filename, $ce
         throw OpensslException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \OpenSSLAsymmetricKey|\OpenSSLCertificate|array|string $public_key
  * @param \OpenSSLAsymmetricKey|\OpenSSLCertificate|array|string $private_key
@@ -574,8 +519,6 @@ function openssl_pkey_derive($public_key, $private_key, int $key_length = 0): st
     }
     return $safeResult;
 }
-
-
 /**
  * @param \OpenSSLAsymmetricKey|\OpenSSLCertificate|array|string $key
  * @param string $output_filename
@@ -598,8 +541,6 @@ function openssl_pkey_export_to_file($key, string $output_filename, ?string $pas
         throw OpensslException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \OpenSSLAsymmetricKey|\OpenSSLCertificate|array|string $key
  * @param null|string $output
@@ -622,8 +563,6 @@ function openssl_pkey_export($key, ?string &$output, ?string $passphrase = null,
         throw OpensslException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \OpenSSLAsymmetricKey $key
  * @return array
@@ -639,8 +578,6 @@ function openssl_pkey_get_details(\OpenSSLAsymmetricKey $key): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param \OpenSSLAsymmetricKey|\OpenSSLCertificate|array|string $private_key
  * @param null|string $passphrase
@@ -661,8 +598,6 @@ function openssl_pkey_get_private($private_key, ?string $passphrase = null): \Op
     }
     return $safeResult;
 }
-
-
 /**
  * @param \OpenSSLAsymmetricKey|\OpenSSLCertificate|array|string $public_key
  * @return \OpenSSLAsymmetricKey
@@ -678,8 +613,6 @@ function openssl_pkey_get_public($public_key): \OpenSSLAsymmetricKey
     }
     return $safeResult;
 }
-
-
 /**
  * @param array|null $options
  * @return \OpenSSLAsymmetricKey
@@ -699,8 +632,6 @@ function openssl_pkey_new(?array $options = null): \OpenSSLAsymmetricKey
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $data
  * @param null|string $decrypted_data
@@ -717,8 +648,6 @@ function openssl_private_decrypt(string $data, ?string &$decrypted_data, $privat
         throw OpensslException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $data
  * @param null|string $encrypted_data
@@ -735,8 +664,6 @@ function openssl_private_encrypt(string $data, ?string &$encrypted_data, $privat
         throw OpensslException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $data
  * @param null|string $decrypted_data
@@ -753,8 +680,6 @@ function openssl_public_decrypt(string $data, ?string &$decrypted_data, $public_
         throw OpensslException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $data
  * @param null|string $encrypted_data
@@ -771,8 +696,6 @@ function openssl_public_encrypt(string $data, ?string &$encrypted_data, $public_
         throw OpensslException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $length
  * @param bool|null $strong_result
@@ -785,8 +708,6 @@ function openssl_random_pseudo_bytes(int $length, ?bool &$strong_result = null):
     $safeResult = \openssl_random_pseudo_bytes($length, $strong_result);
     return $safeResult;
 }
-
-
 /**
  * @param string $data
  * @param null|string $sealed_data
@@ -807,8 +728,6 @@ function openssl_seal(string $data, ?string &$sealed_data, ?array &$encrypted_ke
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $data
  * @param null|string $signature
@@ -825,8 +744,6 @@ function openssl_sign(string $data, ?string &$signature, $private_key, $algorith
         throw OpensslException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $spki
  * @return null|string
@@ -842,8 +759,6 @@ function openssl_spki_export_challenge(string $spki): ?string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $spki
  * @return null|string
@@ -859,8 +774,6 @@ function openssl_spki_export(string $spki): ?string
     }
     return $safeResult;
 }
-
-
 /**
  * @param \OpenSSLAsymmetricKey $private_key
  * @param string $challenge
@@ -878,8 +791,6 @@ function openssl_spki_new(\OpenSSLAsymmetricKey $private_key, string $challenge,
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $spki
  * @throws OpensslException
@@ -893,8 +804,6 @@ function openssl_spki_verify(string $spki): void
         throw OpensslException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $data
  * @param string $signature
@@ -913,8 +822,6 @@ function openssl_verify(string $data, string $signature, $public_key, $algorithm
     }
     return $safeResult;
 }
-
-
 /**
  * @param \OpenSSLCertificate|string $certificate
  * @param int $purpose
@@ -937,8 +844,6 @@ function openssl_x509_checkpurpose($certificate, int $purpose, array $ca_info = 
     }
     return $safeResult;
 }
-
-
 /**
  * @param \OpenSSLCertificate|string $certificate
  * @param string $output_filename
@@ -954,8 +859,6 @@ function openssl_x509_export_to_file($certificate, string $output_filename, bool
         throw OpensslException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \OpenSSLCertificate|string $certificate
  * @param null|string $output
@@ -971,8 +874,6 @@ function openssl_x509_export($certificate, ?string &$output, bool $no_text = tru
         throw OpensslException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \OpenSSLCertificate|string $certificate
  * @param string $digest_algo
@@ -990,8 +891,6 @@ function openssl_x509_fingerprint($certificate, string $digest_algo = "sha1", bo
     }
     return $safeResult;
 }
-
-
 /**
  * @param \OpenSSLCertificate|string $certificate
  * @return \OpenSSLCertificate

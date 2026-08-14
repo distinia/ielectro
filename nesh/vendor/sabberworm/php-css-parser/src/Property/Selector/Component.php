@@ -1,11 +1,7 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\Property\Selector;
-
 use Sabberworm\CSS\Renderable;
-
 /**
  * This interface is for a class that represents a part of a selector which is either a compound selector (or a simple
  * selector, which is effectively a compound selector without any compounding) or a selector combinator.
@@ -28,12 +24,10 @@ interface Component extends Renderable
      * @return non-empty-string
      */
     public function getValue(): string;
-
     /**
      * @param non-empty-string $value
      */
     public function setValue(string $value): void;
-
     /**
      * @return int<0, max>
      */

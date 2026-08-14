@@ -1,2 +1,0 @@
--- Centralize user avatars under Account (file storage: account/assets/users/{account_id}/avatar.png)
--- Run: php account/database/migrate-avatars.php

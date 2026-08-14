@@ -1,55 +1,26 @@
 import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
-
 import { Alert } from "../core/alert.js";
-
 import { Api } from "../core/api.js";
-
-
-
 export class AvatarEditor {
-
     constructor(user, onUpdated) {
-
         this.user = user;
-
         this.onUpdated = onUpdated;
-
         this.overlay = null;
-
         this.cropImage = null;
-
         this.objectUrl = null;
-
         this.baseScale = 1;
-
         this.offsetX = 0;
-
         this.offsetY = 0;
-
         this.dragging = false;
-
         this.lastX = 0;
-
         this.lastY = 0;
-
         this.viewport = 280;
-
         this.root = null;
-
         this.fileInput = null;
-
     }
-
-
-
     apiUrl(path) {
-
         return `${window.location.origin}/api/${path.replace(/^\/+/, "")}`;
-
     }
-
-
-
     initials() {
         const name =
             `${this.user?.name || ""} ${this.user?.surname || ""}`.trim() ||
@@ -62,38 +33,21 @@ export class AvatarEditor {
             .slice(0, 2)
             .toUpperCase();
     }
-
-
-
     avatarUrl(version = null) {
-
         const base = String(this.user?.avatar || "").split("?")[0];
-
         if (!base) return "";
-
         const token = version ?? Date.now();
-
         return `${base}?t=${token}`;
-
     }
-
-
-
     hasCustomAvatar() {
-
         return Boolean(this.user?.avatar_custom);
-
     }
-
-
-
     isImageFile(file) {
         if (!file) return false;
         const type = String(file.type || "").toLowerCase();
         if (type.startsWith("image/")) return true;
         return /\.(jpe?g|png|gif|webp|bmp|svg|avif)$/i.test(String(file.name || ""));
     }
-
     decodeImage(src) {
         return new Promise((resolve, reject) => {
             const img = new Image();
@@ -102,7 +56,6 @@ export class AvatarEditor {
             img.src = src;
         });
     }
-
     activateCrop(canvas, empty, hint, saveBtn, wrap) {
         const ready = () => {
             this.cropImage = canvas;
@@ -119,115 +72,56 @@ export class AvatarEditor {
             canvas.onload = ready;
         }
     }
-
     bind(root) {
-
         this.root = root;
-
         this.fileInput = root.querySelector(".profile-avatar-file");
-
         const trigger = root.querySelector(".profile-avatar-trigger");
-
         const removeBtn = root.querySelector(".profile-avatar-remove");
-
-
-
         trigger?.addEventListener("click", () => this.fileInput?.click());
-
         this.fileInput?.addEventListener("change", async () => {
             const file = this.fileInput.files?.[0];
             if (!file) return;
             this.fileInput.value = "";
             await this.openEditor(file);
         });
-
-
-
         removeBtn?.addEventListener("click", (event) => {
-
             event.preventDefault();
-
             this.removeAvatar();
-
         });
-
-
-
         this.syncDisplay();
-
     }
-
-
-
     setLoading(loading) {
-
         this.root?.querySelector(".profile-avatar-loading")?.toggleAttribute("hidden", !loading);
-
         if (this.root?.querySelector(".profile-avatar-trigger")) {
-
             this.root.querySelector(".profile-avatar-trigger").disabled = loading;
-
         }
-
     }
-
-
-
     syncDisplay() {
-
         if (!this.root) return;
-
         const img = this.root.querySelector(".profile-avatar");
-
         const fallback = this.root.querySelector(".profile-avatar-fallback");
-
         const removeBtn = this.root.querySelector(".profile-avatar-remove");
-
         const custom = this.hasCustomAvatar();
-
-
-
         if (fallback) {
-
             fallback.textContent = this.initials();
-
             fallback.hidden = custom;
-
         }
-
         if (img) {
-
             img.hidden = !custom;
-
             if (custom) {
-
                 img.src = this.avatarUrl();
-
                 img.onerror = () => {
-
                     img.hidden = true;
-
                     if (fallback) fallback.hidden = false;
-
                 };
-
             }
-
         }
-
         if (removeBtn) {
-
             removeBtn.hidden = !custom;
-
         }
-
     }
-
-
-
     async openEditor(file = null) {
         this.closeEditor();
-
         let initialUrl = null;
         if (file && this.isImageFile(file)) {
             initialUrl = URL.createObjectURL(file);
@@ -240,9 +134,7 @@ export class AvatarEditor {
             }
             this.objectUrl = initialUrl;
         }
-
         const hasImage = Boolean(initialUrl);
-
         this.overlay = document.createElement("div");
         this.overlay.className = "avatar-editor-overlay";
         this.overlay.innerHTML = `
@@ -264,18 +156,15 @@ export class AvatarEditor {
                     <button type="button" class="avatar-editor-save"${hasImage ? "" : " disabled"}>Save photo</button>
                 </footer>
             </div>`;
-
         document.body.appendChild(this.overlay);
         Nesh.Html.setScrollEnabled(false);
         Nesh.Icons.load(this.overlay);
-
         const canvas = this.overlay.querySelector(".avatar-editor-canvas");
         const wrap = this.overlay.querySelector(".avatar-editor-canvas-wrap");
         const empty = this.overlay.querySelector(".avatar-editor-empty");
         const fileInput = this.overlay.querySelector('.avatar-editor-pick input[type="file"]');
         const saveBtn = this.overlay.querySelector(".avatar-editor-save");
         const hint = this.overlay.querySelector(".avatar-editor-hint");
-
         const close = () => this.closeEditor();
         this.overlay.querySelector(".avatar-editor-cancel")?.addEventListener("click", close);
         this.overlay.addEventListener("click", (event) => {
@@ -287,7 +176,6 @@ export class AvatarEditor {
                 if (event.key === "Escape") close();
             }),
         );
-
         const loadFile = (nextFile) => {
             if (!nextFile || !canvas || !this.isImageFile(nextFile)) return;
             if (this.objectUrl) URL.revokeObjectURL(this.objectUrl);
@@ -295,17 +183,14 @@ export class AvatarEditor {
             canvas.onload = () => this.activateCrop(canvas, empty, hint, saveBtn, wrap);
             canvas.src = this.objectUrl;
         };
-
         const pickImage = (nextFile) => {
             if (!this.isImageFile(nextFile)) return;
             loadFile(nextFile);
         };
-
         fileInput?.addEventListener("change", () => {
             pickImage(fileInput.files?.[0]);
             if (fileInput) fileInput.value = "";
         });
-
         const onDragOver = (event) => {
             event.preventDefault();
             event.stopPropagation();
@@ -327,13 +212,11 @@ export class AvatarEditor {
                 wrap?.classList.remove("is-dragover");
             }
         });
-
         wrap?.addEventListener("click", (event) => {
             if (wrap?.classList.contains("is-cropping")) return;
             if (event.target.closest(".avatar-editor-pick")) return;
             fileInput?.click();
         });
-
         wrap?.addEventListener("pointerdown", (event) => {
             if (!wrap?.classList.contains("is-cropping")) return;
             event.preventDefault();
@@ -359,249 +242,119 @@ export class AvatarEditor {
         };
         wrap?.addEventListener("pointerup", endDrag);
         wrap?.addEventListener("pointercancel", endDrag);
-
         saveBtn?.addEventListener("click", () => this.saveAvatar(saveBtn));
-
         if (hasImage && canvas) {
             canvas.src = initialUrl;
             this.activateCrop(canvas, empty, hint, saveBtn, wrap);
         }
     }
-
-
-
     fitCrop() {
-
         if (!this.cropImage) return;
-
         const naturalW = this.cropImage.naturalWidth;
-
         const naturalH = this.cropImage.naturalHeight;
-
         if (!naturalW || !naturalH) return;
-
         this.baseScale = Math.max(this.viewport / naturalW, this.viewport / naturalH);
-
         this.offsetX = 0;
-
         this.offsetY = 0;
-
         this.clampOffset();
-
         this.applyTransform();
-
     }
-
-
-
     scale() {
-
         return this.baseScale;
-
     }
-
-
-
     clampOffset() {
-
         if (!this.cropImage) return;
-
         const drawW = this.cropImage.naturalWidth * this.scale();
-
         const drawH = this.cropImage.naturalHeight * this.scale();
-
         const maxX = Math.max(0, (drawW - this.viewport) / 2);
-
         const maxY = Math.max(0, (drawH - this.viewport) / 2);
-
         this.offsetX = Math.min(maxX, Math.max(-maxX, this.offsetX));
-
         this.offsetY = Math.min(maxY, Math.max(-maxY, this.offsetY));
-
     }
-
-
-
     applyTransform() {
-
         if (!this.cropImage) return;
-
         const s = this.scale();
-
         this.cropImage.style.transform = `translate(calc(-50% + ${this.offsetX}px), calc(-50% + ${this.offsetY}px)) scale(${s})`;
-
     }
-
-
-
     async toBlob(size = 512) {
-
         const canvas = document.createElement("canvas");
-
         canvas.width = size;
-
         canvas.height = size;
-
         const ctx = canvas.getContext("2d");
-
         if (!ctx || !this.cropImage) throw new Error("Crop unavailable");
-
         const scale = this.scale();
-
         const sourceW = this.viewport / scale;
-
         const sourceH = this.viewport / scale;
-
         const sourceX = this.cropImage.naturalWidth / 2 - sourceW / 2 - this.offsetX / scale;
-
         const sourceY = this.cropImage.naturalHeight / 2 - sourceH / 2 - this.offsetY / scale;
-
         ctx.beginPath();
-
         ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
-
         ctx.clip();
-
         ctx.drawImage(this.cropImage, sourceX, sourceY, sourceW, sourceH, 0, 0, size, size);
-
         return new Promise((resolve, reject) => {
-
             canvas.toBlob(
-
                 (blob) => (blob ? resolve(blob) : reject(new Error("Crop failed"))),
-
                 "image/png",
-
                 0.92,
-
             );
-
         });
-
     }
-
-
-
     async saveAvatar(button) {
-
         if (!this.cropImage?.src) return;
-
         button.disabled = true;
-
         this.setLoading(true);
-
         try {
-
             const blob = await this.toBlob();
-
             const data = new FormData();
-
             data.append("avatar", blob, "avatar.png");
-
             const response = await Nesh.Request.post(this.apiUrl("avatar"), data);
-
             const saved = Api.record(response);
-
             this.user.avatar = saved?.url || this.user.avatar;
-
             this.user.avatar_custom = saved?.avatar_custom ?? true;
-
             this.syncDisplay();
-
             this.onUpdated?.(this.user);
-
             this.closeEditor();
-
             Alert.success("Profile photo updated");
-
         } catch (error) {
-
             Alert.error(Api.errorMessage(error));
-
         } finally {
-
             button.disabled = false;
-
             this.setLoading(false);
-
         }
-
     }
-
-
-
     async removeAvatar() {
-
         if (!(await Alert.confirm("Remove your profile photo?"))) return;
-
         this.setLoading(true);
-
         try {
-
             const response = await Nesh.Request.delete(this.apiUrl("avatar"));
-
             const saved = Api.record(response);
-
             this.user.avatar = saved?.url || this.user.avatar;
-
             this.user.avatar_custom = saved?.avatar_custom ?? false;
-
             this.syncDisplay();
-
             this.onUpdated?.(this.user);
-
             Alert.success("Profile photo reset");
-
         } catch (error) {
-
             Alert.error(Api.errorMessage(error));
-
         } finally {
-
             this.setLoading(false);
-
         }
-
     }
-
-
-
     closeEditor() {
-
         if (this._escHandler) {
-
             document.removeEventListener("keydown", this._escHandler);
-
             this._escHandler = null;
-
         }
-
         if (this.objectUrl) URL.revokeObjectURL(this.objectUrl);
-
         this.objectUrl = null;
-
         this.overlay?.remove();
-
         this.overlay = null;
-
         this.cropImage = null;
-
         Nesh.Html.setScrollEnabled(true);
-
     }
-
-
-
     renderHtml() {
-
         const initials = Nesh.Html.escape(this.initials());
-
         const url = this.avatarUrl(0);
-
         const custom = this.hasCustomAvatar();
-
-
-
         return `
             <div class="profile-avatar-wrap">
                 <input type="file" class="profile-avatar-file" accept="image/*" hidden>
@@ -616,9 +369,5 @@ export class AvatarEditor {
                 </button>
                 <button type="button" class="profile-avatar-remove" ${custom ? "" : "hidden"}>Remove photo</button>
             </div>`;
-
     }
-
 }
-
-

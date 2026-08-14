@@ -1,24 +1,18 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\CSSList;
-
 use Sabberworm\CSS\OutputFormat;
 use Sabberworm\CSS\Property\AtRule;
-
 class KeyFrame extends CSSList implements AtRule
 {
     /**
      * @var non-empty-string
      */
     private $vendorKeyFrame = 'keyframes';
-
     /**
      * @var non-empty-string
      */
     private $animationName = 'none';
-
     /**
      * @param non-empty-string $vendorKeyFrame
      */
@@ -26,7 +20,6 @@ class KeyFrame extends CSSList implements AtRule
     {
         $this->vendorKeyFrame = $vendorKeyFrame;
     }
-
     /**
      * @return non-empty-string
      */
@@ -34,7 +27,6 @@ class KeyFrame extends CSSList implements AtRule
     {
         return $this->vendorKeyFrame;
     }
-
     /**
      * @param non-empty-string $animationName
      */
@@ -42,7 +34,6 @@ class KeyFrame extends CSSList implements AtRule
     {
         $this->animationName = $animationName;
     }
-
     /**
      * @return non-empty-string
      */
@@ -50,7 +41,6 @@ class KeyFrame extends CSSList implements AtRule
     {
         return $this->animationName;
     }
-
     /**
      * @return non-empty-string
      */
@@ -63,12 +53,10 @@ class KeyFrame extends CSSList implements AtRule
         $result .= '}';
         return $result;
     }
-
     public function isRootList(): bool
     {
         return false;
     }
-
     /**
      * @return non-empty-string
      */
@@ -76,7 +64,6 @@ class KeyFrame extends CSSList implements AtRule
     {
         return $this->vendorKeyFrame;
     }
-
     /**
      * @return non-empty-string
      */

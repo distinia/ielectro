@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\IconvException;
-
 /**
  * @param string $type
  * @return mixed
@@ -19,8 +16,6 @@ function iconv_get_encoding(string $type = "all")
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $string
  * @param int $mode
@@ -42,8 +37,6 @@ function iconv_mime_decode(string $string, int $mode = 0, ?string $encoding = nu
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $field_name
  * @param string $field_value
@@ -61,8 +54,6 @@ function iconv_mime_encode(string $field_name, string $field_value, array $optio
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $type
  * @param string $encoding
@@ -77,8 +68,6 @@ function iconv_set_encoding(string $type, string $encoding): void
         throw IconvException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $string
  * @param null|string $encoding
@@ -99,8 +88,6 @@ function iconv_strlen(string $string, ?string $encoding = null): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $from_encoding
  * @param string $to_encoding

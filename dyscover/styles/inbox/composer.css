@@ -6,7 +6,6 @@
     gap: 0.55rem;
     background: rgba(248, 250, 252, 0.95);
 }
-
 .chat-area-composer .message-input {
     flex: 1;
     margin: 0;
@@ -17,7 +16,6 @@
     line-height: 1.4;
     min-height: 2.75rem;
 }
-
 .chat-area-composer .attach-chat-btn {
     width: 2.5rem;
     height: 2.5rem;
@@ -30,11 +28,9 @@
     border: 1px solid var(--border-subtle);
     background: var(--surface-elevated);
 }
-
 .chat-area-composer.is-chat-composer-hidden {
     display: none !important;
 }
-
 .send-message-btn {
     width: 2.65rem;
     height: 2.65rem;
@@ -51,11 +47,9 @@
     flex-shrink: 0;
     cursor: pointer;
 }
-
 .send-message-btn:hover {
     transform: translateY(-1px);
 }
-
 .hidden-file-input {
     position: absolute;
     width: 0;
@@ -63,7 +57,6 @@
     opacity: 0;
     pointer-events: none;
 }
-
 .chat-attach-hint {
     display: flex;
     align-items: center;
@@ -75,14 +68,12 @@
     font-size: 0.82rem;
     color: var(--text-color);
 }
-
 .chat-attach-hint-label {
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-
 .chat-attach-hint-remove {
     border: none;
     background: rgba(15, 23, 42, 0.06);
@@ -95,12 +86,10 @@
     line-height: 1;
     flex-shrink: 0;
 }
-
 .chat-attach-hint-remove:hover {
     background: rgba(229, 57, 53, 0.12);
     color: #c62828;
 }
-
 .chat-reply-hint {
     display: flex;
     align-items: center;
@@ -110,20 +99,17 @@
     background: rgba(30, 136, 229, 0.06);
     border-top: 1px solid var(--border-subtle);
 }
-
 .chat-reply-hint-body {
     min-width: 0;
     display: flex;
     flex-direction: column;
     gap: 0.15rem;
 }
-
 .chat-reply-hint-label {
     font-size: 0.75rem;
     font-weight: 700;
     color: var(--blue-mid);
 }
-
 .chat-reply-hint-preview {
     font-size: 0.82rem;
     color: var(--text-muted);
@@ -131,7 +117,6 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-
 .chat-reply-hint-remove {
     border: none;
     background: rgba(15, 23, 42, 0.06);
@@ -144,19 +129,16 @@
     line-height: 1;
     flex-shrink: 0;
 }
-
 .chat-reply-hint-remove:hover {
     background: rgba(229, 57, 53, 0.12);
     color: #c62828;
 }
-
 .chat-attach-upload-spinner {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
 }
-
 .chat-area-composer.is-uploading-attachment .attach-chat-btn {
     opacity: 0.45;
 }

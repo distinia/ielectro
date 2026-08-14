@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\ClassobjException;
-
 /**
  * @param string $class
  * @param string $alias

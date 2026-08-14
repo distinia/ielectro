@@ -1,15 +1,11 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\Property\Selector;
-
 use Sabberworm\CSS\Comment\Comment;
 use Sabberworm\CSS\OutputFormat;
 use Sabberworm\CSS\Parsing\ParserState;
 use Sabberworm\CSS\Parsing\UnexpectedTokenException;
 use Sabberworm\CSS\ShortClassNameProvider;
-
 /**
  * Class representing a CSS selector combinator (space, `>`, `+`, or `~`).
  *
@@ -18,12 +14,10 @@ use Sabberworm\CSS\ShortClassNameProvider;
 class Combinator implements Component
 {
     use ShortClassNameProvider;
-
     /**
      * @var ValidCombinatorValue
      */
     private $value;
-
     /**
      * @param ValidCombinatorValue $value
      */
@@ -31,7 +25,6 @@ class Combinator implements Component
     {
         $this->setValue($value);
     }
-
     /**
      * @param list<Comment> $comments
      *
@@ -42,7 +35,6 @@ class Combinator implements Component
     public static function parse(ParserState $parserState, array &$comments = []): self
     {
         $consumedWhitespace = $parserState->consumeWhiteSpace($comments);
-
         $nextToken = $parserState->peek();
         if (\in_array($nextToken, ['>', '+', '~'], true)) {
             $value = $nextToken;
@@ -58,10 +50,8 @@ class Combinator implements Component
                 $parserState->currentLine()
             );
         }
-
         return new self($value);
     }
-
     /**
      * @return ValidCombinatorValue
      */
@@ -69,7 +59,6 @@ class Combinator implements Component
     {
         return $this->value;
     }
-
     /**
      * @param non-empty-string $value
      *
@@ -80,10 +69,8 @@ class Combinator implements Component
         if (!\in_array($value, [' ', '>', '+', '~'], true)) {
             throw new \UnexpectedValueException('`' . $value . '` is not a valid selector combinator.');
         }
-
         $this->value = $value;
     }
-
     /**
      * @return int<0, max>
      */
@@ -91,7 +78,6 @@ class Combinator implements Component
     {
         return 0;
     }
-
     public function render(OutputFormat $outputFormat): string
     {
         $spacing = $outputFormat->getSpaceAroundSelectorCombinator();
@@ -100,10 +86,8 @@ class Combinator implements Component
         } else {
             $rendering = $spacing . $this->value . $spacing;
         }
-
         return $rendering;
     }
-
     /**
      * @return array<string, bool|int|float|string|array<mixed>|null>
      *

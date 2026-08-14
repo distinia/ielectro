@@ -1,5 +1,4 @@
 import { CreatorHelp } from "./creator-help.js";
-
 export const CREATOR_TYPES = [
     {
         value: "article",
@@ -63,7 +62,6 @@ export const CREATOR_TYPES = [
         maxBytes: 10485760,
     },
 ];
-
 export function creatorTypeConfig(type) {
     return CREATOR_TYPES.find((entry) => entry.value === type) || CREATOR_TYPES[0];
 }

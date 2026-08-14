@@ -5,11 +5,9 @@
  * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
  */
 namespace Dompdf\FrameReflower;
-
 use Dompdf\Frame;
 use Dompdf\FrameDecorator\Block as BlockFrameDecorator;
 use Dompdf\FrameDecorator\Page as PageFrameDecorator;
-
 /**
  * Reflows pages
  *
@@ -17,21 +15,18 @@ use Dompdf\FrameDecorator\Page as PageFrameDecorator;
  */
 class Page extends AbstractFrameReflower
 {
-
     /**
      * Cache of the callbacks array
      *
      * @var array
      */
     private $_callbacks;
-
     /**
      * Cache of the canvas
      *
      * @var \Dompdf\Canvas
      */
     private $_canvas;
-
     /**
      * Page constructor.
      * @param PageFrameDecorator $frame
@@ -40,7 +35,6 @@ class Page extends AbstractFrameReflower
     {
         parent::__construct($frame);
     }
-
     /**
      * @param PageFrameDecorator $frame
      * @param int $page_number
@@ -49,42 +43,32 @@ class Page extends AbstractFrameReflower
     {
         $style = $frame->get_style();
         $page_styles = $style->get_stylesheet()->get_page_styles();
-
         // http://www.w3.org/TR/CSS21/page.html#page-selectors
         if (count($page_styles) > 1) {
             $odd = $page_number % 2 == 1;
             $first = $page_number == 1;
-
             $style = clone $page_styles["base"];
-
             // FIXME RTL
             if ($odd && isset($page_styles[":right"])) {
                 $style->merge($page_styles[":right"]);
             }
-
             if ($odd && isset($page_styles[":odd"])) {
                 $style->merge($page_styles[":odd"]);
             }
-
             // FIXME RTL
             if (!$odd && isset($page_styles[":left"])) {
                 $style->merge($page_styles[":left"]);
             }
-
             if (!$odd && isset($page_styles[":even"])) {
                 $style->merge($page_styles[":even"]);
             }
-
             if ($first && isset($page_styles[":first"])) {
                 $style->merge($page_styles[":first"]);
             }
-
             $frame->set_style($style);
         }
-
         $frame->calculate_bottom_page_edge();
     }
-
     /**
      * Paged layout:
      * http://www.w3.org/TR/CSS21/page.html
@@ -99,7 +83,6 @@ class Page extends AbstractFrameReflower
         $fixed_children = [];
         $prev_child = null;
         $current_page = 0;
-
         // Only if it's the first page, we save the nodes with a fixed position
         if ($child) {
             foreach ($child->get_children() as $onechild) {
@@ -110,50 +93,37 @@ class Page extends AbstractFrameReflower
             }
             $fixed_children = array_reverse($fixed_children);
         }
-
         while ($child) {
             $this->apply_page_style($frame, $current_page + 1);
-
             $style = $frame->get_style();
-
             // Pages are only concerned with margins
             $cb = $frame->get_containing_block();
             $left = (float)$style->length_in_pt($style->margin_left, $cb["w"]);
             $right = (float)$style->length_in_pt($style->margin_right, $cb["w"]);
             $top = (float)$style->length_in_pt($style->margin_top, $cb["h"]);
             $bottom = (float)$style->length_in_pt($style->margin_bottom, $cb["h"]);
-
             $content_x = $cb["x"] + $left;
             $content_y = $cb["y"] + $top;
             $content_width = $cb["w"] - $left - $right;
             $content_height = $cb["h"] - $top - $bottom;
-
             $child->set_containing_block($content_x, $content_y, $content_width, $content_height);
-
             //Insert a copy of each node which have a fixed position
             foreach ($fixed_children as $fixed_child) {
                 $child->prepend_child($fixed_child->deep_copy());
             }
-
             // Check for begin reflow callback
             $this->_check_callbacks("begin_page_reflow", $child);
-
             $child->reflow();
             $next_child = $child->get_next_sibling();
-
             // Check for begin render callback
             $this->_check_callbacks("begin_page_render", $child);
-
             // Render the page
             $frame->get_renderer()->render($child);
-
             // Check for end render callback
             $this->_check_callbacks("end_page_render", $child);
-
             if ($next_child) {
                 $frame->next_page();
             }
-
             // Wait to dispose of all frames on the previous page
             // so callback will have access to them
             if ($prev_child) {
@@ -163,13 +133,11 @@ class Page extends AbstractFrameReflower
             $child = $next_child;
             $current_page++;
         }
-
         // Dispose of previous page if it still exists
         if ($prev_child) {
             $prev_child->dispose(true);
         }
     }
-
     /**
      * Check for callbacks that need to be performed when a given event
      * gets triggered on a page
@@ -184,12 +152,10 @@ class Page extends AbstractFrameReflower
             $this->_callbacks = $dompdf->getCallbacks();
             $this->_canvas = $dompdf->getCanvas();
         }
-
         if (isset($this->_callbacks[$event])) {
             $fs = $this->_callbacks[$event];
             $canvas = $this->_canvas;
             $fontMetrics = $this->get_dompdf()->getFontMetrics();
-
             foreach ($fs as $f) {
                 $f($frame, $canvas, $fontMetrics);
             }

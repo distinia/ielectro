@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\InotifyException;
-
 /**
  * @return resource
  * @throws InotifyException
@@ -18,8 +15,6 @@ function inotify_init()
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $inotify_instance
  * @param int $watch_descriptor

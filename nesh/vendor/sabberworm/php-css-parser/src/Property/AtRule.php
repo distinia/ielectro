@@ -1,11 +1,7 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\Property;
-
 use Sabberworm\CSS\CSSList\CSSListItem;
-
 /**
  * Note that `CSSListItem` extends both `Commentable` and `Renderable`,
  * so concrete classes implementing this interface must also implement those.
@@ -29,7 +25,6 @@ interface AtRule extends CSSListItem
         'scope',
         'starting-style',
     ];
-
     /**
      * @return non-empty-string
      */

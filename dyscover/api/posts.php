@@ -10,7 +10,6 @@ use Nesh\Response;
 use Nesh\Routing;
 use Nesh\Validate;
 use Nesh\Video;
-
 require_once __DIR__ . '/moderation.php';
 class Posts
 {
@@ -1048,7 +1047,6 @@ class PostAssets
             Response::error('Unable to save article');
         }
     }
-
     public static function normalizeArticleHtml(string $html): string
     {
         $html = preg_replace(
@@ -1056,16 +1054,13 @@ class PostAssets
             '$1$2',
             $html
         ) ?? $html;
-
         $html = preg_replace(
             '/(<th\b[^>]*)\sstyle="text-align:\s*left;?"(\s[^>]*\bcolspan="2"[^>]*>)/i',
             '$1$2',
             $html
         ) ?? $html;
-
         return self::syncTemplateImageClasses($html);
     }
-
     public static function syncTemplateImageClasses(string $html): string
     {
         return preg_replace_callback(
@@ -1075,7 +1070,6 @@ class PostAssets
                 if (!$fields) {
                     return $match[0];
                 }
-
                 $body = preg_replace_callback(
                     '/(<tr\b[^>]*\bdata-field="([^"]+)"[^>]*>)([\s\S]*?)(<\/tr>)/i',
                     static function (array $rowMatch) use ($fields): string {
@@ -1083,31 +1077,26 @@ class PostAssets
                         if ($field === null) {
                             return $rowMatch[0];
                         }
-
                         $large = $field === 'large-image';
                         $single = $field === 'single-image';
                         if (!$large && !$single) {
                             return $rowMatch[0];
                         }
-
                         return self::fixTemplateRowImageClasses($rowMatch[0], $large);
                     },
                     $match[3]
                 ) ?? $match[3];
-
                 return $match[1] . $body . $match[4];
             },
             $html
         ) ?? $html;
     }
-
     /** @return array<string, string> */
     private static function templateFieldMap(int $templateId): array
     {
         if ($templateId <= 0) {
             return [];
         }
-
         $rows = Query::fetchAll(
             'SELECT name, type
             FROM ielectro_dyscover.dyscover_template_fields
@@ -1115,7 +1104,6 @@ class PostAssets
             ORDER BY position ASC',
             [$templateId]
         );
-
         $fields = [];
         foreach ($rows as $row) {
             $name = trim((string) ($row['name'] ?? ''));
@@ -1128,25 +1116,20 @@ class PostAssets
                 (string) ($row['type'] ?? 'text')
             );
         }
-
         return $fields;
     }
-
     private static function templateFieldSlug(string $name): string
     {
         $slug = mb_strtolower($name);
         $slug = preg_replace('/[^a-z0-9]+/', '-', $slug) ?? $slug;
-
         return trim($slug, '-');
     }
-
     private static function normalizeTemplateFieldType(string $name, string $type): string
     {
         $type = str_replace('_', '-', strtolower(trim($type)));
         if ($type === 'image') {
             $type = 'single-image';
         }
-
         $lowerName = mb_strtolower($name);
         if (preg_match('/(^|\s)logo(\s|$)/u', $lowerName)) {
             return 'single-image';
@@ -1154,10 +1137,8 @@ class PostAssets
         if (preg_match('/(^|\s)map(\s|$)/u', $lowerName)) {
             return 'large-image';
         }
-
         return $type;
     }
-
     private static function fixTemplateRowImageClasses(string $rowHtml, bool $large): string
     {
         return preg_replace_callback(
@@ -1174,7 +1155,6 @@ class PostAssets
                     ) {
                         return $imgMatch[0];
                     }
-
                     $classes = array_values(array_diff($classes, [
                         'template-image',
                         'template-large-image',
@@ -1188,9 +1168,7 @@ class PostAssets
                         1
                     ) ?? $attrs;
                 }
-
                 $attrs = preg_replace('/\sstyle="[^"]*\bwidth\s*:[^"]*"/i', '', $attrs) ?? $attrs;
-
                 return $imgMatch[1] . $attrs;
             },
             $rowHtml
@@ -1368,14 +1346,12 @@ class PostAssets
 class PostTags
 {
     public const MAX = 5;
-
     private const LOW_PRIORITY = [
         'creative',
         'lore',
         'worldbuilding',
         'article',
     ];
-
     private const HIGH_PRIORITY = [
         'politicalparty',
         'massorganization',
@@ -1418,17 +1394,14 @@ class PostTags
         'boravia',
         'alveria',
     ];
-
     public static function validateLimit(mixed $input): array
     {
         $names = self::parse($input);
         if (count($names) > self::MAX) {
             Response::badRequest('Maximum ' . self::MAX . ' tags allowed');
         }
-
         return $names;
     }
-
     public static function rank(array $tags, array $post = []): array
     {
         $tags = array_values(array_unique(array_filter(array_map(
@@ -1438,7 +1411,6 @@ class PostTags
         if ($tags === []) {
             return [];
         }
-
         $scored = [];
         foreach ($tags as $tag) {
             $scored[] = [
@@ -1446,7 +1418,6 @@ class PostTags
                 'score' => self::scoreTag($tag, $post),
             ];
         }
-
         usort(
             $scored,
             static function (array $a, array $b): int {
@@ -1454,11 +1425,9 @@ class PostTags
                 if ($score !== 0) {
                     return $score;
                 }
-
                 return strcmp((string) $a['tag'], (string) $b['tag']);
             }
         );
-
         $positive = array_values(array_filter(
             $scored,
             static fn(array $item): bool => (int) ($item['score'] ?? 0) > 0
@@ -1466,10 +1435,8 @@ class PostTags
         if ($positive !== []) {
             return array_slice(array_column($positive, 'tag'), 0, self::MAX);
         }
-
         return array_slice(array_column($scored, 'tag'), 0, self::MAX);
     }
-
     public static function names(int $postId): array
     {
         $rows = Query::fetchAll(
@@ -1521,7 +1488,6 @@ class PostTags
             );
         }
     }
-
     public static function merge(int $postId, mixed $input, ?array $post = null): void
     {
         if ($post === null) {
@@ -1530,7 +1496,6 @@ class PostTags
         $names = array_values(array_unique(array_merge(self::names($postId), self::parse($input))));
         self::sync($postId, self::rank($names, $post), $post);
     }
-
     public static function pruneUnused(): int
     {
         return Query::execute(
@@ -1606,7 +1571,6 @@ class PostTags
         $name = ltrim($name, '#');
         return mb_strtolower($name);
     }
-
     private static function postContext(int $postId): array
     {
         $row = Query::fetch(
@@ -1616,10 +1580,8 @@ class PostTags
             LIMIT 1',
             [$postId]
         );
-
         return is_array($row) ? $row : [];
     }
-
     private static function scoreTag(string $tag, array $post): int
     {
         $title = mb_strtolower(trim((string) ($post['title'] ?? '')));
@@ -1627,23 +1589,18 @@ class PostTags
         $type = (string) ($post['type'] ?? '');
         $text = $title . ' ' . $description;
         $score = 0;
-
         if (in_array($tag, self::LOW_PRIORITY, true)) {
             $score -= 50;
         }
-
         if (in_array($tag, self::HIGH_PRIORITY, true)) {
             $score += 35;
         }
-
         if ($tag === $type) {
             $score += 25;
         }
-
         if (str_contains($text, $tag)) {
             $score += 40;
         }
-
         foreach (preg_split('/\s+/u', $title) ?: [] as $word) {
             $word = preg_replace('/[^a-z0-9]+/i', '', $word) ?? '';
             if ($word === '' || strlen($word) < 4) {
@@ -1653,16 +1610,13 @@ class PostTags
                 $score += 20;
             }
         }
-
         $titleSlug = preg_replace('/[^a-z0-9]+/i', '', $title) ?? '';
         if ($tag === $titleSlug && strlen($tag) > 12) {
             $score -= 30;
         }
-
         if (strlen($tag) > 18) {
             $score -= 15;
         }
-
         return $score;
     }
     private static function ensure(string $name): int

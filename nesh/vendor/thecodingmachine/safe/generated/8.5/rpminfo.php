@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\RpminfoException;
-
 /**
  * @param int $tag
  * @throws RpminfoException
@@ -17,8 +14,6 @@ function rpmaddtag(int $tag): void
         throw RpminfoException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $text
  * @throws RpminfoException

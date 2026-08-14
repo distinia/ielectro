@@ -7,12 +7,10 @@ import { Video } from "./video.js";
 import { Audio } from "./audio.js";
 import { Document } from "./document.js";
 import { Template } from "./template.js";
-
 export class CreatorRegistry {
     static classes = [Article, Image, Video, Audio, Document, Template];
     static posts = [];
     static loaded = false;
-
     static async loadAll() {
         const userId = await App.resolveSelfUserId();
         if (!userId) {
@@ -26,16 +24,13 @@ export class CreatorRegistry {
         }
         await CreatorRegistry.applySearch();
     }
-
     static async reload() {
         await CreatorRegistry.loadAll();
     }
-
     static async applySearch() {
         const { Search } = await import("./search.js");
         Search.instance?.apply();
     }
-
     static activeType() {
         const section = document.querySelector(".section.active-section");
         if (!section) return "article";
@@ -46,11 +41,9 @@ export class CreatorRegistry {
         }
         return "article";
     }
-
     static activeClass() {
         const type = CreatorRegistry.activeType();
         return CreatorRegistry.classes.find((Class) => Class.type === type) || null;
     }
 }
-
 export { Post, Article, Image, Video, Audio, Document, Template };

@@ -1,12 +1,10 @@
 import { Api } from "../core/api.js";
 import { App, Icons, Mention, Request } from "../core/index.js";
-
 export class Informations {
     constructor(page) {
         this.page = page;
         this.init();
     }
-
     static normalizeWebsiteUrl(raw) {
         const value = String(raw || "").trim();
         if (!value) {
@@ -19,7 +17,6 @@ export class Informations {
             .replace(/\/$/, "");
         return { href, label: label || value };
     }
-
     static renderWebsite(website) {
         const wrap = document.querySelector(".profile-website-wrap");
         const link = document.querySelector(".profile-website");
@@ -37,7 +34,6 @@ export class Informations {
         labelEl.textContent = label;
         Icons.load(wrap).catch(() => {});
     }
-
     static async refresh(page) {
         if (!page?.userId) return;
         try {
@@ -49,7 +45,6 @@ export class Informations {
             /* ignore */
         }
     }
-
     async init() {
         if (!this.page?.userId) {
             return;

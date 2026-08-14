@@ -5,9 +5,7 @@
  * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
  */
 namespace FontLib;
-
 use FontLib\TrueType\File;
-
 /**
  * Font header container.
  *
@@ -19,17 +17,13 @@ abstract class Header extends BinaryStream {
    */
   protected $font;
   protected $def = array();
-
   public $data;
-
   public function __construct(File $font) {
     $this->font = $font;
   }
-
   public function encode() {
     return $this->font->pack($this->def, $this->data);
   }
-
   public function parse() {
     $this->data = $this->font->unpack($this->def);
   }

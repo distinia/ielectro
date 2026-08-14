@@ -6,7 +6,6 @@
     box-shadow: 0 32px 80px rgba(15, 23, 42, 0.22);
     animation: post-box-in 0.34s cubic-bezier(0.22, 1, 0.36, 1);
 }
-
 @keyframes post-box-in {
     from {
         opacity: 0;
@@ -17,7 +16,6 @@
         transform: translateY(0) scale(1);
     }
 }
-
 .post-box-horizontal {
     display: flex;
     flex-direction: row;
@@ -25,7 +23,6 @@
     height: min(calc(100vh - 6rem), 84vh);
     max-height: calc(100vh - 6rem);
 }
-
 .post-box-media {
     flex: 1.2;
     min-width: 0;
@@ -38,7 +35,6 @@
     justify-content: center;
     position: relative;
 }
-
 .post-box-media::after {
     content: "";
     position: absolute;
@@ -46,20 +42,17 @@
     pointer-events: none;
     box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.35);
 }
-
 .post-box-media .post-media {
     width: 100%;
     height: 100%;
     aspect-ratio: unset;
 }
-
 .post-box-media .post-preview-image,
 .post-box-media .post-preview-video,
 .post-box-media img,
 .post-box-media video {
     object-fit: contain;
 }
-
 .post-box-panel {
     flex: 0 0 min(520px, 42vw);
     min-width: 360px;
@@ -69,7 +62,6 @@
     background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
     border-left: 1px solid rgba(15, 23, 42, 0.08);
 }
-
 .post-overlay {
     position: fixed;
     inset: 0;
@@ -84,7 +76,6 @@
     box-sizing: border-box;
     animation: post-overlay-in 0.28s ease;
 }
-
 @keyframes post-overlay-in {
     from {
         opacity: 0;
@@ -93,7 +84,6 @@
         opacity: 1;
     }
 }
-
 .post-overlay-close {
     position: fixed;
     top: 1.1rem;
@@ -113,17 +103,14 @@
         transform 0.2s ease,
         background 0.2s ease;
 }
-
 .post-overlay-close:hover {
     transform: scale(1.06);
     background: rgba(255, 255, 255, 0.24);
 }
-
 .post-overlay-close i {
     width: 1.35rem;
     height: 1.35rem;
 }
-
 .post-overlay-panel {
     max-height: calc(100vh - 1.5rem);
     overflow: hidden;
@@ -132,7 +119,6 @@
     justify-content: center;
     align-items: center;
 }
-
 @media (max-width: 900px) {
     .post-box-horizontal {
         flex-direction: column;
@@ -141,13 +127,11 @@
         max-height: 92vh;
         border-radius: 22px;
     }
-
     .post-box-media {
         flex: none;
         aspect-ratio: 1 / 1;
         max-height: 52vh;
     }
-
     .post-box-panel {
         flex: 1 1 auto;
         max-width: none;
@@ -157,7 +141,6 @@
         max-height: 46vh;
     }
 }
-
 @media (prefers-reduced-motion: reduce) {
     .post-box,
     .post-overlay {

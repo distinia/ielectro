@@ -1,9 +1,6 @@
 <?php
-
 namespace Masterminds\HTML5\Parser;
-
 use Masterminds\HTML5\Entities;
-
 /**
  * Manage entity references.
  *
@@ -17,7 +14,6 @@ class CharacterReference
         0,
         0xFFFF,
     );
-
     /**
      * Given a name (e.g. 'amp'), lookup the UTF-8 character ('&').
      *
@@ -30,7 +26,6 @@ class CharacterReference
         // Do we really want to return NULL here? or FFFD
         return isset(Entities::$byName[$name]) ? Entities::$byName[$name] : null;
     }
-
     /**
      * Given a decimal number, return the UTF-8 character.
      *
@@ -41,12 +36,10 @@ class CharacterReference
     public static function lookupDecimal($int)
     {
         $entity = '&#' . $int . ';';
-
         // UNTESTED: This may fail on some planes. Couldn't find full documentation
         // on the value of the mask array.
         return mb_decode_numericentity($entity, static::$numeric_mask, 'utf-8');
     }
-
     /**
      * Given a hexadecimal number, return the UTF-8 character.
      *

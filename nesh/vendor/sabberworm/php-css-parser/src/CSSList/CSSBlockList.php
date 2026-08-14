@@ -1,9 +1,6 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\CSSList;
-
 use Sabberworm\CSS\CSSElement;
 use Sabberworm\CSS\Property\Declaration;
 use Sabberworm\CSS\Property\Selector;
@@ -13,7 +10,6 @@ use Sabberworm\CSS\RuleSet\RuleSet;
 use Sabberworm\CSS\Value\CSSFunction;
 use Sabberworm\CSS\Value\Value;
 use Sabberworm\CSS\Value\ValueList;
-
 /**
  * A `CSSBlockList` is a `CSSList` whose `DeclarationBlock`s are guaranteed to contain valid declaration blocks or
  * at-rules.
@@ -30,7 +26,6 @@ abstract class CSSBlockList extends CSSList
     public function getAllDeclarationBlocks(): array
     {
         $result = [];
-
         foreach ($this->contents as $item) {
             if ($item instanceof DeclarationBlock) {
                 $result[] = $item;
@@ -38,10 +33,8 @@ abstract class CSSBlockList extends CSSList
                 $result = \array_merge($result, $item->getAllDeclarationBlocks());
             }
         }
-
         return $result;
     }
-
     /**
      * Returns all `RuleSet` objects recursively found in the tree, no matter how deeply nested the rule sets are.
      *
@@ -50,7 +43,6 @@ abstract class CSSBlockList extends CSSList
     public function getAllRuleSets(): array
     {
         $result = [];
-
         foreach ($this->contents as $item) {
             if ($item instanceof RuleSet) {
                 $result[] = $item;
@@ -60,10 +52,8 @@ abstract class CSSBlockList extends CSSList
                 $result[] = $item->getRuleSet();
             }
         }
-
         return $result;
     }
-
     /**
      * Returns all `Value` objects found recursively in `Declaration`s in the tree.
      *
@@ -86,7 +76,6 @@ abstract class CSSBlockList extends CSSList
         bool $searchInFunctionArguments = false
     ): array {
         $element = $element ?? $this;
-
         $result = [];
         if ($element instanceof CSSBlockList) {
             foreach ($element->getContents() as $contentItem) {
@@ -129,17 +118,14 @@ abstract class CSSBlockList extends CSSList
         } elseif ($element instanceof Value) {
             $result[] = $element;
         }
-
         return $result;
     }
-
     /**
      * @return list<Selector>
      */
     protected function getAllSelectors(?string $specificitySearch = null): array
     {
         $result = [];
-
         foreach ($this->getAllDeclarationBlocks() as $declarationBlock) {
             foreach ($declarationBlock->getSelectors() as $selector) {
                 if ($specificitySearch === null) {
@@ -177,7 +163,6 @@ abstract class CSSBlockList extends CSSList
                 }
             }
         }
-
         return $result;
     }
 }

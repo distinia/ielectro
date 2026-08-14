@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\YamlException;
-
 /**
  * @param string $filename
  * @param int $pos
@@ -26,8 +23,6 @@ function yaml_parse_file(string $filename, int $pos = 0, ?int &$ndocs = null, ?a
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $url
  * @param int $pos
@@ -50,8 +45,6 @@ function yaml_parse_url(string $url, int $pos = 0, ?int &$ndocs = null, ?array $
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $input
  * @param int $pos

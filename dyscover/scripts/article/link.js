@@ -2,12 +2,10 @@ import { Alert } from "../core/index.js";
 import { Select } from "./select.js";
 import { WebSelector } from "./web-selector.js";
 import { ArticlePreview } from "./article-preview.js";
-
 export class Link {
     static list = new Map();
     static tag = "a";
     static className = "link";
-
     constructor(element) {
         if (!element) return;
         this.element = element;
@@ -16,7 +14,6 @@ export class Link {
         this.preview = new ArticlePreview(this);
         Link.list.set(this.element, this);
     }
-
     static async init() {
         const range = Select.cursor();
         const element = Select.element(range);
@@ -74,7 +71,6 @@ export class Link {
         instance.startEditing();
         Select.cursorToEnd(instance.element);
     }
-
     static create(url, text, postId = "", postType = "") {
         if (!url || !text) {
             return null;
@@ -93,12 +89,10 @@ export class Link {
         }
         return element;
     }
-
     generate(obj) {
         const element = Link.create(obj.url, obj.text);
         return new Link(element);
     }
-
     export() {
         return {
             element: Link.className,
@@ -106,15 +100,12 @@ export class Link {
             url: this.element.href,
         };
     }
-
     startEditing() {
         this.preview?.startEditing();
     }
-
     closeEditing() {
         this.preview?.closeEditing();
     }
-
     delete() {
         const fragment = document
             .createRange()

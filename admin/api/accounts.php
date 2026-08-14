@@ -1,14 +1,11 @@
 <?php
 namespace Admin;
-
 use Nesh\Avatar;
 use Nesh\Query;
 use Nesh\Request;
 use Nesh\Response;
 use Nesh\Schema;
-
 require_once __DIR__ . '/access.php';
-
 class Accounts
 {
     public function index(): void
@@ -19,7 +16,6 @@ class Accounts
         if (mb_strlen($query) < 2) {
             Response::success([]);
         }
-
         $like = '%' . $query . '%';
         $rows = Query::fetchAll(
             'SELECT
@@ -41,22 +37,17 @@ class Accounts
             LIMIT 20',
             [$like, $like, $like]
         );
-
         Response::success(array_map([self::class, 'mapAccount'], $rows));
     }
-
     public function log(): void
     {
         Request::get();
         Access::requireMember();
-
         $filter = trim((string) Request::value('filter', 'all'));
         $query = trim((string) Request::value('q', ''));
         $limit = min(100, max(10, (int) Request::value('limit', 50)));
-
         $where = ['1=1'];
         $params = [];
-
         if ($filter === 'failed') {
             $where[] = "(aa.action = 'login_failed' OR (aa.action = 'login' AND aa.account_id IS NULL))";
         } elseif ($filter === 'updates') {
@@ -67,7 +58,6 @@ class Accounts
         } elseif ($filter === 'security') {
             $where[] = "aa.action IN ('login', 'login_failed', 'logout', 'session_revoked', 'password_reset')";
         }
-
         if ($query !== '') {
             $where[] = '(a.username LIKE ? OR a.email LIKE ? OR aa.details LIKE ?)';
             $like = '%' . $query . '%';
@@ -75,7 +65,6 @@ class Accounts
             $params[] = $like;
             $params[] = $like;
         }
-
         $sql = 'SELECT
                 aa.id,
                 aa.action,
@@ -94,7 +83,6 @@ class Accounts
             ORDER BY aa.id DESC
             LIMIT ?';
         $params[] = $limit;
-
         $rows = Query::fetchAll($sql, $params);
         Response::success([
             'items' => array_map(static function (array $row): array {
@@ -113,7 +101,6 @@ class Accounts
             'stats' => self::logStats(),
         ]);
     }
-
     public function hardDelete(): void
     {
         Request::post();
@@ -135,7 +122,6 @@ class Accounts
         );
         Response::success(['message' => 'Account permanently deleted']);
     }
-
     private static function logStats(): array
     {
         $activity = Schema::ACCOUNT_ACTIVITY;
@@ -162,12 +148,10 @@ class Accounts
             ),
         ];
     }
-
     private static function mapAccount(array $row): array
     {
         $name = trim(((string) ($row['name'] ?? '')) . ' ' . ((string) ($row['surname'] ?? '')));
         $id = (int) ($row['account_id'] ?? $row['id']);
-
         return [
             'id' => $id,
             'username' => (string) ($row['username'] ?? ''),

@@ -1,24 +1,19 @@
 import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
 import { App } from "./app.js";
-
 export class AdminModal {
     static overlay = null;
     static closeTimer = null;
-
     static syncScrollLock() {
         Nesh.Html.setScrollEnabled(!this.overlay);
     }
-
     static close() {
         const closing = this.overlay;
         if (!closing) return;
-
         this.overlay = null;
         if (this.closeTimer) {
             clearTimeout(this.closeTimer);
             this.closeTimer = null;
         }
-
         closing.classList.add("admin-modal-closing");
         this.closeTimer = setTimeout(() => {
             closing.remove();
@@ -26,7 +21,6 @@ export class AdminModal {
             this.syncScrollLock();
         }, 220);
     }
-
     static open({ title, content, footer = "", onClose = null }) {
         this.close();
         const overlay = document.createElement("div");
@@ -45,7 +39,6 @@ export class AdminModal {
         document.body.appendChild(overlay);
         this.overlay = overlay;
         this.syncScrollLock();
-
         let ignoreBackdropUntil = Date.now() + 320;
         const close = () => {
             onClose?.();
@@ -66,7 +59,6 @@ export class AdminModal {
         Nesh.Icons.load(overlay);
         return overlay;
     }
-
     static formFooter({ formId, saveLabel = "Save", deleteLabel = "Delete", showDelete = false, deleteClass = "" }) {
         const deleteBtn = showDelete
             ? `<button type="button" class="admin-icon-btn admin-icon-btn-danger ${deleteClass}" aria-label="${App.esc(deleteLabel)}" title="${App.esc(deleteLabel)}"><i data-icon="trash-2"></i></button>`

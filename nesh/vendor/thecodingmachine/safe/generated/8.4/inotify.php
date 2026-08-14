@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\InotifyException;
-
 /**
  * @param resource $inotify_instance
  * @param string $pathname
@@ -21,8 +18,6 @@ function inotify_add_watch($inotify_instance, string $pathname, int $mask): int
     }
     return $safeResult;
 }
-
-
 /**
  * @return resource
  * @throws InotifyException
@@ -37,8 +32,6 @@ function inotify_init()
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $inotify_instance
  * @param int $watch_descriptor

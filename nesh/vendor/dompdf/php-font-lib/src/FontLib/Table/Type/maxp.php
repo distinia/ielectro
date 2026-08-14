@@ -4,10 +4,8 @@
  * @link    https://github.com/dompdf/php-font-lib
  * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
  */
-
 namespace FontLib\Table\Type;
 use FontLib\Table\Table;
-
 /**
  * `maxp` font table.
  *
@@ -31,11 +29,9 @@ class maxp extends Table {
     "maxComponentElements"  => self::uint16,
     "maxComponentDepth"     => self::uint16,
   );
-
   function _encode() {
     $font                    = $this->getFont();
     $this->data["numGlyphs"] = count($font->getSubset());
-
     return parent::_encode();
   }
 }

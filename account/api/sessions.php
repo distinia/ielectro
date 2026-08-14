@@ -45,13 +45,11 @@ class Sessions
             ORDER BY last_activity DESC",
             [Identity::id()]
         );
-
         foreach ($rows as &$row) {
             $row['is_current'] = $currentSessionId !== null
                 && (int) $row['id'] === (int) $currentSessionId;
         }
         unset($row);
-
         Response::success($rows);
     }
     private function destroy(): void

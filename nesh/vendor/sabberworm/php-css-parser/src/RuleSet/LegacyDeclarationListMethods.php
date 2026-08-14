@@ -1,11 +1,7 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\RuleSet;
-
 use Sabberworm\CSS\Property\Declaration;
-
 /**
  * Provides a mapping of the deprecated methods in a `DeclarationList` to their renamed replacements.
  */
@@ -18,7 +14,6 @@ trait LegacyDeclarationListMethods
     {
         $this->addDeclaration($declarationToAdd, $sibling);
     }
-
     /**
      * @deprecated in v9.2, will be removed in v10.0; use `removeDeclaration()` instead.
      */
@@ -26,7 +21,6 @@ trait LegacyDeclarationListMethods
     {
         $this->removeDeclaration($declarationToRemove);
     }
-
     /**
      * @deprecated in v9.2, will be removed in v10.0; use `removeMatchingDeclarations()` instead.
      */
@@ -34,7 +28,6 @@ trait LegacyDeclarationListMethods
     {
         $this->removeMatchingDeclarations($searchPattern);
     }
-
     /**
      * @deprecated in v9.2, will be removed in v10.0; use `removeAllDeclarations()` instead.
      */
@@ -42,7 +35,6 @@ trait LegacyDeclarationListMethods
     {
         $this->removeAllDeclarations();
     }
-
     /**
      * @param array<Declaration> $declarations
      *
@@ -52,7 +44,6 @@ trait LegacyDeclarationListMethods
     {
         $this->setDeclarations($declarations);
     }
-
     /**
      * @return array<int<0, max>, Declaration>
      *
@@ -62,7 +53,6 @@ trait LegacyDeclarationListMethods
     {
         return $this->getDeclarations($searchPattern);
     }
-
     /**
      * @return array<string, Declaration>
      *

@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\MysqlException;
-
 /**
  * @param null|resource $link_identifier
  * @throws MysqlException
@@ -17,8 +14,6 @@ function mysql_close($link_identifier = null): void
         throw MysqlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $server
  * @param string $username
@@ -50,8 +45,6 @@ function mysql_connect(?string $server = null, ?string $username = null, ?string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $database_name
  * @param null|resource $link_identifier
@@ -66,8 +59,6 @@ function mysql_create_db(string $database_name, $link_identifier = null): void
         throw MysqlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $result
  * @param int $row_number
@@ -82,8 +73,6 @@ function mysql_data_seek($result, int $row_number): void
         throw MysqlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $result
  * @param int $row
@@ -101,8 +90,6 @@ function mysql_db_name($result, int $row, $field = null): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $database
  * @param string $query
@@ -120,8 +107,6 @@ function mysql_db_query(string $database, string $query, $link_identifier = null
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $database_name
  * @param null|resource $link_identifier
@@ -136,8 +121,6 @@ function mysql_drop_db(string $database_name, $link_identifier = null): void
         throw MysqlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $result
  * @return array
@@ -153,8 +136,6 @@ function mysql_fetch_lengths($result): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $result
  * @param int $field_offset
@@ -171,8 +152,6 @@ function mysql_field_flags($result, int $field_offset): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $result
  * @param int $field_offset
@@ -189,8 +168,6 @@ function mysql_field_len($result, int $field_offset): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $result
  * @param int $field_offset
@@ -207,8 +184,6 @@ function mysql_field_name($result, int $field_offset): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $result
  * @param int $field_offset
@@ -223,8 +198,6 @@ function mysql_field_seek($result, int $field_offset): void
         throw MysqlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $result
  * @throws MysqlException
@@ -238,8 +211,6 @@ function mysql_free_result($result): void
         throw MysqlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param null|resource $link_identifier
  * @return string
@@ -255,8 +226,6 @@ function mysql_get_host_info($link_identifier = null): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param null|resource $link_identifier
  * @return int
@@ -272,8 +241,6 @@ function mysql_get_proto_info($link_identifier = null): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param null|resource $link_identifier
  * @return string
@@ -289,8 +256,6 @@ function mysql_get_server_info($link_identifier = null): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param null|resource $link_identifier
  * @return string
@@ -306,8 +271,6 @@ function mysql_info($link_identifier = null): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param null|resource $link_identifier
  * @return resource
@@ -323,8 +286,6 @@ function mysql_list_dbs($link_identifier = null)
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $database_name
  * @param string $table_name
@@ -342,8 +303,6 @@ function mysql_list_fields(string $database_name, string $table_name, $link_iden
     }
     return $safeResult;
 }
-
-
 /**
  * @param null|resource $link_identifier
  * @return resource
@@ -359,8 +318,6 @@ function mysql_list_processes($link_identifier = null)
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $database
  * @param null|resource $link_identifier
@@ -377,8 +334,6 @@ function mysql_list_tables(string $database, $link_identifier = null)
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $result
  * @return int
@@ -394,8 +349,6 @@ function mysql_num_fields($result): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $result
  * @return int
@@ -411,8 +364,6 @@ function mysql_num_rows($result): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $query
  * @param null|resource $link_identifier
@@ -429,8 +380,6 @@ function mysql_query(string $query, $link_identifier = null)
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $unescaped_string
  * @param null|resource $link_identifier
@@ -447,8 +396,6 @@ function mysql_real_escape_string(string $unescaped_string, $link_identifier = n
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $result
  * @param int $row
@@ -466,8 +413,6 @@ function mysql_result($result, int $row, $field = 0): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $database_name
  * @param null|resource $link_identifier
@@ -482,8 +427,6 @@ function mysql_select_db(string $database_name, $link_identifier = null): void
         throw MysqlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $charset
  * @param null|resource $link_identifier
@@ -498,8 +441,6 @@ function mysql_set_charset(string $charset, $link_identifier = null): void
         throw MysqlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $result
  * @param int $i
@@ -516,8 +457,6 @@ function mysql_tablename($result, int $i): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param null|resource $link_identifier
  * @return int
@@ -533,8 +472,6 @@ function mysql_thread_id($link_identifier = null): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $query
  * @param null|resource $link_identifier

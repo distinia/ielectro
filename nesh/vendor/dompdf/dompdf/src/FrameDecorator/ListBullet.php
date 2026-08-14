@@ -5,10 +5,8 @@
  * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
  */
 namespace Dompdf\FrameDecorator;
-
 use Dompdf\Dompdf;
 use Dompdf\Frame;
-
 /**
  * Decorates frames for list bullet rendering
  *
@@ -20,23 +18,19 @@ class ListBullet extends AbstractFrameDecorator
      * Bullet diameter as fraction of font size.
      */
     public const BULLET_SIZE = 0.35;
-
     /**
      * Bullet offset from font baseline as fraction of font size.
      */
     public const BULLET_OFFSET = 0.1;
-
     /**
      * Thickness of bullet outline as fraction of font size.
      * See also `DECO_THICKNESS`. Screen: 0.08, print: better less, e.g. 0.04.
      */
     public const BULLET_THICKNESS = 0.04;
-
     /**
      * Indentation from the start of the line as fraction of font size.
      */
     public const MARKER_INDENT = 0.52;
-
     /**
      * ListBullet constructor.
      * @param Frame $frame
@@ -46,7 +40,6 @@ class ListBullet extends AbstractFrameDecorator
     {
         parent::__construct($frame, $dompdf);
     }
-
     /**
      * Get the width of the bullet symbol.
      *
@@ -55,14 +48,11 @@ class ListBullet extends AbstractFrameDecorator
     public function get_width(): float
     {
         $style = $this->_frame->get_style();
-
         if ($style->list_style_type === "none") {
             return 0.0;
         }
-
         return $style->font_size * self::BULLET_SIZE;
     }
-
     /**
      * Get the height of the bullet symbol.
      *
@@ -71,28 +61,22 @@ class ListBullet extends AbstractFrameDecorator
     public function get_height(): float
     {
         $style = $this->_frame->get_style();
-
         if ($style->list_style_type === "none") {
             return 0.0;
         }
-
         return $style->font_size * self::BULLET_SIZE;
     }
-
     /**
      * Get the width of the bullet, including indentation.
      */
     public function get_margin_width(): float
     {
         $style = $this->get_style();
-
         if ($style->list_style_type === "none") {
             return 0.0;
         }
-
         return $style->font_size * (self::BULLET_SIZE + self::MARKER_INDENT);
     }
-
     /**
      * Get the line height for the bullet.
      *
@@ -101,17 +85,14 @@ class ListBullet extends AbstractFrameDecorator
     public function get_margin_height(): float
     {
         $style = $this->get_style();
-
         if ($style->list_style_type === "none") {
             return 0.0;
         }
-
         // TODO: This is a copy of `FrameDecorator\Text::get_margin_height()`
         // Would be nice to properly refactor that at some point
         $font = $style->font_family;
         $size = $style->font_size;
         $fontHeight = $this->_dompdf->getFontMetrics()->getFontHeight($font, $size);
-
         return ($style->line_height / ($size > 0 ? $size : 1)) * $fontHeight;
     }
 }

@@ -1,11 +1,9 @@
 import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
 import { App, Api, Alert, Request, AdminShell, AdminUi } from "../core/index.js";
-
 export default class DyscoverPanel {
     constructor() {
         this.tab = "reports";
     }
-
     formatWhen(value) {
         if (!value) return "—";
         const date = new Date(value);
@@ -17,7 +15,6 @@ export default class DyscoverPanel {
             minute: "2-digit",
         });
     }
-
     statusTone(status) {
         const value = String(status || "").toLowerCase();
         if (value === "banned") return "danger";
@@ -25,7 +22,6 @@ export default class DyscoverPanel {
         if (value === "active") return "success";
         return "muted";
     }
-
     bindTabs() {
         document.querySelectorAll(".dyscover-tabs .mod-tab").forEach((btn) => {
             btn.addEventListener("click", () => {
@@ -43,7 +39,6 @@ export default class DyscoverPanel {
         document.querySelector(".posts-filter-q")?.addEventListener("input", () => this.loadPosts());
         document.querySelector(".dyscover-term-form")?.addEventListener("submit", (e) => this.saveTerm(e));
     }
-
     async loadOverview() {
         const node = document.querySelector(".dyscover-overview");
         if (!node) return;
@@ -73,7 +68,6 @@ export default class DyscoverPanel {
             node.innerHTML = AdminUi.emptyState("Unable to load statistics.");
         }
     }
-
     loadTab() {
         if (this.tab === "reports") return this.loadReports();
         if (this.tab === "users") return this.loadUsers();
@@ -82,7 +76,6 @@ export default class DyscoverPanel {
         if (this.tab === "posts") return this.loadPosts();
         return Promise.resolve();
     }
-
     async loadReports() {
         const list = document.querySelector(".dyscover-reports-list");
         if (!list) return;
@@ -127,7 +120,6 @@ export default class DyscoverPanel {
             list.innerHTML = AdminUi.emptyState("Unable to load reports.");
         }
     }
-
     async handleReportAction(event) {
         const btn = event.target.closest("[data-action]");
         if (!btn) return;
@@ -165,7 +157,6 @@ export default class DyscoverPanel {
         Alert.success("Updated");
         await Promise.all([this.loadOverview(), this.loadReports()]);
     }
-
     async loadUsers() {
         const list = document.querySelector(".dyscover-users-list");
         if (!list) return;
@@ -235,7 +226,6 @@ export default class DyscoverPanel {
             list.innerHTML = AdminUi.emptyState("Unable to load users.");
         }
     }
-
     async loadTrends() {
         const tagsNode = document.querySelector(".dyscover-trends-tags");
         const postsNode = document.querySelector(".dyscover-trends-posts");
@@ -296,7 +286,6 @@ export default class DyscoverPanel {
             tagsNode.innerHTML = `<h3>Trending tags</h3>${AdminUi.emptyState("Unable to load trends.")}`;
         }
     }
-
     async loadTerms() {
         const list = document.querySelector(".dyscover-terms-list");
         if (!list) return;
@@ -340,7 +329,6 @@ export default class DyscoverPanel {
             list.innerHTML = AdminUi.emptyState("Unable to load terms.");
         }
     }
-
     async saveTerm(event) {
         event.preventDefault();
         const form = event.currentTarget;
@@ -350,7 +338,6 @@ export default class DyscoverPanel {
         form.reset();
         await Promise.all([this.loadOverview(), this.loadTerms()]);
     }
-
     async loadPosts() {
         const list = document.querySelector(".dyscover-posts-list");
         if (!list) return;
@@ -396,7 +383,6 @@ export default class DyscoverPanel {
             list.innerHTML = AdminUi.emptyState("Unable to load posts.");
         }
     }
-
     async run() {
         document.body.classList.add("admin-page-dyscover");
         AdminShell.mount("dyscover", "Dyscover");

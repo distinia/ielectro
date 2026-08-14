@@ -1,13 +1,9 @@
 <?php
-
 namespace Dyscover;
-
 use Nesh\Ai\Client;
 use Nesh\Query;
-
 require_once __DIR__ . '/posts.php';
 require_once __DIR__ . '/article-content.php';
-
 class ArticleKnowledge
 {
     private const STOP_WORDS = [
@@ -21,24 +17,20 @@ class ArticleKnowledge
         'under', 'again', 'once', 'here', 'che', 'per', 'con', 'una', 'uno', 'degli', 'delle',
         'dello', 'della', 'sono', 'come', 'anche', 'questo', 'questa', 'quello', 'quella',
     ];
-
     private const COUNTRY_FIELD_HINTS = [
         'population', 'area', 'gdp', 'currency', 'demonym', 'capital', 'ethnic', 'language',
         'languages', 'map', 'flag', 'emblem', 'anthem', 'motto', 'border', 'continent',
         'preceded', 'religion', 'government', 'legislature',
     ];
-
     private const OFFICE_FIELD_HINTS = [
         'leadership', 'mandate', 'term', 'president', 'minister', 'speaker', 'incumbent',
         'role', 'office', 'premier', 'justice', 'formation', 'predecessor', 'successor',
         'appointment', 'election', 'powers', 'residence',
     ];
-
     public static function expandSearchTerms(array $terms, string $primaryEntity, string $archetype): array
     {
         $expanded = $terms;
         $entity = mb_strtolower(trim($primaryEntity));
-
         if ($entity !== '') {
             $expanded[] = $entity;
             $expanded[] = 'politics of ' . $entity;
@@ -46,7 +38,6 @@ class ArticleKnowledge
             $expanded[] = 'law enforcement in ' . $entity;
             $expanded[] = 'organizations in ' . $entity;
         }
-
         if (in_array($archetype, ['president', 'office', 'other'], true) && $entity !== '') {
             $expanded[] = 'politics';
             $expanded[] = 'government';
@@ -59,20 +50,17 @@ class ArticleKnowledge
                 $expanded[] = 'mass organization';
             }
         }
-
         if ($archetype === 'country' && $entity !== '') {
             $expanded[] = 'geography';
             $expanded[] = 'economy';
             $expanded[] = 'demography';
             $expanded[] = 'culture';
         }
-
         return array_values(array_unique(array_filter(array_map(
             static fn($term): string => mb_strtolower(trim((string) $term)),
             $expanded
         ))));
     }
-
     public static function searchRelatedArticles(
         array $terms,
         string $primaryEntity,
@@ -91,16 +79,13 @@ class ArticleKnowledge
                 $deduped[$uuid] = $row;
             }
         }
-
         $ranked = array_values($deduped);
         usort(
             $ranked,
             static fn(array $a, array $b): int => ($b['topic_score'] ?? 0) <=> ($a['topic_score'] ?? 0)
         );
-
         return array_slice($ranked, 0, $limit);
     }
-
     public static function searchPostsByTags(
         array $tagNames,
         ?string $excludeUuid,
@@ -114,12 +99,10 @@ class ArticleKnowledge
         if ($tagNames === []) {
             return [];
         }
-
         $typeList = implode(',', array_map(
             static fn(string $type): string => "'" . str_replace("'", "''", $type) . "'",
             $types
         ));
-
         $scoreParts = [];
         $whereParts = [];
         $params = [];
@@ -130,7 +113,6 @@ class ArticleKnowledge
             $params[] = $like;
             $params[] = $like;
         }
-
         $sql = 'SELECT p.id, p.uuid, p.type, p.title, p.description, p.user_id, p.extension,
             (' . implode(' + ', $scoreParts) . ') AS relevance
             FROM ielectro_dyscover.dyscover_posts p
@@ -139,18 +121,15 @@ class ArticleKnowledge
             WHERE p.status = \'active\'
             AND p.type IN (' . $typeList . ')
             AND (' . implode(' OR ', $whereParts) . ')';
-
         if ($excludeUuid !== null && $excludeUuid !== '') {
             $sql .= ' AND p.uuid <> ?';
             $params[] = $excludeUuid;
         }
-
         $sql .= ' GROUP BY p.id ORDER BY relevance DESC, p.updated_at DESC LIMIT ' . (int) $limit;
         $rows = Query::fetchAll($sql, $params);
         $postIds = array_map(static fn(array $row): int => (int) ($row['id'] ?? 0), $rows);
         $tagMap = PostTags::mapForPosts($postIds);
         $results = [];
-
         foreach ($rows as $row) {
             $uuid = (string) $row['uuid'];
             $userId = (int) $row['user_id'];
@@ -158,7 +137,6 @@ class ArticleKnowledge
             $url = $type === 'article' ? self::articleUrl($uuid) : '';
             $mediaUrl = self::postMediaUrl($row);
             $snippet = trim((string) ($row['description'] ?? ''));
-
             $entry = [
                 'id' => (int) $row['id'],
                 'uuid' => $uuid,
@@ -171,13 +149,10 @@ class ArticleKnowledge
                 'tags' => $tagMap[(int) $row['id']] ?? [],
                 'topic_score' => (int) ($row['relevance'] ?? 0) + 8,
             ];
-
             $results[] = $entry;
         }
-
         return $results;
     }
-
     public static function searchBodyMedia(
         array $terms,
         string $primaryEntity,
@@ -188,16 +163,13 @@ class ArticleKnowledge
         $expanded = self::expandSearchTerms($terms, $primaryEntity, $archetype);
         $results = self::searchByTerms($expanded, $primaryEntity, $excludeUuid, ['image', 'video', 'audio'], $limit * 2, true);
         $filtered = [];
-
         foreach ($results as $row) {
             if ((int) ($row['topic_score'] ?? 0) >= 4) {
                 $filtered[] = $row;
             }
         }
-
         return array_slice($filtered, 0, $limit);
     }
-
     public static function pickMediaPairForField(
         array $media,
         array $field,
@@ -209,7 +181,6 @@ class ArticleKnowledge
         if (($field['type'] ?? '') !== 'double-image' && !str_contains($name, 'flag') && !str_contains($name, 'emblem')) {
             return null;
         }
-
         $matches = [];
         foreach ($media as $item) {
             if (($item['type'] ?? '') !== 'image' || empty($item['media_url'])) {
@@ -220,34 +191,27 @@ class ArticleKnowledge
                 $matches[] = $item;
             }
         }
-
         if (count($matches) < 2) {
             return count($matches) === 1 ? $matches : null;
         }
-
         return array_slice($matches, 0, 2);
     }
-
     public static function formatMediaCatalogGrouped(array $media, int $limit = 18): string
     {
         if ($media === []) {
             return 'No verified media posts available. Omit media macros if none fit the section topic.';
         }
-
         $lines = ['Use verified media generously after headings when the title matches the article topic:'];
         foreach (array_slice($media, 0, $limit) as $item) {
             $lines[] = '- [' . ($item['type'] ?? 'media') . '] ' . ($item['title'] ?? '')
                 . ' → {{image|' . ($item['media_url'] ?? '') . '|caption}}';
         }
-
         return implode("\n", $lines);
     }
-
     public static function retrieve(string $prompt, ?string $excludeUuid = null, int $limit = 6): array
     {
         return self::searchPosts($prompt, '', $excludeUuid, ['article', 'document'], $limit, false);
     }
-
     public static function linkCatalog(
         string $prompt,
         string $title,
@@ -256,12 +220,10 @@ class ArticleKnowledge
     ): array {
         return self::searchPosts($prompt, $title, $excludeUuid, ['article'], $limit, true);
     }
-
     public static function mediaCatalog(string $prompt, string $title, int $limit = 18): array
     {
         return self::searchPosts($prompt, $title, null, ['image', 'video', 'audio'], $limit, true);
     }
-
     public static function rankedTemplates(string $prompt, string $title, int $limit = 8): array
     {
         $catalog = self::templateCatalog(60);
@@ -274,7 +236,6 @@ class ArticleKnowledge
             '/\b(country|republic|nation|kingdom|territory|state of)\b/i',
             $topic
         ) && !$isOfficeTopic;
-
         foreach ($catalog as $index => $template) {
             $catalog[$index]['score'] = self::scoreTemplate(
                 $template,
@@ -283,20 +244,16 @@ class ArticleKnowledge
                 $isCountryTopic
             );
         }
-
         usort(
             $catalog,
             static fn(array $a, array $b): int => ($b['score'] ?? 0) <=> ($a['score'] ?? 0)
         );
-
         $filtered = array_values(array_filter(
             $catalog,
             static fn(array $template): bool => (int) ($template['score'] ?? 0) >= 8
         ));
-
         return array_slice($filtered, 0, $limit);
     }
-
     public static function templateCatalog(int $limit = 20): array
     {
         $rows = Query::fetchAll(
@@ -308,7 +265,6 @@ class ArticleKnowledge
             LIMIT ?",
             [$limit]
         );
-
         $catalog = [];
         foreach ($rows as $row) {
             $id = (int) $row['id'];
@@ -333,10 +289,8 @@ class ArticleKnowledge
                 ),
             ];
         }
-
         return $catalog;
     }
-
     public static function fieldSlug(string $name): string
     {
         $raw = trim($name);
@@ -344,26 +298,21 @@ class ArticleKnowledge
             return '_title';
         }
         $slug = strtolower((string) preg_replace('/[^a-z0-9]+/i', '-', $raw));
-
         return trim($slug, '-');
     }
-
     public static function formatContext(array $references): string
     {
         if ($references === []) {
             return 'No related Dyscover content was found. Invent consistent details that fit the user brief.';
         }
-
         $chunks = [];
         foreach ($references as $index => $ref) {
             $chunks[] = sprintf('[%d] %s — %s', $index + 1, $ref['title'], $ref['snippet']);
         }
-
         return "Use ONLY to understand the fictional world (places, people, institutions).\n"
             . "Do NOT copy, paraphrase, or repeat these passages.\n\n"
             . implode("\n", $chunks);
     }
-
     public static function knownPlaces(): array
     {
         return [
@@ -372,7 +321,6 @@ class ArticleKnowledge
             'alveria', 'metosia', 'stasia', 'suklan', 'laocitia', 'sifalam',
         ];
     }
-
     public static function extractOfficeRole(string $articleTitle): string
     {
         $text = mb_strtolower(trim($articleTitle));
@@ -385,17 +333,14 @@ class ArticleKnowledge
         if (str_contains($text, 'minister of')) {
             return 'minister';
         }
-
         return '';
     }
-
     public static function scoreLinkRelevance(array $link, string $primaryEntity, string $articleTitle = ''): int
     {
         $linkTitle = mb_strtolower(trim((string) ($link['title'] ?? '')));
         $entity = mb_strtolower(trim($primaryEntity));
         $title = mb_strtolower(trim($articleTitle));
         $score = 0;
-
         if ($entity !== '') {
             if (str_contains($linkTitle, $entity)) {
                 $score += 24;
@@ -410,22 +355,18 @@ class ArticleKnowledge
                 }
             }
         }
-
         foreach (preg_split('/\s+/u', $title) ?: [] as $word) {
             $word = mb_strtolower(preg_replace('/[^a-z0-9]/u', '', $word) ?? '');
             if ($word !== '' && strlen($word) >= 4 && str_contains($linkTitle, $word)) {
                 $score += 10;
             }
         }
-
         $role = self::extractOfficeRole($articleTitle);
         if ($role !== '' && str_contains($linkTitle, $role)) {
             $score += 12;
         }
-
         return $score;
     }
-
     public static function filterLinksForTopic(array $links, string $primaryEntity, string $articleTitle = ''): array
     {
         $filtered = [];
@@ -437,21 +378,17 @@ class ArticleKnowledge
             $link['relevance_score'] = $score;
             $filtered[] = $link;
         }
-
         usort(
             $filtered,
             static fn(array $a, array $b): int => ($b['relevance_score'] ?? 0) <=> ($a['relevance_score'] ?? 0)
         );
-
         return $filtered;
     }
-
     public static function filterMediaForTopic(array $media, string $primaryEntity, string $articleTitle = ''): array
     {
         $entity = mb_strtolower(trim($primaryEntity));
         $role = self::extractOfficeRole($articleTitle);
         $filtered = [];
-
         foreach ($media as $item) {
             $mediaTitle = mb_strtolower(trim((string) ($item['title'] ?? '')));
             if ($entity !== '' && !str_contains($mediaTitle, $entity)) {
@@ -467,38 +404,30 @@ class ArticleKnowledge
             }
             $filtered[] = $item;
         }
-
         return $filtered;
     }
-
     public static function formatLinkCatalog(array $links, int $limit = 24): string
     {
         if ($links === []) {
             return 'No verified article links available. Do NOT invent [[Label|url]] links.';
         }
-
         $lines = ['Use ONLY these verified article links (exact URL):'];
         foreach (array_slice($links, 0, $limit) as $ref) {
             $lines[] = '- [[' . $ref['title'] . '|' . $ref['url'] . ']]';
         }
-
         return implode("\n", $lines);
     }
-
     public static function formatMediaCatalog(array $media, int $limit = 18): string
     {
         if ($media === []) {
             return 'No verified media posts available. Do NOT invent image/video/audio URLs.';
         }
-
         $lines = ['Use ONLY these verified media URLs from Dyscover posts:'];
         foreach (array_slice($media, 0, $limit) as $item) {
             $lines[] = '- ' . $item['type'] . ': ' . $item['title'] . ' → ' . $item['media_url'];
         }
-
         return implode("\n", $lines);
     }
-
     public static function sanitizeSource(string $source, array $links, array $media): string
     {
         $allowedArticles = [];
@@ -507,7 +436,6 @@ class ArticleKnowledge
                 $allowedArticles[self::normalizeUrl((string) $link['url'])] = true;
             }
         }
-
         $allowedMedia = [];
         foreach ($media as $item) {
             if (!empty($item['media_url'])) {
@@ -517,7 +445,6 @@ class ArticleKnowledge
         foreach (self::extractSourceMediaUrls($source) as $url) {
             $allowedMedia[self::normalizeUrl($url)] = true;
         }
-
         $source = (string) preg_replace_callback(
             '/\[\[([^|\]]+)\|([^\]]+)\]\]/u',
             static function (array $matches) use ($allowedArticles): string {
@@ -526,12 +453,10 @@ class ArticleKnowledge
                 if ($url !== '' && isset($allowedArticles[$url])) {
                     return '[[' . $label . '|' . $url . ']]';
                 }
-
                 return $label !== '' ? '**' . $label . '**' : '';
             },
             $source
         );
-
         $source = (string) preg_replace_callback(
             '/\{\{(image|image-table|icon-image|video|audio|template-single-image|template-large-image)\|([^|{}]+)(?:\|([^{}]*))?\}\}/iu',
             static function (array $matches) use ($allowedMedia): string {
@@ -541,14 +466,12 @@ class ArticleKnowledge
                     return '';
                 }
                 $caption = trim($matches[3] ?? '');
-
                 return $caption !== ''
                     ? '{{' . $macro . '|' . $url . '|' . $caption . '}}'
                     : '{{' . $macro . '|' . $url . '}}';
             },
             $source
         );
-
         $source = (string) preg_replace_callback(
             '/\{\{template-double-image\|([^}]+)\}\}/iu',
             static function (array $matches) use ($allowedMedia): string {
@@ -560,17 +483,13 @@ class ArticleKnowledge
                         $valid[] = $url;
                     }
                 }
-
                 return $valid !== [] ? '{{template-double-image|' . implode(' ;; ', $valid) . '}}' : '';
             },
             $source
         );
-
         $source = preg_replace("/\n{3,}/", "\n\n", $source) ?? $source;
-
         return trim($source);
     }
-
     private static function searchPosts(
         string $prompt,
         string $title,
@@ -583,17 +502,14 @@ class ArticleKnowledge
         if ($keywords === []) {
             return [];
         }
-
         $typeList = implode(',', array_map(
             static fn(string $type): string => "'" . str_replace("'", "''", $type) . "'",
             $types
         ));
-
         $scoreParams = [];
         $whereParams = [];
         $scoreParts = [];
         $whereParts = [];
-
         foreach ($keywords as $word) {
             $like = '%' . $word . '%';
             $scoreParts[] = '(CASE WHEN LOWER(p.title) LIKE ? THEN 5 ELSE 0 END
@@ -619,7 +535,6 @@ class ArticleKnowledge
             $whereParams[] = $like;
             $whereParams[] = $like;
         }
-
         $params = array_merge($scoreParams, $whereParams);
         $sql = 'SELECT p.id, p.uuid, p.type, p.title, p.description, p.user_id, p.extension,
             (' . implode(' + ', $scoreParts) . ') AS relevance
@@ -627,32 +542,27 @@ class ArticleKnowledge
             WHERE p.status = \'active\'
             AND p.type IN (' . $typeList . ')
             AND (' . implode(' OR ', $whereParts) . ')';
-
         if ($excludeUuid !== null && $excludeUuid !== '') {
             $sql .= ' AND p.uuid <> ?';
             $params[] = $excludeUuid;
         }
-
         $sql .= ' ORDER BY relevance DESC, p.updated_at DESC LIMIT ' . (int) $limit;
         $rows = Query::fetchAll($sql, $params);
         $postIds = array_map(static fn(array $row): int => (int) ($row['id'] ?? 0), $rows);
         $tagMap = PostTags::mapForPosts($postIds);
         $results = [];
-
         foreach ($rows as $row) {
             $uuid = (string) $row['uuid'];
             $userId = (int) $row['user_id'];
             $type = (string) $row['type'];
             $url = $type === 'article' ? self::articleUrl($uuid) : '';
             $mediaUrl = self::postMediaUrl($row);
-
             if ($requireUrl && $type === 'article' && $url === '') {
                 continue;
             }
             if ($requireUrl && in_array($type, ['image', 'video', 'audio'], true) && $mediaUrl === '') {
                 continue;
             }
-
             $snippet = trim((string) ($row['description'] ?? ''));
             if ($type === 'article' && $snippet === '') {
                 $path = PostAssets::articlePath($userId, $uuid);
@@ -664,7 +574,6 @@ class ArticleKnowledge
                         : mb_substr(self::htmlToText($html), 0, 220);
                 }
             }
-
             $entry = [
                 'id' => (int) $row['id'],
                 'uuid' => $uuid,
@@ -676,13 +585,10 @@ class ArticleKnowledge
                 'user_id' => $userId,
                 'tags' => $tagMap[(int) $row['id']] ?? [],
             ];
-
             $results[] = $entry;
         }
-
         return $results;
     }
-
     private static function scoreTemplate(
         array $template,
         string $topic,
@@ -692,13 +598,11 @@ class ArticleKnowledge
         $score = 0;
         $title = mb_strtolower((string) ($template['title'] ?? ''));
         $keywords = self::keywords($topic);
-
         foreach ($keywords as $word) {
             if ($word !== '' && str_contains($title, $word)) {
                 $score += 3;
             }
         }
-
         if ($isOfficeTopic && str_contains($title, 'country')) {
             $score -= 25;
         }
@@ -708,11 +612,9 @@ class ArticleKnowledge
         if ($isCountryTopic && str_contains($title, 'country')) {
             $score += 15;
         }
-
         $countryFields = 0;
         $officeFields = 0;
         $fieldMatches = 0;
-
         foreach ($template['fields'] as $field) {
             $name = mb_strtolower((string) ($field['name'] ?? '') . ' ' . (string) ($field['slug'] ?? ''));
             foreach ($keywords as $word) {
@@ -731,9 +633,7 @@ class ArticleKnowledge
                 }
             }
         }
-
         $score += $fieldMatches;
-
         if ($isOfficeTopic) {
             $score += $officeFields * 4;
             $score -= $countryFields * 3;
@@ -741,15 +641,12 @@ class ArticleKnowledge
         if ($isCountryTopic) {
             $score += $countryFields * 3;
         }
-
         return $score;
     }
-
     public static function topicKeywords(string $prompt, string $title = ''): array
     {
         $words = self::keywords($prompt . ' ' . $title);
         $combined = mb_strtolower($prompt . ' ' . $title);
-
         $roleHints = [
             'president' => ['president', 'presidente', 'head', 'state', 'office', 'mandate', 'executive'],
             'prime minister' => ['prime', 'minister', 'premier', 'government', 'executive', 'cabinet'],
@@ -757,23 +654,19 @@ class ArticleKnowledge
             'speaker' => ['speaker', 'parliament', 'legislature', 'senate', 'chamber'],
             'official' => ['official', 'bureaucrat', 'administration', 'civil', 'service'],
         ];
-
         foreach ($roleHints as $needle => $extras) {
             if (str_contains($combined, $needle)) {
                 $words = array_merge($words, $extras);
             }
         }
-
         return array_values(array_unique(array_slice($words, 0, 18)));
     }
-
     private static function postMediaUrl(array $row): string
     {
         $userId = (int) ($row['user_id'] ?? 0);
         $uuid = (string) ($row['uuid'] ?? '');
         $type = (string) ($row['type'] ?? '');
         $extension = (string) ($row['extension'] ?? '');
-
         if ($uuid === '' || $userId <= 0) {
             return '';
         }
@@ -783,26 +676,21 @@ class ArticleKnowledge
         if ($extension === '') {
             return (string) ($row['preview_image'] ?? '');
         }
-
         return PostAssets::mediaUrl($userId, $type, $uuid, $extension);
     }
-
     private static function articleUrl(string $uuid): string
     {
         return rtrim((string) APP_URL, '/') . '/article/' . rawurlencode($uuid);
     }
-
     private static function normalizeUrl(string $url): string
     {
         return rtrim(trim($url), '/');
     }
-
     private static function keywords(string $text): array
     {
         $text = mb_strtolower(trim($text));
         $parts = preg_split('/\s+/u', $text) ?: [];
         $words = [];
-
         foreach ($parts as $part) {
             $word = preg_replace('/[^a-z0-9àèéìòù]/u', '', $part) ?? '';
             if (strlen($word) < 3 || in_array($word, self::STOP_WORDS, true)) {
@@ -810,10 +698,8 @@ class ArticleKnowledge
             }
             $words[] = $word;
         }
-
         return array_values(array_unique($words));
     }
-
     public static function extractTopicTerms(string $prompt, string $title): array
     {
         $fallback = [
@@ -823,7 +709,6 @@ class ArticleKnowledge
             'political_party' => '',
             'related_tags' => [],
         ];
-
         try {
             $raw = Client::chat([
                 [
@@ -838,7 +723,6 @@ class ArticleKnowledge
                     'content' => "Title: {$title}\nBrief: {$prompt}",
                 ],
             ], 0.1, 180, Client::fastModel());
-
             if (preg_match('/\{[\s\S]*\}/', $raw, $match)) {
                 $json = json_decode($match[0], true);
                 if (is_array($json) && !empty($json['terms']) && is_array($json['terms'])) {
@@ -861,7 +745,6 @@ class ArticleKnowledge
                             $terms[] = mb_strtolower($party);
                             $relatedTags[] = mb_strtolower($party);
                         }
-
                         return [
                             'terms' => array_values(array_unique(array_slice($terms, 0, 12))),
                             'primary_entity' => self::normalizeTopicEntity($json['primary_entity'] ?? $fallback['primary_entity']),
@@ -875,10 +758,8 @@ class ArticleKnowledge
         } catch (\Throwable) {
             // fallback below
         }
-
         return $fallback;
     }
-
     private static function normalizeTopicEntity(mixed $value): string
     {
         if (is_array($value)) {
@@ -886,13 +767,10 @@ class ArticleKnowledge
                 static fn($item): string => trim((string) $item),
                 $value
             )));
-
             return $parts !== [] ? $parts[0] : '';
         }
-
         return trim((string) $value);
     }
-
     public static function searchByTerms(
         array $terms,
         string $primaryEntity,
@@ -904,11 +782,9 @@ class ArticleKnowledge
         if ($terms === []) {
             return [];
         }
-
         $query = implode(' ', $terms);
         $results = self::searchPosts($query, $primaryEntity, $excludeUuid, $types, $limit * 3, false);
         $scored = [];
-
         foreach ($results as $row) {
             $score = self::scorePostForTopic($row, $terms, $primaryEntity, $strictEntity);
             if ($score < 4) {
@@ -917,41 +793,33 @@ class ArticleKnowledge
             $row['topic_score'] = $score;
             $scored[] = $row;
         }
-
         usort(
             $scored,
             static fn(array $a, array $b): int => ($b['topic_score'] ?? 0) <=> ($a['topic_score'] ?? 0)
         );
-
         return array_slice($scored, 0, $limit);
     }
-
     public static function loadArticleCorpus(array $articles, int $maxChars = 6000): string
     {
         $chunks = [];
         $length = 0;
-
         foreach ($articles as $article) {
             if (($article['type'] ?? '') !== 'article') {
                 continue;
             }
-
             $userId = (int) ($article['user_id'] ?? 0);
             $uuid = (string) ($article['uuid'] ?? '');
             if ($uuid === '' || $userId <= 0) {
                 continue;
             }
-
             $path = PostAssets::articlePath($userId, $uuid);
             if (!is_file($path)) {
                 continue;
             }
-
             $text = ArticleContent::extractPlainText((string) file_get_contents($path), 1800);
             if ($text === '') {
                 continue;
             }
-
             $block = '[' . ($article['title'] ?? 'Article') . "]\n" . $text;
             if ($length + mb_strlen($block) > $maxChars) {
                 break;
@@ -959,39 +827,32 @@ class ArticleKnowledge
             $chunks[] = $block;
             $length += mb_strlen($block);
         }
-
         return $chunks === []
             ? 'No related article text found in Dyscover.'
             : implode("\n\n", $chunks);
     }
-
     public static function extractReferenceOutline(array $articles): array
     {
         foreach ($articles as $article) {
             if (($article['type'] ?? '') !== 'article') {
                 continue;
             }
-
             $userId = (int) ($article['user_id'] ?? 0);
             $uuid = (string) ($article['uuid'] ?? '');
             if ($uuid === '' || $userId <= 0) {
                 continue;
             }
-
             $path = PostAssets::articlePath($userId, $uuid);
             if (!is_file($path)) {
                 continue;
             }
-
             $outline = ArticleContent::extractOutline((string) file_get_contents($path));
             if ($outline !== []) {
                 return $outline;
             }
         }
-
         return [];
     }
-
     public static function pickMediaForField(
         array $media,
         array $field,
@@ -1002,11 +863,9 @@ class ArticleKnowledge
         $name = mb_strtolower((string) ($field['name'] ?? '') . ' ' . (string) ($field['slug'] ?? ''));
         $wantImage = str_contains($name, 'image') || str_contains($name, 'photo') || str_contains($name, 'portrait')
             || in_array($field['type'] ?? '', ['single-image', 'large-image', 'double-image'], true);
-
         if (!$wantImage) {
             return null;
         }
-
         $entity = mb_strtolower(trim($primaryEntity));
         $role = self::extractOfficeRole($articleTitle);
         $best = null;
@@ -1015,12 +874,10 @@ class ArticleKnowledge
             if (($item['type'] ?? '') !== 'image' || empty($item['media_url'])) {
                 continue;
             }
-
             $mediaTitle = mb_strtolower((string) ($item['title'] ?? ''));
             if ($entity !== '' && !str_contains($mediaTitle, $entity)) {
                 continue;
             }
-
             $score = (int) ($item['topic_score'] ?? self::scorePostForTopic($item, $terms, $primaryEntity, true));
             if ($role !== '' && str_contains($mediaTitle, $role)) {
                 $score += 20;
@@ -1038,22 +895,18 @@ class ArticleKnowledge
                 $best = $item;
             }
         }
-
         return $bestScore >= 8 ? $best : null;
     }
-
     public static function formatElementsDictionary(): string
     {
         $path = dirname(__DIR__) . '/data/elements.json';
         if (!is_file($path)) {
             return '';
         }
-
         $elements = json_decode((string) file_get_contents($path), true);
         if (!is_array($elements)) {
             return '';
         }
-
         $allowed = [
             'paragraph', 'heading', 'sub-heading', 'bold', 'italic', 'link', 'caption',
             'point-list', 'number-list', 'table', 'image', 'image-table', 'icon-image',
@@ -1069,28 +922,22 @@ class ArticleKnowledge
             $regex = (string) ($element['regex'] ?? '');
             $lines[] = $regex !== '' ? "- {$title}: {$regex}" : "- {$title}";
         }
-
         return implode("\n", $lines);
     }
-
     public static function splitTemplateBody(string $source): array
     {
         if (!preg_match('/^\{\{template\|[\s\S]*?\n\}\}/m', $source, $match, PREG_OFFSET_CAPTURE)) {
             return ['', $source];
         }
-
         $block = trim($match[0][0]);
         $rest = substr($source, $match[0][1] + strlen($match[0][0]));
-
         return [$block, ltrim(self::stripOrphanLinkClauses($rest))];
     }
-
     public static function sanitizeTemplateBlock(string $block): string
     {
         if ($block === '') {
             return '';
         }
-
         $lines = preg_split("/\r\n|\n|\r/", $block) ?: [];
         $output = [];
         foreach ($lines as $line) {
@@ -1104,10 +951,8 @@ class ArticleKnowledge
             }
             $output[] = $line;
         }
-
         return trim(implode("\n", $output));
     }
-
     public static function stripOrphanLinkClauses(string $text): string
     {
         $text = (string) preg_replace(
@@ -1116,10 +961,8 @@ class ArticleKnowledge
             $text
         );
         $text = (string) preg_replace('/\s+\(\[\[[^\]]+\|[^\]]+\]\]\)\.?/u', '', $text);
-
         return trim($text);
     }
-
     private static function stripInlineLinksFromTemplateField(string $line): string
     {
         $line = (string) preg_replace(
@@ -1127,10 +970,8 @@ class ArticleKnowledge
             '',
             $line
         );
-
         return (string) preg_replace('/\[\[[^\]|]+\|[^\]]+\]\]/u', '', $line);
     }
-
     public static function finalizeSource(
         string $source,
         array $links,
@@ -1148,10 +989,8 @@ class ArticleKnowledge
         $source = self::sanitizeSource($source, $links, $media);
         $source = self::stripBadProse($source);
         $source = self::enforceMediaAfterHeadings($source);
-
         return trim($source);
     }
-
     public static function isParagraphLine(string $line): bool
     {
         $trimmed = trim($line);
@@ -1176,17 +1015,14 @@ class ArticleKnowledge
         if (preg_match('/^>/', $trimmed)) {
             return false;
         }
-
         return true;
     }
-
     public static function enforceArticleStructure(string $source): string
     {
         $lines = preg_split("/\r\n|\n|\r/", $source) ?: [];
         $templateLines = [];
         $bodyLines = [];
         $inTemplate = false;
-
         foreach ($lines as $line) {
             $trimmed = trim($line);
             if (!$inTemplate && preg_match('/^\{\{template\|/', $trimmed)) {
@@ -1201,17 +1037,14 @@ class ArticleKnowledge
             }
             $bodyLines[] = $line;
         }
-
         $output = [];
         $leadParagraphs = [];
         $leadDone = false;
         $afterTopHeading = false;
         $inSubsection = false;
         $subsectionParagraphs = 0;
-
         foreach ($bodyLines as $line) {
             $trimmed = trim($line);
-
             if (!$leadDone && preg_match('/^#\s+/', $trimmed) && !preg_match('/^##\s+/', $trimmed)) {
                 $leadDone = true;
                 if (count($leadParagraphs) > 5) {
@@ -1228,7 +1061,6 @@ class ArticleKnowledge
                 $output[] = $line;
                 continue;
             }
-
             if (!$leadDone) {
                 if (self::isParagraphLine($line)) {
                     $leadParagraphs[] = $line;
@@ -1237,7 +1069,6 @@ class ArticleKnowledge
                 }
                 continue;
             }
-
             if (preg_match('/^#\s+/', $trimmed) && !preg_match('/^##\s+/', $trimmed)) {
                 $afterTopHeading = true;
                 $inSubsection = false;
@@ -1245,7 +1076,6 @@ class ArticleKnowledge
                 $output[] = $line;
                 continue;
             }
-
             if (preg_match('/^##\s+/', $trimmed)) {
                 $afterTopHeading = false;
                 $inSubsection = true;
@@ -1253,36 +1083,29 @@ class ArticleKnowledge
                 $output[] = $line;
                 continue;
             }
-
             if ($afterTopHeading && self::isParagraphLine($line)) {
                 continue;
             }
-
             if ($inSubsection && self::isParagraphLine($line)) {
                 if ($subsectionParagraphs >= 5) {
                     continue;
                 }
                 $subsectionParagraphs++;
             }
-
             $output[] = $line;
         }
-
         if (!$leadDone) {
             if (count($leadParagraphs) > 5) {
                 $leadParagraphs = array_slice($leadParagraphs, 0, 5);
             }
             $output = array_merge($leadParagraphs, $output === [] ? [] : ['', ...$output]);
         }
-
         $structured = trim(implode("\n", $output));
         if ($templateLines === []) {
             return $structured;
         }
-
         return trim(implode("\n", $templateLines) . "\n\n" . $structured);
     }
-
     public static function enrichParagraphLinks(
         string $source,
         array $links,
@@ -1293,7 +1116,6 @@ class ArticleKnowledge
         if ($links === []) {
             return self::stripOrphanLinkClauses($source);
         }
-
         $catalog = [];
         foreach ($links as $link) {
             $title = trim((string) ($link['title'] ?? ''));
@@ -1307,34 +1129,28 @@ class ArticleKnowledge
                 'score' => self::scoreLinkRelevance($link, $primaryEntity, $articleTitle),
             ];
         }
-
         if ($catalog === []) {
             return self::stripOrphanLinkClauses($source);
         }
-
         usort(
             $catalog,
             static fn(array $a, array $b): int => ($b['score'] ?? 0) <=> ($a['score'] ?? 0)
                 ?: mb_strlen($b['title']) <=> mb_strlen($a['title'])
         );
-
         $lines = preg_split("/\r\n|\n|\r/", $source) ?: [];
         foreach ($lines as $index => $line) {
             if (!self::isParagraphLine($line)) {
                 continue;
             }
-
             foreach ($catalog as $entry) {
                 if (($entry['score'] ?? 0) < 10) {
                     continue;
                 }
-
                 $title = $entry['title'];
                 $url = $entry['url'];
                 if (str_contains($line, '[[' . $title . '|')) {
                     continue;
                 }
-
                 $quoted = preg_quote($title, '/');
                 $pattern = '/(?<!\[\[)(?<!\|)(?<!\*)' . $quoted . '(?!\]\])(?!\*)/iu';
                 if (preg_match($pattern, $line)) {
@@ -1345,7 +1161,6 @@ class ArticleKnowledge
                         1
                     );
                 }
-
                 $entity = mb_strtolower(trim($primaryEntity));
                 if ($entity !== '' && mb_strlen($entity) >= 4 && str_contains($line, '[[' . $entity . '|')) {
                     continue;
@@ -1368,13 +1183,10 @@ class ArticleKnowledge
                     }
                 }
             }
-
             $lines[$index] = $line;
         }
-
         return self::stripOrphanLinkClauses(trim(implode("\n", $lines)));
     }
-
     private static function extractSourceMediaUrls(string $source): array
     {
         $urls = [];
@@ -1391,10 +1203,8 @@ class ArticleKnowledge
                 }
             }
         }
-
         return $urls;
     }
-
     public static function stripBadProse(string $source): string
     {
         $replacements = [
@@ -1411,39 +1221,30 @@ class ArticleKnowledge
             '/\|\s*fields\s*=/iu' => '',
             '/\|\s*\(content for "[^"]+"\)/iu' => '',
         ];
-
         foreach ($replacements as $pattern => $replacement) {
             $source = (string) preg_replace($pattern, $replacement, $source);
         }
-
         $source = (string) preg_replace("/\n{3,}/", "\n\n", $source);
-
         return trim($source);
     }
-
     public static function enforceMediaAfterHeadings(string $source): string
     {
         $lines = preg_split("/\r\n|\n|\r/", $source) ?: [];
         $output = [];
         $seenHeading = false;
         $mediaPattern = '/^\{\{(image|image-table|icon-image|video|audio)\|/i';
-
         foreach ($lines as $line) {
             $trimmed = trim($line);
             if (preg_match('/^#{1,2}\s+/', $trimmed)) {
                 $seenHeading = true;
             }
-
             if (!$seenHeading && preg_match($mediaPattern, $trimmed)) {
                 continue;
             }
-
             $output[] = $line;
         }
-
         return trim(implode("\n", $output));
     }
-
     private static function scorePostForTopic(
         array $post,
         array $terms,
@@ -1455,7 +1256,6 @@ class ArticleKnowledge
         $tags = array_map('mb_strtolower', (array) ($post['tags'] ?? []));
         $haystack = $title . ' ' . $description . ' ' . implode(' ', $tags);
         $score = 0;
-
         $entity = mb_strtolower(trim($primaryEntity));
         if ($entity !== '') {
             if (str_contains($title, $entity)) {
@@ -1466,7 +1266,6 @@ class ArticleKnowledge
                 $score -= 8;
             }
         }
-
         foreach ($terms as $term) {
             $term = mb_strtolower(trim((string) $term));
             if ($term === '' || strlen($term) < 3) {
@@ -1485,10 +1284,8 @@ class ArticleKnowledge
                 }
             }
         }
-
         return $score;
     }
-
     public static function appendPortraitMedia(
         array $media,
         array $terms,
@@ -1500,7 +1297,6 @@ class ArticleKnowledge
         if ($entity === '') {
             return $media;
         }
-
         $role = self::extractOfficeRole($articleTitle);
         $searchTerms = array_merge($terms, [$entity]);
         if ($role !== '') {
@@ -1508,7 +1304,6 @@ class ArticleKnowledge
         } else {
             $searchTerms[] = 'portrait';
         }
-
         $extra = self::searchByTerms(
             $searchTerms,
             $primaryEntity,
@@ -1517,7 +1312,6 @@ class ArticleKnowledge
             6,
             true
         );
-
         $merged = [];
         foreach (array_merge($extra, $media) as $item) {
             $uuid = (string) ($item['uuid'] ?? '');
@@ -1525,16 +1319,13 @@ class ArticleKnowledge
                 $merged[$uuid] = $item;
             }
         }
-
         $ranked = array_values($merged);
         usort(
             $ranked,
             static fn(array $a, array $b): int => ($b['topic_score'] ?? 0) <=> ($a['topic_score'] ?? 0)
         );
-
         return $ranked;
     }
-
     private static function guessPrimaryEntity(string $prompt, string $title): string
     {
         $text = trim($title . ' ' . $prompt);
@@ -1544,10 +1335,8 @@ class ArticleKnowledge
         if (preg_match('/\b([A-ZÀ-Ü][A-Za-zÀ-ÖØ-öø-ÿ\-]{2,})\b/u', $text, $match)) {
             return trim($match[1]);
         }
-
         return '';
     }
-
     private static function guessArchetype(string $prompt, string $title): string
     {
         $text = mb_strtolower($prompt . ' ' . $title);
@@ -1566,10 +1355,8 @@ class ArticleKnowledge
         if (preg_match('/\b(organization|community|union|alliance)\b/i', $text)) {
             return 'organization';
         }
-
         return 'other';
     }
-
     private static function htmlToText(string $html): string
     {
         $html = preg_replace('/<script\b[^>]*>.*?<\/script>/is', '', $html) ?? $html;
@@ -1577,7 +1364,6 @@ class ArticleKnowledge
         $text = strip_tags($html);
         $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
         $text = preg_replace('/\s+/u', ' ', $text) ?? $text;
-
         return trim($text);
     }
 }

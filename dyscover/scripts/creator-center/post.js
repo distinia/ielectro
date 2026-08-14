@@ -1,10 +1,8 @@
 import { Api } from "../core/api.js";
 import { App, Alert, Card, EmptyState, Icons, Request } from "../core/index.js";
-
 export class Post {
     static type = "";
     static table = "";
-
     constructor(element, item = {}) {
         this.element = element;
         this.item = item;
@@ -14,7 +12,6 @@ export class Post {
         if (!element) return;
         this.constructor.list.set(this.element, this);
     }
-
     static renderTable(allPosts = []) {
         const table = document.querySelector(this.table);
         if (!table) return;
@@ -39,7 +36,6 @@ export class Post {
         this.bindTable(table);
         Icons.load(tbody);
     }
-
     static async loadTable() {
         const { CreatorRegistry } = await import("./registry.js");
         if (CreatorRegistry.loaded) {
@@ -49,7 +45,6 @@ export class Post {
         }
         await CreatorRegistry.loadAll();
     }
-
     static bindTable(table) {
         const checkAll = table.querySelector(".check-all");
         if (checkAll) {
@@ -73,7 +68,6 @@ export class Post {
             });
         });
     }
-
     static syncCheckAll(table) {
         if (!table) return;
         const checkAll = table.querySelector(".check-all");
@@ -84,14 +78,12 @@ export class Post {
             rows.some((post) => post.checked) &&
             !rows.every((post) => post.checked);
     }
-
     setChecked(value) {
         this.checked = !!value;
         const input = this.element?.querySelector("input[type='checkbox']");
         if (input) input.checked = this.checked;
         this.element?.classList.toggle("row-selected", this.checked);
     }
-
     static getSelected() {
         const selected = [];
         this.list.forEach((post) => {
@@ -108,7 +100,6 @@ export class Post {
         });
         return selected;
     }
-
     loadRow() {
         const archived = String(this.item.status || "active") === "hidden";
         this.element.className = archived
@@ -122,7 +113,6 @@ export class Post {
         `;
         return this.element;
     }
-
     nameCellHtml() {
         const archived = String(this.item.status || "active") === "hidden";
         const title = App.escapeHtml(this.item.title || "Untitled");
@@ -131,28 +121,23 @@ export class Post {
             : "";
         return `<span class="item-name-inner">${badge}<span class="item-name-text">${title}</span></span>`;
     }
-
     static create() {
         import("./creator-editor.js").then(({ CreatorEditor }) => {
             CreatorEditor.open(new this(null, {}), "POST");
         });
     }
-
     edit() {
         import("./creator-editor.js").then(({ CreatorEditor }) => {
             CreatorEditor.open(this, "PUT");
         });
     }
-
     async view() {
         const card = new Card(App.enrichPost(this.item));
         await card.openOverlay();
     }
-
     isArchived() {
         return String(this.item.status || "active") === "hidden";
     }
-
     async archive(options = {}) {
         const wasArchived = this.isArchived();
         const nextStatus = wasArchived ? "active" : "hidden";
@@ -179,7 +164,6 @@ export class Post {
             return false;
         }
     }
-
     async delete(options = {}) {
         if (!options.skipConfirm) {
             const confirm = await Alert.confirm(
@@ -203,6 +187,5 @@ export class Post {
             return false;
         }
     }
-
     box() {}
 }

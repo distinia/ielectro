@@ -8,17 +8,14 @@ export class Api {
         }
         return body;
     }
-
     static list(body) {
         const data = this.data(body);
         return Array.isArray(data) ? data : [];
     }
-
     static record(body) {
         const data = this.data(body);
         return data && typeof data === "object" && !Array.isArray(data) ? data : null;
     }
-
     static message(body) {
         if (typeof body === "string") {
             return body;
@@ -33,7 +30,6 @@ export class Api {
         }
         return "";
     }
-
     static errorMessage(error) {
         return this.message(error) || "Request failed";
     }

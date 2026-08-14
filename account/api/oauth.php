@@ -47,7 +47,6 @@ class Oauth {
             if ($profile['sub'] === '') {
                 Response::badRequest('Invalid Google account');
             }
-
             Pending::create(
                 $profile['email'],
                 $profile['name'],

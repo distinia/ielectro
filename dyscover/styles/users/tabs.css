@@ -9,7 +9,6 @@
     border: 1px solid var(--border-subtle);
     flex-wrap: wrap;
 }
-
 .profile-tab {
     border: none;
     background: transparent;
@@ -29,33 +28,27 @@
         color var(--transition-fast),
         box-shadow var(--transition-fast);
 }
-
 .profile-tab i {
     width: 1.1rem;
     height: 1.1rem;
 }
-
 .profile-tab span {
     display: none;
 }
-
 .profile-tab:hover {
     background: rgba(30, 136, 229, 0.08);
     color: var(--text-color);
 }
-
 .profile-tab.active {
     background: #fff;
     color: var(--blue-mid);
     box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08);
 }
-
 @media (min-width: 720px) {
     .profile-tab span {
         display: inline;
     }
 }
-
 .profile-type-tabs {
     display: flex;
     flex-wrap: wrap;
@@ -63,7 +56,6 @@
     gap: 0.4rem;
     margin-bottom: 1.15rem;
 }
-
 .profile-type-tab {
     border: 1px solid var(--border-subtle);
     background: var(--surface-elevated);
@@ -78,12 +70,10 @@
         color var(--transition-fast),
         border-color var(--transition-fast);
 }
-
 .profile-type-tab:hover {
     color: var(--text-color);
     border-color: rgba(30, 136, 229, 0.35);
 }
-
 .profile-type-tab.active {
     background: rgba(30, 136, 229, 0.1);
     color: var(--blue-mid);

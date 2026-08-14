@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\MailparseException;
-
 /**
  * @param resource $mimemail
  * @param mixed $filename
@@ -25,8 +22,6 @@ function mailparse_msg_extract_part_file($mimemail, $filename, ?callable $callba
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $mimemail
  * @throws MailparseException
@@ -40,8 +35,6 @@ function mailparse_msg_free($mimemail): void
         throw MailparseException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $filename
  * @return resource
@@ -57,8 +50,6 @@ function mailparse_msg_parse_file(string $filename)
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $mimemail
  * @param string $data
@@ -73,8 +64,6 @@ function mailparse_msg_parse($mimemail, string $data): void
         throw MailparseException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $sourcefp
  * @param resource $destfp

@@ -1,7 +1,5 @@
 <?php
-
 namespace Safe\Exceptions;
-
 class OpensslException extends \Exception implements SafeExceptionInterface
 {
     public static function createFromPhpError(): self

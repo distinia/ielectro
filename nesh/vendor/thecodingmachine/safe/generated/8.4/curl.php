@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\CurlException;
-
 /**
  * @param \CurlHandle $handle
  * @return \CurlHandle
@@ -19,8 +16,6 @@ function curl_copy_handle(\CurlHandle $handle): \CurlHandle
     }
     return $safeResult;
 }
-
-
 /**
  * @param \CurlHandle $handle
  * @param string $string
@@ -37,8 +32,6 @@ function curl_escape(\CurlHandle $handle, string $string): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param \CurlHandle $handle
  * @return bool|string
@@ -54,8 +47,6 @@ function curl_exec(\CurlHandle $handle)
     }
     return $safeResult;
 }
-
-
 /**
  * @param \CurlHandle $handle
  * @param int|null $option
@@ -76,8 +67,6 @@ function curl_getinfo(\CurlHandle $handle, ?int $option = null)
     }
     return $safeResult;
 }
-
-
 /**
  * @param null|string $url
  * @return \CurlHandle
@@ -97,8 +86,6 @@ function curl_init(?string $url = null): \CurlHandle
     }
     return $safeResult;
 }
-
-
 /**
  * @param \CurlMultiHandle $multi_handle
  * @param int|null $queued_messages
@@ -115,8 +102,6 @@ function curl_multi_info_read(\CurlMultiHandle $multi_handle, ?int &$queued_mess
     }
     return $safeResult;
 }
-
-
 /**
  * @return \CurlMultiHandle
  *
@@ -127,8 +112,6 @@ function curl_multi_init(): \CurlMultiHandle
     $safeResult = \curl_multi_init();
     return $safeResult;
 }
-
-
 /**
  * @param \CurlMultiHandle $multi_handle
  * @param int $option
@@ -144,8 +127,6 @@ function curl_multi_setopt(\CurlMultiHandle $multi_handle, int $option, $value):
         throw CurlException::createFromPhpError($multi_handle);
     }
 }
-
-
 /**
  * @param \CurlHandle $handle
  * @param int $option
@@ -161,8 +142,6 @@ function curl_setopt(\CurlHandle $handle, int $option, $value): void
         throw CurlException::createFromPhpError($handle);
     }
 }
-
-
 /**
  * @param \CurlShareHandle $share_handle
  * @return int
@@ -174,8 +153,6 @@ function curl_share_errno(\CurlShareHandle $share_handle): int
     $safeResult = \curl_share_errno($share_handle);
     return $safeResult;
 }
-
-
 /**
  * @param \CurlShareHandle $share_handle
  * @param int $option
@@ -191,8 +168,6 @@ function curl_share_setopt(\CurlShareHandle $share_handle, int $option, $value):
         throw CurlException::createFromPhpError($share_handle);
     }
 }
-
-
 /**
  * @param \CurlHandle $handle
  * @param string $string
@@ -209,8 +184,6 @@ function curl_unescape(\CurlHandle $handle, string $string): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param \CurlHandle $handle
  * @throws CurlException

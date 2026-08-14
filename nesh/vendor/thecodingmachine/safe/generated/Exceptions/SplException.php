@@ -1,6 +1,5 @@
 <?php
 namespace Safe\Exceptions;
-
 class SplException extends \ErrorException implements SafeExceptionInterface
 {
     public static function createFromPhpError(): self

@@ -4,7 +4,6 @@ import { CreatorRegistry } from "./registry.js";
 import { refreshCreatorStats } from "./creator-stats.js";
 import { Search } from "./search.js";
 import { Table } from "./table.js";
-
 document.addEventListener("DOMContentLoaded", () => {
     App.runPage(async () => {
         await CreatorRegistry.loadAll();

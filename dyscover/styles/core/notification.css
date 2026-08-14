@@ -11,19 +11,16 @@
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
 }
-
 .prompt-container.alert-toast {
     background: rgba(15, 23, 42, 0.38);
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
     pointer-events: none;
 }
-
 .prompt-container .modal-box,
 .prompt-container .select-item-box {
     pointer-events: auto;
 }
-
 .prompt-container .modal-box {
     position: relative;
     margin: auto;

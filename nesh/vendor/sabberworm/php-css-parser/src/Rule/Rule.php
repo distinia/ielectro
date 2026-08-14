@@ -1,13 +1,8 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\Rule;
-
 use Sabberworm\CSS\Property\Declaration;
-
 use function Safe\class_alias;
-
 // @phpstan-ignore function.impossibleType
 if (!\class_exists(Rule::class, false) && !\interface_exists(Rule::class, false)) {
     class_alias(Declaration::class, Rule::class);

@@ -4,18 +4,15 @@ import { Request, Icons } from "./nesh.js";
 import { Alert } from "./alert.js";
 import { Mention } from "./mention.js";
 import { Overlay } from "./overlay.js";
-
 export class Comments {
     constructor(card) {
         this.card = card;
         this.replyTo = null;
         this.expandedThreads = new Set();
     }
-
     get item() {
         return this.card.item;
     }
-
     formatCommentDate(value) {
         if (!value) return "";
         const date = new Date(value);
@@ -36,20 +33,17 @@ export class Comments {
             month: "short",
         });
     }
-
     likesLabel(count) {
         const n = Number(count) || 0;
         if (n <= 0) return "";
         return n === 1 ? "1 like" : `${n} likes`;
     }
-
     errorMessage(err, fallback) {
         if (typeof err === "object" && (err?.message || err?.text)) {
             return err.message || err.text;
         }
         return fallback;
     }
-
     buildTree(rows) {
         const map = new Map();
         const roots = [];
@@ -66,7 +60,6 @@ export class Comments {
         });
         return roots;
     }
-
     countReplies(replies = []) {
         let total = 0;
         replies.forEach((reply) => {
@@ -77,7 +70,6 @@ export class Comments {
         });
         return total;
     }
-
     flattenReplies(replies = [], rootUsername = "") {
         let html = "";
         const walk = (items, parentUsername) => {
@@ -94,7 +86,6 @@ export class Comments {
         walk(replies, rootUsername);
         return html;
     }
-
     commentBodyHtml(c, parentUsername = "") {
         const body = String(c.body || "");
         const mention = parentUsername
@@ -109,7 +100,6 @@ export class Comments {
         }
         return Mention.linkify(body);
     }
-
     commentRowHtml(c, { isReply = false, parentUsername = "" } = {}) {
         const profile = `https://dyscover.ielectro.com/users/${encodeURIComponent(c.username || "")}`;
         const liked = c.liked ? " is-liked" : "";
@@ -144,7 +134,6 @@ export class Comments {
             </div>
         </article>`;
     }
-
     viewRepliesLabel(count, expanded = false) {
         const total = Number(count) || 0;
         if (expanded) {
@@ -152,7 +141,6 @@ export class Comments {
         }
         return `<span class="post-comment-view-replies-line" aria-hidden="true"></span>View replies (${total})`;
     }
-
     threadHtml(c) {
         const replies = c.replies || [];
         const replyCount = this.countReplies(replies);
@@ -171,14 +159,12 @@ export class Comments {
             </div>
         </div>`;
     }
-
     renderRows(list, rows) {
         const tree = this.buildTree(rows);
         list.innerHTML = tree.length
             ? tree.map((c) => this.threadHtml(c)).join("")
             : "";
     }
-
     syncCommentCount(root, delta = 0) {
         if (delta !== 0) {
             this.item.comments = Math.max(
@@ -188,16 +174,13 @@ export class Comments {
         }
         this.card.updateEngagementUi(root);
     }
-
     async fetchRows() {
         const res = await Request.get(Api.postComments(this.item.id));
         return Api.list(res);
     }
-
     getComposeInput(root) {
         return root?.querySelector(".post-comment-input");
     }
-
     setReplyTarget(root, commentId = null, username = "") {
         if (commentId) {
             this.replyTo = { id: commentId, username };
@@ -219,13 +202,11 @@ export class Comments {
                 ?.classList.add("is-reply-target");
         }
     }
-
     closeMenus(list) {
         list?.querySelectorAll(".post-comment-menu-pop").forEach((pop) => {
             pop.hidden = true;
         });
     }
-
     updateLikeUi(commentEl, liked, likes) {
         const btn = commentEl?.querySelector(".post-comment-like-btn");
         const meta = commentEl?.querySelector(".post-comment-likes-count");
@@ -242,7 +223,6 @@ export class Comments {
             date?.insertAdjacentElement("afterend", span);
         }
     }
-
     findThreadIdForComment(rows, commentId) {
         const byId = new Map(rows.map((row) => [row.id, row]));
         let current = byId.get(commentId);
@@ -256,7 +236,6 @@ export class Comments {
         }
         return null;
     }
-
     async submitComment(text, root) {
         const payload = { body: text };
         if (this.replyTo?.id) {
@@ -274,18 +253,15 @@ export class Comments {
         this.setReplyTarget(root, null);
         await this.renderInline(root);
     }
-
     bindListActions(list, root) {
         if (!list || list.dataset.bound === "1") return;
         list.dataset.bound = "1";
-
         list.addEventListener("click", async (event) => {
             const actionEl = event.target.closest("[data-action]");
             if (!actionEl || !list.contains(actionEl)) return;
             const action = actionEl.dataset.action;
             const commentId = Number(actionEl.dataset.id);
             const commentEl = actionEl.closest(".post-comment");
-
             if (action === "toggle-replies") {
                 event.preventDefault();
                 const thread = actionEl.closest(".post-comment-thread");
@@ -311,7 +287,6 @@ export class Comments {
                 }
                 return;
             }
-
             if (action === "reply" && commentId) {
                 this.setReplyTarget(
                     root,
@@ -321,7 +296,6 @@ export class Comments {
                 this.getComposeInput(root)?.focus();
                 return;
             }
-
             if (action === "menu" && commentId) {
                 event.stopPropagation();
                 const pop = commentEl?.querySelector(".post-comment-menu-pop");
@@ -331,7 +305,6 @@ export class Comments {
                 pop.hidden = !willOpen;
                 return;
             }
-
             if (action === "like" && commentId) {
                 const liked = actionEl.classList.contains("is-liked");
                 const countEl = commentEl?.querySelector(
@@ -363,7 +336,6 @@ export class Comments {
                 }
                 return;
             }
-
             if (action === "delete" && commentId) {
                 this.closeMenus(list);
                 try {
@@ -384,13 +356,11 @@ export class Comments {
                 }
             }
         });
-
         document.addEventListener("click", (event) => {
             if (event.target.closest(".post-comment-menu")) return;
             this.closeMenus(list);
         });
     }
-
     bindCompose(root) {
         const input = this.getComposeInput(root);
         const sendBtn = root?.querySelector(".post-comment-send-btn");
@@ -416,7 +386,6 @@ export class Comments {
             }
         });
     }
-
     async renderInline(root) {
         const list = root?.querySelector(".post-comments-list");
         if (!list) return;
@@ -434,7 +403,6 @@ export class Comments {
             list.innerHTML = "";
         }
     }
-
     async bindInline(root) {
         const list = root?.querySelector(".post-comments-list");
         const compose = root?.querySelector(".post-comment-compose-inline");
@@ -443,7 +411,6 @@ export class Comments {
         await this.renderInline(root);
         this.bindCompose(root);
     }
-
     async openBox() {
         const overlay = new Overlay("Comments");
         await overlay.open();

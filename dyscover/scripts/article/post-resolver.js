@@ -1,9 +1,7 @@
 import { Api } from "../core/api.js";
 import { App, Card, Request } from "../core/index.js";
-
 const UUID_RE =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
 export class PostResolver {
     static parseUuidFromUrl(url) {
         if (!url) return "";
@@ -28,11 +26,9 @@ export class PostResolver {
         } catch {}
         return "";
     }
-
     static isUuid(value) {
         return UUID_RE.test(String(value || ""));
     }
-
     static isDyscoverUrl(url) {
         if (!url) return false;
         try {
@@ -42,7 +38,6 @@ export class PostResolver {
             return false;
         }
     }
-
     static linkKind(url) {
         if (!PostResolver.isDyscoverUrl(url)) return null;
         try {
@@ -55,7 +50,6 @@ export class PostResolver {
         } catch {}
         return null;
     }
-
     static findPostInExplore(data, uuid) {
         for (const list of Object.values(data || {})) {
             if (!Array.isArray(list)) continue;
@@ -69,7 +63,6 @@ export class PostResolver {
         }
         return null;
     }
-
     static isRenderablePreview(url) {
         const value = String(url || "").trim();
         if (!value) {
@@ -83,7 +76,6 @@ export class PostResolver {
         }
         return true;
     }
-
     static async resolvePost(postId, url) {
         if (postId) {
             try {
@@ -105,7 +97,6 @@ export class PostResolver {
         } catch {}
         return null;
     }
-
     static async openOverlay(postId, url) {
         const item = await PostResolver.resolvePost(postId, url);
         if (!item) return false;

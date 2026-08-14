@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\LdapException;
-
 /**
  * @param string $value
  * @return string
@@ -19,8 +16,6 @@ function ldap_8859_to_t61(string $value): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param \LDAP\Connection $ldap
  * @param string $dn
@@ -41,8 +36,6 @@ function ldap_add(\LDAP\Connection $ldap, string $dn, array $entry, ?array $cont
         throw LdapException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \LDAP\Connection $ldap
  * @param null|string $dn
@@ -64,8 +57,6 @@ function ldap_bind(\LDAP\Connection $ldap, ?string $dn = null, ?string $password
         throw LdapException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \LDAP\Connection $ldap
  * @param string $dn
@@ -89,8 +80,6 @@ function ldap_compare(\LDAP\Connection $ldap, string $dn, string $attribute, str
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $link
  * @param resource $result
@@ -107,8 +96,6 @@ function ldap_control_paged_result_response($link, $result, ?string &$cookie = n
         throw LdapException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $link
  * @param int $pagesize
@@ -125,8 +112,6 @@ function ldap_control_paged_result($link, int $pagesize, bool $iscritical = fals
         throw LdapException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \LDAP\Connection $ldap
  * @param \LDAP\Result $result
@@ -143,8 +128,6 @@ function ldap_count_entries(\LDAP\Connection $ldap, \LDAP\Result $result): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param \LDAP\Connection $ldap
  * @param string $dn
@@ -164,8 +147,6 @@ function ldap_delete(\LDAP\Connection $ldap, string $dn, ?array $controls = null
         throw LdapException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $dn
  * @return string
@@ -181,8 +162,6 @@ function ldap_dn2ufn(string $dn): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param \LDAP\Connection $ldap
  * @param string $user
@@ -202,8 +181,6 @@ function ldap_exop_passwd(\LDAP\Connection $ldap, string $user = "", string $old
     }
     return $safeResult;
 }
-
-
 /**
  * @param \LDAP\Connection $ldap
  * @return bool|string
@@ -219,8 +196,6 @@ function ldap_exop_whoami(\LDAP\Connection $ldap)
     }
     return $safeResult;
 }
-
-
 /**
  * @param \LDAP\Connection $ldap
  * @param string $request_oid
@@ -251,8 +226,6 @@ function ldap_exop(\LDAP\Connection $ldap, string $request_oid, ?string $request
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $dn
  * @param int $with_attrib
@@ -269,8 +242,6 @@ function ldap_explode_dn(string $dn, int $with_attrib): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param \LDAP\Connection $ldap
  * @param \LDAP\ResultEntry $entry
@@ -287,8 +258,6 @@ function ldap_first_attribute(\LDAP\Connection $ldap, \LDAP\ResultEntry $entry):
     }
     return $safeResult;
 }
-
-
 /**
  * @param \LDAP\Connection $ldap
  * @param \LDAP\Result $result
@@ -305,8 +274,6 @@ function ldap_first_entry(\LDAP\Connection $ldap, \LDAP\Result $result): \LDAP\R
     }
     return $safeResult;
 }
-
-
 /**
  * @param \LDAP\Result $result
  * @throws LdapException
@@ -320,8 +287,6 @@ function ldap_free_result(\LDAP\Result $result): void
         throw LdapException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \LDAP\Connection $ldap
  * @param \LDAP\ResultEntry $entry
@@ -334,8 +299,6 @@ function ldap_get_attributes(\LDAP\Connection $ldap, \LDAP\ResultEntry $entry): 
     $safeResult = \ldap_get_attributes($ldap, $entry);
     return $safeResult;
 }
-
-
 /**
  * @param \LDAP\Connection $ldap
  * @param \LDAP\ResultEntry $entry
@@ -352,8 +315,6 @@ function ldap_get_dn(\LDAP\Connection $ldap, \LDAP\ResultEntry $entry): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param \LDAP\Connection $ldap
  * @param \LDAP\Result $result
@@ -370,8 +331,6 @@ function ldap_get_entries(\LDAP\Connection $ldap, \LDAP\Result $result): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param \LDAP\Connection $ldap
  * @param int $option
@@ -387,8 +346,6 @@ function ldap_get_option(\LDAP\Connection $ldap, int $option, &$value = null): v
         throw LdapException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \LDAP\Connection $ldap
  * @param \LDAP\ResultEntry $entry
@@ -406,8 +363,6 @@ function ldap_get_values_len(\LDAP\Connection $ldap, \LDAP\ResultEntry $entry, s
     }
     return $safeResult;
 }
-
-
 /**
  * @param \LDAP\Connection $ldap
  * @param \LDAP\ResultEntry $entry
@@ -425,8 +380,6 @@ function ldap_get_values(\LDAP\Connection $ldap, \LDAP\ResultEntry $entry, strin
     }
     return $safeResult;
 }
-
-
 /**
  * @param \LDAP\Connection $ldap
  * @param string $dn
@@ -447,8 +400,6 @@ function ldap_mod_add(\LDAP\Connection $ldap, string $dn, array $entry, ?array $
         throw LdapException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \LDAP\Connection $ldap
  * @param string $dn
@@ -469,8 +420,6 @@ function ldap_mod_del(\LDAP\Connection $ldap, string $dn, array $entry, ?array $
         throw LdapException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \LDAP\Connection $ldap
  * @param string $dn
@@ -491,8 +440,6 @@ function ldap_mod_replace(\LDAP\Connection $ldap, string $dn, array $entry, ?arr
         throw LdapException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \LDAP\Connection $ldap
  * @param string $dn
@@ -513,8 +460,6 @@ function ldap_modify_batch(\LDAP\Connection $ldap, string $dn, array $modificati
         throw LdapException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \LDAP\Connection $ldap
  * @param \LDAP\ResultEntry $entry
@@ -531,8 +476,6 @@ function ldap_next_attribute(\LDAP\Connection $ldap, \LDAP\ResultEntry $entry): 
     }
     return $safeResult;
 }
-
-
 /**
  * @param \LDAP\Connection $ldap
  * @param \LDAP\Result $result
@@ -549,8 +492,6 @@ function ldap_parse_exop(\LDAP\Connection $ldap, \LDAP\Result $result, ?string &
         throw LdapException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \LDAP\Connection $ldap
  * @param \LDAP\Result $result
@@ -570,8 +511,6 @@ function ldap_parse_result(\LDAP\Connection $ldap, \LDAP\Result $result, ?int &$
         throw LdapException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \LDAP\Connection $ldap
  * @param string $dn
@@ -594,8 +533,6 @@ function ldap_rename(\LDAP\Connection $ldap, string $dn, string $new_rdn, string
         throw LdapException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \LDAP\Connection $ldap
  * @param null|string $dn
@@ -632,8 +569,6 @@ function ldap_sasl_bind(\LDAP\Connection $ldap, ?string $dn = null, ?string $pas
         throw LdapException::createFromPhpError();
     }
 }
-
-
 /**
  * @param null|resource $ldap
  * @param int $option
@@ -649,8 +584,6 @@ function ldap_set_option($ldap, int $option, $value): void
         throw LdapException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \LDAP\Connection $ldap
  * @throws LdapException

@@ -1,7 +1,6 @@
 import { Api, Request } from "../core/index.js";
 import { CreatorRegistry } from "./registry.js";
 import { Table } from "./table.js";
-
 const LABELS = [
     ["articles", "Articles", "article"],
     ["images", "Images", "image"],
@@ -10,16 +9,13 @@ const LABELS = [
     ["documents", "Docs", "document"],
     ["templates", "Templates", "template"],
 ];
-
 export async function refreshCreatorStats() {
     const mount = document.querySelector(".number-elements");
     if (!mount) return;
-
     const active =
         document.querySelector(".creator-stat-pill.is-active")?.dataset.type ||
         CreatorRegistry.activeType() ||
         "article";
-
     try {
         const res = await Request.get(Api.creatorCenter);
         const data = Api.record(res) || {};

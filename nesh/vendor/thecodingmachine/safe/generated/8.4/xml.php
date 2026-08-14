@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\XmlException;
-
 /**
  * @param \XMLParser $parser
  * @throws XmlException
@@ -17,8 +14,6 @@ function xml_parser_free(\XMLParser $parser): void
         throw XmlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \XMLParser $parser
  * @param int $option
@@ -34,8 +29,6 @@ function xml_parser_set_option(\XMLParser $parser, int $option, $value): void
         throw XmlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \XMLParser $parser
  * @param callable $handler
@@ -48,8 +41,6 @@ function xml_set_character_data_handler(\XMLParser $parser, callable $handler): 
     $safeResult = \xml_set_character_data_handler($parser, $handler);
     return $safeResult;
 }
-
-
 /**
  * @param \XMLParser $parser
  * @param callable $handler
@@ -62,8 +53,6 @@ function xml_set_default_handler(\XMLParser $parser, callable $handler): bool
     $safeResult = \xml_set_default_handler($parser, $handler);
     return $safeResult;
 }
-
-
 /**
  * @param \XMLParser $parser
  * @param callable $start_handler
@@ -77,8 +66,6 @@ function xml_set_element_handler(\XMLParser $parser, callable $start_handler, ca
     $safeResult = \xml_set_element_handler($parser, $start_handler, $end_handler);
     return $safeResult;
 }
-
-
 /**
  * @param \XMLParser $parser
  * @param callable $handler
@@ -91,8 +78,6 @@ function xml_set_end_namespace_decl_handler(\XMLParser $parser, callable $handle
     $safeResult = \xml_set_end_namespace_decl_handler($parser, $handler);
     return $safeResult;
 }
-
-
 /**
  * @param \XMLParser $parser
  * @param callable $handler
@@ -105,8 +90,6 @@ function xml_set_external_entity_ref_handler(\XMLParser $parser, callable $handl
     $safeResult = \xml_set_external_entity_ref_handler($parser, $handler);
     return $safeResult;
 }
-
-
 /**
  * @param \XMLParser $parser
  * @param callable $handler
@@ -119,8 +102,6 @@ function xml_set_notation_decl_handler(\XMLParser $parser, callable $handler): b
     $safeResult = \xml_set_notation_decl_handler($parser, $handler);
     return $safeResult;
 }
-
-
 /**
  * @param \XMLParser $parser
  * @param object $object
@@ -133,8 +114,6 @@ function xml_set_object(\XMLParser $parser, object $object): bool
     $safeResult = \xml_set_object($parser, $object);
     return $safeResult;
 }
-
-
 /**
  * @param \XMLParser $parser
  * @param callable $handler
@@ -147,8 +126,6 @@ function xml_set_processing_instruction_handler(\XMLParser $parser, callable $ha
     $safeResult = \xml_set_processing_instruction_handler($parser, $handler);
     return $safeResult;
 }
-
-
 /**
  * @param \XMLParser $parser
  * @param callable $handler
@@ -161,8 +138,6 @@ function xml_set_start_namespace_decl_handler(\XMLParser $parser, callable $hand
     $safeResult = \xml_set_start_namespace_decl_handler($parser, $handler);
     return $safeResult;
 }
-
-
 /**
  * @param \XMLParser $parser
  * @param callable $handler

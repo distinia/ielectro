@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\FilterException;
-
 /**
  * @param int $type
  * @param array|int $options
@@ -21,8 +18,6 @@ function filter_input_array(int $type, $options = FILTER_DEFAULT, bool $add_empt
     }
     return $safeResult;
 }
-
-
 /**
  * @param array $array
  * @param mixed $options

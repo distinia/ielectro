@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\PosixException;
-
 /**
  * @param string $filename
  * @param int $flags
@@ -18,8 +15,6 @@ function posix_access(string $filename, int $flags = 0): void
         throw PosixException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $group_id
  * @return array{name: string, passwd: string, gid: int, members: list}
@@ -35,8 +30,6 @@ function posix_getgrgid(int $group_id): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $name
  * @return array{name: string, passwd: string, gid: int, members: list}
@@ -52,8 +45,6 @@ function posix_getgrnam(string $name): array
     }
     return $safeResult;
 }
-
-
 /**
  * @return list
  * @throws PosixException
@@ -68,8 +59,6 @@ function posix_getgroups(): array
     }
     return $safeResult;
 }
-
-
 /**
  * @return string
  * @throws PosixException
@@ -84,8 +73,6 @@ function posix_getlogin(): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $user_id
  * @return array{name: string, passwd: string, uid: int, gid: int, gecos: string, dir: string, shell: string}
@@ -101,8 +88,6 @@ function posix_getpwuid(int $user_id): array
     }
     return $safeResult;
 }
-
-
 /**
  * @return array
  * @throws PosixException
@@ -117,8 +102,6 @@ function posix_getrlimit(): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $process_id
  * @return int
@@ -134,8 +117,6 @@ function posix_getsid(int $process_id): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $username
  * @param int $group_id
@@ -150,8 +131,6 @@ function posix_initgroups(string $username, int $group_id): void
         throw PosixException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $process_id
  * @param int $signal
@@ -166,8 +145,6 @@ function posix_kill(int $process_id, int $signal): void
         throw PosixException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $filename
  * @param int $permissions
@@ -182,8 +159,6 @@ function posix_mkfifo(string $filename, int $permissions): void
         throw PosixException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $filename
  * @param int $flags
@@ -200,8 +175,6 @@ function posix_mknod(string $filename, int $flags, int $major = 0, int $minor = 
         throw PosixException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $group_id
  * @throws PosixException
@@ -215,8 +188,6 @@ function posix_setegid(int $group_id): void
         throw PosixException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $user_id
  * @throws PosixException
@@ -230,8 +201,6 @@ function posix_seteuid(int $user_id): void
         throw PosixException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $group_id
  * @throws PosixException
@@ -245,8 +214,6 @@ function posix_setgid(int $group_id): void
         throw PosixException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $process_id
  * @param int $process_group_id
@@ -261,8 +228,6 @@ function posix_setpgid(int $process_id, int $process_group_id): void
         throw PosixException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $resource
  * @param int $soft_limit
@@ -278,8 +243,6 @@ function posix_setrlimit(int $resource, int $soft_limit, int $hard_limit): void
         throw PosixException::createFromPhpError();
     }
 }
-
-
 /**
  * @return int
  * @throws PosixException
@@ -294,8 +257,6 @@ function posix_setsid(): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $user_id
  * @throws PosixException
@@ -309,8 +270,6 @@ function posix_setuid(int $user_id): void
         throw PosixException::createFromPhpError();
     }
 }
-
-
 /**
  * @return array
  * @throws PosixException
@@ -325,8 +284,6 @@ function posix_times(): array
     }
     return $safeResult;
 }
-
-
 /**
  * @return array
  * @throws PosixException

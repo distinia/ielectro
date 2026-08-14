@@ -1,6 +1,5 @@
 <?php
 namespace Account;
-
 use Nesh\File;
 use Nesh\Generate;
 use Nesh\Identity;
@@ -9,7 +8,6 @@ use Nesh\Request;
 use Nesh\Response;
 use Nesh\Routing;
 use Nesh\Avatar as AccountAvatar;
-
 class Avatar
 {
     public function index(): void
@@ -21,12 +19,10 @@ class Avatar
             'DELETE' => fn() => $this->destroy(),
         ]);
     }
-
     public static function url(int $accountId): string
     {
         return AccountAvatar::url($accountId);
     }
-
     private function update(): void
     {
         $method = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'POST'));
@@ -37,17 +33,14 @@ class Avatar
         } else {
             Request::post();
         }
-
         $accountId = Identity::id();
         $file = Request::file('avatar') ?? Request::file('file');
         if (!$file) {
             Response::badRequest('Missing avatar file');
         }
-
         $dir = AccountAvatar::assetsDir($accountId);
         File::makeDirectory($dir);
         AccountAvatar::purgeStale($dir);
-
         $target = AccountAvatar::path($accountId);
         $image = Image::upload($file, Generate::token(), true);
         $image->cover(512, 512);
@@ -67,13 +60,11 @@ class Avatar
         if (!is_file($target)) {
             Response::error('Unable to save avatar');
         }
-
         Response::success([
             'url' => self::url($accountId),
             'avatar_custom' => AccountAvatar::isCustom($accountId),
         ]);
     }
-
     private function destroy(): void
     {
         Request::delete();

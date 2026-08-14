@@ -1,7 +1,6 @@
 .panel-hidden {
     display: none !important;
 }
-
 .alert-container {
     position: fixed;
     inset: 0;
@@ -12,11 +11,9 @@
     background: rgba(11, 31, 58, 0.52);
     backdrop-filter: blur(10px);
 }
-
 .alert-container.alert-closing {
     animation: alertFadeOut 180ms ease forwards;
 }
-
 .alert {
     width: min(420px, 94vw);
     border-radius: 20px;
@@ -27,11 +24,9 @@
     animation: alertPopIn 200ms cubic-bezier(0.22, 1, 0.36, 1) both;
     padding: 22px 22px 18px;
 }
-
 .alert-icon-wrap {
     margin-bottom: 12px;
 }
-
 .alert-icon {
     display: inline-flex;
     align-items: center;
@@ -42,28 +37,23 @@
     background: rgba(11, 31, 58, 0.06);
     color: var(--brand-blue);
 }
-
 .alert-icon svg,
 .alert-icon i {
     width: 22px;
     height: 22px;
 }
-
 .alert-success .alert-icon {
     background: rgba(22, 163, 74, 0.12);
     color: #15803d;
 }
-
 .alert-error .alert-icon {
     background: rgba(220, 38, 38, 0.1);
     color: #b91c1c;
 }
-
 .alert-confirm .alert-icon {
     background: rgba(249, 115, 22, 0.12);
     color: var(--brand-orange-dark);
 }
-
 .alert-message {
     margin: 0 0 18px;
     color: var(--brand-blue);
@@ -71,13 +61,11 @@
     font-weight: 650;
     line-height: 1.5;
 }
-
 .alert-actions {
     display: flex;
     gap: 10px;
     justify-content: flex-end;
 }
-
 .alert-btn {
     display: inline-flex;
     align-items: center;
@@ -96,36 +84,29 @@
         background 120ms ease,
         border-color 120ms ease;
 }
-
 .alert-btn svg,
 .alert-btn i {
     width: 18px;
     height: 18px;
 }
-
 .alert-btn:hover {
     background: var(--surface-alt);
 }
-
 .alert-btn:active {
     transform: translateY(1px);
 }
-
 .alert-btn-confirm {
     border: none;
     background: var(--primary-gradient);
     color: #fff;
     box-shadow: var(--shadow-accent);
 }
-
 .alert-btn-confirm:hover {
     filter: brightness(1.05);
 }
-
 .alert-btn-cancel {
     color: var(--text-muted);
 }
-
 @keyframes alertPopIn {
     from {
         opacity: 0;
@@ -136,7 +117,6 @@
         transform: translateY(0) scale(1);
     }
 }
-
 @keyframes alertFadeOut {
     from {
         opacity: 1;

@@ -1,10 +1,8 @@
 <?php
 namespace Dyscover;
-
 use Nesh\Query;
 use Nesh\Response;
 use Nesh\Schema;
-
 final class Moderation
 {
     public const REPORT_REASONS = [
@@ -18,7 +16,6 @@ final class Moderation
         'copyright' => 'Copyright infringement',
         'other' => 'Other',
     ];
-
     public static function assertCleanText(string $text): void
     {
         $value = trim($text);
@@ -50,7 +47,6 @@ final class Moderation
             }
         }
     }
-
     public static function reasonLabel(string $reason): string
     {
         return self::REPORT_REASONS[$reason] ?? $reason;

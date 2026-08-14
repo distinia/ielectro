@@ -1,7 +1,5 @@
 <?php
-
 namespace Masterminds\HTML5\Serializer;
-
 /**
  * Traverser for walking a DOM tree.
  *
@@ -21,17 +19,11 @@ class Traverser
         'http://www.w3.org/1998/Math/MathML' => 'math',
         'http://www.w3.org/2000/svg' => 'svg',
     );
-
     protected $dom;
-
     protected $options;
-
     protected $encode = false;
-
     protected $rules;
-
     protected $out;
-
     /**
      * Create a traverser.
      *
@@ -49,10 +41,8 @@ class Traverser
         $this->out = $out;
         $this->rules = $rules;
         $this->options = $options;
-
         $this->rules->setTraverser($this);
     }
-
     /**
      * Tell the traverser to walk the DOM.
      *
@@ -76,10 +66,8 @@ class Traverser
         else {
             $this->node($this->dom);
         }
-
         return $this->out;
     }
-
     /**
      * Process a node in the DOM.
      *
@@ -110,7 +98,6 @@ class Traverser
                 break;
         }
     }
-
     /**
      * Walk through all the nodes on a node list.
      *
@@ -122,7 +109,6 @@ class Traverser
             $this->node($node);
         }
     }
-
     /**
      * Is an element local?
      *
@@ -136,7 +122,6 @@ class Traverser
         if (empty($uri)) {
             return false;
         }
-
         return isset(static::$local_ns[$uri]);
     }
 }

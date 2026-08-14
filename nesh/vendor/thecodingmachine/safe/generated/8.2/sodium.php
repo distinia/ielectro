@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\SodiumException;
-
 /**
  * @param string $ciphertext
  * @param string $additional_data
@@ -22,8 +19,6 @@ function sodium_crypto_aead_aes256gcm_decrypt(string $ciphertext, string $additi
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $ciphertext
  * @param string $additional_data
@@ -42,8 +37,6 @@ function sodium_crypto_aead_chacha20poly1305_decrypt(string $ciphertext, string 
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $message
  * @param string $additional_data
@@ -62,8 +55,6 @@ function sodium_crypto_aead_chacha20poly1305_encrypt(string $message, string $ad
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $ciphertext
  * @param string $additional_data
@@ -82,8 +73,6 @@ function sodium_crypto_aead_chacha20poly1305_ietf_decrypt(string $ciphertext, st
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $message
  * @param string $additional_data
@@ -102,8 +91,6 @@ function sodium_crypto_aead_chacha20poly1305_ietf_encrypt(string $message, strin
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $ciphertext
  * @param string $additional_data
@@ -122,8 +109,6 @@ function sodium_crypto_aead_xchacha20poly1305_ietf_decrypt(string $ciphertext, s
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $message
  * @param string $additional_data
@@ -142,8 +127,6 @@ function sodium_crypto_aead_xchacha20poly1305_ietf_encrypt(string $message, stri
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $mac
  * @param string $message
@@ -159,8 +142,6 @@ function sodium_crypto_auth_verify(string $mac, string $message, string $key): v
         throw SodiumException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $ciphertext
  * @param string $nonce
@@ -178,8 +159,6 @@ function sodium_crypto_box_open(string $ciphertext, string $nonce, string $key_p
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $ciphertext
  * @param string $key_pair
@@ -196,8 +175,6 @@ function sodium_crypto_box_seal_open(string $ciphertext, string $key_pair): stri
     }
     return $safeResult;
 }
-
-
 /**
  * @param non-empty-string $state
  * @param string $message
@@ -212,8 +189,6 @@ function sodium_crypto_generichash_update(string &$state, string $message): void
         throw SodiumException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $ciphertext
  * @param string $nonce
@@ -231,8 +206,6 @@ function sodium_crypto_secretbox_open(string $ciphertext, string $nonce, string 
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $signed_message
  * @param non-empty-string $public_key
@@ -249,8 +222,6 @@ function sodium_crypto_sign_open(string $signed_message, string $public_key): st
     }
     return $safeResult;
 }
-
-
 /**
  * @param non-empty-string $signature
  * @param string $message
@@ -266,8 +237,6 @@ function sodium_crypto_sign_verify_detached(string $signature, string $message, 
         throw SodiumException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $message
  * @param string $nonce

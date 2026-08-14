@@ -4,7 +4,6 @@
     gap: 0.35rem;
     padding: 0.45rem 0 0.35rem;
 }
-
 .post-action-btn {
     display: inline-flex;
     align-items: center;
@@ -23,11 +22,9 @@
         transform 0.12s ease;
     box-shadow: none !important;
 }
-
 .post-action-with-count {
     padding-right: 0.65rem;
 }
-
 .post-action-count {
     font-size: 0.82rem;
     font-weight: 700;
@@ -35,68 +32,54 @@
     color: var(--text-color);
     min-width: 0.35rem;
 }
-
 .post-action-btn:hover {
     background: rgba(30, 136, 229, 0.1);
     box-shadow: none !important;
     transform: scale(1.06);
 }
-
 .post-action-like.is-active {
     color: #e53935;
 }
-
 .post-action-like.is-active .post-action-count {
     color: #e53935;
 }
-
 .post-action-like.is-active i,
 .post-action-like.is-active svg {
     fill: currentColor;
 }
-
 .post-action-save {
     margin-left: auto;
 }
-
 .post-action-save.is-active {
     color: var(--blue-mid);
 }
-
 .post-action-save.is-active .post-action-count {
     color: var(--blue-mid);
 }
-
 .post-action-repost.is-active {
     color: #059669;
 }
-
 .post-action-repost.is-active .post-action-count {
     color: #059669;
 }
-
 .post-action-btn i {
     width: 1.45rem;
     height: 1.45rem;
 }
-
 .post-caption {
     font-size: 0.92rem;
     line-height: 1.55;
     margin-bottom: 0.75rem;
 }
-
 .post-caption-user {
     font-weight: 700;
     color: var(--text-color);
     text-decoration: none;
     margin-right: 0.35rem;
 }
-
 .post-caption-text {
     color: var(--text-color);
 }
-
 .post-tags {
     display: flex;
     flex-wrap: wrap;
@@ -104,7 +87,6 @@
     margin-bottom: 0.85rem;
     padding-bottom: 0;
 }
-
 .post-tag {
     color: var(--blue-mid);
     font-size: 0.82rem;
@@ -114,23 +96,19 @@
     border-radius: 999px;
     background: rgba(30, 136, 229, 0.08);
 }
-
 .post-tag:hover {
     background: rgba(30, 136, 229, 0.14);
     text-decoration: none;
 }
-
 .post-panel-footer {
     border-top: 1px solid rgba(15, 23, 42, 0.08);
     padding: 0.55rem 1.1rem 0.95rem;
     flex-shrink: 0;
     background: rgba(255, 255, 255, 0.92);
 }
-
 .post-panel-footer--no-comments {
     border-top: 1px solid rgba(15, 23, 42, 0.08);
 }
-
 .post-meta-line {
     display: flex;
     align-items: baseline;
@@ -138,23 +116,19 @@
     gap: 0.65rem;
     margin: 0.15rem 0 0.55rem;
 }
-
 .post-views-line {
     font-size: 0.88rem;
     color: var(--text-color);
 }
-
 .post-views-line strong {
     font-weight: 700;
 }
-
 .post-date {
     font-size: 0.72rem;
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.06em;
 }
-
 .post-comment-compose-inline {
     display: flex;
     align-items: center;
@@ -163,12 +137,10 @@
     margin-top: 0.35rem;
     padding-top: 0.35rem;
 }
-
 .post-comment-compose-inline .post-comment-input {
     border-top: none;
     padding: 0.55rem 0;
 }
-
 .post-comment-send-btn {
     border: none;
     background: transparent;
@@ -189,24 +161,20 @@
         transform 0.15s ease,
         color 0.18s ease;
 }
-
 .post-comment-input:not(:placeholder-shown) ~ .post-comment-send-btn,
 .post-comment-compose .post-comment-input:not(:placeholder-shown) ~ .post-comment-send-btn {
     opacity: 1;
     box-shadow: none;
 }
-
 .post-comment-send-btn:hover {
     transform: translateY(-1px) scale(1.04);
     background: transparent;
     color: #000;
 }
-
 .post-comment-send-btn:active {
     transform: scale(0.96);
     box-shadow: none;
 }
-
 .post-comment-send-btn i,
 .post-comment-send-btn svg {
     width: 1.05rem;

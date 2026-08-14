@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\UopzException;
-
 /**
  * @param string $class
  * @param string $parent
@@ -18,8 +15,6 @@ function uopz_extend(string $class, string $parent): void
         throw UopzException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $class
  * @param string $interface

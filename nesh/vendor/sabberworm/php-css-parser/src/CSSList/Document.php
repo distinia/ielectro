@@ -1,14 +1,10 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\CSSList;
-
 use Sabberworm\CSS\OutputFormat;
 use Sabberworm\CSS\Parsing\ParserState;
 use Sabberworm\CSS\Parsing\SourceException;
 use Sabberworm\CSS\Property\Selector;
-
 /**
  * This class represents the root of a parsed CSS file. It contains all top-level CSS contents: mostly declaration
  * blocks, but also any at-rules encountered (`Import` and `Charset`).
@@ -24,10 +20,8 @@ class Document extends CSSBlockList
     {
         $document = new Document($parserState->currentLine());
         CSSList::parseList($parserState, $document);
-
         return $document;
     }
-
     /**
      * Returns all `Selector` objects with the requested specificity found recursively in the tree.
      *
@@ -46,7 +40,6 @@ class Document extends CSSBlockList
     {
         return $this->getAllSelectors($specificitySearch);
     }
-
     /**
      * Overrides `render()` to make format argument optional.
      */
@@ -57,7 +50,6 @@ class Document extends CSSBlockList
         }
         return $outputFormat->getFormatter()->comments($this) . $this->renderListContents($outputFormat);
     }
-
     public function isRootList(): bool
     {
         return true;

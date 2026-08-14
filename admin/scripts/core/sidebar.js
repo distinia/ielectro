@@ -7,7 +7,6 @@ export class Sidebar {
         accounts: `<svg class="admin-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.5-7 8-7s8 3 8 7"/></svg>`,
         dyscover: `<svg class="admin-sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>`,
     };
-
     static items() {
         return [
             {
@@ -23,7 +22,6 @@ export class Sidebar {
             },
         ];
     }
-
     static mount(page = "home") {
         const existing = document.querySelector(".admin-sidebar");
         if (existing) {
@@ -34,10 +32,8 @@ export class Sidebar {
             });
             return;
         }
-
         const mount = document.querySelector(".admin-sidebar-mount");
         if (!mount) return;
-
         const groups = this.items()
             .map((group) => {
                 const links = group.links
@@ -50,7 +46,6 @@ export class Sidebar {
                 return `<div class="admin-sidebar-group"><p class="admin-sidebar-sub">${group.group}</p>${links}</div>`;
             })
             .join("");
-
         mount.outerHTML = `<aside class="admin-sidebar">
             <a class="admin-sidebar-logo-link" href="/">
                 <img class="admin-sidebar-logo" src="/assets/brand/logo.png" alt="iElectro" loading="lazy">

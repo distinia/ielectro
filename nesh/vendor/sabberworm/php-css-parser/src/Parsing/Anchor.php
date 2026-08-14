@@ -1,9 +1,6 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\Parsing;
-
 /**
  * @internal since 8.7.0
  */
@@ -13,12 +10,10 @@ class Anchor
      * @var int<0, max>
      */
     private $position;
-
     /**
      * @var ParserState
      */
     private $parserState;
-
     /**
      * @param int<0, max> $position
      */
@@ -27,7 +22,6 @@ class Anchor
         $this->position = $position;
         $this->parserState = $parserState;
     }
-
     public function backtrack(): void
     {
         $this->parserState->setPosition($this->position);

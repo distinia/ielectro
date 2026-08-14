@@ -1,55 +1,43 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\Parsing;
-
 use Sabberworm\CSS\Comment\Comment;
 use Sabberworm\CSS\Settings;
-
 use function Safe\iconv;
 use function Safe\preg_match;
 use function Safe\preg_split;
-
 /**
  * @internal since 8.7.0
  */
 class ParserState
 {
     public const EOF = null;
-
     /**
      * @var Settings
      */
     private $parserSettings;
-
     /**
      * @var string
      */
     private $text;
-
     /**
      * @var array<int, string>
      */
     private $characters;
-
     /**
      * @var int<0, max>
      */
     private $currentPosition = 0;
-
     /**
      * will only be used if the CSS does not contain an `@charset` declaration
      *
      * @var string
      */
     private $charset;
-
     /**
      * @var int<1, max> $lineNumber
      */
     private $lineNumber;
-
     /**
      * @param string $text the complete CSS as text (i.e., usually the contents of a CSS file)
      * @param int<1, max> $lineNumber
@@ -61,7 +49,6 @@ class ParserState
         $this->lineNumber = $lineNumber;
         $this->setCharset($this->parserSettings->getDefaultCharset());
     }
-
     /**
      * Sets the charset to be used if the CSS does not contain an `@charset` declaration.
      */
@@ -70,7 +57,6 @@ class ParserState
         $this->charset = $charset;
         $this->characters = $this->strsplit($this->text);
     }
-
     /**
      * @return int<1, max>
      */
@@ -78,7 +64,6 @@ class ParserState
     {
         return $this->lineNumber;
     }
-
     /**
      * @return int<0, max>
      */
@@ -86,17 +71,14 @@ class ParserState
     {
         return $this->currentPosition;
     }
-
     public function getSettings(): Settings
     {
         return $this->parserSettings;
     }
-
     public function anchor(): Anchor
     {
         return new Anchor($this->currentPosition, $this);
     }
-
     /**
      * @param int<0, max> $position
      */
@@ -104,7 +86,6 @@ class ParserState
     {
         $this->currentPosition = $position;
     }
-
     /**
      * @return non-empty-string
      *
@@ -129,10 +110,8 @@ class ParserState
         if ($ignoreCase) {
             $result = $this->strtolower($result);
         }
-
         return $result;
     }
-
     /**
      * @throws UnexpectedEOFException
      * @throws UnexpectedTokenException
@@ -182,10 +161,8 @@ class ParserState
         } else {
             return $this->consume(1);
         }
-
         return null;
     }
-
     /**
      * Consumes whitespace and/or comments until the next non-whitespace character that isn't a slash opening a comment.
      *
@@ -221,20 +198,16 @@ class ParserState
                 $comments[] = $comment;
             }
         } while ($comment instanceof Comment);
-
         return $consumed;
     }
-
     /**
      * @param non-empty-string $string
      */
     public function comes(string $string, bool $caseInsensitive = false): bool
     {
         $peek = $this->peek(\strlen($string));
-
         return ($peek !== '') && $this->streql($peek, $string, $caseInsensitive);
     }
-
     /**
      * @param int<1, max> $length
      * @param int<0, max> $offset
@@ -245,10 +218,8 @@ class ParserState
         if ($offset >= \count($this->characters)) {
             return '';
         }
-
         return $this->substr($offset, $length);
     }
-
     /**
      * @param string|int<1, max> $value
      *
@@ -268,7 +239,6 @@ class ParserState
                     $this->lineNumber
                 );
             }
-
             $this->lineNumber += $numberOfLines;
             $this->currentPosition += $this->strlen($value);
             $result = $value;
@@ -276,16 +246,13 @@ class ParserState
             if ($this->currentPosition + $value > \count($this->characters)) {
                 throw new UnexpectedEOFException((string) $value, $this->peek(5), 'count', $this->lineNumber);
             }
-
             $result = $this->substr($this->currentPosition, $value);
             $numberOfLines = \substr_count($result, "\n");
             $this->lineNumber += $numberOfLines;
             $this->currentPosition += $value;
         }
-
         return $result;
     }
-
     /**
      * If the possibly-expected next content is next, consume it.
      *
@@ -299,14 +266,11 @@ class ParserState
         if (!$this->streql($this->substr($this->currentPosition, $length), $nextContent)) {
             return false;
         }
-
         $numberOfLines = \substr_count($nextContent, "\n");
         $this->lineNumber += $numberOfLines;
         $this->currentPosition += $this->strlen($nextContent);
-
         return true;
     }
-
     /**
      * @param string $expression
      * @param int<1, max>|null $maximumLength
@@ -321,10 +285,8 @@ class ParserState
         if (preg_match($expression, $input, $matches, PREG_OFFSET_CAPTURE) !== 1) {
             throw new UnexpectedTokenException($expression, $this->peek(5), 'expression', $this->lineNumber);
         }
-
         return $this->consume($matches[0][0]);
     }
-
     /**
      * @return Comment|false
      */
@@ -332,7 +294,6 @@ class ParserState
     {
         $lineNumber = $this->lineNumber;
         $comment = null;
-
         if ($this->comes('/*')) {
             $this->consume(1);
             $comment = '';
@@ -344,16 +305,13 @@ class ParserState
                 }
             }
         }
-
         // We skip the * which was included in the comment.
         return \is_string($comment) ? new Comment(\substr($comment, 1), $lineNumber) : false;
     }
-
     public function isEnd(): bool
     {
         return $this->currentPosition >= \count($this->characters);
     }
-
     /**
      * @param list<string|self::EOF>|string|self::EOF $stopCharacters
      * @param list<Comment> $comments
@@ -370,7 +328,6 @@ class ParserState
         $stopCharacters = \is_array($stopCharacters) ? $stopCharacters : [$stopCharacters];
         $consumedCharacters = '';
         $start = $this->currentPosition;
-
         $comments = \array_merge($comments, $this->consumeComments());
         while (!$this->isEnd()) {
             $character = $this->consume(1);
@@ -385,11 +342,9 @@ class ParserState
             $consumedCharacters .= $character;
             $comments = \array_merge($comments, $this->consumeComments());
         }
-
         if (\in_array(self::EOF, $stopCharacters, true)) {
             return $consumedCharacters;
         }
-
         $this->currentPosition = $start;
         throw new UnexpectedEOFException(
             'One of ("' . \implode('","', $stopCharacters) . '")',
@@ -398,19 +353,16 @@ class ParserState
             $this->lineNumber
         );
     }
-
     private function inputLeft(): string
     {
         return $this->substr($this->currentPosition, -1);
     }
-
     public function streql(string $string1, string $string2, bool $caseInsensitive = true): bool
     {
         return $caseInsensitive
             ? ($this->strtolower($string1) === $this->strtolower($string2))
             : ($string1 === $string2);
     }
-
     /**
      * @param int<1, max> $numberOfCharacters
      */
@@ -418,7 +370,6 @@ class ParserState
     {
         $this->currentPosition -= $numberOfCharacters;
     }
-
     /**
      * @return int<0, max>
      */
@@ -428,7 +379,6 @@ class ParserState
             ? \mb_strlen($string, $this->charset)
             : \strlen($string);
     }
-
     /**
      * @param int<0, max> $offset
      */
@@ -446,10 +396,8 @@ class ParserState
             $offset++;
             $length--;
         }
-
         return $result;
     }
-
     /**
      * @return ($string is non-empty-string ? non-empty-string : string)
      */
@@ -459,7 +407,6 @@ class ParserState
             ? \mb_strtolower($string, $this->charset)
             : \strtolower($string);
     }
-
     /**
      * @return list<string>
      */
@@ -478,17 +425,14 @@ class ParserState
         } else {
             $result = ($string !== '') ? \str_split($string) : [];
         }
-
         return $result;
     }
-
     /**
      * @return list<Comment>
      */
     private function consumeComments(): array
     {
         $comments = [];
-
         while (true) {
             $comment = $this->consumeComment();
             if ($comment instanceof Comment) {

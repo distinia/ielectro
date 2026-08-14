@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\MysqliException;
-
 /**
  * @return array
  * @throws MysqliException

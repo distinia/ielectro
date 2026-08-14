@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\XmlException;
-
 /**
  * @param \XMLParser $parser
  * @throws XmlException
@@ -17,8 +14,6 @@ function xml_parser_free(\XMLParser $parser): void
         throw XmlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \XMLParser $parser
  * @param callable $handler
@@ -33,8 +28,6 @@ function xml_set_character_data_handler(\XMLParser $parser, callable $handler): 
         throw XmlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \XMLParser $parser
  * @param callable $handler
@@ -49,8 +42,6 @@ function xml_set_default_handler(\XMLParser $parser, callable $handler): void
         throw XmlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \XMLParser $parser
  * @param callable $start_handler
@@ -66,8 +57,6 @@ function xml_set_element_handler(\XMLParser $parser, callable $start_handler, ca
         throw XmlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \XMLParser $parser
  * @param callable $handler
@@ -82,8 +71,6 @@ function xml_set_end_namespace_decl_handler(\XMLParser $parser, callable $handle
         throw XmlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \XMLParser $parser
  * @param callable $handler
@@ -98,8 +85,6 @@ function xml_set_external_entity_ref_handler(\XMLParser $parser, callable $handl
         throw XmlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \XMLParser $parser
  * @param callable $handler
@@ -114,8 +99,6 @@ function xml_set_notation_decl_handler(\XMLParser $parser, callable $handler): v
         throw XmlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \XMLParser $parser
  * @param object $object
@@ -130,8 +113,6 @@ function xml_set_object(\XMLParser $parser, object $object): void
         throw XmlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \XMLParser $parser
  * @param callable $handler
@@ -146,8 +127,6 @@ function xml_set_processing_instruction_handler(\XMLParser $parser, callable $ha
         throw XmlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \XMLParser $parser
  * @param callable $handler
@@ -162,8 +141,6 @@ function xml_set_start_namespace_decl_handler(\XMLParser $parser, callable $hand
         throw XmlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \XMLParser $parser
  * @param callable $handler

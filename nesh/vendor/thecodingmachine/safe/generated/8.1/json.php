@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\JsonException;
-
 /**
  * @param mixed $value
  * @param int $flags

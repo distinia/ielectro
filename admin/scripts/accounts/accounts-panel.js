@@ -1,6 +1,5 @@
 import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
 import { App, Api, Alert, Request, AdminShell, AdminUi } from "../core/index.js";
-
 export default class AccountsPanel {
     bindFiltersOnce() {
         if (this._bound) return;
@@ -9,7 +8,6 @@ export default class AccountsPanel {
         document.querySelector(".accounts-filter-type")?.addEventListener("change", () => this.loadLog());
         document.querySelector(".accounts-delete-form")?.addEventListener("submit", (e) => this.handleHardDelete(e));
     }
-
     actionMeta(action) {
         const value = String(action || "").toLowerCase();
         if (value === "login_failed" || value === "deleted") {
@@ -26,13 +24,11 @@ export default class AccountsPanel {
         }
         return { tone: "muted", badge: "mod-badge-muted", icon: "activity" };
     }
-
     actionLabel(action) {
         return String(action || "")
             .replace(/_/g, " ")
             .replace(/\b\w/g, (c) => c.toUpperCase());
     }
-
     formatWhen(value) {
         if (!value) return "—";
         const date = new Date(value);
@@ -44,7 +40,6 @@ export default class AccountsPanel {
             minute: "2-digit",
         });
     }
-
     renderStats(stats = {}) {
         const node = document.querySelector(".accounts-stats");
         if (!node) return;
@@ -67,14 +62,12 @@ export default class AccountsPanel {
             .join("");
         Nesh.Icons.load(node);
     }
-
     renderLogRow(item) {
         const meta = this.actionMeta(item.action);
         const account = item.account;
         const avatar = account?.avatar
             ? `<img src="${App.esc(account.avatar)}" alt="" loading="lazy">`
             : `<span class="mod-avatar-fallback">${App.esc((account?.username || "?").slice(0, 1).toUpperCase())}</span>`;
-
         return `
             <article class="mod-row is-${meta.tone}">
                 <div class="mod-row-accent" aria-hidden="true"></div>
@@ -96,7 +89,6 @@ export default class AccountsPanel {
                 </div>
             </article>`;
     }
-
     async loadLog() {
         const list = document.querySelector(".accounts-log-list");
         if (!list) return;
@@ -118,7 +110,6 @@ export default class AccountsPanel {
             list.innerHTML = AdminUi.emptyState("Unable to load activity log.");
         }
     }
-
     async handleHardDelete(event) {
         event.preventDefault();
         const form = event.currentTarget;
@@ -139,7 +130,6 @@ export default class AccountsPanel {
             Alert.error(err?.text || "Delete failed");
         }
     }
-
     async run() {
         document.body.classList.add("admin-page-accounts");
         AdminShell.mount("accounts", "Accounts");

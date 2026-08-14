@@ -1,14 +1,10 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\Value;
-
 use Sabberworm\CSS\OutputFormat;
 use Sabberworm\CSS\Parsing\ParserState;
 use Sabberworm\CSS\Parsing\UnexpectedEOFException;
 use Sabberworm\CSS\Parsing\UnexpectedTokenException;
-
 /**
  * `Color's can be input in the form #rrggbb, #rgb or schema(val1, val2, …) but are always stored as an array of
  * ('s' => val1, 'c' => val2, 'h' => val3, …) and output in the second form.
@@ -23,7 +19,6 @@ class Color extends CSSFunction
     {
         parent::__construct(\implode('', \array_keys($colorValues)), $colorValues, ',', $lineNumber);
     }
-
     /**
      * @throws UnexpectedEOFException
      * @throws UnexpectedTokenException
@@ -36,7 +31,6 @@ class Color extends CSSFunction
             ? self::parseHexColor($parserState)
             : self::parseColorFunction($parserState);
     }
-
     /**
      * @throws UnexpectedEOFException
      * @throws UnexpectedTokenException
@@ -51,7 +45,6 @@ class Color extends CSSFunction
             $hexValue = $hexValue[0] . $hexValue[0] . $hexValue[1] . $hexValue[1] . $hexValue[2] . $hexValue[2]
                 . $hexValue[3] . $hexValue[3];
         }
-
         if ($parserState->strlen($hexValue) === 8) {
             $colorValues = [
                 'r' => new Size(\intval($hexValue[0] . $hexValue[1], 16), null, true, $parserState->currentLine()),
@@ -78,10 +71,8 @@ class Color extends CSSFunction
                 $parserState->currentLine()
             );
         }
-
         return new Color($colorValues, $parserState->currentLine());
     }
-
     /**
      * @throws UnexpectedEOFException
      * @throws UnexpectedTokenException
@@ -89,11 +80,9 @@ class Color extends CSSFunction
     private static function parseColorFunction(ParserState $parserState): CSSFunction
     {
         $colorValues = [];
-
         $colorMode = $parserState->parseIdentifier(true);
         $parserState->consumeWhiteSpace();
         $parserState->consume('(');
-
         // CSS Color Module Level 4 says that `rgb` and `rgba` are now aliases; likewise `hsl` and `hsla`.
         // So, attempt to parse with the `a`, and allow for it not being there.
         switch ($colorMode) {
@@ -115,7 +104,6 @@ class Color extends CSSFunction
                 $colorModeForParsing = $colorMode;
                 $mayHaveOptionalAlpha = false;
         }
-
         $containsVar = false;
         $containsNone = false;
         $isLegacySyntax = false;
@@ -132,10 +120,8 @@ class Color extends CSSFunction
             } else {
                 $colorValues[$valueKey] = Size::parse($parserState, true);
             }
-
             // This must be done first, to consume comments as well, so that the `comes` test will work.
             $parserState->consumeWhiteSpace();
-
             // With a `var` argument, the function can have fewer arguments.
             // And as of CSS Color Module Level 4, the alpha argument is optional.
             $canCloseNow
@@ -144,7 +130,6 @@ class Color extends CSSFunction
             if ($canCloseNow && $parserState->comes(')')) {
                 break;
             }
-
             // "Legacy" syntax is comma-delimited, and does not allow the `none` keyword.
             // "Modern" syntax is space-delimited, with `/` as alpha delimiter.
             // They cannot be mixed.
@@ -160,11 +145,9 @@ class Color extends CSSFunction
                 }
                 $isLegacySyntax = $parserState->comes(',');
             }
-
             if ($isLegacySyntax && $argumentIndex < ($expectedArgumentCount - 1)) {
                 $parserState->consume(',');
             }
-
             // In the "modern" syntax, the alpha value must be delimited with `/`.
             if (!$isLegacySyntax) {
                 if ($containsVar) {
@@ -181,12 +164,10 @@ class Color extends CSSFunction
             }
         }
         $parserState->consume(')');
-
         return $containsVar
             ? new CSSFunction($colorMode, \array_values($colorValues), ',', $parserState->currentLine())
             : new Color($colorValues, $parserState->currentLine());
     }
-
     private static function mapRange(float $value, float $fromMin, float $fromMax, float $toMin, float $toMax): float
     {
         $fromRange = $fromMax - $fromMin;
@@ -194,10 +175,8 @@ class Color extends CSSFunction
         $multiplier = $toRange / $fromRange;
         $newValue = $value - $fromMin;
         $newValue *= $multiplier;
-
         return $newValue + $toMin;
     }
-
     /**
      * @return array<non-empty-string, Value|string>
      */
@@ -205,7 +184,6 @@ class Color extends CSSFunction
     {
         return $this->components;
     }
-
     /**
      * @param array<non-empty-string, Value|string> $colorValues
      */
@@ -214,7 +192,6 @@ class Color extends CSSFunction
         $this->setName(\implode('', \array_keys($colorValues)));
         $this->components = $colorValues;
     }
-
     /**
      * @return non-empty-string
      */
@@ -222,7 +199,6 @@ class Color extends CSSFunction
     {
         return $this->getName();
     }
-
     /**
      * @return non-empty-string
      */
@@ -231,14 +207,11 @@ class Color extends CSSFunction
         if ($this->shouldRenderAsHex($outputFormat)) {
             return $this->renderAsHex();
         }
-
         if ($this->shouldRenderInModernSyntax()) {
             return $this->renderInModernSyntax($outputFormat);
         }
-
         return parent::render($outputFormat);
     }
-
     /**
      * @return array<string, bool|int|float|string|array<mixed>|null>
      *
@@ -248,7 +221,6 @@ class Color extends CSSFunction
     {
         throw new \BadMethodCallException('`getArrayRepresentation` is not yet implemented for `' . self::class . '`');
     }
-
     private function shouldRenderAsHex(OutputFormat $outputFormat): bool
     {
         return
@@ -256,7 +228,6 @@ class Color extends CSSFunction
             && $this->getRealName() === 'rgb'
             && $this->allComponentsAreNumbers();
     }
-
     /**
      * The function name is a concatenation of the array keys of the components, which is passed to the constructor.
      * However, this can be changed by calling {@see CSSFunction::setName},
@@ -266,7 +237,6 @@ class Color extends CSSFunction
     {
         return \implode('', \array_keys($this->components));
     }
-
     /**
      * Test whether all color components are absolute numbers (CSS type `number`), not percentages or anything else.
      * If any component is not an instance of `Size`, the method will also return `false`.
@@ -278,10 +248,8 @@ class Color extends CSSFunction
                 return false;
             }
         }
-
         return true;
     }
-
     /**
      * Note that this method assumes the following:
      * - The `components` array has keys for `r`, `g` and `b`;
@@ -300,10 +268,8 @@ class Color extends CSSFunction
             $this->components['b']->getSize()
         );
         $canUseShortVariant = ($result[0] === $result[1]) && ($result[2] === $result[3]) && ($result[4] === $result[5]);
-
         return '#' . ($canUseShortVariant ? $result[0] . $result[2] . $result[4] : $result);
     }
-
     /**
      * The "legacy" syntax does not allow RGB colors to have a mixture of `percentage`s and `number`s,
      * and does not allow `none` as any component value.
@@ -324,11 +290,9 @@ class Color extends CSSFunction
         if ($this->hasNoneAsComponentValue()) {
             return true;
         }
-
         if (!$this->colorFunctionMayHaveMixedValueTypes($this->getRealName())) {
             return false;
         }
-
         $hasPercentage = false;
         $hasNumber = false;
         foreach ($this->components as $key => $value) {
@@ -352,15 +316,12 @@ class Color extends CSSFunction
                 return false;
             }
         }
-
         return $hasPercentage && $hasNumber;
     }
-
     private function hasNoneAsComponentValue(): bool
     {
         return \in_array('none', $this->components, true);
     }
-
     /**
      * Some color functions, such as `rgb`,
      * may have a mixture of `percentage`, `number`, or possibly other types in their arguments.
@@ -370,10 +331,8 @@ class Color extends CSSFunction
     private function colorFunctionMayHaveMixedValueTypes(string $function): bool
     {
         $functionsThatMayHaveMixedValueTypes = ['rgb', 'rgba'];
-
         return \in_array($function, $functionsThatMayHaveMixedValueTypes, true);
     }
-
     /**
      * @return non-empty-string
      */
@@ -386,7 +345,6 @@ class Color extends CSSFunction
             $alpha = $this->components['a'];
             unset($componentsWithoutAlpha['a']);
         }
-
         $formatter = $outputFormat->getFormatter();
         $arguments = $formatter->implode(' ', $componentsWithoutAlpha);
         if (isset($alpha)) {
@@ -394,7 +352,6 @@ class Color extends CSSFunction
                 . '/' . $formatter->spaceAfterListArgumentSeparator('/');
             $arguments = $formatter->implode($separator, [$arguments, $alpha]);
         }
-
         return $this->getName() . '(' . $arguments . ')';
     }
 }

@@ -1,13 +1,10 @@
 <?php
-
 /**
  * This file contains all the functions that could not be dealt with automatically using the code generator.
  * If you add a function in this list, do not forget to add it in the generator/config/specialCasesFunctions.php
  *
  */
-
 namespace Safe;
-
 use Safe\Exceptions\ExecException;
 use Safe\Exceptions\FtpException;
 use Safe\Exceptions\MiscException;
@@ -20,9 +17,7 @@ use Safe\Exceptions\PcreException;
 use Safe\Exceptions\SimplexmlException;
 use Safe\Exceptions\FilesystemException;
 use Safe\Exceptions\HashException;
-
 use const PREG_NO_ERROR;
-
 /**
  * Wrapper for json_decode that throws when an error occurs.
  *
@@ -43,7 +38,6 @@ function json_decode(string $json, ?bool $associative = null, int $depth = 512, 
     }
     return $data;
 }
-
 /**
  * Fetches an entry from the cache.
  *
@@ -63,7 +57,6 @@ function apcu_fetch($key)
     }
     return $result;
 }
-
 /**
  * Searches subject for matches to
  * pattern and replaces them with
@@ -149,7 +142,6 @@ function preg_replace($pattern, $replacement, $subject, int $limit = -1, ?int &$
     }
     return $result;
 }
-
 /**
  * Encrypts given data with given method and key, returns a raw
  * or base64 encoded string
@@ -182,7 +174,6 @@ function openssl_encrypt(string $data, string $method, string $key, int $options
     }
     return $result;
 }
-
 /**
  * The function socket_write writes to the
  * socket from the given
@@ -211,7 +202,6 @@ function socket_write(\Socket $socket, string $buffer, int $length = 0): int
     }
     return $result;
 }
-
 /**
  * This function takes a node of a DOM
  * document and makes it into a SimpleXML node. This new object can
@@ -235,7 +225,6 @@ function simplexml_import_dom(\DOMNode $node, string $class_name = \SimpleXMLEle
     }
     return $result;
 }
-
 /**
  * Convert the well-formed XML document in the given file to an object.
  *
@@ -263,8 +252,6 @@ function simplexml_load_file(string $filename, string $class_name = \SimpleXMLEl
     }
     return $result;
 }
-
-
 /**
  * Takes a well-formed XML string and returns it as an object.
  *
@@ -292,7 +279,6 @@ function simplexml_load_string(string $data, string $class_name = \SimpleXMLElem
     }
     return $result;
 }
-
 /**
  * Returns three samples representing the average system load
  * (the number of processes in the system run queue) over the last 1, 5 and 15
@@ -312,7 +298,6 @@ function sys_getloadavg(): array
     }
     return $result;
 }
-
 /**
  * Returns the process group identifier of the process
  * process_id.
@@ -331,8 +316,6 @@ function posix_getpgid(int $process_id): int
     }
     return $result;
 }
-
-
 /**
  * fputcsv formats a line (passed as a
  * fields array) as CSV and writes it (terminated by a
@@ -361,13 +344,11 @@ function fputcsv($stream, array $fields, string $separator = ",", string $enclos
 {
     error_clear_last();
     $result = \fputcsv($stream, $fields, $separator, $enclosure, $escape, $eol);
-
     if ($result === false) {
         throw FilesystemException::createFromPhpError();
     }
     return $result;
 }
-
 /**
  * Similar to fgets except that
  * fgetcsv parses the line it reads for fields in
@@ -402,7 +383,6 @@ function fgetcsv($stream, ?int $length = null, string $separator = ",", string $
     }
     return $safeResult;
 }
-
 /**
  * The passthru function is similar to the
  * exec function in that it executes a
@@ -425,13 +405,11 @@ function fgetcsv($stream, ?int $length = null, string $separator = ",", string $
 function passthru(string $command, ?int &$result_code = null): void
 {
     error_clear_last();
-
     $safeResult = \passthru($command, $result_code);
     if ($safeResult === false) {
         throw ExecException::createFromPhpError();
     }
 }
-
 /**
  *
  *
@@ -459,7 +437,6 @@ function hash_file(string $algo, string $filename, bool $binary = false, array $
     }
     return $safeResult;
 }
-
 /**
  *
  *
@@ -492,7 +469,6 @@ function hash_hmac_file(string $algo, string $filename, string $key, bool $binar
     }
     return $safeResult;
 }
-
 /**
  * Sends an arbitrary command to the FTP server.
  *
@@ -514,7 +490,6 @@ function ftp_raw(\FTP\Connection $ftp, string $command): array
     }
     return $safeResult;
 }
-
 /**
  * Creates a PHP value from a stored representation
  *
@@ -555,20 +530,16 @@ function ftp_raw(\FTP\Connection $ftp, string $command): array
 function unserialize(string $data, array $options = []): mixed
 {
     error_clear_last();
-
     $previous = set_error_handler(function ($severity, $message, $file, $line) use (&$previous) {
         $unserialize_error_msg_prefix = 'unserialize():';
         if (str_starts_with($message, $unserialize_error_msg_prefix)) {
             throw new \ErrorException($message, 0, $severity, $file, $line);
         }
-
         if (!$previous) {
             return false;
         }
-
         return $previous($severity, $message, $file, $line);
     });
-
     try {
         return \unserialize($data, $options);
     } finally {

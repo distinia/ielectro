@@ -1,16 +1,12 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\Property;
-
 use Sabberworm\CSS\Comment\CommentContainer;
 use Sabberworm\CSS\OutputFormat;
 use Sabberworm\CSS\Position\Position;
 use Sabberworm\CSS\Position\Positionable;
 use Sabberworm\CSS\ShortClassNameProvider;
 use Sabberworm\CSS\Value\CSSString;
-
 /**
  * Class representing an `@charset` rule.
  *
@@ -24,12 +20,10 @@ class Charset implements AtRule, Positionable
     use CommentContainer;
     use Position;
     use ShortClassNameProvider;
-
     /**
      * @var CSSString
      */
     private $charset;
-
     /**
      * @param int<1, max>|null $lineNumber
      */
@@ -38,7 +32,6 @@ class Charset implements AtRule, Positionable
         $this->charset = $charset;
         $this->setPosition($lineNumber);
     }
-
     /**
      * @param string|CSSString $charset
      */
@@ -47,12 +40,10 @@ class Charset implements AtRule, Positionable
         $charset = $charset instanceof CSSString ? $charset : new CSSString($charset);
         $this->charset = $charset;
     }
-
     public function getCharset(): string
     {
         return $this->charset->getString();
     }
-
     /**
      * @return non-empty-string
      */
@@ -60,7 +51,6 @@ class Charset implements AtRule, Positionable
     {
         return "{$outputFormat->getFormatter()->comments($this)}@charset {$this->charset->render($outputFormat)};";
     }
-
     /**
      * @return non-empty-string
      */
@@ -68,12 +58,10 @@ class Charset implements AtRule, Positionable
     {
         return 'charset';
     }
-
     public function atRuleArgs(): CSSString
     {
         return $this->charset;
     }
-
     /**
      * @return array<string, bool|int|float|string|array<mixed>|null>
      *

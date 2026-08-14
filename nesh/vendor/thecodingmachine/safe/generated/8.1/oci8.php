@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\Oci8Exception;
-
 /**
  * @param resource $statement
  * @param string $param
@@ -22,8 +19,6 @@ function oci_bind_array_by_name($statement, string $param, array &$var, int $max
         throw Oci8Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $statement
  * @param string $param
@@ -41,8 +36,6 @@ function oci_bind_by_name($statement, string $param, &$var, int $max_length = -1
         throw Oci8Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $statement
  * @throws Oci8Exception
@@ -56,8 +49,6 @@ function oci_cancel($statement): void
         throw Oci8Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $connection
  * @throws Oci8Exception
@@ -71,8 +62,6 @@ function oci_commit($connection): void
         throw Oci8Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $username
  * @param string $password
@@ -100,8 +89,6 @@ function oci_connect(string $username, string $password, ?string $connection_str
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $statement
  * @param string $column
@@ -118,8 +105,6 @@ function oci_define_by_name($statement, string $column, &$var, int $type = 0): v
         throw Oci8Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $statement
  * @param int $mode
@@ -134,8 +119,6 @@ function oci_execute($statement, int $mode = OCI_COMMIT_ON_SUCCESS): void
         throw Oci8Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $statement
  * @param mixed $column
@@ -152,8 +135,6 @@ function oci_field_name($statement, $column): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $statement
  * @param mixed $column
@@ -170,8 +151,6 @@ function oci_field_precision($statement, $column): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $statement
  * @param mixed $column
@@ -188,8 +167,6 @@ function oci_field_scale($statement, $column): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $statement
  * @param mixed $column
@@ -206,8 +183,6 @@ function oci_field_size($statement, $column): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $statement
  * @param mixed $column
@@ -224,8 +199,6 @@ function oci_field_type_raw($statement, $column): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $statement
  * @param mixed $column
@@ -242,8 +215,6 @@ function oci_field_type($statement, $column)
     }
     return $safeResult;
 }
-
-
 /**
  * @param \OCILob $lob
  * @throws Oci8Exception
@@ -257,8 +228,6 @@ function oci_free_descriptor(\OCILob $lob): void
         throw Oci8Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $statement
  * @throws Oci8Exception
@@ -272,8 +241,6 @@ function oci_free_statement($statement): void
         throw Oci8Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $connection
  * @param string $type_name
@@ -295,8 +262,6 @@ function oci_new_collection($connection, string $type_name, ?string $schema = nu
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $username
  * @param string $password
@@ -324,8 +289,6 @@ function oci_new_connect(string $username, string $password, ?string $connection
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $connection
  * @return resource
@@ -341,8 +304,6 @@ function oci_new_cursor($connection)
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $connection
  * @param int $type
@@ -359,8 +320,6 @@ function oci_new_descriptor($connection, int $type = OCI_DTYPE_LOB)
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $statement
  * @return 0|positive-int
@@ -376,8 +335,6 @@ function oci_num_rows($statement): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $connection
  * @param string $sql
@@ -394,8 +351,6 @@ function oci_parse($connection, string $sql)
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $username
  * @param string $password
@@ -423,8 +378,6 @@ function oci_pconnect(string $username, string $password, ?string $connection_st
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $connection
  * @param callable $callback
@@ -439,8 +392,6 @@ function oci_register_taf_callback($connection, callable $callback): void
         throw Oci8Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $statement
  * @param mixed $column
@@ -457,8 +408,6 @@ function oci_result($statement, $column): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $connection
  * @throws Oci8Exception
@@ -472,8 +421,6 @@ function oci_rollback($connection): void
         throw Oci8Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $connection
  * @return string
@@ -489,8 +436,6 @@ function oci_server_version($connection): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $connection
  * @param string $action
@@ -505,8 +450,6 @@ function oci_set_action($connection, string $action): void
         throw Oci8Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $connection
  * @param int $timeout
@@ -521,8 +464,6 @@ function oci_set_call_timeout($connection, int $timeout): void
         throw Oci8Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $connection
  * @param string $client_id
@@ -537,8 +478,6 @@ function oci_set_client_identifier($connection, string $client_id): void
         throw Oci8Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $connection
  * @param string $client_info
@@ -553,8 +492,6 @@ function oci_set_client_info($connection, string $client_info): void
         throw Oci8Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $connection
  * @param string $action
@@ -569,8 +506,6 @@ function oci_set_db_operation($connection, string $action): void
         throw Oci8Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $edition
  * @throws Oci8Exception
@@ -584,8 +519,6 @@ function oci_set_edition(string $edition): void
         throw Oci8Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $connection
  * @param string $name
@@ -600,8 +533,6 @@ function oci_set_module_name($connection, string $name): void
         throw Oci8Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $statement
  * @param int $rows
@@ -616,8 +547,6 @@ function oci_set_prefetch($statement, int $rows): void
         throw Oci8Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $statement
  * @return string
@@ -633,8 +562,6 @@ function oci_statement_type($statement): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $connection
  * @throws Oci8Exception

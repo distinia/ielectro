@@ -1,9 +1,7 @@
 import { App } from "../core/app.js";
 import { Auth, Card, EmptyState, Icons } from "../core/index.js";
-
 export class ProfilePage {
     static instance = null;
-
     constructor(username) {
         this.username = username;
         this.loggedUsername = null;
@@ -19,11 +17,9 @@ export class ProfilePage {
         this.typeFilter = "article";
         ProfilePage.instance = this;
     }
-
     static current() {
         return ProfilePage.instance;
     }
-
     showError(message) {
         const root = document.querySelector(".profile-page");
         if (root) {
@@ -31,7 +27,6 @@ export class ProfilePage {
         }
         return false;
     }
-
     async init() {
         this.loggedUsername = await Auth.username();
         if (
@@ -52,7 +47,6 @@ export class ProfilePage {
         document.title = `@${this.username} - iElectro Dyscover`;
         return true;
     }
-
     itemsForGrid() {
         let source = this.posts;
         if (this.mainFilter === "saved") source = this.saved;
@@ -63,7 +57,6 @@ export class ProfilePage {
             (item) => String(item.type || "article") === this.typeFilter,
         );
     }
-
     async renderGrid() {
         const container = document.querySelector(".profile-posts");
         if (!container) return;

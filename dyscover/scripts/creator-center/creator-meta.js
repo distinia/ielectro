@@ -2,7 +2,6 @@ import { Api } from "../core/api.js";
 import { Alert, Request } from "../core/index.js";
 import { Icons } from "../core/nesh.js";
 import { CreatorModal } from "./creator-modal.js";
-
 function escapeHtml(value) {
     return String(value ?? "")
         .replace(/&/g, "&amp;")
@@ -10,13 +9,11 @@ function escapeHtml(value) {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;");
 }
-
 function activeTagTerm(value, caret) {
     const before = value.slice(0, caret ?? value.length);
     const match = before.match(/#([\p{L}\p{N}_-]*)$/u);
     return match ? match[1] : "";
 }
-
 function replaceActiveTag(input, tag) {
     const caret = input.selectionStart ?? input.value.length;
     const before = input.value.slice(0, caret);
@@ -24,10 +21,8 @@ function replaceActiveTag(input, tag) {
     input.value = before.replace(/#([\p{L}\p{N}_-]*)$/u, `#${tag} `) + after;
     input.focus();
 }
-
 export class CreatorMeta {
     static MAX_TAGS = 5;
-
     static fieldHtml({ title = "", description = "", tags = [] } = {}) {
         const tagValue = (Array.isArray(tags) ? tags : [])
             .map((tag) => `#${String(tag).replace(/^#+/, "")}`)
@@ -46,7 +41,6 @@ export class CreatorMeta {
                     </div>
                 </div>`;
     }
-
     static optionsHtml({
         type = "article",
         typeLocked = false,
@@ -64,12 +58,10 @@ export class CreatorMeta {
                     </label>
                 </div>`;
     }
-
     static bindTags(root) {
         const input = root.querySelector(".tags-input");
         const list = root.querySelector(".tags-suggestions");
         if (!input || !list) return;
-
         let timer = null;
         input.addEventListener("input", () => {
             clearTimeout(timer);
@@ -110,19 +102,16 @@ export class CreatorMeta {
                 }
             }, 180);
         });
-
         input.addEventListener("keydown", (event) => {
             if (event.key !== "Escape") return;
             list.hidden = true;
         });
-
         document.addEventListener("click", (event) => {
             if (!root.contains(event.target)) {
                 list.hidden = true;
             }
         });
     }
-
     static readTags(form) {
         const field = form.tags || form.querySelector('[name="tags"]');
         const raw = String(field?.value || "");
@@ -133,7 +122,6 @@ export class CreatorMeta {
             ),
         ].slice(0, CreatorMeta.MAX_TAGS);
     }
-
     static validateTags(tags) {
         if (tags.length > CreatorMeta.MAX_TAGS) {
             Alert.error(`Maximum ${CreatorMeta.MAX_TAGS} tags allowed`);
@@ -141,7 +129,6 @@ export class CreatorMeta {
         }
         return true;
     }
-
     static async withSubmitLock(submitBtn, task) {
         if (!submitBtn || submitBtn.dataset.busy === "1") {
             return null;

@@ -6,7 +6,6 @@ body.admin-app {
     overflow-y: auto;
     overflow-x: clip;
 }
-
 .admin-sidebar {
     position: fixed;
     inset: 0 auto 0 0;
@@ -20,20 +19,17 @@ body.admin-app {
     z-index: 100;
     border-right: 1px solid var(--border-color);
 }
-
 .admin-sidebar-logo-link {
     display: block;
     line-height: 0;
     padding: 4px 8px;
 }
-
 .admin-sidebar-logo {
     display: block;
     width: 128px;
     max-width: 100%;
     height: auto;
 }
-
 .admin-sidebar-sub {
     margin: 0;
     padding: 0 10px;
@@ -43,20 +39,17 @@ body.admin-app {
     letter-spacing: 0.14em;
     color: var(--text-muted);
 }
-
 .admin-sidebar-group {
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
-
 .admin-sidebar-nav {
     display: flex;
     flex-direction: column;
     gap: 18px;
     flex: 1;
 }
-
 .admin-sidebar-link {
     display: flex;
     align-items: center;
@@ -74,32 +67,27 @@ body.admin-app {
         border-color var(--transition-fast),
         box-shadow var(--transition-fast);
 }
-
 .admin-sidebar-link:hover {
     background: #fff;
     color: var(--brand-blue);
     box-shadow: var(--shadow-sm);
 }
-
 .admin-sidebar-link.active {
     background: #fff;
     color: var(--brand-blue);
     border-color: rgba(11, 31, 58, 0.12);
     box-shadow: var(--shadow-sm);
 }
-
 .admin-sidebar-icon {
     width: 18px;
     height: 18px;
     flex: 0 0 18px;
     opacity: 0.72;
 }
-
 .admin-sidebar-link.active .admin-sidebar-icon,
 .admin-sidebar-link:hover .admin-sidebar-icon {
     opacity: 1;
 }
-
 .admin-sidebar-foot {
     margin-top: auto;
     padding: 16px 10px 0;
@@ -107,14 +95,12 @@ body.admin-app {
     font-size: 0.82rem;
     color: var(--text-muted);
 }
-
 .admin-frame {
     min-height: 100vh;
     height: auto;
     display: flex;
     flex-direction: column;
 }
-
 .admin-topbar {
     position: sticky;
     top: 0;
@@ -129,7 +115,6 @@ body.admin-app {
     backdrop-filter: blur(14px);
     border-bottom: 1px solid transparent;
 }
-
 .admin-topbar-title {
     margin: 0;
     font-size: 1.65rem;
@@ -137,14 +122,12 @@ body.admin-app {
     color: var(--brand-blue);
     letter-spacing: -0.03em;
 }
-
 .admin-topbar-actions {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
     margin-left: auto;
 }
-
 .admin-topbar-profile {
     display: flex;
     align-items: center;
@@ -155,7 +138,6 @@ body.admin-app {
     border: 1px solid var(--border-color);
     box-shadow: var(--shadow-sm);
 }
-
 .admin-topbar-profile-text {
     display: flex;
     flex-direction: column;
@@ -163,17 +145,14 @@ body.admin-app {
     gap: 2px;
     line-height: 1.2;
 }
-
 .admin-topbar-profile-text strong {
     font-size: 0.84rem;
     color: var(--brand-blue);
 }
-
 .admin-topbar-profile-text span {
     font-size: 0.75rem;
     color: var(--text-muted);
 }
-
 .admin-content {
     flex: 1 1 auto;
     display: flex;
@@ -183,23 +162,19 @@ body.admin-app {
     min-height: auto;
     overflow: visible;
 }
-
 .admin-content-wide {
     max-width: none;
 }
-
 .admin-shell {
     display: flex;
     flex-direction: column;
     gap: 18px;
 }
-
 .admin-grid {
     display: grid;
     gap: 18px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
 }
-
 .admin-card {
     background: var(--surface);
     border: 1px solid var(--border-color);
@@ -209,7 +184,6 @@ body.admin-app {
     display: flex;
     flex-direction: column;
 }
-
 .admin-card h1,
 .admin-card h2 {
     margin: 0 0 16px;
@@ -218,7 +192,6 @@ body.admin-app {
     letter-spacing: -0.02em;
     color: var(--brand-blue);
 }
-
 .admin-list-filters {
     display: flex;
     flex-wrap: wrap;
@@ -227,7 +200,6 @@ body.admin-app {
     align-items: center;
     flex-shrink: 0;
 }
-
 .admin-filter-search {
     flex: 1 1 220px;
     min-width: 180px;
@@ -240,7 +212,6 @@ body.admin-app {
     padding-left: 42px !important;
     border-color: transparent;
 }
-
 .admin-filter-sort {
     flex: 0 1 auto;
     width: auto;
@@ -249,7 +220,6 @@ body.admin-app {
     background-color: var(--surface-alt);
     border-color: transparent;
 }
-
 .admin-row {
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
@@ -261,20 +231,17 @@ body.admin-app {
         border-color var(--transition-fast),
         transform var(--transition-fast);
 }
-
 .admin-row:hover {
     border-color: rgba(249, 115, 22, 0.18);
     box-shadow: var(--shadow-sm);
     transform: translateY(-1px);
 }
-
 .admin-row-with-thumb {
     display: grid;
     grid-template-columns: minmax(110px, 160px) 1fr;
     gap: 16px;
     align-items: start;
 }
-
 .admin-row-thumb img {
     width: 100%;
     min-height: 110px;
@@ -284,7 +251,6 @@ body.admin-app {
     background: var(--surface-alt);
     border: 1px solid var(--border-color);
 }
-
 .admin-row-thumb-fallback {
     display: grid;
     place-items: center;
@@ -296,7 +262,6 @@ body.admin-app {
     font-weight: 700;
     color: var(--brand-blue);
 }
-
 .admin-row-body header {
     display: flex;
     flex-wrap: wrap;
@@ -304,23 +269,19 @@ body.admin-app {
     align-items: baseline;
     margin-bottom: 8px;
 }
-
 .admin-row-body header strong {
     color: var(--brand-blue);
 }
-
 .admin-row-body header small,
 .admin-muted {
     color: var(--text-muted);
 }
-
 .admin-actions {
     display: flex;
     gap: 8px;
     margin-top: 12px;
     flex-wrap: wrap;
 }
-
 .admin-link {
     display: inline-flex;
     align-items: center;
@@ -334,17 +295,14 @@ body.admin-app {
     border: 1px solid rgba(249, 115, 22, 0.14);
     transition: filter var(--transition-fast);
 }
-
 .admin-link:hover {
     filter: brightness(0.98);
 }
-
 .admin-toolbar {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
 }
-
 .admin-toolbar a,
 .admin-toolbar button,
 .admin-actions button {
@@ -365,7 +323,6 @@ body.admin-app {
         filter var(--transition-fast),
         transform 0.1s ease;
 }
-
 .admin-toolbar .secondary,
 .admin-actions .secondary {
     background: #fff;
@@ -373,46 +330,38 @@ body.admin-app {
     border: 1px solid var(--border-color);
     box-shadow: var(--shadow-sm);
 }
-
 .admin-toolbar .primary,
 .admin-actions .primary {
     background: var(--primary-gradient);
     color: #fff;
     box-shadow: var(--shadow-accent);
 }
-
 .admin-actions .btn-row-delete {
     background: #fff1f2;
     color: #be123c;
     border: 1px solid #fecdd3;
 }
-
 @media (max-width: 960px) {
     body.admin-app {
         padding-left: 0;
     }
-
     .admin-sidebar {
         position: relative;
         width: 100%;
         inset: auto;
     }
-
     .admin-grid {
         grid-template-columns: 1fr;
     }
-
     .admin-content,
     .admin-content-wide {
         padding: 18px;
         max-width: none;
     }
-
     .admin-topbar {
         padding: 18px;
         flex-wrap: wrap;
     }
-
     .admin-topbar-profile-text {
         display: none;
     }

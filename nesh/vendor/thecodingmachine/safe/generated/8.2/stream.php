@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\StreamException;
-
 /**
  * @param resource $context
  * @param array $params
@@ -18,8 +15,6 @@ function stream_context_set_params($context, array $params): void
         throw StreamException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $from
  * @param resource $to
@@ -44,8 +39,6 @@ function stream_copy_to_stream($from, $to, ?int $length = null, int $offset = 0)
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $stream
  * @param string $filtername
@@ -70,8 +63,6 @@ function stream_filter_append($stream, string $filtername, ?int $read_write = nu
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $stream
  * @param string $filtername
@@ -96,8 +87,6 @@ function stream_filter_prepend($stream, string $filtername, ?int $read_write = n
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filter_name
  * @param string $class
@@ -112,8 +101,6 @@ function stream_filter_register(string $filter_name, string $class): void
         throw StreamException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $stream_filter
  * @throws StreamException
@@ -127,8 +114,6 @@ function stream_filter_remove($stream_filter): void
         throw StreamException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $stream
  * @param int|null $length
@@ -152,8 +137,6 @@ function stream_get_contents($stream, ?int $length = null, int $offset = -1): st
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $stream
  * @param int $length
@@ -171,8 +154,6 @@ function stream_get_line($stream, int $length, string $ending = ""): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $stream
  * @throws StreamException
@@ -186,8 +167,6 @@ function stream_isatty($stream): void
         throw StreamException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $filename
  * @return string
@@ -203,8 +182,6 @@ function stream_resolve_include_path(string $filename): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $stream
  * @param bool $enable
@@ -219,8 +196,6 @@ function stream_set_blocking($stream, bool $enable): void
         throw StreamException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $stream
  * @param int $seconds
@@ -236,8 +211,6 @@ function stream_set_timeout($stream, int $seconds, int $microseconds = 0): void
         throw StreamException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $socket
  * @param float|null $timeout
@@ -261,8 +234,6 @@ function stream_socket_accept($socket, ?float $timeout = null, ?string &$peer_na
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $address
  * @param int|null $error_code
@@ -291,8 +262,6 @@ function stream_socket_client(string $address, ?int &$error_code = null, ?string
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $socket
  * @param bool $remote
@@ -309,8 +278,6 @@ function stream_socket_get_name($socket, bool $remote): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $domain
  * @param int $type
@@ -328,8 +295,6 @@ function stream_socket_pair(int $domain, int $type, int $protocol): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $socket
  * @param int $length
@@ -348,8 +313,6 @@ function stream_socket_recvfrom($socket, int $length, int $flags = 0, ?string &$
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $socket
  * @param string $data
@@ -368,8 +331,6 @@ function stream_socket_sendto($socket, string $data, int $flags = 0, string $add
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $address
  * @param int|null $error_code
@@ -393,8 +354,6 @@ function stream_socket_server(string $address, ?int &$error_code = null, ?string
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $stream
  * @param int $mode
@@ -409,8 +368,6 @@ function stream_socket_shutdown($stream, int $mode): void
         throw StreamException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $stream
  * @throws StreamException
@@ -424,8 +381,6 @@ function stream_supports_lock($stream): void
         throw StreamException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $protocol
  * @param string $class
@@ -441,8 +396,6 @@ function stream_wrapper_register(string $protocol, string $class, int $flags = 0
         throw StreamException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $protocol
  * @throws StreamException
@@ -456,8 +409,6 @@ function stream_wrapper_restore(string $protocol): void
         throw StreamException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $protocol
  * @throws StreamException

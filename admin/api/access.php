@@ -1,11 +1,9 @@
 <?php
 namespace Admin;
-
 use Nesh\Identity;
 use Nesh\Query;
 use Nesh\Response;
 use Nesh\Url;
-
 class Access
 {
     public static function member(?int $accountId = null): ?array
@@ -14,7 +12,6 @@ class Access
         if (!$accountId) {
             return null;
         }
-
         $row = Query::fetch(
             'SELECT
                 t.id,
@@ -31,16 +28,13 @@ class Access
             LIMIT 1',
             [$accountId, 'active']
         );
-
         if (!$row) {
             return null;
         }
-
         $name = trim((string) ($row['account_name'] ?? ''));
         if ($name === '') {
             $name = (string) ($row['username'] ?? '');
         }
-
         return [
             'id' => (int) $row['id'],
             'uuid' => $row['uuid'],
@@ -49,7 +43,6 @@ class Access
             'role_text' => $row['role_text'],
         ];
     }
-
     public static function requireMember(): void
     {
         Identity::required();
@@ -57,7 +50,6 @@ class Access
             Response::forbidden('Admin access required');
         }
     }
-
     public static function requirePage(): void
     {
         if (!Identity::id()) {
@@ -68,7 +60,6 @@ class Access
                 'https://account.ielectro.com/login?service=admin&return=' . $return
             );
         }
-
         if (!self::member()) {
             http_response_code(403);
             header('Content-Type: text/html; charset=utf-8');

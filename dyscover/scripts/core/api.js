@@ -2,12 +2,10 @@ export class Api {
     static origin = "https://dyscover.ielectro.com";
     static accountOrigin = "https://account.ielectro.com";
     static base = `${Api.origin}/api`;
-
     static feed = (limit = 50) => `${Api.base}/feed/${limit}`;
     static exploreRecents = `${Api.base}/explore/recents`;
     static exploreSearchAll = (term) =>
         `${Api.base}/explore/${encodeURIComponent(term)}/all`;
-
     static posts = `${Api.base}/posts`;
     static post = (id) => `${Api.base}/posts/${id}`;
     static postComments = (id) => `${Api.base}/posts/${id}/comments`;
@@ -20,19 +18,14 @@ export class Api {
     static postReposts = (id) => `${Api.base}/posts/${id}/reposts`;
     static postShares = (id) => `${Api.base}/posts/${id}/shares`;
     static postViews = (id) => `${Api.base}/posts/${id}/views`;
-
     static article = (uuid) =>
         `${Api.base}/articles/${encodeURIComponent(uuid)}`;
-
     static articlePreview = (uuid) =>
         `${Api.base}/articles/${encodeURIComponent(uuid)}/preview`;
-
     static articlePdf = (uuid) =>
         `${Api.base}/articles/${encodeURIComponent(uuid)}/pdf`;
-
     static articleGenerate = (uuid) =>
         `${Api.base}/articles/${encodeURIComponent(uuid)}/generate`;
-
     static user = (idOrUsername) =>
         `${Api.base}/users/${encodeURIComponent(idOrUsername)}`;
     static userId(id) {
@@ -61,7 +54,6 @@ export class Api {
     static userMentions = (id) => Api.userResource(id, "mentions");
     static userFollowerOne = (userId, followerId) =>
         `${Api.base}/users/${Api.userId(userId)}/followers/${Api.userId(followerId)}`;
-
     static inbox = `${Api.base}/inbox`;
     static inboxUpload = (chatId) =>
         `${Api.base}/inbox/upload?chat_id=${encodeURIComponent(String(chatId))}`;
@@ -69,18 +61,15 @@ export class Api {
     static inboxMessages = (id) => `${Api.base}/inbox/${id}/messages`;
     static inboxMessage = (inboxId, messageId) =>
         `${Api.base}/inbox/${inboxId}/messages/${messageId}`;
-
     static activity = `${Api.base}/activity`;
     static activityOne = (id) => `${Api.base}/activity/${id}`;
     static activityMarkRead = (id) => `${Api.base}/activity/${id}/read`;
     static activityMarkAllRead = `${Api.base}/activity/read-all`;
-
     static creatorCenter = `${Api.base}/creator-center`;
     static tagsSuggest = (term) =>
         `${Api.base}/tags?term=${encodeURIComponent(String(term).replace(/^#+/, ""))}`;
     static templateFields = (id) => `${Api.base}/templates/${id}/fields`;
     static avatar = `${Api.accountOrigin}/api/avatar`;
-
     static data(body) {
         if (body === null || body === undefined) {
             return null;
@@ -90,19 +79,16 @@ export class Api {
         }
         return body;
     }
-
     static list(body) {
         const data = Api.data(body);
         return Array.isArray(data) ? data : [];
     }
-
     static record(body) {
         const data = Api.data(body);
         return data && typeof data === "object" && !Array.isArray(data)
             ? data
             : null;
     }
-
     static message(body) {
         if (typeof body === "string") {
             return body;

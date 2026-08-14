@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\RrdException;
-
 /**
  * @param string $filename
  * @param array $options
@@ -18,8 +15,6 @@ function rrd_create(string $filename, array $options): void
         throw RrdException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $file
  * @param int $raaindex
@@ -36,8 +31,6 @@ function rrd_first(string $file, int $raaindex = 0): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @param array $options
@@ -54,8 +47,6 @@ function rrd_graph(string $filename, array $options): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @return array
@@ -71,8 +62,6 @@ function rrd_info(string $filename): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @return array
@@ -88,8 +77,6 @@ function rrd_lastupdate(string $filename): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $xml_file
  * @param string $rrd_file
@@ -109,8 +96,6 @@ function rrd_restore(string $xml_file, string $rrd_file, ?array $options = null)
         throw RrdException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $filename
  * @param array $options
@@ -125,8 +110,6 @@ function rrd_tune(string $filename, array $options): void
         throw RrdException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $filename
  * @param array $options
@@ -141,8 +124,6 @@ function rrd_update(string $filename, array $options): void
         throw RrdException::createFromPhpError();
     }
 }
-
-
 /**
  * @param array $options
  * @return array

@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\ApacheException;
-
 /**
  * @return string
  * @throws ApacheException
@@ -18,8 +15,6 @@ function apache_get_version(): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $variable
  * @param bool $walk_to_top
@@ -36,8 +31,6 @@ function apache_getenv(string $variable, bool $walk_to_top = false): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @return object
@@ -53,8 +46,6 @@ function apache_lookup_uri(string $filename): object
     }
     return $safeResult;
 }
-
-
 /**
  * @return array|false
  *
@@ -65,8 +56,6 @@ function apache_request_headers()
     $safeResult = \apache_request_headers();
     return $safeResult;
 }
-
-
 /**
  * @return array|false
  *
@@ -77,8 +66,6 @@ function apache_response_headers()
     $safeResult = \apache_response_headers();
     return $safeResult;
 }
-
-
 /**
  * @param string $variable
  * @param string $value
@@ -94,8 +81,6 @@ function apache_setenv(string $variable, string $value, bool $walk_to_top = fals
         throw ApacheException::createFromPhpError();
     }
 }
-
-
 /**
  * @return array
  *
@@ -106,8 +91,6 @@ function getallheaders(): array
     $safeResult = \getallheaders();
     return $safeResult;
 }
-
-
 /**
  * @param string $uri
  * @throws ApacheException

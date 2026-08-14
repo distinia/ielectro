@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\FilesystemException;
-
 /**
  * @param string $filename
  * @param int|string $group
@@ -18,8 +15,6 @@ function chgrp(string $filename, $group): void
         throw FilesystemException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $filename
  * @param int $permissions
@@ -34,8 +29,6 @@ function chmod(string $filename, int $permissions): void
         throw FilesystemException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $filename
  * @param int|string $user
@@ -50,8 +43,6 @@ function chown(string $filename, $user): void
         throw FilesystemException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $source
  * @param string $dest
@@ -71,8 +62,6 @@ function copy(string $source, string $dest, $context = null): void
         throw FilesystemException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $directory
  * @return float
@@ -88,8 +77,6 @@ function disk_free_space(string $directory): float
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $directory
  * @return float
@@ -105,8 +92,6 @@ function disk_total_space(string $directory): float
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $stream
  * @throws FilesystemException
@@ -120,8 +105,6 @@ function fclose($stream): void
         throw FilesystemException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $stream
  * @throws FilesystemException
@@ -135,8 +118,6 @@ function fdatasync($stream): void
         throw FilesystemException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $stream
  * @throws FilesystemException
@@ -150,8 +131,6 @@ function fflush($stream): void
         throw FilesystemException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $filename
  * @param bool $use_include_path
@@ -179,8 +158,6 @@ function file_get_contents(string $filename, bool $use_include_path = false, $co
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @param mixed $data
@@ -203,8 +180,6 @@ function file_put_contents(string $filename, $data, int $flags = 0, $context = n
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @param int-mask $flags
@@ -226,8 +201,6 @@ function file(string $filename, int $flags = 0, $context = null): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @return int
@@ -243,8 +216,6 @@ function fileatime(string $filename): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @return int
@@ -260,8 +231,6 @@ function filectime(string $filename): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @return int
@@ -277,8 +246,6 @@ function fileinode(string $filename): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @return int
@@ -294,8 +261,6 @@ function filemtime(string $filename): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @return int
@@ -311,8 +276,6 @@ function fileowner(string $filename): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @return int
@@ -328,8 +291,6 @@ function fileperms(string $filename): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @return 0|positive-int
@@ -345,8 +306,6 @@ function filesize(string $filename): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @return string
@@ -362,8 +321,6 @@ function filetype(string $filename): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $stream
  * @param int-mask $operation
@@ -379,8 +336,6 @@ function flock($stream, int $operation, ?int &$would_block = null): void
         throw FilesystemException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $filename
  * @param string $mode
@@ -403,8 +358,6 @@ function fopen(string $filename, string $mode, bool $use_include_path = false, $
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $stream
  * @param positive-int $length
@@ -421,8 +374,6 @@ function fread($stream, int $length): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $stream
  * @return array
@@ -438,8 +389,6 @@ function fstat($stream): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $stream
  * @throws FilesystemException
@@ -453,8 +402,6 @@ function fsync($stream): void
         throw FilesystemException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $stream
  * @return int
@@ -470,8 +417,6 @@ function ftell($stream): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $stream
  * @param 0|positive-int $size
@@ -486,8 +431,6 @@ function ftruncate($stream, int $size): void
         throw FilesystemException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $handle
  * @param string $string
@@ -509,8 +452,6 @@ function fwrite($handle, string $string, ?int $length = null): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $pattern
  * @param int $flags
@@ -527,8 +468,6 @@ function glob(string $pattern, int $flags = 0): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @param int|string $group
@@ -543,8 +482,6 @@ function lchgrp(string $filename, $group): void
         throw FilesystemException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $filename
  * @param int|string $user
@@ -559,8 +496,6 @@ function lchown(string $filename, $user): void
         throw FilesystemException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $target
  * @param string $link
@@ -575,8 +510,6 @@ function link(string $target, string $link): void
         throw FilesystemException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $filename
  * @return array
@@ -592,8 +525,6 @@ function lstat(string $filename): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $directory
  * @param int $permissions
@@ -614,8 +545,6 @@ function mkdir(string $directory, int $permissions = 0777, bool $recursive = fal
         throw FilesystemException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $filename
  * @param bool $process_sections
@@ -633,8 +562,6 @@ function parse_ini_file(string $filename, bool $process_sections = false, int $s
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $ini_string
  * @param bool $process_sections
@@ -652,8 +579,6 @@ function parse_ini_string(string $ini_string, bool $process_sections = false, in
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $handle
  * @return int
@@ -669,8 +594,6 @@ function pclose($handle): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $command
  * @param string $mode
@@ -687,8 +610,6 @@ function popen(string $command, string $mode)
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @param bool $use_include_path
@@ -710,8 +631,6 @@ function readfile(string $filename, bool $use_include_path = false, $context = n
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $path
  * @return string
@@ -727,8 +646,6 @@ function readlink(string $path): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $path
  * @return non-empty-string
@@ -744,8 +661,6 @@ function realpath(string $path): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $oldname
  * @param string $newname
@@ -765,8 +680,6 @@ function rename(string $oldname, string $newname, $context = null): void
         throw FilesystemException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $stream
  * @throws FilesystemException
@@ -780,8 +693,6 @@ function rewind($stream): void
         throw FilesystemException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $directory
  * @param resource $context
@@ -800,8 +711,6 @@ function rmdir(string $directory, $context = null): void
         throw FilesystemException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $target
  * @param string $link
@@ -816,8 +725,6 @@ function symlink(string $target, string $link): void
         throw FilesystemException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $directory
  * @param string $prefix
@@ -834,8 +741,6 @@ function tempnam(string $directory, string $prefix): string
     }
     return $safeResult;
 }
-
-
 /**
  * @return resource
  * @throws FilesystemException
@@ -850,8 +755,6 @@ function tmpfile()
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @param int $time
@@ -873,8 +776,6 @@ function touch(string $filename, ?int $time = null, ?int $atime = null): void
         throw FilesystemException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $filename
  * @param resource $context

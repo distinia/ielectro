@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\ComException;
-
 /**
  * @return string
  * @throws ComException
@@ -18,8 +15,6 @@ function com_create_guid(): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param object $variant
  * @param object $sink_object
@@ -39,8 +34,6 @@ function com_event_sink(object $variant, object $sink_object, $sink_interface = 
         throw ComException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $typelib
  * @param bool $case_insensitive
@@ -55,8 +48,6 @@ function com_load_typelib(string $typelib, bool $case_insensitive = true): void
         throw ComException::createFromPhpError();
     }
 }
-
-
 /**
  * @param object $variant
  * @param null|string $dispatch_interface
@@ -78,8 +69,6 @@ function com_print_typeinfo(object $variant, ?string $dispatch_interface = null,
         throw ComException::createFromPhpError();
     }
 }
-
-
 /**
  * @param object $variant
  * @return int
@@ -95,8 +84,6 @@ function variant_date_to_timestamp(object $variant): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param mixed $value
  * @param int $decimals

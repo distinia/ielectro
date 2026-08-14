@@ -1,9 +1,6 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\Position;
-
 /**
  * Represents a CSS item that may have a position in the source CSS document (line number and possibly column number).
  *
@@ -15,12 +12,10 @@ interface Positionable
      * @return int<1, max>|null
      */
     public function getLineNumber(): ?int;
-
     /**
      * @return int<0, max>|null
      */
     public function getColumnNumber(): ?int;
-
     /**
      * @param int<1, max>|null $lineNumber
      * @param int<0, max>|null $columnNumber

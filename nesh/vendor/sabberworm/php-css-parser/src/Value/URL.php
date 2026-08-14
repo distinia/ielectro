@@ -1,28 +1,22 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\Value;
-
 use Sabberworm\CSS\OutputFormat;
 use Sabberworm\CSS\Parsing\ParserState;
 use Sabberworm\CSS\Parsing\SourceException;
 use Sabberworm\CSS\Parsing\UnexpectedEOFException;
 use Sabberworm\CSS\Parsing\UnexpectedTokenException;
 use Sabberworm\CSS\ShortClassNameProvider;
-
 /**
  * This class represents URLs in CSS. `URL`s always output in `URL("")` notation.
  */
 class URL extends PrimitiveValue
 {
     use ShortClassNameProvider;
-
     /**
      * @var CSSString
      */
     private $url;
-
     /**
      * @param int<1, max>|null $lineNumber
      */
@@ -31,7 +25,6 @@ class URL extends PrimitiveValue
         parent::__construct($lineNumber);
         $this->url = $url;
     }
-
     /**
      * @throws SourceException
      * @throws UnexpectedEOFException
@@ -65,17 +58,14 @@ class URL extends PrimitiveValue
         }
         return $result;
     }
-
     public function setURL(CSSString $url): void
     {
         $this->url = $url;
     }
-
     public function getURL(): CSSString
     {
         return $this->url;
     }
-
     /**
      * @return non-empty-string
      */
@@ -83,7 +73,6 @@ class URL extends PrimitiveValue
     {
         return "url({$this->url->render($outputFormat)})";
     }
-
     /**
      * @return array<string, bool|int|float|string|array<mixed>|null>
      *

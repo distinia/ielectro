@@ -3,17 +3,14 @@ body.inbox-page {
     grid-template-rows: 1fr;
     min-height: 100vh;
 }
-
 body.inbox-page main.inbox-shell {
     padding: 0;
     overflow: hidden;
     min-height: 0;
 }
-
 body.inbox-page footer.site-footer {
     display: none;
 }
-
 .inbox-shell {
     display: flex;
     width: 100%;
@@ -25,29 +22,23 @@ body.inbox-page footer.site-footer {
     overflow: hidden;
     box-shadow: none;
 }
-
 .hidden {
     display: none !important;
 }
-
 @media (max-width: 900px) {
     body.inbox-page main.inbox-shell {
         height: calc(100dvh - 72px);
     }
-
     body.inbox-page .inbox-shell.chat-open .conversations {
         display: none;
     }
-
     body.inbox-page .inbox-shell:not(.chat-open) .chat-area {
         display: none;
     }
-
     body.inbox-page .chat-back-btn {
         display: inline-flex !important;
     }
 }
-
 @media (min-width: 901px) {
     .chat-back-btn {
         display: none !important;

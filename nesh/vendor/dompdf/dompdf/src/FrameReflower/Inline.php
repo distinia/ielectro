@@ -5,11 +5,9 @@
  * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
  */
 namespace Dompdf\FrameReflower;
-
 use Dompdf\FrameDecorator\Block as BlockFrameDecorator;
 use Dompdf\FrameDecorator\Inline as InlineFrameDecorator;
 use Dompdf\FrameDecorator\Text as TextFrameDecorator;
-
 /**
  * Reflows inline frames
  *
@@ -25,7 +23,6 @@ class Inline extends AbstractFrameReflower
     {
         parent::__construct($frame);
     }
-
     /**
      * Handle reflow of empty inline frames.
      *
@@ -40,17 +37,13 @@ class Inline extends AbstractFrameReflower
         /** @var InlineFrameDecorator */
         $frame = $this->_frame;
         $style = $frame->get_style();
-
         // Resolve width, so the margin width can be checked
         $style->set_used("width", 0.0);
-
         $cb = $frame->get_containing_block();
         $line = $block->get_current_line_box();
         $width = $frame->get_margin_width();
-
         if ($width > ($cb["w"] - $line->left - $line->w - $line->right)) {
             $block->add_line();
-
             // Find the appropriate inline ancestor to split
             $child = $frame;
             $p = $child->get_parent();
@@ -58,7 +51,6 @@ class Inline extends AbstractFrameReflower
                 $child = $p;
                 $p = $p->get_parent();
             }
-
             if ($p instanceof InlineFrameDecorator) {
                 // Split parent and stop current reflow. Reflow continues
                 // via child-reflow loop of split parent
@@ -66,11 +58,9 @@ class Inline extends AbstractFrameReflower
                 return;
             }
         }
-
         $frame->position();
         $block->add_frame_to_line($frame);
     }
-
     /**
      * @param BlockFrameDecorator|null $block
      */
@@ -78,20 +68,15 @@ class Inline extends AbstractFrameReflower
     {
         /** @var InlineFrameDecorator */
         $frame = $this->_frame;
-
         // Check if a page break is forced
         $page = $frame->get_root();
         $page->check_forced_page_break($frame);
-
         if ($page->is_full()) {
             return;
         }
-
         // Counters and generated content
         $this->_set_content();
-
         $style = $frame->get_style();
-
         // Resolve auto margins
         // https://www.w3.org/TR/CSS21/visudet.html#inline-width
         // https://www.w3.org/TR/CSS21/visudet.html#inline-non-replaced
@@ -107,7 +92,6 @@ class Inline extends AbstractFrameReflower
         if ($style->margin_bottom === "auto") {
             $style->set_used("margin_bottom", 0.0);
         }
-
         // Handle line breaks
         if ($frame->get_node()->nodeName === "br") {
             if ($block) {
@@ -115,17 +99,14 @@ class Inline extends AbstractFrameReflower
                 $frame->set_containing_line($line);
                 $block->maximize_line_height($frame->get_margin_height(), $frame);
                 $block->add_line(true);
-
                 $next = $frame->get_next_sibling();
                 $p = $frame->get_parent();
-
                 if ($next && $p instanceof InlineFrameDecorator) {
                     $p->split($next);
                 }
             }
             return;
         }
-
         // Handle empty inline frames
         if (!$frame->get_first_child()) {
             if ($block) {
@@ -133,7 +114,6 @@ class Inline extends AbstractFrameReflower
             }
             return;
         }
-
         // Add margin, padding & border width to the first and last children,
         // so they are accounted for during text layout
         if (($f = $frame->get_first_child()) && $f instanceof TextFrameDecorator) {
@@ -142,48 +122,39 @@ class Inline extends AbstractFrameReflower
             $f_style->padding_left = $style->padding_left;
             $f_style->border_left_width = $style->border_left_width;
         }
-
         if (($l = $frame->get_last_child()) && $l instanceof TextFrameDecorator) {
             $l_style = $l->get_style();
             $l_style->margin_right = $style->margin_right;
             $l_style->padding_right = $style->padding_right;
             $l_style->border_right_width = $style->border_right_width;
         }
-
         $frame->position();
-
         $cb = $frame->get_containing_block();
-
         // Set the containing blocks and reflow each child.  The containing
         // block is not changed by line boxes.
         foreach ($frame->get_children() as $child) {
             $child->set_containing_block($cb);
             $child->reflow($block);
-
             // Stop reflow if the frame has been reset by a line or page break
             // due to child reflow
             if (!$frame->content_set) {
                 return;
             }
         }
-
         // Assume the position of the first in-flow child, otherwise use the
         // fallback position that was set before child reflow
         $child = $frame->get_first_child();
         while ($child && !$child->is_in_flow()) {
             $child = $child->get_next_sibling();
         }
-
         if ($child) {
             [$x, $y] = $child->get_position();
             $frame->set_position($x, $y);
         }
-
         // Handle relative positioning
         foreach ($frame->get_children() as $child) {
             $this->position_relative($child);
         }
-
         if ($block) {
             $block->add_frame_to_line($frame);
         }

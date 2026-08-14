@@ -1,5 +1,4 @@
 import { App } from "./app.js";
-
 export class EmptyState {
     static html({ icon = "sparkles", title, message, action = null, compact = false }) {
         let actionHtml = "";
@@ -15,7 +14,6 @@ export class EmptyState {
             ${actionHtml}
         </div>`;
     }
-
     static mount(container, options, onAction) {
         if (!container) return null;
         container.innerHTML = EmptyState.html(options);
@@ -28,7 +26,6 @@ export class EmptyState {
         }
         return container.querySelector(".empty-state");
     }
-
     static bindAction(root, onAction) {
         root?.querySelector(".empty-state-action[data-empty-action]")?.addEventListener(
             "click",
@@ -38,7 +35,6 @@ export class EmptyState {
             },
         );
     }
-
     static creatorType(type) {
         const map = {
             article: {
@@ -80,7 +76,6 @@ export class EmptyState {
         };
         return map[type] || map.article;
     }
-
     static feed() {
         return {
             icon: "home",
@@ -93,7 +88,6 @@ export class EmptyState {
             },
         };
     }
-
     static profilePosts({ isOwn, username } = {}) {
         return {
             icon: "image",
@@ -112,7 +106,6 @@ export class EmptyState {
                   },
         };
     }
-
     static exploreSearch(type, term) {
         const labels = {
             user: "users",
@@ -134,7 +127,6 @@ export class EmptyState {
             compact: true,
         };
     }
-
     static exploreRecents(type) {
         const labels = {
             article: "articles",
@@ -156,7 +148,6 @@ export class EmptyState {
             compact: true,
         };
     }
-
     static profileGrid({ filter, typeFilter, isOwn, username }) {
         if (filter === "saved") {
             return {
@@ -226,7 +217,6 @@ export class EmptyState {
                 : null,
         };
     }
-
     static activity() {
         return {
             icon: "bell",
@@ -235,7 +225,6 @@ export class EmptyState {
             compact: true,
         };
     }
-
     static usersList(term) {
         if (term) {
             return {
@@ -252,7 +241,6 @@ export class EmptyState {
             compact: true,
         };
     }
-
     static inbox() {
         return {
             icon: "message-circle",
@@ -261,7 +249,6 @@ export class EmptyState {
             compact: true,
         };
     }
-
     static profileNotFound() {
         return {
             icon: "user",

@@ -3,7 +3,6 @@
     gap: 0.85rem;
     padding: 1rem 1.35rem 0.25rem;
 }
-
 .article-generate-label {
     display: grid;
     gap: 0.45rem;
@@ -11,7 +10,6 @@
     font-weight: 600;
     color: #475569;
 }
-
 .article-generate-input {
     width: 100%;
     min-height: 210px;
@@ -19,12 +17,10 @@
     resize: vertical;
     text-transform: none;
 }
-
 .article-generate-footer {
     display: flex;
     justify-content: flex-end;
 }
-
 .article-generate-footer .button {
     min-width: 8.5rem;
 }

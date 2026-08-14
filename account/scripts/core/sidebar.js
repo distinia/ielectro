@@ -33,12 +33,10 @@ export class Sidebar {
             },
         ];
     }
-
     linkHtml(item, extraClass = "") {
         const className = extraClass ? ` class="${extraClass}"` : "";
         return `<li><a href="${item.href}"${className}><i data-icon="${item.icon}" class="sidebar-icon" aria-hidden="true"></i><span class="sidebar-label">${item.label}</span></a></li>`;
     }
-
     render() {
         const links = this.items()
             .map((item) => this.linkHtml(item))
@@ -51,10 +49,8 @@ export class Sidebar {
             },
             "logout",
         );
-
         return `<nav class="sidebar"><img src="https://account.ielectro.com/assets/brand/logo.png" class="logo" alt="iElectro" loading="lazy"><ul>${links}${logout}</ul></nav>`;
     }
-
     highlight(page) {
         document.querySelectorAll(".sidebar a").forEach((link) => {
             const href = link.getAttribute("href");

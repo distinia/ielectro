@@ -332,18 +332,15 @@ class Update
         $password = (string) ($input['password'] ?? '');
         $confirm = (string) ($input['confirm_password'] ?? '');
         $hasPassword = $account['password_hash'] !== null;
-
         if (
             !Validate::required($password)
             || !Validate::required($confirm)
         ) {
             Response::badRequest('New password and confirmation are required');
         }
-
         if ($hasPassword && !Validate::required($current)) {
             Response::badRequest('Current password is required');
         }
-
         if (!Validate::same($password, $confirm)) {
             Response::badRequest('Passwords do not match');
         }

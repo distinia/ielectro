@@ -1,33 +1,26 @@
 import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
 import { Alert } from "../core/alert.js";
 import { Api } from "../core/api.js";
-
 export class Sessions {
     constructor(output) {
         this.output = output;
     }
-
     sessionTitle(row) {
         if (row.is_current) {
             return "This device";
         }
-
         const browser = String(row.browser || "Unknown browser").trim();
         const os = String(row.os || "Unknown OS").trim();
         return `${browser} · ${os}`;
     }
-
     deviceLabel(row) {
         const browser = String(row.browser || "").trim();
         const os = String(row.os || "").trim();
-
         if (browser && os) {
             return `${browser} on ${os}`;
         }
-
         return row.device_info || "-";
     }
-
     async load() {
         if (!this.output) return;
         try {
@@ -57,7 +50,6 @@ export class Sessions {
             Alert.error(Api.errorMessage(error));
         }
     }
-
     async revoke(sessionId, isCurrent = false) {
         try {
             const result = await Nesh.Request.delete(
@@ -66,25 +58,21 @@ export class Sessions {
             );
             const currentSessionRevoked =
                 isCurrent || result?.current_session_revoked === true;
-
             Alert.success(
                 Api.message(result) ||
                     (currentSessionRevoked
                         ? "Signed out successfully"
                         : "Session revoked"),
             );
-
             if (currentSessionRevoked) {
                 window.location.href = "https://account.ielectro.com/login";
                 return;
             }
-
             await this.load();
         } catch (error) {
             Alert.error(Api.errorMessage(error));
         }
     }
-
     async revokeAllOthers() {
         try {
             const result = await Nesh.Request.delete(
@@ -96,7 +84,6 @@ export class Sessions {
             Alert.error(Api.errorMessage(error));
         }
     }
-
     renderEmpty(text) {
         this.output.innerHTML = `<div class="security-item"><p class="security-meta">${Nesh.Html.escape(text)}</p></div>`;
     }

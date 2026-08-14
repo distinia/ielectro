@@ -5,7 +5,6 @@
     --table-row-even: #fafbfc;
     --table-row-odd: #ffffff;
     --table-row-hover: rgba(21, 101, 192, 0.05);
-
     width: 100%;
     margin: 1.75em 0;
     color: #1e293b;
@@ -19,11 +18,9 @@
         0 1px 2px rgba(15, 23, 42, 0.04),
         0 10px 28px rgba(15, 23, 42, 0.07);
 }
-
 .table thead {
     position: relative;
 }
-
 .table thead::after {
     content: "";
     position: absolute;
@@ -34,7 +31,6 @@
     background: linear-gradient(90deg, rgba(21, 101, 192, 0.45), rgba(66, 165, 245, 0.35));
     pointer-events: none;
 }
-
 .table th {
     background: var(--table-header-bg);
     color: var(--table-header-color);
@@ -48,11 +44,9 @@
     border-bottom: 1px solid var(--table-border);
     vertical-align: middle;
 }
-
 .table th:last-child {
     border-right: none;
 }
-
 .table td {
     padding: 0.82rem 1rem;
     border-right: 1px solid var(--table-border);
@@ -62,42 +56,33 @@
     font-size: 0.98rem;
     transition: background-color 0.18s ease;
 }
-
 .table td:last-child {
     border-right: none;
 }
-
 .table tbody tr:last-child td {
     border-bottom: none;
 }
-
 .table tbody tr:hover td {
     background-color: var(--table-row-hover);
 }
-
 .table .row-even td {
     background-color: var(--table-row-even);
 }
-
 .table .row-odd td {
     background-color: var(--table-row-odd);
 }
-
 .table .row-even:hover td,
 .table .row-odd:hover td {
     background-color: var(--table-row-hover);
 }
-
 .table td .paragraph,
 .table th .paragraph {
     margin-bottom: 0.65em;
 }
-
 .table td .paragraph:last-child,
 .table th .paragraph:last-child {
     margin-bottom: 0;
 }
-
 .table td .link,
 .table th .link {
     word-break: break-word;

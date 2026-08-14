@@ -1,13 +1,11 @@
 import { Api } from "../core/api.js";
 import { App, EmptyState, Icons, Request, Spinner } from "../core/index.js";
-
 export class Posts {
     constructor(page) {
         this.page = page;
         this.container = document.querySelector(".profile-posts");
         this.init();
     }
-
     async init() {
         if (!this.container || !this.page?.userId) {
             return;
@@ -55,7 +53,6 @@ export class Posts {
             await Icons.load(this.container);
         }
     }
-
     async fetchList(apiFn) {
         try {
             const res = await Request.get(apiFn(this.page.userId));

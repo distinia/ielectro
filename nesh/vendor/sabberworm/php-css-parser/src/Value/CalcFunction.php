@@ -1,20 +1,14 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\Value;
-
 use Sabberworm\CSS\Parsing\ParserState;
 use Sabberworm\CSS\Parsing\UnexpectedEOFException;
 use Sabberworm\CSS\Parsing\UnexpectedTokenException;
-
 use function Safe\preg_match;
-
 class CalcFunction extends CSSFunction
 {
     private const T_OPERAND = 1;
     private const T_OPERATOR = 2;
-
     /**
      * @throws UnexpectedTokenException
      * @throws UnexpectedEOFException
@@ -41,7 +35,6 @@ class CalcFunction extends CSSFunction
             if ($parserState->isEnd() && $nestingLevel === 0) {
                 break;
             }
-
             $parserState->consumeWhiteSpace();
             if ($parserState->comes('(')) {
                 $nestingLevel++;
@@ -96,7 +89,6 @@ class CalcFunction extends CSSFunction
         }
         return new CalcFunction($function, $list, ',', $parserState->currentLine());
     }
-
     /**
      * @return array<string, bool|int|float|string|array<mixed>|null>
      *

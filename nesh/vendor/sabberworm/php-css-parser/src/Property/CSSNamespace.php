@@ -1,9 +1,6 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\Property;
-
 use Sabberworm\CSS\Comment\CommentContainer;
 use Sabberworm\CSS\OutputFormat;
 use Sabberworm\CSS\Position\Position;
@@ -11,7 +8,6 @@ use Sabberworm\CSS\Position\Positionable;
 use Sabberworm\CSS\ShortClassNameProvider;
 use Sabberworm\CSS\Value\CSSString;
 use Sabberworm\CSS\Value\URL;
-
 /**
  * `CSSNamespace` represents an `@namespace` rule.
  */
@@ -20,17 +16,14 @@ class CSSNamespace implements AtRule, Positionable
     use CommentContainer;
     use Position;
     use ShortClassNameProvider;
-
     /**
      * @var CSSString|URL
      */
     private $url;
-
     /**
      * @var string|null
      */
     private $prefix;
-
     /**
      * @param CSSString|URL $url
      * @param int<1, max>|null $lineNumber
@@ -41,7 +34,6 @@ class CSSNamespace implements AtRule, Positionable
         $this->prefix = $prefix;
         $this->setPosition($lineNumber);
     }
-
     /**
      * @return non-empty-string
      */
@@ -50,7 +42,6 @@ class CSSNamespace implements AtRule, Positionable
         return '@namespace ' . ($this->prefix === null ? '' : $this->prefix . ' ')
             . $this->url->render($outputFormat) . ';';
     }
-
     /**
      * @return CSSString|URL
      */
@@ -58,12 +49,10 @@ class CSSNamespace implements AtRule, Positionable
     {
         return $this->url;
     }
-
     public function getPrefix(): ?string
     {
         return $this->prefix;
     }
-
     /**
      * @param CSSString|URL $url
      */
@@ -71,12 +60,10 @@ class CSSNamespace implements AtRule, Positionable
     {
         $this->url = $url;
     }
-
     public function setPrefix(string $prefix): void
     {
         $this->prefix = $prefix;
     }
-
     /**
      * @return non-empty-string
      */
@@ -84,7 +71,6 @@ class CSSNamespace implements AtRule, Positionable
     {
         return 'namespace';
     }
-
     /**
      * @return array{0: CSSString|URL|non-empty-string, 1?: CSSString|URL}
      */
@@ -96,7 +82,6 @@ class CSSNamespace implements AtRule, Positionable
         }
         return $result;
     }
-
     /**
      * @return array<string, bool|int|float|string|array<mixed>|null>
      *

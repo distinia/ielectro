@@ -4,12 +4,9 @@
  * @link    https://github.com/dompdf/php-font-lib
  * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
  */
-
 namespace FontLib\Table\Type;
-
 use FontLib\Table\Table;
 use FontLib\Font;
-
 /**
  * `name` font table.
  *
@@ -21,7 +18,6 @@ class name extends Table {
     "count"        => self::uint16,
     "stringOffset" => self::uint16,
   );
-
   const NAME_COPYRIGHT          = 0;
   const NAME_NAME               = 1;
   const NAME_SUBFAMILY          = 2;
@@ -41,7 +37,6 @@ class name extends Table {
   const NAME_PREFERRE_SUBFAMILY = 17;
   const NAME_COMPAT_FULL_NAME   = 18;
   const NAME_SAMPLE_TEXT        = 19;
-
   static $nameIdCodes = array(
     0  => "Copyright",
     1  => "FontName",
@@ -64,14 +59,12 @@ class name extends Table {
     18 => "CompatibleFullName",
     19 => "SampleText",
   );
-
   static $platforms = array(
     0 => "Unicode",
     1 => "Macintosh",
     // 2 =>  Reserved
     3 => "Microsoft",
   );
-
   static $platformSpecific = array(
     // Unicode
     0 => array(
@@ -80,7 +73,6 @@ class name extends Table {
       2 => "ISO 10646 1993 semantics (deprecated)",
       3 => "Unicode 2.0 or later semantics",
     ),
-
     // Macintosh
     1 => array(
       0  => "Roman",
@@ -116,7 +108,6 @@ class name extends Table {
       30 => "Vietnamese",
       31 => "Sindhi",
     ),
-
     // Microsoft
     3 => array(
       0  => "Symbol",
@@ -132,31 +123,23 @@ class name extends Table {
       10 => "Unicode UCS-4",
     ),
   );
-
   protected function _parse() {
     $font = $this->getFont();
-
     $tableOffset = $font->pos();
-
     $data = $font->unpack(self::$header_format);
-
     $records = array();
     for ($i = 0; $i < $data["count"]; $i++) {
       $record      = new nameRecord();
       $record_data = $font->unpack(nameRecord::$format);
       $record->map($record_data);
-
       $records[] = $record;
     }
-
     $system_encodings = mb_list_encodings();
     $system_encodings = array_change_key_case(array_fill_keys($system_encodings, true), CASE_UPPER);
-    
     $names = array();
     foreach ($records as $record) {
       $font->seek($tableOffset + $data["stringOffset"] + $record->offset);
       $record->stringRaw = $font->read($record->length);
-
       $encoding = null;
       switch ($record->platformID) {
         case 3:
@@ -187,33 +170,24 @@ class name extends Table {
       if ($encoding === null) {
         $encoding = "UTF-16";
       }
-
       $record->string = mb_convert_encoding($record->stringRaw, "UTF-8", $encoding);
       if (strpos($record->string, "\0") !== false) {
         $record->string = str_replace("\0", "", $record->string);
       }
       $names[$record->nameID] = $record;
     }
-
     $data["records"] = $names;
-
     $this->data = $data;
   }
-
   protected function _encode() {
     $font = $this->getFont();
-
     /** @var nameRecord[] $records */
     $records       = $this->data["records"];
     $count_records = \count($records);
-
     $this->data["count"]        = $count_records;
     $this->data["stringOffset"] = 6 + ($count_records * 12); // 6 => uint16 * 3, 12 => sizeof self::$record_format
-
     $length = $font->pack(self::$header_format, $this->data);
-
     $offset = 0;
-
     /** @var nameRecord[] $records_to_encode */
     $records_to_encode = array();
     foreach ($records as $record) {
@@ -226,16 +200,13 @@ class name extends Table {
       $encoded_record->string = $record->string;
       $encoded_record->length = mb_strlen($encoded_record->getUTF16(), "8bit");
       $records_to_encode[] = $encoded_record;
-
       $offset += $encoded_record->length;
       $length += $font->pack(nameRecord::$format, (array)$encoded_record);
     }
-
     foreach ($records_to_encode as $record) {
       $str = $record->getUTF16();
       $length += $font->write($str, mb_strlen($str, "8bit"));
     }
-
     return $length;
   }
 }

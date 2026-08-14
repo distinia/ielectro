@@ -1,5 +1,4 @@
 export const DYSCOVER_POST_PREFIX = "@@DYSCOVER_POST@@";
-
 export function encodePostMessage(item = {}) {
     const payload = {
         id: item.id,
@@ -10,7 +9,6 @@ export function encodePostMessage(item = {}) {
     };
     return DYSCOVER_POST_PREFIX + JSON.stringify(payload);
 }
-
 export function decodePostMessage(body) {
     const raw = String(body || "");
     if (!raw.startsWith(DYSCOVER_POST_PREFIX)) return null;
@@ -20,7 +18,6 @@ export function decodePostMessage(body) {
         return null;
     }
 }
-
 export function postTypeLabel(type) {
     const value = String(type || "post").toLowerCase();
     if (value === "article") return "article";
@@ -32,12 +29,10 @@ export function postTypeLabel(type) {
     if (value === "biography") return "biography";
     return "post";
 }
-
 export function resolveNotificationType(item = {}) {
     if (item.type === "follow" && item.body === "unfollow") return "unfollow";
     return item.type || "default";
 }
-
 export function notificationArticle(item = {}) {
     if (item.post?.title) return item.post.title;
     if (item.type === "mention" && !item.post_id && !item.post) {
@@ -45,7 +40,6 @@ export function notificationArticle(item = {}) {
     }
     return item.body || "";
 }
-
 export function notificationPostType(item = {}) {
     if (item.post?.type) return postTypeLabel(item.post.type);
     if (item.type === "mention" && !item.post_id && !item.post) {
@@ -53,7 +47,6 @@ export function notificationPostType(item = {}) {
     }
     return postTypeLabel(item.post?.type || "post");
 }
-
 export function notificationTypeIcon(type) {
     const value = String(type || "default").toLowerCase();
     const map = {
@@ -72,7 +65,6 @@ export function notificationTypeIcon(type) {
     };
     return map[value] || "bell";
 }
-
 export function formatRelativeTime(value) {
     if (!value) return "";
     const date = new Date(value);

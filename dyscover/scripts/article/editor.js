@@ -21,7 +21,6 @@ import { getArticleState } from "./state.js";
 import { SourceSerializer } from "./source-serializer.js";
 import { SourceParser } from "./source-parser.js";
 import { yieldToMain } from "./source-yield.js";
-
 export class Editor {
     static current = null;
     static _escapeBound = false;
@@ -33,7 +32,6 @@ export class Editor {
     static SKIP_LOAD = new Set([Bold, Italic, Center]);
     static ELEMENTS_PER_YIELD = 80;
     static LINKS_PER_YIELD = 50;
-
     constructor() {
         this.elements = [
             Paragraph,
@@ -63,7 +61,6 @@ export class Editor {
         void this.activateElements();
         Editor.current = this;
     }
-
     static hydrateBlock(node) {
         if (!node || node.nodeType !== Node.ELEMENT_NODE) {
             return;
@@ -95,7 +92,6 @@ export class Editor {
             video.controls = false;
         });
     }
-
     mountManagedIn(root, editing = false) {
         if (!root?.querySelectorAll) {
             return;
@@ -180,14 +176,11 @@ export class Editor {
             }
         });
     }
-
     async mountBlockNode(node, { editing = false, lazy = false } = {}) {
         if (!node || node.nodeType !== Node.ELEMENT_NODE) {
             return;
         }
-
         Editor.hydrateBlock(node);
-
         if (node.classList.contains(Template.className)) {
             const instance = Template.list.get(node) || new Template(node);
             if (editing && instance.templateId) {
@@ -213,7 +206,6 @@ export class Editor {
             }
             return;
         }
-
         if (node.classList.contains(Table.className)) {
             if (!Table.list.has(node)) {
                 new Table(node);
@@ -224,7 +216,6 @@ export class Editor {
             }
             return;
         }
-
         if (
             node.classList.contains("heading") ||
             node.classList.contains("sub-heading")
@@ -237,7 +228,6 @@ export class Editor {
             }
             return;
         }
-
         if (node.classList.contains(Caption.className)) {
             if (!Caption.list.has(node)) {
                 new Caption(node);
@@ -247,7 +237,6 @@ export class Editor {
             }
             return;
         }
-
         if (
             node.classList.contains(List.classMap.ul) ||
             node.classList.contains(List.classMap.ol)
@@ -260,7 +249,6 @@ export class Editor {
             }
             return;
         }
-
         if (node.classList.contains(Paragraph.className)) {
             if (editing && !lazy) {
                 if (!Paragraph.list.has(node)) {
@@ -270,7 +258,6 @@ export class Editor {
             }
             return;
         }
-
         if (node.classList.contains(Legend.className)) {
             if (!Legend.list.has(node)) {
                 new Legend(node);
@@ -280,7 +267,6 @@ export class Editor {
             }
             return;
         }
-
         if (node.classList.contains(Percentage.className)) {
             if (!Percentage.list.has(node)) {
                 new Percentage(node);
@@ -290,7 +276,6 @@ export class Editor {
             }
             return;
         }
-
         for (const className of Object.values(Media.classMap)) {
             if (!node.classList.contains(className)) {
                 continue;
@@ -304,7 +289,6 @@ export class Editor {
             return;
         }
     }
-
     bindLazyBlockEditing() {
         if (!this.isEditing || this.isTextMode || this._lazyEditBound) {
             return;
@@ -341,7 +325,6 @@ export class Editor {
         this.content?.addEventListener("focusin", this._lazyFocusIn);
         this.content?.addEventListener("mousedown", this._lazyPointerDown);
     }
-
     unbindLazyBlockEditing() {
         this.blurEditBlock(this._activeEditBlock);
         this._activeEditBlock = null;
@@ -355,7 +338,6 @@ export class Editor {
         }
         this._lazyEditBound = false;
     }
-
     blurEditBlock(block) {
         if (!block) {
             return;
@@ -382,14 +364,12 @@ export class Editor {
             List.list.get(block)?.closeEditing?.();
         }
     }
-
     focusEditBlock(block) {
         if (!block || this._activeEditBlock === block) {
             return;
         }
         this.blurEditBlock(this._activeEditBlock);
         this._activeEditBlock = block;
-
         if (block.classList.contains(Paragraph.className)) {
             let instance = Paragraph.list.get(block);
             if (!instance) {
@@ -427,12 +407,10 @@ export class Editor {
             }
             instance.startEditing?.();
         }
-
         if (block.isContentEditable) {
             block.focus({ preventScroll: true });
         }
     }
-
     async activateManagedElements(editing) {
         for (const Class of Editor.MANAGED) {
             if (!(Class.list instanceof Map)) {
@@ -450,7 +428,6 @@ export class Editor {
             });
         }
     }
-
     static hydrateLegacyContent(container) {
         if (!container) return;
         Editor.stripContentEditable(container);
@@ -488,7 +465,6 @@ export class Editor {
             video.controls = false;
         });
     }
-
     static stripContentEditable(root) {
         if (!root) {
             return;
@@ -504,7 +480,6 @@ export class Editor {
             element.removeAttribute?.("contenteditable");
         }
     }
-
     static stripContentEditableHtml(html) {
         if (!html) {
             return html;
@@ -514,7 +489,6 @@ export class Editor {
         Editor.stripContentEditable(container);
         return container.innerHTML;
     }
-
     getSelectors(Class) {
         const selectors = [];
         if (Class.className) {
@@ -530,7 +504,6 @@ export class Editor {
         }
         return selectors;
     }
-
     mountElementClass(Class, container) {
         if (!(Class.list instanceof Map)) {
             return 0;
@@ -549,7 +522,6 @@ export class Editor {
         });
         return mounted;
     }
-
     loadManagedElements() {
         const container = Select.container();
         if (!container) return;
@@ -557,7 +529,6 @@ export class Editor {
             this.mountElementClass(Class, container);
         });
     }
-
     loadViewBlocks() {
         const container = Select.container();
         if (!container) return;
@@ -565,7 +536,6 @@ export class Editor {
             this.mountElementClass(Class, container);
         });
     }
-
     async loadEditBlocks() {
         const container = Select.container();
         if (!container) return;
@@ -589,7 +559,6 @@ export class Editor {
             }
         }
     }
-
     async activateEditBlocks() {
         let processed = 0;
         for (const Class of Editor.EDIT_BLOCKS) {
@@ -605,11 +574,9 @@ export class Editor {
             }
         }
     }
-
     async initLinkPreviews() {
         await this.setLinkEditing(false);
     }
-
     async init() {
         try {
             this.instruments = await API.getElements();
@@ -621,7 +588,6 @@ export class Editor {
             Alert.error(e?.text || "Failed to load instruments");
         }
     }
-
     create() {
         const container = document.createElement("div");
         container.className = "instruments";
@@ -714,7 +680,6 @@ export class Editor {
             void Editor.toggleEditing();
         });
     }
-
     static async toggleEditing() {
         const editButton = document.querySelector(".index-edit-button");
         if (!Editor.current) return;
@@ -730,7 +695,6 @@ export class Editor {
         if (editButton) await Icons.load(editButton);
         await Editor.current?.index?.buildSidebar();
     }
-
     static showModeTransition() {
         const scroll = document.querySelector(".article-scroll");
         if (!scroll || Editor._transitionOverlay) {
@@ -746,13 +710,11 @@ export class Editor {
         Editor._transitionOverlay = overlay;
         document.body.classList.add("article-mode-switching");
     }
-
     static hideModeTransition() {
         Editor._transitionOverlay?.remove();
         Editor._transitionOverlay = null;
         document.body.classList.remove("article-mode-switching");
     }
-
     static async runModeTransition(task) {
         if (Editor._modeSwitching) {
             return task?.();
@@ -773,7 +735,6 @@ export class Editor {
             Editor._modeSwitching = false;
         }
     }
-
     static updateModeTransitionProgress(index, total, label = "") {
         const overlay = Editor._transitionOverlay;
         if (!overlay || !total) {
@@ -794,7 +755,6 @@ export class Editor {
             overlay.setAttribute("aria-label", label);
         }
     }
-
     static async toggleEditorMode() {
         if (!Editor.current?.isEditing || Editor._modeSwitching) {
             return;
@@ -806,14 +766,12 @@ export class Editor {
         }
         await Editor.current.index?.buildSidebar();
     }
-
     getContent() {
         if (this.isTextMode && this.sourceEditor) {
             return this.sourceEditor.value;
         }
         return this.content?.innerHTML ?? "";
     }
-
     async getHtmlContent() {
         if (this.isTextMode && this.sourceEditor) {
             const div = document.createElement("div");
@@ -823,7 +781,6 @@ export class Editor {
         }
         return this.content?.innerHTML ?? "";
     }
-
     clearElementLists() {
         this.elements.forEach((Class) => {
             if (Class.list instanceof Map) {
@@ -831,7 +788,6 @@ export class Editor {
             }
         });
     }
-
     async reloadParsedElements() {
         this.loadManagedElements();
         this.loadViewBlocks();
@@ -840,7 +796,6 @@ export class Editor {
         }
         await this.index?.refresh();
     }
-
     async applySourceToContent(options = {}) {
         if (!this.sourceEditor || !this.content) {
             return;
@@ -869,7 +824,6 @@ export class Editor {
             throw error;
         }
     }
-
     ensureSourceEditor() {
         if (this.sourceEditor) {
             return;
@@ -881,7 +835,6 @@ export class Editor {
         this.sourceEditor.setAttribute("aria-label", "Article source");
         document.querySelector(".article-scroll")?.appendChild(this.sourceEditor);
     }
-
     async enterTextMode() {
         if (!this.isEditing || this.isTextMode || Editor._modeSwitching) {
             return;
@@ -898,13 +851,11 @@ export class Editor {
             await this.activateElements();
         });
     }
-
     async applyGeneratedSource(source) {
         const text = String(source || "").trim();
         if (!text) {
             return;
         }
-
         if (!this.isEditing) {
             const editButton = document.querySelector(".index-edit-button");
             editButton?.classList.add("is-active");
@@ -916,9 +867,7 @@ export class Editor {
                 await Icons.load(editButton);
             }
         }
-
         this.ensureSourceEditor();
-
         if (!this.isTextMode) {
             await Editor.runModeTransition(async () => {
                 this.isTextMode = true;
@@ -928,11 +877,9 @@ export class Editor {
                 await this.activateElements();
             });
         }
-
         this.sourceEditor.value = text;
         await this.index?.buildSidebar();
     }
-
     async enterGraphicMode() {
         if (!this.isTextMode || Editor._modeSwitching) {
             return;
@@ -957,7 +904,6 @@ export class Editor {
             }
         });
     }
-
     async syncTextToGraphic() {
         if (!this.isTextMode) {
             return;
@@ -1014,7 +960,6 @@ export class Editor {
         Editor.stripContentEditable(this.content);
         await this.setLinkEditing(false);
     }
-
     async setLinkEditing(editing) {
         const container = Select.container();
         if (!container) {
@@ -1040,7 +985,6 @@ export class Editor {
             }
         }
     }
-
     pasteElements() {
         if (this._pasteBound) {
             return;

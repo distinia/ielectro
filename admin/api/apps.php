@@ -11,7 +11,6 @@ class Apps
             'GET' => fn() => $this->list(),
         ]);
     }
-
     public static function catalog(): array
     {
         return [
@@ -30,7 +29,6 @@ class Apps
             ],
         ];
     }
-
     private function list(): void
     {
         Request::get();

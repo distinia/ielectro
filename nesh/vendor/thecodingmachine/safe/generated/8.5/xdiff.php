@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\XdiffException;
-
 /**
  * @param string $old_file
  * @param string $new_file
@@ -19,8 +16,6 @@ function xdiff_file_bdiff(string $old_file, string $new_file, string $dest): voi
         throw XdiffException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $file
  * @param string $patch
@@ -36,8 +31,6 @@ function xdiff_file_bpatch(string $file, string $patch, string $dest): void
         throw XdiffException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $old_file
  * @param string $new_file
@@ -53,8 +46,6 @@ function xdiff_file_diff_binary(string $old_file, string $new_file, string $dest
         throw XdiffException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $old_file
  * @param string $new_file
@@ -72,8 +63,6 @@ function xdiff_file_diff(string $old_file, string $new_file, string $dest, int $
         throw XdiffException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $file
  * @param string $patch
@@ -89,8 +78,6 @@ function xdiff_file_patch_binary(string $file, string $patch, string $dest): voi
         throw XdiffException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $old_file
  * @param string $new_file
@@ -106,8 +93,6 @@ function xdiff_file_rabdiff(string $old_file, string $new_file, string $dest): v
         throw XdiffException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $str
  * @param string $patch
@@ -124,8 +109,6 @@ function xdiff_string_bpatch(string $str, string $patch): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $str
  * @param string $patch
@@ -142,8 +125,6 @@ function xdiff_string_patch_binary(string $str, string $patch): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $str
  * @param string $patch
@@ -168,8 +149,6 @@ function xdiff_string_patch(string $str, string $patch, ?int $flags = null, ?str
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $old_data
  * @param string $new_data

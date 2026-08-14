@@ -4,13 +4,10 @@ export class Spinner {
             <div class="page-spinner__ring"></div>
         </div>`;
     }
-
     static mount(container, compact = false) {
         if (!container) return;
         container.innerHTML = Spinner.html(compact);
     }
-
     static showPage() {}
-
     static hidePage() {}
 }

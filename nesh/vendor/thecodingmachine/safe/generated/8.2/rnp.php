@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\RnpException;
-
 /**
  * @param \RnpFFI $ffi
  * @param string $input
@@ -20,8 +17,6 @@ function rnp_decrypt(\RnpFFI $ffi, string $input): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $input
  * @param int $flags
@@ -38,8 +33,6 @@ function rnp_dump_packets_to_json(string $input, int $flags): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $input
  * @param int $flags
@@ -56,8 +49,6 @@ function rnp_dump_packets(string $input, int $flags): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $pub_format
  * @param string $sec_format
@@ -74,8 +65,6 @@ function rnp_ffi_create(string $pub_format, string $sec_format): \RnpFFI
     }
     return $safeResult;
 }
-
-
 /**
  * @param \RnpFFI $ffi
  * @param callable $password_callback
@@ -90,8 +79,6 @@ function rnp_ffi_set_pass_provider(\RnpFFI $ffi, callable $password_callback): v
         throw RnpException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \RnpFFI $ffi
  * @param string $input
@@ -109,8 +96,6 @@ function rnp_import_keys(\RnpFFI $ffi, string $input, int $flags): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param \RnpFFI $ffi
  * @param string $input
@@ -128,8 +113,6 @@ function rnp_import_signatures(\RnpFFI $ffi, string $input, int $flags): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param \RnpFFI $ffi
  * @param string $key_fp
@@ -149,8 +132,6 @@ function rnp_key_export_autocrypt(\RnpFFI $ffi, string $key_fp, string $subkey_f
     }
     return $safeResult;
 }
-
-
 /**
  * @param \RnpFFI $ffi
  * @param string $key_fp
@@ -173,8 +154,6 @@ function rnp_key_export_revocation(\RnpFFI $ffi, string $key_fp, int $flags, ?ar
     }
     return $safeResult;
 }
-
-
 /**
  * @param \RnpFFI $ffi
  * @param string $key_fp
@@ -192,8 +171,6 @@ function rnp_key_export(\RnpFFI $ffi, string $key_fp, int $flags): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param \RnpFFI $ffi
  * @param string $key_fp
@@ -210,8 +187,6 @@ function rnp_key_get_info(\RnpFFI $ffi, string $key_fp): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param \RnpFFI $ffi
  * @param string $key_fp
@@ -227,8 +202,6 @@ function rnp_key_remove(\RnpFFI $ffi, string $key_fp, int $flags): void
         throw RnpException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \RnpFFI $ffi
  * @param string $key_fp
@@ -249,8 +222,6 @@ function rnp_key_revoke(\RnpFFI $ffi, string $key_fp, int $flags, ?array $option
         throw RnpException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \RnpFFI $ffi
  * @param string $identifier_type
@@ -267,8 +238,6 @@ function rnp_list_keys(\RnpFFI $ffi, string $identifier_type): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param \RnpFFI $ffi
  * @param string $format
@@ -285,8 +254,6 @@ function rnp_load_keys_from_path(\RnpFFI $ffi, string $format, string $input_pat
         throw RnpException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \RnpFFI $ffi
  * @param string $format
@@ -303,8 +270,6 @@ function rnp_load_keys(\RnpFFI $ffi, string $format, string $input, int $flags):
         throw RnpException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \RnpFFI $ffi
  * @param string $identifier_type
@@ -322,8 +287,6 @@ function rnp_locate_key(\RnpFFI $ffi, string $identifier_type, string $identifie
     }
     return $safeResult;
 }
-
-
 /**
  * @param \RnpFFI $ffi
  * @param string $message
@@ -346,8 +309,6 @@ function rnp_op_encrypt(\RnpFFI $ffi, string $message, array $recipient_keys_fp,
     }
     return $safeResult;
 }
-
-
 /**
  * @param \RnpFFI $ffi
  * @param string $userid
@@ -373,8 +334,6 @@ function rnp_op_generate_key(\RnpFFI $ffi, string $userid, string $key_alg, ?str
     }
     return $safeResult;
 }
-
-
 /**
  * @param \RnpFFI $ffi
  * @param string $data
@@ -397,8 +356,6 @@ function rnp_op_sign_cleartext(\RnpFFI $ffi, string $data, array $keys_fp, ?arra
     }
     return $safeResult;
 }
-
-
 /**
  * @param \RnpFFI $ffi
  * @param string $data
@@ -421,8 +378,6 @@ function rnp_op_sign_detached(\RnpFFI $ffi, string $data, array $keys_fp, ?array
     }
     return $safeResult;
 }
-
-
 /**
  * @param \RnpFFI $ffi
  * @param string $data
@@ -445,8 +400,6 @@ function rnp_op_sign(\RnpFFI $ffi, string $data, array $keys_fp, ?array $options
     }
     return $safeResult;
 }
-
-
 /**
  * @param \RnpFFI $ffi
  * @param string $data
@@ -464,8 +417,6 @@ function rnp_op_verify_detached(\RnpFFI $ffi, string $data, string $signature): 
     }
     return $safeResult;
 }
-
-
 /**
  * @param \RnpFFI $ffi
  * @param string $data
@@ -482,8 +433,6 @@ function rnp_op_verify(\RnpFFI $ffi, string $data): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param \RnpFFI $ffi
  * @param string $format
@@ -500,8 +449,6 @@ function rnp_save_keys_to_path(\RnpFFI $ffi, string $format, string $output_path
         throw RnpException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \RnpFFI $ffi
  * @param string $format
@@ -518,8 +465,6 @@ function rnp_save_keys(\RnpFFI $ffi, string $format, string &$output, int $flags
         throw RnpException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $type
  * @return string

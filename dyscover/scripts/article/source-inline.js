@@ -9,23 +9,19 @@ export class SourceInline {
     static collapseWhitespace(text) {
         return String(text || "").replace(/\s+/g, " ");
     }
-
     static normalizeInline(text) {
         return this.collapseWhitespace(text).trim();
     }
-
     static escapeText(text) {
         return String(text || "")
             .replace(/\\/g, "\\\\")
             .replace(/\[\[/g, "\\[[")
             .replace(/\{\{/g, "\\{{");
     }
-
     static unescapeText(text) {
         return String(text || "")
             .replace(/\\(\[\[|\{\{|\\|\*)/g, "$1");
     }
-
     static serialize(node) {
         if (!node) {
             return "";
@@ -38,7 +34,6 @@ export class SourceInline {
         }
         const el = node;
         const tag = el.tagName.toLowerCase();
-
         if (el.classList.contains("bold") || tag === "b") {
             return `**${this.serializeChildren(el)}**`;
         }
@@ -92,37 +87,31 @@ export class SourceInline {
         }
         return this.serializeChildren(el);
     }
-
     static serializeChildren(parent) {
         if (!parent) {
             return "";
         }
         return [...parent.childNodes].map((node) => this.serialize(node)).join("");
     }
-
     static parse(text) {
         const fragment = document.createDocumentFragment();
         this.parseInto(text, fragment);
         return fragment;
     }
-
     static parseInto(text, parent) {
         let i = 0;
         const source = String(text || "");
-
         const appendText = (value) => {
             if (value) {
                 parent.appendChild(document.createTextNode(value));
             }
         };
-
         while (i < source.length) {
             if (source.startsWith("\\", i)) {
                 appendText(source[i + 1] || "");
                 i += 2;
                 continue;
             }
-
             const macro = this.readMacro(source, i);
             if (macro) {
                 const node = this.createMacroNode(macro);
@@ -134,14 +123,12 @@ export class SourceInline {
                 i = macro.end;
                 continue;
             }
-
             const link = this.readLink(source, i);
             if (link) {
                 parent.appendChild(Link.create(link.url, link.text));
                 i = link.end;
                 continue;
             }
-
             const bold = this.readWrapped(source, i, "**");
             if (bold) {
                 const node = Bold.create(bold.inner);
@@ -153,7 +140,6 @@ export class SourceInline {
                 i = bold.end;
                 continue;
             }
-
             const italic = this.readWrapped(source, i, "*");
             if (italic) {
                 const node = Italic.create(italic.inner);
@@ -165,7 +151,6 @@ export class SourceInline {
                 i = italic.end;
                 continue;
             }
-
             const nextSpecial = this.findNextSpecial(source, i);
             if (nextSpecial <= i) {
                 appendText(source[i]);
@@ -176,25 +161,21 @@ export class SourceInline {
             i = nextSpecial;
         }
     }
-
     static async parseIntoAsync(text, parent) {
         let i = 0;
         const source = String(text || "");
         let steps = 0;
-
         const appendText = (value) => {
             if (value) {
                 parent.appendChild(document.createTextNode(value));
             }
         };
-
         while (i < source.length) {
             if (source.startsWith("\\", i)) {
                 appendText(source[i + 1] || "");
                 i += 2;
                 continue;
             }
-
             const macro = this.readMacro(source, i);
             if (macro) {
                 const node = this.createMacroNode(macro);
@@ -210,7 +191,6 @@ export class SourceInline {
                 }
                 continue;
             }
-
             const link = this.readLink(source, i);
             if (link) {
                 parent.appendChild(Link.create(link.url, link.text));
@@ -221,7 +201,6 @@ export class SourceInline {
                 }
                 continue;
             }
-
             const bold = this.readWrapped(source, i, "**");
             if (bold) {
                 const node = Bold.create(bold.inner);
@@ -237,7 +216,6 @@ export class SourceInline {
                 }
                 continue;
             }
-
             const italic = this.readWrapped(source, i, "*");
             if (italic) {
                 const node = Italic.create(italic.inner);
@@ -253,7 +231,6 @@ export class SourceInline {
                 }
                 continue;
             }
-
             const nextSpecial = this.findNextSpecial(source, i);
             if (nextSpecial <= i) {
                 appendText(source[i]);
@@ -273,14 +250,12 @@ export class SourceInline {
             }
         }
     }
-
     static findNextSpecial(source, start) {
         const indices = ["\\", "[[", "{{", "**", "*"]
             .map((token) => source.indexOf(token, start))
             .filter((index) => index !== -1);
         return indices.length ? Math.min(...indices) : source.length;
     }
-
     static readWrapped(source, start, marker) {
         if (!source.startsWith(marker, start)) {
             return null;
@@ -294,7 +269,6 @@ export class SourceInline {
             end: end + marker.length,
         };
     }
-
     static readLink(source, start) {
         if (!source.startsWith("[[", start)) {
             return null;
@@ -324,7 +298,6 @@ export class SourceInline {
         }
         return null;
     }
-
     static readMacro(source, start) {
         if (!source.startsWith("{{", start)) {
             return null;
@@ -343,7 +316,6 @@ export class SourceInline {
             end: end + 2,
         };
     }
-
     static splitMacroParts(inner) {
         const parts = [];
         let current = "";
@@ -358,13 +330,11 @@ export class SourceInline {
         parts.push(current.trim());
         return parts.map((part) => part.replace(/\\\|/g, "|"));
     }
-
     static isSingleCompleteMacro(text) {
         const trimmed = String(text || "").trim();
         const macro = this.readMacro(trimmed, 0);
         return !!(macro && macro.end === trimmed.length);
     }
-
     static splitTableCells(line) {
         const inner = String(line || "")
             .trim()
@@ -373,7 +343,6 @@ export class SourceInline {
         const cells = [];
         let current = "";
         let i = 0;
-
         while (i < inner.length) {
             if (inner.startsWith("\\|", i)) {
                 current += "|";
@@ -409,11 +378,9 @@ export class SourceInline {
             current += inner[i];
             i++;
         }
-
         cells.push(current.trim());
         return cells.map((cell) => cell.replace(/\\n/g, "\n"));
     }
-
     static createMacroNode(macro) {
         switch (macro.type) {
             case "legend": {
@@ -493,7 +460,6 @@ export class SourceInline {
                 return null;
         }
     }
-
     static parseListItems(text) {
         const lines = String(text || "")
             .replace(/\r/g, "")
@@ -508,7 +474,6 @@ export class SourceInline {
         }
         return [text.trim()];
     }
-
     static fillElement(parent, text) {
         parent.replaceChildren();
         this.parseInto(text, parent);
@@ -516,7 +481,6 @@ export class SourceInline {
             parent.appendChild(document.createTextNode(""));
         }
     }
-
     static async fillElementAsync(parent, text) {
         parent.replaceChildren();
         await this.parseIntoAsync(text, parent);

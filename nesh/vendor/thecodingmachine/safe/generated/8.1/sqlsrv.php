@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\SqlsrvException;
-
 /**
  * @param resource $conn
  * @throws SqlsrvException
@@ -17,8 +14,6 @@ function sqlsrv_begin_transaction($conn): void
         throw SqlsrvException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $stmt
  * @throws SqlsrvException
@@ -32,8 +27,6 @@ function sqlsrv_cancel($stmt): void
         throw SqlsrvException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $conn
  * @return array
@@ -49,8 +42,6 @@ function sqlsrv_client_info($conn): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $conn
  * @throws SqlsrvException
@@ -64,8 +55,6 @@ function sqlsrv_close($conn): void
         throw SqlsrvException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $conn
  * @throws SqlsrvException
@@ -79,8 +68,6 @@ function sqlsrv_commit($conn): void
         throw SqlsrvException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $setting
  * @param mixed $value
@@ -95,8 +82,6 @@ function sqlsrv_configure(string $setting, $value): void
         throw SqlsrvException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $stmt
  * @throws SqlsrvException
@@ -110,8 +95,6 @@ function sqlsrv_execute($stmt): void
         throw SqlsrvException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $stmt
  * @param int $fetchType
@@ -138,8 +121,6 @@ function sqlsrv_fetch_array($stmt, ?int $fetchType = null, ?int $row = null, ?in
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $stmt
  * @param string $className
@@ -169,8 +150,6 @@ function sqlsrv_fetch_object($stmt, ?string $className = null, ?array $ctorParam
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $stmt
  * @param int $row
@@ -194,8 +173,6 @@ function sqlsrv_fetch($stmt, ?int $row = null, ?int $offset = null): ?bool
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $stmt
  * @throws SqlsrvException
@@ -209,8 +186,6 @@ function sqlsrv_free_stmt($stmt): void
         throw SqlsrvException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $stmt
  * @param int $fieldIndex
@@ -232,8 +207,6 @@ function sqlsrv_get_field($stmt, int $fieldIndex, ?int $getAsType = null)
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $stmt
  * @return bool|null
@@ -249,8 +222,6 @@ function sqlsrv_next_result($stmt): ?bool
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $stmt
  * @return int
@@ -266,8 +237,6 @@ function sqlsrv_num_fields($stmt): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $stmt
  * @return int
@@ -283,8 +252,6 @@ function sqlsrv_num_rows($stmt): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $conn
  * @param string $sql
@@ -309,8 +276,6 @@ function sqlsrv_prepare($conn, string $sql, ?array $params = null, ?array $optio
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $conn
  * @param string $sql
@@ -335,8 +300,6 @@ function sqlsrv_query($conn, string $sql, ?array $params = null, ?array $options
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $conn
  * @throws SqlsrvException

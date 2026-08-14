@@ -1,5 +1,4 @@
 <?php
-
 if (strpos(PHP_VERSION, "8.1.") === 0) {
     return require_once __DIR__ . '/generated/8.1/rector-migrate.php';
 }

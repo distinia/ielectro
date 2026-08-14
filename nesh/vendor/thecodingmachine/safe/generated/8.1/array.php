@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\ArrayException;
-
 /**
  * @param array $keys
  * @param array $values
@@ -20,8 +17,6 @@ function array_combine(array $keys, array $values): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param array $array
  * @return array
@@ -37,8 +32,6 @@ function array_flip(array $array): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param array $array
  * @param array $replacements
@@ -59,8 +52,6 @@ function array_replace_recursive(array $array, array ...$replacements): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param array $array
  * @param array $replacements
@@ -81,8 +72,6 @@ function array_replace(array $array, array ...$replacements): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param array|object $array
  * @param callable $callback
@@ -102,8 +91,6 @@ function array_walk_recursive(&$array, callable $callback, $arg = null): void
         throw ArrayException::createFromPhpError();
     }
 }
-
-
 /**
  * @param array $array
  * @throws ArrayException

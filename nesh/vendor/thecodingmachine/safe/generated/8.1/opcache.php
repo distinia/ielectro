@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\OpcacheException;
-
 /**
  * @param string $filename
  * @throws OpcacheException
@@ -17,8 +14,6 @@ function opcache_compile_file(string $filename): void
         throw OpcacheException::createFromPhpError();
     }
 }
-
-
 /**
  * @param bool $include_scripts
  * @return array

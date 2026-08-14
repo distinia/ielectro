@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\MiscException;
-
 /**
  * @param string $constant_name
  * @param mixed $value
@@ -19,8 +16,6 @@ function define(string $constant_name, $value, bool $case_insensitive = false): 
         throw MiscException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $filename
  * @param bool $return
@@ -37,8 +32,6 @@ function highlight_file(string $filename, bool $return = false)
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $string
  * @param bool $return
@@ -55,8 +48,6 @@ function highlight_string(string $string, bool $return = false)
     }
     return $safeResult;
 }
-
-
 /**
  * @param bool $as_number
  * @return array{0:int,1:int}|float|int
@@ -72,8 +63,6 @@ function hrtime(bool $as_number = false)
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $format
  * @param mixed $values
@@ -94,8 +83,6 @@ function pack(string $format, ...$values): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param int|string $in_codepage
  * @param int|string $out_codepage
@@ -113,8 +100,6 @@ function sapi_windows_cp_conv($in_codepage, $out_codepage, string $subject): str
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $codepage
  * @throws MiscException
@@ -128,8 +113,6 @@ function sapi_windows_cp_set(int $codepage): void
         throw MiscException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $event
  * @param int $pid
@@ -144,8 +127,6 @@ function sapi_windows_generate_ctrl_event(int $event, int $pid = 0): void
         throw MiscException::createFromPhpError();
     }
 }
-
-
 /**
  * @param callable|null $handler
  * @param bool $add
@@ -160,8 +141,6 @@ function sapi_windows_set_ctrl_handler(?callable $handler, bool $add = true): vo
         throw MiscException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $stream
  * @param bool|null $enable
@@ -180,8 +159,6 @@ function sapi_windows_vt100_support($stream, ?bool $enable = null): void
         throw MiscException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $seconds
  * @return int
@@ -197,8 +174,6 @@ function sleep(int $seconds): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $seconds
  * @param int $nanoseconds
@@ -215,8 +190,6 @@ function time_nanosleep(int $seconds, int $nanoseconds)
     }
     return $safeResult;
 }
-
-
 /**
  * @param float $timestamp
  * @throws MiscException
@@ -230,8 +203,6 @@ function time_sleep_until(float $timestamp): void
         throw MiscException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $format
  * @param string $string

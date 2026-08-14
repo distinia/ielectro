@@ -10,7 +10,6 @@ use Nesh\Response;
 use Nesh\Routing;
 use Nesh\Validate;
 use Nesh\Video;
-
 class Inbox
 {
     public function index(): void
@@ -398,7 +397,6 @@ class InboxData
             LIMIT 1',
             [$chatId, $userId]
         );
-
         return (int) ($row['user_id'] ?? 0);
     }
     public static function directChat(int $userA, int $userB): ?array
@@ -554,7 +552,6 @@ class InboxAssets
     {
         return \APP_ASSETS . '/users/' . $userId . '/inbox/' . $chatId;
     }
-
     public static function fileUrl(int $userId, int $chatId, string $filename): string
     {
         return \APP_URL
@@ -562,7 +559,6 @@ class InboxAssets
             . '/inbox/' . $chatId
             . '/' . ltrim($filename, '/');
     }
-
     public static function deleteChatFiles(int $chatId): void
     {
         $rows = Query::fetchAll(

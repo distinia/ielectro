@@ -2,7 +2,6 @@ import { App } from "../core/app.js";
 import { Api } from "../core/api.js";
 import { Card, EmptyState, Icons, Request } from "../core/index.js";
 import { ExploreHelpers } from "./helpers.js";
-
 export class Recents {
     async load() {
         let items = [];
@@ -30,14 +29,12 @@ export class Recents {
         }
     }
 }
-
 export class ExploreGrid {
     static async renderPreview(mount, item, type) {
         if (!mount || !item?.id) return;
         const card = new Card(App.enrichPost({ ...item, type: item.type || type }));
         await card.preview(mount);
     }
-
     static async renderItems(mount, items, type) {
         if (!mount || !Array.isArray(items) || !items.length) return;
         for (const item of items) {

@@ -1,18 +1,13 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\Value;
-
 use Sabberworm\CSS\OutputFormat;
 use Sabberworm\CSS\Parsing\ParserState;
 use Sabberworm\CSS\Parsing\SourceException;
 use Sabberworm\CSS\Parsing\UnexpectedEOFException;
 use Sabberworm\CSS\Parsing\UnexpectedTokenException;
 use Sabberworm\CSS\ShortClassNameProvider;
-
 use function Safe\preg_match;
-
 /**
  * This class is a wrapper for quoted strings to distinguish them from keywords.
  *
@@ -21,12 +16,10 @@ use function Safe\preg_match;
 class CSSString extends PrimitiveValue
 {
     use ShortClassNameProvider;
-
     /**
      * @var string
      */
     private $string;
-
     /**
      * @param int<1, max>|null $lineNumber
      */
@@ -35,7 +28,6 @@ class CSSString extends PrimitiveValue
         $this->string = $string;
         parent::__construct($lineNumber);
     }
-
     /**
      * @throws SourceException
      * @throws UnexpectedEOFException
@@ -76,17 +68,14 @@ class CSSString extends PrimitiveValue
         }
         return new CSSString($result, $parserState->currentLine());
     }
-
     public function setString(string $string): void
     {
         $this->string = $string;
     }
-
     public function getString(): string
     {
         return $this->string;
     }
-
     /**
      * @return non-empty-string
      */
@@ -96,7 +85,6 @@ class CSSString extends PrimitiveValue
             . $this->escape($this->string, $outputFormat)
             . $outputFormat->getStringQuotingType();
     }
-
     /**
      * @return array<string, bool|int|float|string|array<mixed>|null>
      *
@@ -110,15 +98,12 @@ class CSSString extends PrimitiveValue
             'contents' => $this->string,
         ];
     }
-
     private function escape(string $string, OutputFormat $outputFormat): string
     {
         $charactersToEscape = '\\';
         $charactersToEscape .= ($outputFormat->getStringQuotingType() === '"' ? '"' : "'");
         $withEscapedQuotes = \addcslashes($string, $charactersToEscape);
-
         $withNewlineEncoded = \str_replace("\n", '\\A', $withEscapedQuotes);
-
         return $withNewlineEncoded;
     }
 }

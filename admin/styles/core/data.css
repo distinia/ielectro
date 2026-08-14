@@ -7,7 +7,6 @@
     overflow: hidden;
     background: #fff;
 }
-
 .admin-data-head,
 .admin-data-row {
     display: grid;
@@ -16,7 +15,6 @@
     align-items: center;
     padding: 12px 16px;
 }
-
 .admin-data-head {
     background: var(--surface-alt);
     border-bottom: 1px solid var(--border-color);
@@ -27,36 +25,29 @@
     color: var(--text-muted);
     flex-shrink: 0;
 }
-
 .admin-data-body {
     display: flex;
     flex-direction: column;
 }
-
 .admin-data-row {
     border-bottom: 1px solid var(--border-color);
     transition: background var(--transition-fast);
     cursor: pointer;
 }
-
 .admin-data-row:last-child {
     border-bottom: none;
 }
-
 .admin-data-row:hover {
     background: rgba(11, 31, 58, 0.04);
 }
-
 .admin-data-row.is-selected {
     background: rgba(22, 58, 107, 0.06);
 }
-
 .col-check {
     display: flex;
     align-items: center;
     justify-content: center;
 }
-
 .col-check input[type="checkbox"] {
     width: 16px;
     height: 16px;
@@ -64,14 +55,12 @@
     accent-color: var(--brand-blue-mid);
     cursor: pointer;
 }
-
 .admin-data-main {
     display: flex;
     align-items: center;
     gap: 14px;
     min-width: 0;
 }
-
 .admin-data-main strong {
     display: block;
     color: var(--brand-blue);
@@ -80,7 +69,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
 .admin-data-excerpt {
     margin: 4px 0 0;
     font-size: 0.84rem;
@@ -91,7 +79,6 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
-
 .admin-data-thumb {
     flex: 0 0 52px;
     width: 52px;
@@ -101,14 +88,12 @@
     border: 1px solid var(--border-color);
     background: var(--surface-alt);
 }
-
 .admin-data-thumb img {
     width: 100%;
     height: 100%;
     object-fit: contain;
     display: block;
 }
-
 .admin-data-avatar {
     flex: 0 0 44px;
     width: 44px;
@@ -118,14 +103,12 @@
     border: 2px solid #fff;
     box-shadow: 0 0 0 1px var(--border-color);
 }
-
 .admin-data-avatar img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
 }
-
 .admin-data-avatar-fallback {
     display: grid;
     place-items: center;
@@ -134,14 +117,12 @@
     color: var(--brand-blue);
     background: rgba(11, 31, 58, 0.06);
 }
-
 .admin-data-empty {
     padding: 48px 24px;
     text-align: center;
     color: var(--text-muted);
     font-size: 0.92rem;
 }
-
 .admin-status {
     display: inline-flex;
     align-items: center;
@@ -152,54 +133,43 @@
     text-transform: capitalize;
     white-space: nowrap;
 }
-
 .admin-status-success {
     background: rgba(22, 163, 74, 0.12);
     color: #15803d;
 }
-
 .admin-status-warn {
     background: rgba(234, 179, 8, 0.16);
     color: #a16207;
 }
-
 .admin-status-muted {
     background: rgba(100, 116, 139, 0.12);
     color: #475569;
 }
-
 .admin-status-default {
     background: rgba(37, 99, 235, 0.1);
     color: #1d4ed8;
 }
-
 .admin-data-list-team .admin-data-head,
 .admin-data-list-team .admin-data-row {
     grid-template-columns: 42px minmax(0, 1fr) 160px 130px 100px;
 }
-
 .admin-data-list-compact .admin-data-head,
 .admin-data-list-compact .admin-data-row {
     grid-template-columns: 42px minmax(0, 1fr) 110px;
 }
-
 .admin-data-list-apps .admin-data-head,
 .admin-data-list-apps .admin-data-row {
     grid-template-columns: minmax(0, 1fr) 148px 52px;
 }
-
 .admin-app-row {
     cursor: default;
 }
-
 .admin-app-main {
     align-items: flex-start;
 }
-
 .admin-app-copy {
     min-width: 0;
 }
-
 .admin-app-status {
     width: 100%;
     margin: 0;
@@ -213,50 +183,41 @@
     font-weight: 600;
     cursor: pointer;
 }
-
 .admin-app-status:focus-visible {
     outline: 2px solid rgba(22, 58, 107, 0.28);
     outline-offset: 1px;
 }
-
 .admin-app-status[data-status="accepted"] {
     border-color: rgba(16, 185, 129, 0.35);
     background: rgba(16, 185, 129, 0.08);
     color: #047857;
 }
-
 .admin-app-status[data-status="rejected"] {
     border-color: rgba(239, 68, 68, 0.28);
     background: rgba(239, 68, 68, 0.08);
     color: #b91c1c;
 }
-
 .admin-app-status[data-status="reviewing"] {
     border-color: rgba(22, 58, 107, 0.16);
     background: var(--surface-alt);
     color: var(--brand-blue);
 }
-
 @media (max-width: 860px) {
     .admin-data-head {
         display: none;
     }
-
     .admin-data-row {
         grid-template-columns: 42px 1fr;
         gap: 10px;
         padding: 16px;
     }
-
     .admin-data-row > :not(.col-check):not(.col-main) {
         grid-column: 2;
     }
-
     .admin-data-list-apps .admin-data-row {
         grid-template-columns: 1fr;
         gap: 12px;
     }
-
     .admin-data-list-apps .admin-data-row > .col-status,
     .admin-data-list-apps .admin-data-row > .col-actions {
         grid-column: 1;

@@ -1,6 +1,5 @@
 <?php
 namespace Safe\Exceptions;
-
 class PsException extends \ErrorException implements SafeExceptionInterface
 {
     public static function createFromPhpError(): self

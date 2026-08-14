@@ -1,5 +1,4 @@
 import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
-
 export class Alert {
     static close(container) {
         if (!container) return;
@@ -11,7 +10,6 @@ export class Alert {
             }
         }, 280);
     }
-
     static iconName(type) {
         switch (type) {
             case "success":
@@ -22,7 +20,6 @@ export class Alert {
                 return "exclamation";
         }
     }
-
     static create(text, type = "error", confirm = false) {
         const existing = document.querySelector(".alert-container");
         if (existing) existing.remove();
@@ -62,18 +59,15 @@ export class Alert {
         document.addEventListener("keydown", onKey);
         return container;
     }
-
     static success(text) {
         const container = this.create(text, "success");
         container.querySelector(".alert-btn-cancel")?.addEventListener("click", () => this.close(container));
         setTimeout(() => this.close(container), 2600);
     }
-
     static error(text) {
         const container = this.create(text, "error");
         container.querySelector(".alert-btn-cancel")?.addEventListener("click", () => this.close(container));
     }
-
     static confirm(text) {
         const container = this.create(text, "confirm", true);
         const confirmButton = container.querySelector(".alert-btn-confirm");

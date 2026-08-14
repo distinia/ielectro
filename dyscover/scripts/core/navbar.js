@@ -2,10 +2,8 @@ import { Api } from "./api.js";
 import { Request, Icons, Auth } from "./nesh.js";
 import { App } from "./app.js";
 import { NotificationPopup } from "./notification-popup.js";
-
 export class Navbar {
     static instance = null;
-
     constructor() {
         Navbar.instance = this;
         this.timer = null;
@@ -13,7 +11,6 @@ export class Navbar {
         this.nav = null;
         this.init();
     }
-
     async init() {
         let profileUrl = "https://account.ielectro.com/login?service=dyscover";
         const username = await Auth.username();
@@ -52,7 +49,6 @@ export class Navbar {
             NotificationPopup.start().catch(() => {});
         }
     }
-
     highlightActive() {
         const page = App.page();
         this.nav.querySelectorAll(".nav-icon[data-nav]").forEach((link) => {
@@ -68,7 +64,6 @@ export class Navbar {
             link.classList.toggle("active-icon", active);
         });
     }
-
     async startBadges() {
         await this.refreshBadges().catch(() => {});
         setTimeout(() => {
@@ -88,14 +83,12 @@ export class Navbar {
             });
         }
     }
-
     static async refresh() {
         if (Navbar.instance instanceof Navbar) {
             return Navbar.instance.refreshBadges().catch(() => undefined);
         }
         return undefined;
     }
-
     async refreshBadges() {
         if (!(await Auth.logged())) return;
         try {
@@ -120,7 +113,6 @@ export class Navbar {
             NotificationPopup.poll().catch(() => {});
         } catch {}
     }
-
     applyBadge(element, value) {
         if (!element) return;
         const count = Math.max(0, Math.floor(Number(value) || 0));
@@ -132,7 +124,6 @@ export class Navbar {
         element.textContent = count > 99 ? "99+" : String(count);
         element.classList.add("nav-badge--show");
     }
-
     destroy() {
         clearInterval(this.timer);
         this.timer = null;

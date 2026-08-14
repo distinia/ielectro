@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\UodbcException;
-
 /**
  * @param \Odbc\Connection $odbc
  * @param bool|null $enable
@@ -24,8 +21,6 @@ function odbc_autocommit(\Odbc\Connection $odbc, ?bool $enable = null)
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $statement
  * @param int $mode
@@ -38,8 +33,6 @@ function odbc_binmode(int $statement, int $mode): bool
     $safeResult = \odbc_binmode($statement, $mode);
     return $safeResult;
 }
-
-
 /**
  * @param \Odbc\Connection $odbc
  * @param string $catalog
@@ -55,8 +48,6 @@ function odbc_columnprivileges(\Odbc\Connection $odbc, string $catalog, string $
     $safeResult = \odbc_columnprivileges($odbc, $catalog, $schema, $table, $column);
     return $safeResult;
 }
-
-
 /**
  * @param \Odbc\Connection $odbc
  * @param null|string $catalog
@@ -82,8 +73,6 @@ function odbc_columns(\Odbc\Connection $odbc, ?string $catalog = null, ?string $
     }
     return $safeResult;
 }
-
-
 /**
  * @param \Odbc\Connection $odbc
  * @throws UodbcException
@@ -97,8 +86,6 @@ function odbc_commit(\Odbc\Connection $odbc): void
         throw UodbcException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $dsn
  * @param null|string $user
@@ -125,8 +112,6 @@ function odbc_connect(string $dsn, ?string $user = null, ?string $password = nul
     }
     return $safeResult;
 }
-
-
 /**
  * @param \Odbc\Result $statement
  * @return string
@@ -142,8 +127,6 @@ function odbc_cursor(\Odbc\Result $statement): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param \Odbc\Connection $odbc
  * @param int $fetch_type
@@ -160,8 +143,6 @@ function odbc_data_source(\Odbc\Connection $odbc, int $fetch_type): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param \Odbc\Connection $odbc
  * @param string $query
@@ -178,8 +159,6 @@ function odbc_exec(\Odbc\Connection $odbc, string $query): \Odbc\Result
     }
     return $safeResult;
 }
-
-
 /**
  * @param \Odbc\Result $statement
  * @param array $params
@@ -194,8 +173,6 @@ function odbc_execute(\Odbc\Result $statement, array $params = []): void
         throw UodbcException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \Odbc\Result $statement
  * @param array|null $array
@@ -217,8 +194,6 @@ function odbc_fetch_into(\Odbc\Result $statement, ?array &$array, ?int $row = nu
     }
     return $safeResult;
 }
-
-
 /**
  * @param \Odbc\Result $statement
  * @param int $field
@@ -235,8 +210,6 @@ function odbc_field_len(\Odbc\Result $statement, int $field): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param \Odbc\Result $statement
  * @param int $field
@@ -253,8 +226,6 @@ function odbc_field_name(\Odbc\Result $statement, int $field): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param \Odbc\Result $statement
  * @param string $field
@@ -271,8 +242,6 @@ function odbc_field_num(\Odbc\Result $statement, string $field): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param \Odbc\Result $statement
  * @param int $field
@@ -289,8 +258,6 @@ function odbc_field_scale(\Odbc\Result $statement, int $field): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param \Odbc\Result $statement
  * @param int $field
@@ -307,8 +274,6 @@ function odbc_field_type(\Odbc\Result $statement, int $field): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param \Odbc\Connection $odbc
  * @param string $pk_catalog
@@ -326,8 +291,6 @@ function odbc_foreignkeys(\Odbc\Connection $odbc, string $pk_catalog, string $pk
     $safeResult = \odbc_foreignkeys($odbc, $pk_catalog, $pk_schema, $pk_table, $fk_catalog, $fk_schema, $fk_table);
     return $safeResult;
 }
-
-
 /**
  * @param \Odbc\Connection $odbc
  * @param int $data_type
@@ -340,8 +303,6 @@ function odbc_gettypeinfo(\Odbc\Connection $odbc, int $data_type = 0)
     $safeResult = \odbc_gettypeinfo($odbc, $data_type);
     return $safeResult;
 }
-
-
 /**
  * @param \Odbc\Result $statement
  * @param int $length
@@ -354,8 +315,6 @@ function odbc_longreadlen(\Odbc\Result $statement, int $length): bool
     $safeResult = \odbc_longreadlen($statement, $length);
     return $safeResult;
 }
-
-
 /**
  * @param \Odbc\Result $statement
  * @return int
@@ -371,8 +330,6 @@ function odbc_num_fields(\Odbc\Result $statement): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $dsn
  * @param null|string $user
@@ -399,8 +356,6 @@ function odbc_pconnect(string $dsn, ?string $user = null, ?string $password = nu
     }
     return $safeResult;
 }
-
-
 /**
  * @param \Odbc\Connection $odbc
  * @param string $query
@@ -417,8 +372,6 @@ function odbc_prepare(\Odbc\Connection $odbc, string $query): \Odbc\Result
     }
     return $safeResult;
 }
-
-
 /**
  * @param \Odbc\Connection $odbc
  * @param string $catalog
@@ -433,8 +386,6 @@ function odbc_primarykeys(\Odbc\Connection $odbc, string $catalog, string $schem
     $safeResult = \odbc_primarykeys($odbc, $catalog, $schema, $table);
     return $safeResult;
 }
-
-
 /**
  * @param  $odbc
  * @param null|string $catalog
@@ -460,8 +411,6 @@ function odbc_procedurecolumns($odbc, ?string $catalog = null, ?string $schema =
     }
     return $safeResult;
 }
-
-
 /**
  * @param  $odbc
  * @param null|string $catalog
@@ -488,8 +437,6 @@ function odbc_procedures($odbc, ?string $catalog = null, ?string $schema = null,
     }
     return $safeResult;
 }
-
-
 /**
  * @param \Odbc\Result $statement
  * @param string $format
@@ -506,8 +453,6 @@ function odbc_result_all(\Odbc\Result $statement, string $format = ""): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param \Odbc\Result $statement
  * @param mixed $field
@@ -524,8 +469,6 @@ function odbc_result(\Odbc\Result $statement, $field)
     }
     return $safeResult;
 }
-
-
 /**
  * @param \Odbc\Connection $odbc
  * @throws UodbcException
@@ -539,8 +482,6 @@ function odbc_rollback(\Odbc\Connection $odbc): void
         throw UodbcException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \Odbc\Connection|\Odbc\Result $odbc
  * @param int $which
@@ -557,8 +498,6 @@ function odbc_setoption($odbc, int $which, int $option, int $value): void
         throw UodbcException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \Odbc\Connection $odbc
  * @param int $type
@@ -576,8 +515,6 @@ function odbc_specialcolumns(\Odbc\Connection $odbc, int $type, string $catalog,
     $safeResult = \odbc_specialcolumns($odbc, $type, $catalog, $schema, $table, $scope, $nullable);
     return $safeResult;
 }
-
-
 /**
  * @param \Odbc\Connection $odbc
  * @param string $catalog
@@ -594,8 +531,6 @@ function odbc_statistics(\Odbc\Connection $odbc, string $catalog, string $schema
     $safeResult = \odbc_statistics($odbc, $catalog, $schema, $table, $unique, $accuracy);
     return $safeResult;
 }
-
-
 /**
  * @param \Odbc\Connection $odbc
  * @param string $catalog
@@ -610,8 +545,6 @@ function odbc_tableprivileges(\Odbc\Connection $odbc, string $catalog, string $s
     $safeResult = \odbc_tableprivileges($odbc, $catalog, $schema, $table);
     return $safeResult;
 }
-
-
 /**
  * @param \Odbc\Connection $odbc
  * @param null|string $catalog

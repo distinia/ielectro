@@ -1,11 +1,7 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\Property\Selector;
-
 use function Safe\preg_match_all;
-
 /**
  * Utility class to calculate the specificity of a CSS selector.
  *
@@ -34,7 +30,6 @@ final class SpecificityCalculator
             |empty|contains
         ))
         /ix';
-
     /**
      * regexp for specificity calculations
      */
@@ -45,12 +40,10 @@ final class SpecificityCalculator
             after|before|first-letter|first-line|selection
         ))
         /ix';
-
     /**
      * @var array<string, int<0, max>>
      */
     private static $cache = [];
-
     /**
      * Calculates the specificity of the given CSS selector.
      *
@@ -69,10 +62,8 @@ final class SpecificityCalculator
             $d = preg_match_all(self::ELEMENTS_AND_PSEUDO_ELEMENTS_RX, $selector, $matches);
             self::$cache[$selector] = ($a * 1000) + ($b * 100) + ($c * 10) + $d;
         }
-
         return self::$cache[$selector];
     }
-
     /**
      * Clears the cache in order to lower memory usage.
      */

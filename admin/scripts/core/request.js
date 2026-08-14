@@ -1,5 +1,4 @@
 import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
-
 function adminRoot() {
     const path = window.location.pathname || "";
     const marker = "/admin";
@@ -9,12 +8,9 @@ function adminRoot() {
     }
     return window.location.origin;
 }
-
 function adminApiBase() {
     return `${adminRoot()}/api`;
 }
-
 Nesh.Request.baseUrl = adminApiBase();
-
 export const Request = Nesh.Request;
 export const adminAssetUrl = (assetPath) => `${adminRoot()}/${String(assetPath || "").replace(/^\/+/, "")}`;

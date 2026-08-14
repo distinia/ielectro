@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\ErrorfuncException;
-
 /**
  * @param string $message
  * @param 0|1|2|3|4 $message_type

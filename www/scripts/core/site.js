@@ -7,15 +7,12 @@ export class Site {
         }
         return suffix === "/" ? `${base}/` : `${base}${suffix}`;
     }
-
     static url() {
         return this.origin() + this.basePath();
     }
-
     static origin() {
         return typeof location !== "undefined" ? location.origin : "";
     }
-
     static absolute(path = "/") {
         const href = this.href(path);
         if (/^https?:\/\//i.test(href)) {
@@ -23,7 +20,6 @@ export class Site {
         }
         return this.origin() + href;
     }
-
     static pagePath() {
         const base = this.basePath();
         let path = window.location.pathname.replace(/\\/g, "/");
@@ -36,7 +32,6 @@ export class Site {
         }
         return path;
     }
-
     static pageSlug() {
         const path = this.pagePath();
         if (path === "/") {
@@ -48,7 +43,6 @@ export class Site {
         }
         return slug;
     }
-
     static basePath() {
         const path = window.location.pathname.replace(/\\/g, "/");
         const match = path.match(/^(.*?\/www)(?=\/|$)/i);

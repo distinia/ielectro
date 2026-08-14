@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\DatetimeException;
-
 /**
  * @param string $datetime
  * @param \DateTimeZone|null $timezone
@@ -24,8 +21,6 @@ function date_create_immutable(string $datetime = "now", ?\DateTimeZone $timezon
     }
     return $safeResult;
 }
-
-
 /**
  * @param null|string $datetime
  * @param \DateTimeZone|null $timezone
@@ -46,8 +41,6 @@ function date_create(?string $datetime = "now", ?\DateTimeZone $timezone = null)
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $format
  * @param string $datetime
@@ -64,8 +57,6 @@ function date_parse_from_format(string $format, string $datetime): ?array
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $datetime
  * @return array{year: int|false, month: int|false, day: int|false, hour: int|false, minute: int|false, second: int|false, fraction: float|false, warning_count: int, warnings: string[], error_count: int, errors: string[], is_localtime: bool, zone_type: int|bool, zone: int|bool, is_dst: bool, tz_abbr: string, tz_id: string, relative: array{year: int, month: int, day: int, hour: int, minute: int, second: int, weekday: int, weekdays: int, first_day_of_month: bool, last_day_of_month: bool}}|null
@@ -77,8 +68,6 @@ function date_parse(string $datetime): ?array
     $safeResult = \date_parse($datetime);
     return $safeResult;
 }
-
-
 /**
  * @param int $timestamp
  * @param float $latitude
@@ -92,8 +81,6 @@ function date_sun_info(int $timestamp, float $latitude, float $longitude)
     $safeResult = \date_sun_info($timestamp, $latitude, $longitude);
     return $safeResult;
 }
-
-
 /**
  * @param int $timestamp
  * @param int $returnFormat
@@ -124,8 +111,6 @@ function date_sunrise(int $timestamp, int $returnFormat = SUNFUNCS_RET_STRING, ?
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $timestamp
  * @param int $returnFormat
@@ -156,8 +141,6 @@ function date_sunset(int $timestamp, int $returnFormat = SUNFUNCS_RET_STRING, ?f
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $format
  * @param int|null $timestamp
@@ -174,8 +157,6 @@ function date(string $format, ?int $timestamp = null): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $hour
  * @param int|null $minute
@@ -208,8 +189,6 @@ function gmmktime(int $hour, ?int $minute = null, ?int $second = null, ?int $mon
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $format
  * @param int|null $timestamp
@@ -230,8 +209,6 @@ function gmstrftime(string $format, ?int $timestamp = null): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $format
  * @param int|null $timestamp
@@ -252,8 +229,6 @@ function idate(string $format, ?int $timestamp = null): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $hour
  * @param int|null $minute
@@ -286,8 +261,6 @@ function mktime(int $hour, ?int $minute = null, ?int $second = null, ?int $month
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $format
  * @param int|null $timestamp
@@ -308,8 +281,6 @@ function strftime(string $format, ?int $timestamp = null): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $timestamp
  * @param string $format
@@ -326,8 +297,6 @@ function strptime(string $timestamp, string $format): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $datetime
  * @param int|null $baseTimestamp
@@ -348,8 +317,6 @@ function strtotime(string $datetime, ?int $baseTimestamp = null): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $abbr
  * @param int $utcOffset

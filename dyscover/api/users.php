@@ -111,7 +111,6 @@ class User
         self::assertCanAccess($row);
         return (int) $row['id'];
     }
-
     public static function requireCanPost(): void
     {
         $row = self::statusRow();
@@ -123,7 +122,6 @@ class User
             Response::forbidden('Your Dyscover account is suspended');
         }
     }
-
     public static function statusRow(): ?array
     {
         $accountId = Identity::id();
@@ -138,7 +136,6 @@ class User
             [$accountId]
         );
     }
-
     private static function refreshSuspension(array &$row): void
     {
         if ((string) ($row['status'] ?? '') !== 'suspended') {
@@ -160,7 +157,6 @@ class User
         $row['status'] = 'active';
         $row['suspended_until'] = null;
     }
-
     private static function assertCanAccess(array $row): void
     {
         if ((string) ($row['status'] ?? '') === 'banned') {

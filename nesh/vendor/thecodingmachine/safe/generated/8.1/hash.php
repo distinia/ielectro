@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\HashException;
-
 /**
  * @param string $algo
  * @param string $key
@@ -23,8 +20,6 @@ function hash_hkdf(string $algo, string $key, int $length = 0, string $info = ""
     }
     return $safeResult;
 }
-
-
 /**
  * @param \HashContext $context
  * @param string $filename

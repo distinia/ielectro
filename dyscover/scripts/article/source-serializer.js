@@ -1,10 +1,8 @@
 import { SourceInline } from "./source-inline.js";
 import { Media } from "./media.js";
 import { yieldToMain } from "./source-yield.js";
-
 export class SourceSerializer {
     static BLOCKS_PER_YIELD = 1;
-
     static fromContainer(container) {
         if (!container) {
             return "";
@@ -23,7 +21,6 @@ export class SourceSerializer {
         });
         return blocks.join("\n\n");
     }
-
     static async fromContainerAsync(container) {
         if (!container) {
             return "";
@@ -52,7 +49,6 @@ export class SourceSerializer {
         }
         return blocks.join("\n\n");
     }
-
     static serializeBlock(element) {
         if (element.classList?.contains("template")) {
             return this.serializeTemplate(element);
@@ -120,7 +116,6 @@ export class SourceSerializer {
         }
         return SourceInline.serializeChildren(element).trim();
     }
-
     static serializeList(element, prefix, numbered = false) {
         const items = [...element.querySelectorAll(":scope > li")];
         return items
@@ -135,7 +130,6 @@ export class SourceSerializer {
             })
             .join("\n");
     }
-
     static serializeTable(table) {
         const rows = [];
         const headerCells = [...table.querySelectorAll("thead th")];
@@ -154,7 +148,6 @@ export class SourceSerializer {
         });
         return rows.join("\n");
     }
-
     static serializeCell(cell) {
         const list = cell.querySelector(":scope > ul, :scope > ol");
         if (list) {
@@ -168,7 +161,6 @@ export class SourceSerializer {
             SourceInline.serializeChildren(cell),
         ).replace(/\n/g, " ");
     }
-
     static serializeTemplate(table) {
         this.hydrateTemplateRowSlugs(table);
         const id = table.dataset.template || "";
@@ -179,10 +171,8 @@ export class SourceSerializer {
                 `| _title = ${SourceInline.normalizeInline(title.textContent)}`,
             );
         }
-
         const fields = new Map();
         const order = [];
-
         table.querySelectorAll("tbody tr").forEach((row, rowIndex) => {
             let slug = row.dataset.field;
             const part = this.serializeTemplateRow(row);
@@ -202,15 +192,12 @@ export class SourceSerializer {
             }
             fields.get(slug).push(part);
         });
-
         order.forEach((slug) => {
             lines.push(`| ${slug} = ${fields.get(slug).join("\n")}`);
         });
-
         lines.push("}}");
         return lines.join("\n");
     }
-
     static hydrateTemplateRowSlugs(table) {
         if (!table) {
             return;
@@ -236,47 +223,38 @@ export class SourceSerializer {
             }
         });
     }
-
     static serializeTemplateField(rows) {
         return rows.map((row) => this.serializeTemplateRow(row)).filter(Boolean).join("\n");
     }
-
     static templateImages(cell) {
         return [...cell.querySelectorAll("img")].filter(
             (img) => !img.classList.contains("icon-image"),
         );
     }
-
     static serializeTemplateRow(row) {
         const ths = [...row.querySelectorAll(":scope > th")];
         const tds = [...row.querySelectorAll(":scope > td")];
-
         if (ths.length === 1 && !tds.length && ths[0].colSpan >= 2) {
             return `**${SourceInline.normalizeInline(ths[0].textContent)}**`;
         }
-
         if (
             tds.length === 2 &&
             !row.querySelector(":scope > th.template-cell-label")
         ) {
             return this.serializeTemplateDoubleColumn(tds[0], tds[1]);
         }
-
         if (tds.length === 1 && tds[0].colSpan >= 2) {
             return this.serializeTemplateWideCell(tds[0]);
         }
-
         if (tds.length === 1) {
             const wide = this.serializeTemplateWideCell(tds[0]);
             if (wide) {
                 return wide;
             }
         }
-
         if (ths.length === 1 && tds.length === 1) {
             return this.serializeTemplateListCell(tds[0]);
         }
-
         const rowImgs = this.templateImages(row);
         if (rowImgs.length >= 2) {
             return this.serializeTemplateDoubleImage(rowImgs);
@@ -284,12 +262,10 @@ export class SourceSerializer {
         if (rowImgs.length === 1) {
             return this.serializeTemplateImage(rowImgs[0]);
         }
-
         return SourceInline.normalizeInline(
             SourceInline.serializeChildren(row),
         );
     }
-
     static serializeTemplateWideCell(cell) {
         const imgs = this.templateImages(cell);
         if (imgs.length >= 2) {
@@ -301,7 +277,6 @@ export class SourceSerializer {
         const serialized = this.serializeTemplateListCell(cell);
         return serialized || "";
     }
-
     static serializeTemplateDoubleColumn(leftCell, rightCell) {
         const leftItems = this.serializeTemplateListItems(leftCell);
         const rightItems = this.serializeTemplateListItems(rightCell);
@@ -314,7 +289,6 @@ export class SourceSerializer {
         }
         return pairs.join("\n");
     }
-
     static serializeTemplateListCell(cell) {
         const items = this.serializeTemplateListItems(cell);
         if (items.length === 1) {
@@ -322,7 +296,6 @@ export class SourceSerializer {
         }
         return items.map((item) => (item ? `- ${item}` : "- ")).join("\n");
     }
-
     static serializeTemplateListItems(container) {
         const list = container.querySelector(":scope > .template-cell-info");
         if (!list) {
@@ -335,7 +308,6 @@ export class SourceSerializer {
             SourceInline.normalizeInline(SourceInline.serializeChildren(li)),
         );
     }
-
     static serializeTemplateDoubleImage(imgs) {
         const urls = imgs.map((img) => img.src).join(" ;; ");
         const postIds = imgs
@@ -345,7 +317,6 @@ export class SourceSerializer {
             postIds.length >= 2 ? `|${postIds.join(" ;; ")}` : "";
         return `{{template-double-image|${urls}${postSuffix}}}`;
     }
-
     static serializeTemplateImage(img) {
         const url =
             img.getAttribute("src") ||
@@ -362,7 +333,6 @@ export class SourceSerializer {
         }
         return `{{template-single-image|${url}${postSuffix}}}`;
     }
-
     static serializeTemplateList(container) {
         return this.serializeTemplateListItems(container).map((item) =>
             item ? `- ${item}` : "- ",

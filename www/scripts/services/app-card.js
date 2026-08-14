@@ -1,5 +1,4 @@
 import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
-
 export class AppCard {
     static logo = "https://www.ielectro.com/assets/brand/logo.png";
     constructor(app, index = 0) {

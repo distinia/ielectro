@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\SemException;
-
 /**
  * @param int $key
  * @param int $permissions
@@ -20,8 +17,6 @@ function msg_get_queue(int $key, int $permissions = 0666): \SysvMessageQueue
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $key
  * @throws SemException
@@ -35,8 +30,6 @@ function msg_queue_exists(int $key): void
         throw SemException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \SysvMessageQueue $queue
  * @param int $desired_message_type
@@ -57,8 +50,6 @@ function msg_receive(\SysvMessageQueue $queue, int $desired_message_type, ?int &
         throw SemException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \SysvMessageQueue $queue
  * @throws SemException
@@ -72,8 +63,6 @@ function msg_remove_queue(\SysvMessageQueue $queue): void
         throw SemException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \SysvMessageQueue $queue
  * @param int $message_type
@@ -92,8 +81,6 @@ function msg_send(\SysvMessageQueue $queue, int $message_type, $message, bool $s
         throw SemException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \SysvMessageQueue $queue
  * @param array $data
@@ -108,8 +95,6 @@ function msg_set_queue(\SysvMessageQueue $queue, array $data): void
         throw SemException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \SysvMessageQueue $queue
  * @return array
@@ -125,8 +110,6 @@ function msg_stat_queue(\SysvMessageQueue $queue): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param \SysvSemaphore $semaphore
  * @param bool $non_blocking
@@ -141,8 +124,6 @@ function sem_acquire(\SysvSemaphore $semaphore, bool $non_blocking = false): voi
         throw SemException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $key
  * @param int $max_acquire
@@ -161,8 +142,6 @@ function sem_get(int $key, int $max_acquire = 1, int $permissions = 0666, bool $
     }
     return $safeResult;
 }
-
-
 /**
  * @param \SysvSemaphore $semaphore
  * @throws SemException
@@ -176,8 +155,6 @@ function sem_release(\SysvSemaphore $semaphore): void
         throw SemException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \SysvSemaphore $semaphore
  * @throws SemException
@@ -191,8 +168,6 @@ function sem_remove(\SysvSemaphore $semaphore): void
         throw SemException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $key
  * @param int|null $size
@@ -216,8 +191,6 @@ function shm_attach(int $key, ?int $size = null, int $permissions = 0666): \Sysv
     }
     return $safeResult;
 }
-
-
 /**
  * @param \SysvSharedMemory $shm
  * @throws SemException
@@ -231,8 +204,6 @@ function shm_detach(\SysvSharedMemory $shm): void
         throw SemException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \SysvSharedMemory $shm
  * @param int $key
@@ -248,8 +219,6 @@ function shm_put_var(\SysvSharedMemory $shm, int $key, $value): void
         throw SemException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \SysvSharedMemory $shm
  * @param int $key
@@ -264,8 +233,6 @@ function shm_remove_var(\SysvSharedMemory $shm, int $key): void
         throw SemException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \SysvSharedMemory $shm
  * @throws SemException

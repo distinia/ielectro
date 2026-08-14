@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\VarException;
-
 /**
  * @param mixed $var
  * @param string $type

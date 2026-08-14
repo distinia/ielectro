@@ -1,7 +1,5 @@
 <?php
-
 namespace Www;
-
 use Admin\Apps;
 use Nesh\Query;
 use Nesh\RateLimit;
@@ -9,7 +7,6 @@ use Nesh\Request;
 use Nesh\Response;
 use Nesh\Routing;
 use Nesh\Schema;
-
 class Stats
 {
     public function index(): void
@@ -18,19 +15,16 @@ class Stats
             'GET' => fn () => $this->show(),
         ]);
     }
-
     private function show(): void
     {
         Request::get();
         RateLimit::check('www:stats', 60, 60);
-
         Response::success([
             'uptime' => self::uptime(),
             'users' => self::users(),
             'apps' => count(Apps::catalog()),
         ]);
     }
-
     private static function users(): int
     {
         try {
@@ -41,7 +35,6 @@ class Stats
             return 0;
         }
     }
-
     private static function uptime(): float
     {
         try {

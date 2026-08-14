@@ -4,9 +4,7 @@
  * @link    https://github.com/dompdf/php-font-lib
  * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
  */
-
 namespace FontLib\TrueType;
-
 use FontLib\AdobeFontMetrics;
 use FontLib\Font;
 use FontLib\BinaryStream;
@@ -15,7 +13,6 @@ use FontLib\Table\DirectoryEntry;
 use FontLib\Table\Type\glyf;
 use FontLib\Table\Type\name;
 use FontLib\Table\Type\nameRecord;
-
 /**
  * TrueType font file.
  *
@@ -26,18 +23,12 @@ class File extends BinaryStream {
    * @var Header
    */
   public $header = array();
-
   private $tableOffset = 0; // Used for TTC
-
   private static $raw = false;
-
   protected $directory = array();
   protected $data = array();
-
   protected $glyph_subset = array();
-
   public $glyph_all = array();
-
   static $macCharNames = array(
     ".notdef", ".null", "CR",
     "space", "exclam", "quotedbl", "numbersign",
@@ -99,7 +90,6 @@ class File extends BinaryStream {
     "Scedilla", "scedilla", "Cacute", "cacute",
     "Ccaron", "ccaron", "dmacron"
   );
-
   private function uniord (string $c, ?string $encoding = null) {
     if (function_exists("mb_ord")) {
       if (PHP_VERSION_ID < 80000 && $encoding === null) {
@@ -108,11 +98,9 @@ class File extends BinaryStream {
       }
       return mb_ord($c, $encoding);
     }
-
     if ($encoding != "UTF-8" && $encoding !== null) {
       $c = mb_convert_encoding($c, "UTF-8", $encoding);
     }
-
     $length = mb_strlen(mb_substr($c, 0, 1), '8bit');
     $ord = false;
     $bytes = [];
@@ -162,40 +150,30 @@ class File extends BinaryStream {
         break;
       }
     }
-
     return $ord;
   }
-
   function getTable() {
     $this->parseTableEntries();
-
     return $this->directory;
   }
-
   function setTableOffset($offset) {
     $this->tableOffset = $offset;
   }
-
   function parse() {
     $this->parseTableEntries();
-
     $this->data = array();
-
     foreach ($this->directory as $tag => $table) {
       if (empty($this->data[$tag])) {
         $this->readTable($tag);
       }
     }
   }
-
   function utf8toUnicode($str) {
     $len = mb_strlen($str, '8bit');
     $out = array();
-
     for ($i = 0; $i < $len; $i++) {
       $uni = -1;
       $h   = ord($str[$i]);
-
       if ($h <= 0x7F) {
         $uni = $h;
       }
@@ -210,15 +188,12 @@ class File extends BinaryStream {
           $uni = ($h & 0x0F) << 18 | (ord($str[++$i]) & 0x3F) << 12 | (ord($str[++$i]) & 0x3F) << 6 | (ord($str[++$i]) & 0x3F);
         }
       }
-
       if ($uni >= 0) {
         $out[] = $uni;
       }
     }
-
     return $out;
   }
-
   function getUnicodeCharMap() {
     $subtable = null;
     foreach ($this->getData("cmap", "subtables") as $_subtable) {
@@ -227,11 +202,9 @@ class File extends BinaryStream {
         break;
       }
     }
-
     if ($subtable) {
       return $subtable["glyphIndexArray"];
     }
-
     $system_encodings = mb_list_encodings();
     $system_encodings = array_change_key_case(array_fill_keys($system_encodings, true), CASE_UPPER);
     foreach ($this->getData("cmap", "subtables") as $_subtable) {
@@ -276,37 +249,28 @@ class File extends BinaryStream {
         return $glyphIndexArray;
       }
     }
-    
     return null;
   }
-
   function setSubset($subset) {
     if (!is_array($subset)) {
       $subset = $this->utf8toUnicode($subset);
     }
-
     $subset = array_unique($subset);
-
     $glyphIndexArray = $this->getUnicodeCharMap();
-
     if (!$glyphIndexArray) {
       return;
     }
-
     $gids = array(
       0, // .notdef
       1, // .null
     );
-
     foreach ($subset as $code) {
       if (!isset($glyphIndexArray[$code])) {
         continue;
       }
-
       $gid        = $glyphIndexArray[$code];
       $gids[$gid] = $gid;
     }
-
     /** @var glyf $glyf */
     $glyf = $this->getTableObject("glyf");
     if ($glyf) {
@@ -316,15 +280,12 @@ class File extends BinaryStream {
     }
     $this->glyph_all    = array_values($glyphIndexArray); // FIXME
   }
-
   function getSubset() {
     if (empty($this->glyph_subset)) {
       return $this->glyph_all;
     }
-
     return $this->glyph_subset;
   }
-
   function encode($tags = array()) {
     if (!self::$raw) {
       $tags = array_merge(array("head", "hhea", "cmap", "hmtx", "maxp", "glyf", "loca", "name", "post", "cvt ", "fpgm", "prep"), $tags);
@@ -332,11 +293,8 @@ class File extends BinaryStream {
     else {
       $tags = array_keys($this->directory);
     }
-
     $n          = 16; // @todo
-
     Font::d("Tables : " . implode(", ", $tags));
-
     /** @var DirectoryEntry[] $entries */
     $entries = array();
     foreach ($tags as $tag) {
@@ -344,83 +302,62 @@ class File extends BinaryStream {
         Font::d("  >> '$tag' table doesn't exist");
         continue;
       }
-
       $entries[$tag] = $this->directory[$tag];
     }
-
     $num_tables = count($entries);
     $exponent = floor(log($num_tables, 2));
     $power_of_two = pow(2, $exponent);
-
     $this->header->data["numTables"] = $num_tables;
     $this->header->data["searchRange"] = $power_of_two * 16;
     $this->header->data["entrySelector"] = log($power_of_two, 2);
     $this->header->data["rangeShift"] = $num_tables * 16 - $this->header->data["searchRange"];
     $this->header->encode();
-
     $directory_offset = $this->pos();
     $offset           = $directory_offset + $num_tables * $n;
     $this->seek($offset);
-
     $i = 0;
     foreach ($entries as $entry) {
       $entry->encode($directory_offset + $i * $n);
       $i++;
     }
   }
-
   function parseHeader() {
     if (!empty($this->header)) {
       return;
     }
-
     $this->seek($this->tableOffset);
-
     $this->header = new Header($this);
     $this->header->parse();
   }
-
   function getFontType(){
     $class_parts = explode("\\", get_class($this));
     return $class_parts[1];
   }
-
   function parseTableEntries() {
     $this->parseHeader();
-
     if (!empty($this->directory)) {
       return;
     }
-
     if (empty($this->header->data["numTables"])) {
       return;
     }
-
-
     $type = $this->getFontType();
     $class = "FontLib\\$type\\TableDirectoryEntry";
-
     for ($i = 0; $i < $this->header->data["numTables"]; $i++) {
       /** @var TableDirectoryEntry $entry */
       $entry = new $class($this);
       $entry->parse();
-
       $this->directory[$entry->tag] = $entry;
     }
   }
-
   function normalizeFUnit($value, $base = 1000) {
     return round($value * ($base / $this->getData("head", "unitsPerEm")));
   }
-
   protected function readTable($tag) {
     $this->parseTableEntries();
-
     if (!self::$raw) {
       $name_canon = preg_replace("/[^a-z0-9]/", "", strtolower($tag));
-
       $class = "FontLib\\Table\\Type\\$name_canon";
-
       if (!isset($this->directory[$tag]) || !@class_exists($class)) {
         return;
       }
@@ -428,14 +365,11 @@ class File extends BinaryStream {
     else {
       $class = "FontLib\\Table\\Table";
     }
-
     /** @var Table $table */
     $table = new $class($this->directory[$tag]);
     $table->parse();
-
     $this->data[$tag] = $table;
   }
-
   /**
    * @param $name
    *
@@ -447,22 +381,17 @@ class File extends BinaryStream {
     }
     return null;
   }
-
   public function setTableObject($name, Table $data) {
     $this->data[$name] = $data;
   }
-
   public function getData($name, $key = null) {
     $this->parseTableEntries();
-
     if (empty($this->data[$name])) {
       $this->readTable($name);
     }
-
     if (!isset($this->data[$name])) {
       return null;
     }
-
     if (!$key) {
       return $this->data[$name]->data;
     }
@@ -470,16 +399,13 @@ class File extends BinaryStream {
       return $this->data[$name]->data[$key];
     }
   }
-
   function addDirectoryEntry(DirectoryEntry $entry) {
     $this->directory[$entry->tag] = $entry;
   }
-
   function saveAdobeFontMetrics($file, $encoding = null) {
     $afm = new AdobeFontMetrics($this);
     $afm->write($file, $encoding);
   }
-
   /**
    * Get a specific name table string value from its ID
    *
@@ -490,14 +416,11 @@ class File extends BinaryStream {
   function getNameTableString($nameID) {
     /** @var nameRecord[] $records */
     $records = $this->getData("name", "records");
-
     if (!isset($records[$nameID])) {
       return null;
     }
-
     return $records[$nameID]->string;
   }
-
   /**
    * Get font copyright
    *
@@ -506,7 +429,6 @@ class File extends BinaryStream {
   function getFontCopyright() {
     return $this->getNameTableString(name::NAME_COPYRIGHT);
   }
-
   /**
    * Get font name
    *
@@ -515,7 +437,6 @@ class File extends BinaryStream {
   function getFontName() {
     return $this->getNameTableString(name::NAME_NAME);
   }
-
   /**
    * Get font subfamily
    *
@@ -524,7 +445,6 @@ class File extends BinaryStream {
   function getFontSubfamily() {
     return $this->getNameTableString(name::NAME_SUBFAMILY);
   }
-
   /**
    * Get font subfamily ID
    *
@@ -533,7 +453,6 @@ class File extends BinaryStream {
   function getFontSubfamilyID() {
     return $this->getNameTableString(name::NAME_SUBFAMILY_ID);
   }
-
   /**
    * Get font full name
    *
@@ -542,7 +461,6 @@ class File extends BinaryStream {
   function getFontFullName() {
     return $this->getNameTableString(name::NAME_FULL_NAME);
   }
-
   /**
    * Get font version
    *
@@ -551,7 +469,6 @@ class File extends BinaryStream {
   function getFontVersion() {
     return $this->getNameTableString(name::NAME_VERSION);
   }
-
   /**
    * Get font weight
    *
@@ -560,7 +477,6 @@ class File extends BinaryStream {
   function getFontWeight() {
     return $this->getTableObject("OS/2")->data["usWeightClass"];
   }
-
   /**
    * Get font Postscript name
    *
@@ -569,7 +485,6 @@ class File extends BinaryStream {
   function getFontPostscriptName() {
     return $this->getNameTableString(name::NAME_POSTSCRIPT_NAME);
   }
-
   function reduce() {
     $names_to_keep = array(
       name::NAME_COPYRIGHT,
@@ -580,7 +495,6 @@ class File extends BinaryStream {
       name::NAME_VERSION,
       name::NAME_POSTSCRIPT_NAME,
     );
-
     foreach ($this->data["name"]->data["records"] as $id => $rec) {
       if (!in_array($id, $names_to_keep)) {
         unset($this->data["name"]->data["records"][$id]);

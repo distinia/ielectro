@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\GmpException;
-
 /**
  * @param \GMP|int|string $seed
  * @throws GmpException

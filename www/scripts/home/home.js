@@ -2,7 +2,6 @@ import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
 import { Api } from "../core/api.js";
 import { Site } from "../core/site.js";
 import { NewsCarousel } from "./news-carousel.js";
-
 export class Home {
     constructor() {
         this.carousel = document.querySelector(".ie-carousel");

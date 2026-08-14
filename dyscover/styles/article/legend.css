@@ -16,14 +16,12 @@
         box-shadow 0.2s ease,
         transform 0.15s ease;
 }
-
 .legend:hover {
     border-color: rgba(21, 101, 192, 0.22);
     box-shadow:
         0 4px 14px rgba(21, 101, 192, 0.1),
         inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
-
 .legend-box {
     width: 14px;
     height: 14px;
@@ -36,11 +34,9 @@
         0 1px 3px rgba(15, 23, 42, 0.14);
     transition: transform 0.2s ease;
 }
-
 .legend:hover .legend-box {
     transform: scale(1.08);
 }
-
 .legend-text {
     font-size: 0.86rem;
     line-height: 1.35;

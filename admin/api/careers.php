@@ -10,7 +10,6 @@ use Nesh\Response;
 use Nesh\Routing;
 use Nesh\Validate;
 use Nesh\RateLimit;
-
 require_once __DIR__ . '/access.php';
 require_once __DIR__ . '/paths.php';
 class Careers
@@ -367,7 +366,6 @@ class Applications
             'PATCH' => fn() => $this->updateStatus(),
         ]);
     }
-
     private function list(): void
     {
         Request::get();
@@ -388,7 +386,6 @@ class Applications
         );
         Response::success(ApplicationFields::rows($rows));
     }
-
     private function updateStatus(): void
     {
         Request::patch();
@@ -475,7 +472,6 @@ class ApplicationFields
         }
         return $id;
     }
-
     public static function status(mixed $value): string
     {
         $value = strtolower(trim((string) $value));
@@ -484,7 +480,6 @@ class ApplicationFields
         }
         return $value;
     }
-
     public static function rows(array $rows): array
     {
         return array_map(
@@ -492,7 +487,6 @@ class ApplicationFields
             $rows
         );
     }
-
     public static function row(array $row): array
     {
         return [
@@ -541,7 +535,6 @@ class ApplicationMail
             </html>'
         );
     }
-
     public static function rejected(string $email, string $name, string $position): bool
     {
         $safeName = htmlspecialchars(trim($name) !== '' ? trim($name) : 'there', ENT_QUOTES, 'UTF-8');

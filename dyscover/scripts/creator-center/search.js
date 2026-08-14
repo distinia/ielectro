@@ -1,8 +1,6 @@
 import { CreatorRegistry } from "./registry.js";
-
 export class Search {
     static instance = null;
-
     constructor() {
         Search.instance = this;
         this.input = document.querySelector(".search-item");
@@ -14,11 +12,9 @@ export class Search {
         });
         this.input.addEventListener("search", () => this.apply(this.input.value));
     }
-
     activeClass() {
         return CreatorRegistry.activeClass();
     }
-
     resetAll() {
         CreatorRegistry.classes.forEach((Class) => {
             Class.list.forEach((post) => {
@@ -28,15 +24,12 @@ export class Search {
             });
         });
     }
-
     apply(value = this.input?.value || "") {
         const term = String(value || "").trim().toLowerCase();
         this.resetAll();
         if (!term) return;
-
         const active = this.activeClass();
         if (!active) return;
-
         active.list.forEach((post) => {
             if (!post.element) return;
             const title = String(post.title || post.item?.title || "").toLowerCase();

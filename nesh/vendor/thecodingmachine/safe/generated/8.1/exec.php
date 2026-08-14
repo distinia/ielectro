@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\ExecException;
-
 /**
  * @param string $command
  * @param array|null $output
@@ -21,8 +18,6 @@ function exec(string $command, ?array &$output = null, ?int &$result_code = null
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $process
  * @return int
@@ -38,8 +33,6 @@ function proc_close($process): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $priority
  * @throws ExecException
@@ -53,8 +46,6 @@ function proc_nice(int $priority): void
         throw ExecException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $cmd
  * @param array $descriptorspec
@@ -83,8 +74,6 @@ function proc_open(string $cmd, array $descriptorspec, ?array &$pipes, ?string $
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $command
  * @return null|string
@@ -100,8 +89,6 @@ function shell_exec(string $command): ?string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $command
  * @param int|null $result_code

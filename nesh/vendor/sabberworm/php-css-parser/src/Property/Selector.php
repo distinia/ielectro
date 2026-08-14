@@ -1,9 +1,6 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\Property;
-
 use Sabberworm\CSS\Comment\Comment;
 use Sabberworm\CSS\OutputFormat;
 use Sabberworm\CSS\Parsing\ParserState;
@@ -14,9 +11,7 @@ use Sabberworm\CSS\Property\Selector\CompoundSelector;
 use Sabberworm\CSS\Renderable;
 use Sabberworm\CSS\Settings;
 use Sabberworm\CSS\ShortClassNameProvider;
-
 use function Safe\preg_match;
-
 /**
  * Class representing a single CSS selector. Selectors have to be split by the comma prior to being passed into this
  * class.
@@ -24,7 +19,6 @@ use function Safe\preg_match;
 class Selector implements Renderable
 {
     use ShortClassNameProvider;
-
     /**
      * @internal since 8.5.2
      */
@@ -56,12 +50,10 @@ class Selector implements Renderable
             )*+ # zero or more times
         )$
         /ux';
-
     /**
      * @var non-empty-list<Component>
      */
     private $components;
-
     /**
      * @internal since V8.8.0
      */
@@ -69,10 +61,8 @@ class Selector implements Renderable
     {
         // Note: We need to use `static::` here as the constant is overridden in the `KeyframeSelector` class.
         $numberOfMatches = preg_match(static::SELECTOR_VALIDATION_RX, $selector);
-
         return $numberOfMatches === 1;
     }
-
     /**
      * @param non-empty-string|non-empty-list<Component> $selector
      *        Providing a string is deprecated in version 9.2 and will not work from v10.0
@@ -87,7 +77,6 @@ class Selector implements Renderable
             $this->setComponents($selector);
         }
     }
-
     /**
      * @param list<Comment> $comments
      *
@@ -101,7 +90,6 @@ class Selector implements Renderable
         // (It is allowed within, e.g. as part of a string or within a function like `:not()`.)
         // Gobble any up now to get a clean start.
         $parserState->consumeWhiteSpace($comments);
-
         $selectorParts = [];
         while (true) {
             try {
@@ -123,10 +111,8 @@ class Selector implements Renderable
                 break;
             }
         }
-
         return $selectorParts;
     }
-
     /**
      * @param list<Comment> $comments
      *
@@ -137,7 +123,6 @@ class Selector implements Renderable
     public static function parse(ParserState $parserState, array &$comments = []): self
     {
         $selectorParts = self::parseComponents($parserState, $comments);
-
         // Check that the selector has been fully parsed:
         if (!\in_array($parserState->peek(), ['{', '}', ',', ''], true)) {
             throw new UnexpectedTokenException(
@@ -147,10 +132,8 @@ class Selector implements Renderable
                 $parserState->currentLine()
             );
         }
-
         return new static($selectorParts);
     }
-
     /**
      * @return non-empty-list<Component>
      */
@@ -158,7 +141,6 @@ class Selector implements Renderable
     {
         return $this->components;
     }
-
     /**
      * @param non-empty-list<Component> $components
      *        This should be an alternating sequence of `CompoundSelector` and `Combinator`, starting and ending with a
@@ -167,10 +149,8 @@ class Selector implements Renderable
     public function setComponents(array $components): self
     {
         $this->components = $components;
-
         return $this;
     }
-
     /**
      * @return non-empty-string
      *
@@ -180,7 +160,6 @@ class Selector implements Renderable
     {
         return $this->render(new OutputFormat());
     }
-
     /**
      * @param non-empty-string $selector
      *
@@ -191,9 +170,7 @@ class Selector implements Renderable
     public function setSelector(string $selector): void
     {
         $parserState = new ParserState($selector, Settings::create());
-
         $components = self::parseComponents($parserState);
-
         // Check that the selector has been fully parsed:
         if (!$parserState->isEnd()) {
             throw new UnexpectedTokenException(
@@ -202,10 +179,8 @@ class Selector implements Renderable
                 'literal'
             );
         }
-
         $this->components = $components;
     }
-
     /**
      * @return int<0, max>
      */
@@ -220,7 +195,6 @@ class Selector implements Renderable
             )
         );
     }
-
     public function render(OutputFormat $outputFormat): string
     {
         return \implode(
@@ -233,7 +207,6 @@ class Selector implements Renderable
             )
         );
     }
-
     /**
      * @return array<string, bool|int|float|string|array<mixed>|null>
      *

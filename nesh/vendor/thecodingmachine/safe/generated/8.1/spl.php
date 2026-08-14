@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\SplException;
-
 /**
  * @param object|string $object_or_class
  * @param bool $autoload
@@ -20,8 +17,6 @@ function class_implements($object_or_class, bool $autoload = true): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param object|string $object_or_class
  * @param bool $autoload
@@ -38,8 +33,6 @@ function class_parents($object_or_class, bool $autoload = true): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param object|string $object_or_class
  * @param bool $autoload
@@ -56,8 +49,6 @@ function class_uses($object_or_class, bool $autoload = true): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param callable(string):void|null $callback
  * @param bool $throw
@@ -81,8 +72,6 @@ function spl_autoload_register(?callable $callback = null, bool $throw = true, b
         throw SplException::createFromPhpError();
     }
 }
-
-
 /**
  * @param mixed $callback
  * @throws SplException

@@ -18,28 +18,23 @@
         transform 0.1s ease,
         opacity var(--transition-fast);
 }
-
 .admin-icon-btn:disabled {
     opacity: 0.38;
     cursor: not-allowed;
     box-shadow: none;
 }
-
 .admin-icon-btn i,
 .admin-icon-btn svg {
     width: 18px;
     height: 18px;
 }
-
 .admin-icon-btn:hover:not(:disabled) {
     background: var(--surface-alt);
     border-color: rgba(11, 31, 58, 0.18);
 }
-
 .admin-icon-btn:active:not(:disabled) {
     transform: translateY(1px);
 }
-
 .admin-icon-btn-accent,
 .admin-icon-btn-primary {
     background: var(--primary-gradient);
@@ -47,23 +42,19 @@
     color: #fff;
     box-shadow: var(--shadow-accent);
 }
-
 .admin-icon-btn-accent:hover:not(:disabled),
 .admin-icon-btn-primary:hover:not(:disabled) {
     filter: brightness(1.06);
     background: var(--primary-gradient);
 }
-
 .admin-icon-btn-danger {
     color: #be123c;
     border-color: #fecdd3;
     background: #fff1f2;
 }
-
 .admin-icon-btn-danger:hover:not(:disabled) {
     background: #ffe4e6;
 }
-
 .admin-btn {
     display: inline-flex;
     align-items: center;
@@ -80,44 +71,36 @@
         filter var(--transition-fast),
         transform 0.1s ease;
 }
-
 .admin-btn-primary {
     background: var(--primary-gradient);
     color: #fff;
     box-shadow: var(--shadow-accent);
 }
-
 .admin-btn-primary:hover {
     filter: brightness(1.06);
 }
-
 .admin-btn-danger {
     background: #fff1f2;
     color: #be123c;
     border: 1px solid #fecdd3;
 }
-
 .admin-btn-danger:hover {
     background: #ffe4e6;
 }
-
 .admin-btn-secondary {
     background: var(--surface-alt);
     color: var(--text-secondary);
     border: 1px solid var(--border-color);
 }
-
 .admin-btn-secondary:hover {
     background: #fff;
     border-color: rgba(11, 31, 58, 0.16);
 }
-
 .admin-btn-sm {
     padding: 8px 14px;
     font-size: 0.82rem;
     border-radius: 999px;
 }
-
 button[type="submit"],
 button.btn-primary {
     width: 100%;

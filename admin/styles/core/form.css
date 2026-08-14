@@ -9,16 +9,13 @@ label.field-label,
     text-transform: uppercase;
     letter-spacing: 0.08em;
 }
-
 .admin-form-card {
     padding: 0;
     overflow: hidden;
 }
-
 .admin-form-head {
     padding: 22px 24px 0;
 }
-
 .admin-form-head .form-heading {
     margin: 0;
     font-size: 1.2rem;
@@ -26,31 +23,25 @@ label.field-label,
     color: var(--brand-blue);
     letter-spacing: -0.02em;
 }
-
 .admin-form {
     padding: 20px 24px 24px;
 }
-
 .admin-form-grid {
     display: grid;
     gap: 0 18px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
 }
-
 .admin-field {
     margin-bottom: 16px;
 }
-
 .admin-field.span-2 {
     grid-column: 1 / -1;
 }
-
 .admin-field input,
 .admin-field textarea,
 .admin-field select {
     margin-bottom: 0;
 }
-
 .admin-form-foot {
     display: flex;
     flex-wrap: wrap;
@@ -59,18 +50,15 @@ label.field-label,
     border-top: 1px solid var(--border-color);
     margin-top: 8px;
 }
-
 .admin-form-msg {
     margin: 0;
     padding: 0 24px 20px;
     font-size: 0.875rem;
     color: var(--text-muted);
 }
-
 .admin-form-msg:not(:empty) {
     color: var(--brand-blue);
 }
-
 .admin-upload {
     position: relative;
     display: flex;
@@ -88,12 +76,10 @@ label.field-label,
         border-color var(--transition-fast),
         background var(--transition-fast);
 }
-
 .admin-upload:hover {
     border-color: rgba(249, 115, 22, 0.45);
     background: #fff;
 }
-
 .admin-upload input[type="file"] {
     position: absolute;
     inset: 0;
@@ -103,18 +89,15 @@ label.field-label,
     width: 100%;
     height: 100%;
 }
-
 .admin-upload-label {
     font-size: 0.875rem;
     font-weight: 600;
     color: var(--brand-blue);
 }
-
 .admin-upload-hint {
     font-size: 0.8rem;
     color: var(--text-muted);
 }
-
 .admin-upload-preview {
     margin-top: 12px;
     border-radius: var(--radius-md);
@@ -123,14 +106,12 @@ label.field-label,
     max-width: 320px;
     background: var(--surface-alt);
 }
-
 .admin-upload-preview img {
     display: block;
     width: 100%;
     height: auto;
     object-fit: contain;
 }
-
 .admin-avatar-slot {
     width: 88px;
     height: 88px;
@@ -139,14 +120,12 @@ label.field-label,
     border: 3px solid #fff;
     box-shadow: 0 0 0 1px var(--border-color), var(--shadow-sm);
 }
-
 .admin-avatar-slot img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
 }
-
 input[type="text"],
 input[type="url"],
 input[type="number"],
@@ -171,19 +150,16 @@ select {
         border-color var(--transition-fast),
         box-shadow var(--transition-fast);
 }
-
 textarea {
     min-height: 140px;
     resize: vertical;
     line-height: 1.6;
 }
-
 input:hover,
 textarea:hover,
 select:hover {
     border-color: rgba(11, 31, 58, 0.18);
 }
-
 input:focus,
 textarea:focus,
 select:focus {
@@ -191,7 +167,6 @@ select:focus {
     border-color: rgba(249, 115, 22, 0.55);
     box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.12);
 }
-
 select {
     cursor: pointer;
     appearance: none;
@@ -200,7 +175,6 @@ select {
     background-position: right 12px center;
     padding-right: 40px;
 }
-
 @media (max-width: 720px) {
     .admin-form-grid {
         grid-template-columns: 1fr;

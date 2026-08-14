@@ -5,7 +5,6 @@ import { List } from "./list.js";
 import { BiographyEditor } from "./biography-editor.js";
 import { ProfilePage } from "./profile-page.js";
 import { Report } from "../core/report.js";
-
 export class UI {
     constructor(page) {
         this.page = page;
@@ -14,7 +13,6 @@ export class UI {
         this.bindTabs();
         this.bindTypeTabs();
     }
-
     bindTabs() {
         document.querySelectorAll(".profile-tab").forEach((tab) => {
             tab.addEventListener("click", () => {
@@ -27,7 +25,6 @@ export class UI {
             });
         });
     }
-
     bindTypeTabs() {
         document.querySelectorAll(".profile-type-tab").forEach((tab) => {
             tab.addEventListener("click", () => {
@@ -40,7 +37,6 @@ export class UI {
             });
         });
     }
-
     async initActions() {
         const logged = await Auth.username();
         const container = document.querySelector(".actions");
@@ -87,7 +83,6 @@ export class UI {
             if (this.page.userId) Report.openUser(this.page.userId);
         });
     }
-
     bindStats() {
         document.querySelector(".followers-stat")?.addEventListener("click", async () => {
             const data = await Request.get(Api.userFollowers(this.page.userId));

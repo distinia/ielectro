@@ -1,6 +1,5 @@
 <?php
 namespace Safe\Exceptions;
-
 class ApacheException extends \ErrorException implements SafeExceptionInterface
 {
     public static function createFromPhpError(): self

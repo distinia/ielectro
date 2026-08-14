@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS `ielectro_dyscover`.`dyscover_posts` (
   `visibility` ENUM('public','private','unlisted') DEFAULT 'public',
   `allow_comments` BOOLEAN DEFAULT TRUE,
   `allow_shares` BOOLEAN DEFAULT TRUE,
-  `status` ENUM('active','hidden') DEFAULT 'active',
+  `status` ENUM('active','hidden','removed') DEFAULT 'active',
   `published_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),

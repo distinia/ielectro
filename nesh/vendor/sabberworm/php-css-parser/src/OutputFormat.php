@@ -1,23 +1,18 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS;
-
 final class OutputFormat
 {
     /**
      * @var '"'|"'"
      */
     private $stringQuotingType = '"';
-
     /**
      * Output RGB colors in hash notation if possible
      *
      * @var bool
      */
     private $usesRgbHashNotation = true;
-
     /**
      * Declaration format
      *
@@ -26,7 +21,6 @@ final class OutputFormat
      * @var bool
      */
     private $renderSemicolonAfterLastRule = true;
-
     /**
      * Spacing
      * Note that these strings are not sanity-checked: the value should only consist of whitespace
@@ -37,152 +31,126 @@ final class OutputFormat
      * @var string
      */
     private $spaceAfterRuleName = ' ';
-
     /**
      * @var string
      */
     private $spaceBeforeRules = '';
-
     /**
      * @var string
      */
     private $spaceAfterRules = '';
-
     /**
      * @var string
      */
     private $spaceBetweenRules = '';
-
     /**
      * @var string
      */
     private $spaceBeforeBlocks = '';
-
     /**
      * @var string
      */
     private $spaceAfterBlocks = '';
-
     /**
      * @var string
      */
     private $spaceBetweenBlocks = "\n";
-
     /**
      * Content injected in and around at-rule blocks.
      *
      * @var string
      */
     private $contentBeforeAtRuleBlock = '';
-
     /**
      * @var string
      */
     private $contentAfterAtRuleBlock = '';
-
     /**
      * This is what’s printed before and after the comma if a declaration block contains multiple selectors.
      *
      * @var string
      */
     private $spaceBeforeSelectorSeparator = '';
-
     /**
      * @var string
      */
     private $spaceAfterSelectorSeparator = ' ';
-
     /**
      * @var string
      */
     private $spaceAroundSelectorCombinator = ' ';
-
     /**
      * This is what’s inserted before the separator in value lists, by default.
      *
      * @var string
      */
     private $spaceBeforeListArgumentSeparator = '';
-
     /**
      * Keys are separators (e.g. `,`).  Values are the space sequence to insert, or an empty string.
      *
      * @var array<non-empty-string, string>
      */
     private $spaceBeforeListArgumentSeparators = [];
-
     /**
      * This is what’s inserted after the separator in value lists, by default.
      *
      * @var string
      */
     private $spaceAfterListArgumentSeparator = '';
-
     /**
      * Keys are separators (e.g. `,`).  Values are the space sequence to insert, or an empty string.
      *
      * @var array<non-empty-string, string>
      */
     private $spaceAfterListArgumentSeparators = [];
-
     /**
      * @var string
      */
     private $spaceBeforeOpeningBrace = ' ';
-
     /**
      * Content injected in and around declaration blocks.
      *
      * @var string
      */
     private $contentBeforeDeclarationBlock = '';
-
     /**
      * @var string
      */
     private $contentAfterDeclarationBlockSelectors = '';
-
     /**
      * @var string
      */
     private $contentAfterDeclarationBlock = '';
-
     /**
      * Indentation character(s) per level. Only applicable if newlines are used in any of the spacing settings.
      *
      * @var string
      */
     private $indentation = "\t";
-
     /**
      * Output exceptions.
      *
      * @var bool
      */
     private $shouldIgnoreExceptions = false;
-
     /**
      * Render comments for lists and RuleSets
      *
      * @var bool
      */
     private $shouldRenderComments = false;
-
     /**
      * @var OutputFormatter|null
      */
     private $outputFormatter;
-
     /**
      * @var OutputFormat|null
      */
     private $nextLevelFormat;
-
     /**
      * @var int<0, max>
      */
     private $indentationLevel = 0;
-
     /**
      * @return '"'|"'"
      *
@@ -192,7 +160,6 @@ final class OutputFormat
     {
         return $this->stringQuotingType;
     }
-
     /**
      * @param '"'|"'" $quotingType
      *
@@ -201,10 +168,8 @@ final class OutputFormat
     public function setStringQuotingType(string $quotingType): self
     {
         $this->stringQuotingType = $quotingType;
-
         return $this;
     }
-
     /**
      * @internal
      */
@@ -212,17 +177,14 @@ final class OutputFormat
     {
         return $this->usesRgbHashNotation;
     }
-
     /**
      * @return $this fluent interface
      */
     public function setRGBHashNotation(bool $usesRgbHashNotation): self
     {
         $this->usesRgbHashNotation = $usesRgbHashNotation;
-
         return $this;
     }
-
     /**
      * @internal
      */
@@ -230,17 +192,14 @@ final class OutputFormat
     {
         return $this->renderSemicolonAfterLastRule;
     }
-
     /**
      * @return $this fluent interface
      */
     public function setSemicolonAfterLastRule(bool $renderSemicolonAfterLastRule): self
     {
         $this->renderSemicolonAfterLastRule = $renderSemicolonAfterLastRule;
-
         return $this;
     }
-
     /**
      * @internal
      */
@@ -248,17 +207,14 @@ final class OutputFormat
     {
         return $this->spaceAfterRuleName;
     }
-
     /**
      * @return $this fluent interface
      */
     public function setSpaceAfterRuleName(string $whitespace): self
     {
         $this->spaceAfterRuleName = $whitespace;
-
         return $this;
     }
-
     /**
      * @internal
      */
@@ -266,17 +222,14 @@ final class OutputFormat
     {
         return $this->spaceBeforeRules;
     }
-
     /**
      * @return $this fluent interface
      */
     public function setSpaceBeforeRules(string $whitespace): self
     {
         $this->spaceBeforeRules = $whitespace;
-
         return $this;
     }
-
     /**
      * @internal
      */
@@ -284,17 +237,14 @@ final class OutputFormat
     {
         return $this->spaceAfterRules;
     }
-
     /**
      * @return $this fluent interface
      */
     public function setSpaceAfterRules(string $whitespace): self
     {
         $this->spaceAfterRules = $whitespace;
-
         return $this;
     }
-
     /**
      * @internal
      */
@@ -302,17 +252,14 @@ final class OutputFormat
     {
         return $this->spaceBetweenRules;
     }
-
     /**
      * @return $this fluent interface
      */
     public function setSpaceBetweenRules(string $whitespace): self
     {
         $this->spaceBetweenRules = $whitespace;
-
         return $this;
     }
-
     /**
      * @internal
      */
@@ -320,17 +267,14 @@ final class OutputFormat
     {
         return $this->spaceBeforeBlocks;
     }
-
     /**
      * @return $this fluent interface
      */
     public function setSpaceBeforeBlocks(string $whitespace): self
     {
         $this->spaceBeforeBlocks = $whitespace;
-
         return $this;
     }
-
     /**
      * @internal
      */
@@ -338,17 +282,14 @@ final class OutputFormat
     {
         return $this->spaceAfterBlocks;
     }
-
     /**
      * @return $this fluent interface
      */
     public function setSpaceAfterBlocks(string $whitespace): self
     {
         $this->spaceAfterBlocks = $whitespace;
-
         return $this;
     }
-
     /**
      * @internal
      */
@@ -356,17 +297,14 @@ final class OutputFormat
     {
         return $this->spaceBetweenBlocks;
     }
-
     /**
      * @return $this fluent interface
      */
     public function setSpaceBetweenBlocks(string $whitespace): self
     {
         $this->spaceBetweenBlocks = $whitespace;
-
         return $this;
     }
-
     /**
      * @internal
      */
@@ -374,17 +312,14 @@ final class OutputFormat
     {
         return $this->contentBeforeAtRuleBlock;
     }
-
     /**
      * @return $this fluent interface
      */
     public function setBeforeAtRuleBlock(string $content): self
     {
         $this->contentBeforeAtRuleBlock = $content;
-
         return $this;
     }
-
     /**
      * @internal
      */
@@ -392,17 +327,14 @@ final class OutputFormat
     {
         return $this->contentAfterAtRuleBlock;
     }
-
     /**
      * @return $this fluent interface
      */
     public function setAfterAtRuleBlock(string $content): self
     {
         $this->contentAfterAtRuleBlock = $content;
-
         return $this;
     }
-
     /**
      * @internal
      */
@@ -410,17 +342,14 @@ final class OutputFormat
     {
         return $this->spaceBeforeSelectorSeparator;
     }
-
     /**
      * @return $this fluent interface
      */
     public function setSpaceBeforeSelectorSeparator(string $whitespace): self
     {
         $this->spaceBeforeSelectorSeparator = $whitespace;
-
         return $this;
     }
-
     /**
      * @internal
      */
@@ -428,17 +357,14 @@ final class OutputFormat
     {
         return $this->spaceAfterSelectorSeparator;
     }
-
     /**
      * @return $this fluent interface
      */
     public function setSpaceAfterSelectorSeparator(string $whitespace): self
     {
         $this->spaceAfterSelectorSeparator = $whitespace;
-
         return $this;
     }
-
     /**
      * @internal
      */
@@ -446,7 +372,6 @@ final class OutputFormat
     {
         return $this->spaceAroundSelectorCombinator;
     }
-
     /**
      * The spacing set is also used for the descendent combinator, which is whitespace only,
      * unless an empty string is set, in which case a space will be used.
@@ -456,10 +381,8 @@ final class OutputFormat
     public function setSpaceAroundSelectorCombinator(string $whitespace): self
     {
         $this->spaceAroundSelectorCombinator = $whitespace;
-
         return $this;
     }
-
     /**
      * @internal
      */
@@ -467,17 +390,14 @@ final class OutputFormat
     {
         return $this->spaceBeforeListArgumentSeparator;
     }
-
     /**
      * @return $this fluent interface
      */
     public function setSpaceBeforeListArgumentSeparator(string $whitespace): self
     {
         $this->spaceBeforeListArgumentSeparator = $whitespace;
-
         return $this;
     }
-
     /**
      * @return array<non-empty-string, string>
      *
@@ -487,7 +407,6 @@ final class OutputFormat
     {
         return $this->spaceBeforeListArgumentSeparators;
     }
-
     /**
      * @param array<non-empty-string, string> $separatorSpaces
      *
@@ -496,10 +415,8 @@ final class OutputFormat
     public function setSpaceBeforeListArgumentSeparators(array $separatorSpaces): self
     {
         $this->spaceBeforeListArgumentSeparators = $separatorSpaces;
-
         return $this;
     }
-
     /**
      * @internal
      */
@@ -507,17 +424,14 @@ final class OutputFormat
     {
         return $this->spaceAfterListArgumentSeparator;
     }
-
     /**
      * @return $this fluent interface
      */
     public function setSpaceAfterListArgumentSeparator(string $whitespace): self
     {
         $this->spaceAfterListArgumentSeparator = $whitespace;
-
         return $this;
     }
-
     /**
      * @return array<non-empty-string, string>
      *
@@ -527,7 +441,6 @@ final class OutputFormat
     {
         return $this->spaceAfterListArgumentSeparators;
     }
-
     /**
      * @param array<non-empty-string, string> $separatorSpaces
      *
@@ -536,10 +449,8 @@ final class OutputFormat
     public function setSpaceAfterListArgumentSeparators(array $separatorSpaces): self
     {
         $this->spaceAfterListArgumentSeparators = $separatorSpaces;
-
         return $this;
     }
-
     /**
      * @internal
      */
@@ -547,17 +458,14 @@ final class OutputFormat
     {
         return $this->spaceBeforeOpeningBrace;
     }
-
     /**
      * @return $this fluent interface
      */
     public function setSpaceBeforeOpeningBrace(string $whitespace): self
     {
         $this->spaceBeforeOpeningBrace = $whitespace;
-
         return $this;
     }
-
     /**
      * @internal
      */
@@ -565,17 +473,14 @@ final class OutputFormat
     {
         return $this->contentBeforeDeclarationBlock;
     }
-
     /**
      * @return $this fluent interface
      */
     public function setBeforeDeclarationBlock(string $content): self
     {
         $this->contentBeforeDeclarationBlock = $content;
-
         return $this;
     }
-
     /**
      * @internal
      */
@@ -583,17 +488,14 @@ final class OutputFormat
     {
         return $this->contentAfterDeclarationBlockSelectors;
     }
-
     /**
      * @return $this fluent interface
      */
     public function setAfterDeclarationBlockSelectors(string $content): self
     {
         $this->contentAfterDeclarationBlockSelectors = $content;
-
         return $this;
     }
-
     /**
      * @internal
      */
@@ -601,17 +503,14 @@ final class OutputFormat
     {
         return $this->contentAfterDeclarationBlock;
     }
-
     /**
      * @return $this fluent interface
      */
     public function setAfterDeclarationBlock(string $content): self
     {
         $this->contentAfterDeclarationBlock = $content;
-
         return $this;
     }
-
     /**
      * @internal
      */
@@ -619,17 +518,14 @@ final class OutputFormat
     {
         return $this->indentation;
     }
-
     /**
      * @return $this fluent interface
      */
     public function setIndentation(string $indentation): self
     {
         $this->indentation = $indentation;
-
         return $this;
     }
-
     /**
      * @internal
      */
@@ -637,17 +533,14 @@ final class OutputFormat
     {
         return $this->shouldIgnoreExceptions;
     }
-
     /**
      * @return $this fluent interface
      */
     public function setIgnoreExceptions(bool $ignoreExceptions): self
     {
         $this->shouldIgnoreExceptions = $ignoreExceptions;
-
         return $this;
     }
-
     /**
      * @internal
      */
@@ -655,17 +548,14 @@ final class OutputFormat
     {
         return $this->shouldRenderComments;
     }
-
     /**
      * @return $this fluent interface
      */
     public function setRenderComments(bool $renderComments): self
     {
         $this->shouldRenderComments = $renderComments;
-
         return $this;
     }
-
     /**
      * @return int<0, max>
      *
@@ -675,7 +565,6 @@ final class OutputFormat
     {
         return $this->indentationLevel;
     }
-
     /**
      * @param int<1, max> $numberOfTabs
      *
@@ -685,7 +574,6 @@ final class OutputFormat
     {
         return $this->setIndentation(\str_repeat("\t", $numberOfTabs));
     }
-
     /**
      * @param int<1, max> $numberOfSpaces
      *
@@ -695,7 +583,6 @@ final class OutputFormat
     {
         return $this->setIndentation(\str_repeat(' ', $numberOfSpaces));
     }
-
     /**
      * @internal since V8.8.0
      */
@@ -708,12 +595,10 @@ final class OutputFormat
         }
         return $this->nextLevelFormat;
     }
-
     public function beLenient(): void
     {
         $this->shouldIgnoreExceptions = true;
     }
-
     /**
      * @internal since 8.8.0
      */
@@ -722,10 +607,8 @@ final class OutputFormat
         if ($this->outputFormatter === null) {
             $this->outputFormatter = new OutputFormatter($this);
         }
-
         return $this->outputFormatter;
     }
-
     /**
      * Creates an instance of this class without any particular formatting settings.
      */
@@ -733,7 +616,6 @@ final class OutputFormat
     {
         return new OutputFormat();
     }
-
     /**
      * Creates an instance of this class with a preset for compact formatting.
      */
@@ -753,10 +635,8 @@ final class OutputFormat
             ->setSpaceAroundSelectorCombinator('')
             ->setSemicolonAfterLastRule(false)
             ->setRenderComments(false);
-
         return $format;
     }
-
     /**
      * Creates an instance of this class with a preset for pretty formatting.
      */
@@ -772,7 +652,6 @@ final class OutputFormat
             ->setSpaceAfterBlocks("\n")
             ->setSpaceAfterListArgumentSeparators([',' => ' '])
             ->setRenderComments(true);
-
         return $format;
     }
 }

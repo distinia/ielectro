@@ -51,15 +51,12 @@
     flex-shrink: 0;
     opacity: 0.85;
 }
-
 .menuOption span {
     flex: 1 1 auto;
 }
-
 .menuOption:active {
     background-color: rgba(30, 136, 229, 0.16);
 }
-
 @media (prefers-reduced-motion: reduce) {
     .menu {
         transition: opacity 0.15s ease;

@@ -1,5 +1,4 @@
 import { App, Api, Request } from "./index.js";
-
 export class AccountPicker {
     constructor(root) {
         this.root = root;
@@ -12,7 +11,6 @@ export class AccountPicker {
         this.timer = null;
         this.bind();
     }
-
     bind() {
         this.search?.addEventListener("input", () => {
             clearTimeout(this.timer);
@@ -34,7 +32,6 @@ export class AccountPicker {
             }
         });
     }
-
     async lookup() {
         const q = this.search?.value.trim() || "";
         if (q.length < 2) {
@@ -61,7 +58,6 @@ export class AccountPicker {
             this.results.innerHTML = `<p class="account-picker-empty">Search failed.</p>`;
         }
     }
-
     pick(account) {
         if (!account?.id) return;
         if (this.hidden) this.hidden.value = String(account.id);
@@ -79,7 +75,6 @@ export class AccountPicker {
         if (this.search) this.search.value = account.username;
         this.onSelect?.(account);
     }
-
     clear() {
         if (this.hidden) this.hidden.value = "";
         if (this.selected) this.selected.innerHTML = "";
@@ -87,7 +82,6 @@ export class AccountPicker {
         if (this.results) this.results.innerHTML = "";
         this.onClear?.();
     }
-
     setAccountId(id, meta = {}) {
         if (!id) {
             this.clear();

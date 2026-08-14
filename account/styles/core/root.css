@@ -6,13 +6,11 @@
     --brand-orange: #f97316;
     --brand-orange-dark: #ea580c;
     --brand-orange-light: #fff7ed;
-
     --primary-color: var(--brand-blue-light);
     --primary-hover: #1d4ed8;
     --primary-soft: rgba(37, 99, 235, 0.12);
     --secondary-color: var(--brand-blue);
     --secondary-soft: rgba(11, 31, 58, 0.08);
-
     --text-primary: #0f172a;
     --text-secondary: #475569;
     --text-muted: #64748b;
@@ -20,11 +18,9 @@
     --surface: #ffffff;
     --surface-alt: #eef4fb;
     --border-color: rgba(11, 31, 58, 0.1);
-
     --success-color: #10b981;
     --danger-color: #ef4444;
     --warning-color: #f59e0b;
-
     --radius-sm: 0.5rem;
     --radius-md: 0.875rem;
     --radius-lg: 1.25rem;
@@ -34,7 +30,6 @@
     --shadow-accent: 0 12px 32px rgba(37, 99, 235, 0.18);
     --transition-fast: 0.18s ease;
     --transition-smooth: 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-
     /* Guest session pages — unchanged */
     --session-background: #0f172a;
     --session-surface: #ffffff;

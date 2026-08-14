@@ -1,17 +1,12 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\Property\Selector;
-
 use Sabberworm\CSS\Comment\Comment;
 use Sabberworm\CSS\OutputFormat;
 use Sabberworm\CSS\Parsing\ParserState;
 use Sabberworm\CSS\Parsing\UnexpectedTokenException;
 use Sabberworm\CSS\ShortClassNameProvider;
-
 use function Safe\preg_match;
-
 /**
  * Class representing a CSS compound selector.
  * Selectors have to be split at combinators (space, `>`, `+`, `~`) before being passed to this class.
@@ -19,7 +14,6 @@ use function Safe\preg_match;
 class CompoundSelector implements Component
 {
     use ShortClassNameProvider;
-
     private const PARSER_STOP_CHARACTERS = [
         '{',
         '}',
@@ -40,7 +34,6 @@ class CompoundSelector implements Component
         ParserState::EOF,
         '', // `ParserState::peek()` returns empty string rather than `ParserState::EOF` when end of string is reached
     ];
-
     private const SELECTOR_VALIDATION_RX = '/
         ^
             # not starting with whitespace
@@ -76,12 +69,10 @@ class CompoundSelector implements Component
             (?<!\\s)
         $
         /ux';
-
     /**
      * @var non-empty-string
      */
     private $value;
-
     /**
      * @param non-empty-string $value
      */
@@ -89,7 +80,6 @@ class CompoundSelector implements Component
     {
         $this->setValue($value);
     }
-
     /**
      * @param list<Comment> $comments
      *
@@ -103,7 +93,6 @@ class CompoundSelector implements Component
         $stringWrapperCharacter = null;
         $functionNestingLevel = 0;
         $isWithinAttribute = false;
-
         while (true) {
             $selectorParts[] = $parserState->consumeUntil(self::PARSER_STOP_CHARACTERS, false, false, $comments);
             $nextCharacter = $parserState->peek();
@@ -198,7 +187,6 @@ class CompoundSelector implements Component
             }
             $selectorParts[] = $parserState->consume(1);
         }
-
         if ($functionNestingLevel !== 0) {
             throw new UnexpectedTokenException(')', $nextCharacter, 'literal', $parserState->currentLine());
         }
@@ -210,7 +198,6 @@ class CompoundSelector implements Component
                 $parserState->currentLine()
             );
         }
-
         $value = \implode('', $selectorParts);
         if ($value === '') {
             throw new UnexpectedTokenException('selector', $nextCharacter, 'literal', $parserState->currentLine());
@@ -223,10 +210,8 @@ class CompoundSelector implements Component
                 $parserState->currentLine()
             );
         }
-
         return new self($value);
     }
-
     /**
      * @return non-empty-string
      */
@@ -234,7 +219,6 @@ class CompoundSelector implements Component
     {
         return $this->value;
     }
-
     /**
      * @param non-empty-string $value
      *
@@ -245,10 +229,8 @@ class CompoundSelector implements Component
         if (!self::isValid($value)) {
             throw new \UnexpectedValueException('`' . $value . '` is not a valid compound selector.');
         }
-
         $this->value = $value;
     }
-
     /**
      * @return int<0, max>
      */
@@ -256,12 +238,10 @@ class CompoundSelector implements Component
     {
         return SpecificityCalculator::calculate($this->value);
     }
-
     public function render(OutputFormat $outputFormat): string
     {
         return $this->getValue();
     }
-
     /**
      * @return array<string, bool|int|float|string|array<mixed>|null>
      *
@@ -274,11 +254,9 @@ class CompoundSelector implements Component
             'value' => $this->value,
         ];
     }
-
     private static function isValid(string $value): bool
     {
         $numberOfMatches = preg_match(self::SELECTOR_VALIDATION_RX, $value);
-
         return $numberOfMatches === 1;
     }
 }

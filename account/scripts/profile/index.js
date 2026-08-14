@@ -5,7 +5,6 @@ import { ProfileValidator } from "./validator.js";
 import { ProfileView } from "./view.js";
 import { ProfileEditor } from "./editor.js";
 import { AvatarEditor } from "./avatar-editor.js";
-
 document.addEventListener("DOMContentLoaded", async () => {
     new App();
     const stackRoot = document.querySelector("#profile-stack");
@@ -17,7 +16,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     await validator.load();
     const user = await service.load();
     if (!user) return;
-
     const avatarEditor = new AvatarEditor(user, async (updated) => {
         service.user = updated;
     });

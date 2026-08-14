@@ -1,12 +1,8 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\RuleSet;
-
 use Sabberworm\CSS\OutputFormat;
 use Sabberworm\CSS\Property\AtRule;
-
 /**
  * This class represents rule sets for generic at-rules which are not covered by specific classes, i.e., not
  * `@import`, `@charset` or `@media`.
@@ -19,12 +15,10 @@ class AtRuleSet extends RuleSet implements AtRule
      * @var non-empty-string
      */
     private $type;
-
     /**
      * @var string
      */
     private $arguments;
-
     /**
      * @param non-empty-string $type
      * @param int<1, max>|null $lineNumber
@@ -35,7 +29,6 @@ class AtRuleSet extends RuleSet implements AtRule
         $this->type = $type;
         $this->arguments = $arguments;
     }
-
     /**
      * @return non-empty-string
      */
@@ -43,12 +36,10 @@ class AtRuleSet extends RuleSet implements AtRule
     {
         return $this->type;
     }
-
     public function atRuleArgs(): string
     {
         return $this->arguments;
     }
-
     /**
      * @return non-empty-string
      */
@@ -65,7 +56,6 @@ class AtRuleSet extends RuleSet implements AtRule
         $result .= '}';
         return $result;
     }
-
     /**
      * @return array<string, bool|int|float|string|array<mixed>|null>
      *
@@ -76,7 +66,6 @@ class AtRuleSet extends RuleSet implements AtRule
         $arrayRepresentation = parent::getArrayRepresentation();
         $arrayRepresentation['atRuleName'] = $this->type;
         $arrayRepresentation['arguments'] = $this->arguments;
-
         return $arrayRepresentation;
     }
 }

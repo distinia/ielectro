@@ -3,7 +3,6 @@ import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
 import { API } from "./api.js";
 import { Editor } from "./editor.js";
 import { setArticleState } from "./state.js";
-
 export class Article {
     async load() {
         try {
@@ -28,7 +27,6 @@ export class Article {
             Alert.error("Article not found");
         }
     }
-
     async editAuthorization(res) {
         if (!Editor.current) return;
         try {

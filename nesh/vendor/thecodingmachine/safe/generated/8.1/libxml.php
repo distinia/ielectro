@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\LibxmlException;
-
 /**
  * @param callable $resolver_function
  * @throws LibxmlException

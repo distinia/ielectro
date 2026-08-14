@@ -3,7 +3,6 @@ import { Alert, Box } from "../core/index.js";
 import { API } from "./api.js";
 import { ArticleHelp } from "./article-help.js";
 import { PostResolver } from "./post-resolver.js";
-
 const TYPE_LABELS = {
     link: "link",
     article: "article",
@@ -13,7 +12,6 @@ const TYPE_LABELS = {
     audio: "audio",
     document: "document",
 };
-
 const TYPE_VARIANTS = {
     link: "article",
     article: "article",
@@ -23,23 +21,19 @@ const TYPE_VARIANTS = {
     audio: "media",
     document: "media",
 };
-
 export class WebSelector {
     static options = ["dyscover", "url"];
-
     constructor(type) {
         this.type = type;
         this.selectedClass = "selected-link";
         this.box = null;
         this.results = [];
     }
-
     static normalizeSource(option) {
         return String(option || "").trim().toLowerCase() === "url"
             ? "url"
             : "dyscover";
     }
-
     static async init(option, type) {
         const instance = new WebSelector(type);
         const source = WebSelector.normalizeSource(option);
@@ -51,11 +45,9 @@ export class WebSelector {
         }
         return null;
     }
-
     titleLabel() {
         return TYPE_LABELS[this.type] || this.type;
     }
-
     boxOptions() {
         const helpMap = {
             link: ArticleHelp.link,
@@ -67,7 +59,6 @@ export class WebSelector {
             help: helpMap[this.type] || ArticleHelp.media,
         };
     }
-
     async fromServer() {
         return new Promise(async (resolve) => {
             const opts = this.boxOptions();
@@ -120,11 +111,9 @@ export class WebSelector {
             });
         });
     }
-
     isMediaPicker() {
         return ["image", "video", "audio", "document"].includes(this.type);
     }
-
     async renderResults(body, term) {
         body.innerHTML = `<p class="selector-empty">Searching…</p>`;
         try {
@@ -147,14 +136,12 @@ export class WebSelector {
             this.bindItem(item);
         });
     }
-
     async fetchResults(term) {
         if (this.type === "link") {
             return await API.searchLinkPosts(term);
         }
         return await API.search(this.type, term);
     }
-
     createRow(result) {
         const el = document.createElement("button");
         el.type = "button";
@@ -177,7 +164,6 @@ export class WebSelector {
         el.dataset.value = this.resolveValue(result, assetUrl);
         return el;
     }
-
     static cacheBust(url, result) {
         if (!url) return "";
         const stamp = new Date(
@@ -185,14 +171,12 @@ export class WebSelector {
         ).getTime();
         return `${url}${String(url).includes("?") ? "&" : "?"}t=${stamp}`;
     }
-
     static escapeAttr(value) {
         return String(value || "")
             .replace(/&/g, "&amp;")
             .replace(/"/g, "&quot;")
             .replace(/</g, "&lt;");
     }
-
     static pickPreviewSource(result) {
         for (const url of [
             result.preview_image,
@@ -205,15 +189,12 @@ export class WebSelector {
         }
         return "";
     }
-
     static isVideoFile(url) {
         return /\.(mp4|webm|mov|m4v|ogv)(\?|$)/i.test(String(url || ""));
     }
-
     static isDefaultPreview(url) {
         return /\/assets\/brand\/default-post\.jpg/i.test(String(url || ""));
     }
-
     static videoPreviewCandidates(result) {
         const list = [];
         const push = (url) => {
@@ -245,7 +226,6 @@ export class WebSelector {
         }
         return list.map((url) => WebSelector.cacheBust(url, result));
     }
-
     videoSource(result) {
         const media = String(result.media || "").trim();
         if (media && WebSelector.isVideoFile(media)) {
@@ -253,7 +233,6 @@ export class WebSelector {
         }
         return "";
     }
-
     previewUrl(result) {
         const type = String(result.type || this.type).toLowerCase();
         if (type === "video") {
@@ -278,7 +257,6 @@ export class WebSelector {
         }
         return WebSelector.cacheBust(source, result);
     }
-
     assetUrl(result) {
         const type = String(result.type || this.type).toLowerCase();
         if (type === "video" || type === "audio") {
@@ -286,7 +264,6 @@ export class WebSelector {
         }
         return this.previewUrl(result);
     }
-
     createMediaCard(result) {
         const el = document.createElement("div");
         const type = String(result.type || this.type).toLowerCase();
@@ -296,7 +273,6 @@ export class WebSelector {
         const preview = this.previewUrl(result);
         const assetUrl = this.assetUrl(result);
         const title = result.title || "Untitled";
-
         const visual = document.createElement("div");
         visual.className = "selector-media-visual";
         if (type === "video") {
@@ -306,28 +282,23 @@ export class WebSelector {
         } else {
             visual.classList.add(`selector-media-visual--${type}`);
         }
-
         const label = document.createElement("p");
         label.className = "selector-media-title";
         label.textContent = title;
         label.title = title;
-
         el.append(visual, label);
         el.dataset.postId = String(result.id || "");
         el.dataset.postType = String(result.type || "");
         el.dataset.value = this.resolveValue(result, assetUrl);
         return el;
     }
-
     setVideoVisual(visual, result, title) {
         const candidates = WebSelector.videoPreviewCandidates(result);
         const videoSrc = this.videoSource(result);
-
         const showPlaceholder = () => {
             visual.innerHTML = "";
             visual.classList.add("selector-media-visual--video");
         };
-
         const showVideo = () => {
             visual.innerHTML = "";
             visual.classList.remove("selector-media-visual--video");
@@ -352,7 +323,6 @@ export class WebSelector {
             video.addEventListener("error", showPlaceholder, { once: true });
             visual.appendChild(video);
         };
-
         if (!candidates.length) {
             if (videoSrc) {
                 showVideo();
@@ -361,7 +331,6 @@ export class WebSelector {
             }
             return;
         }
-
         const img = document.createElement("img");
         img.className = "selector-media-thumb";
         img.alt = title;
@@ -382,7 +351,6 @@ export class WebSelector {
         visual.appendChild(img);
         tryNext();
     }
-
     resolveValue(result, media) {
         if (this.type === "link") {
             if (result.url) {
@@ -399,7 +367,6 @@ export class WebSelector {
         }
         return media || result.url || "";
     }
-
     async fromURL() {
         while (true) {
             const url = await Alert.prompt("Insert the URL");
@@ -418,7 +385,6 @@ export class WebSelector {
             Alert.error("Invalid URL");
         }
     }
-
     bindItem(item) {
         const select = () => {
             const all = this.box.container.querySelectorAll(".selector-result-item");
@@ -433,7 +399,6 @@ export class WebSelector {
             }
         };
     }
-
     debounce(fn, delay) {
         let timeout;
         return (...args) => {

@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\PsException;
-
 /**
  * @param resource $psdoc
  * @param float $llx
@@ -22,8 +19,6 @@ function ps_add_launchlink($psdoc, float $llx, float $lly, float $urx, float $ur
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param float $llx
@@ -43,8 +38,6 @@ function ps_add_locallink($psdoc, float $llx, float $lly, float $urx, float $ury
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param float $llx
@@ -66,8 +59,6 @@ function ps_add_note($psdoc, float $llx, float $lly, float $urx, float $ury, str
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param float $llx
@@ -88,8 +79,6 @@ function ps_add_pdflink($psdoc, float $llx, float $lly, float $urx, float $ury, 
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param float $llx
@@ -108,8 +97,6 @@ function ps_add_weblink($psdoc, float $llx, float $lly, float $urx, float $ury, 
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param float $x
@@ -128,8 +115,6 @@ function ps_arc($psdoc, float $x, float $y, float $radius, float $alpha, float $
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param float $x
@@ -148,8 +133,6 @@ function ps_arcn($psdoc, float $x, float $y, float $radius, float $alpha, float 
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param float $width
@@ -165,8 +148,6 @@ function ps_begin_page($psdoc, float $width, float $height): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param float $width
@@ -187,8 +168,6 @@ function ps_begin_pattern($psdoc, float $width, float $height, float $xstep, flo
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $psdoc
  * @param float $width
@@ -206,8 +185,6 @@ function ps_begin_template($psdoc, float $width, float $height): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $psdoc
  * @param float $x
@@ -224,8 +201,6 @@ function ps_circle($psdoc, float $x, float $y, float $radius): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @throws PsException
@@ -239,8 +214,6 @@ function ps_clip($psdoc): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param int $imageid
@@ -255,8 +228,6 @@ function ps_close_image($psdoc, int $imageid): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @throws PsException
@@ -270,8 +241,6 @@ function ps_close($psdoc): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @throws PsException
@@ -285,8 +254,6 @@ function ps_closepath_stroke($psdoc): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @throws PsException
@@ -300,8 +267,6 @@ function ps_closepath($psdoc): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param string $text
@@ -316,8 +281,6 @@ function ps_continue_text($psdoc, string $text): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param float $x1
@@ -337,8 +300,6 @@ function ps_curveto($psdoc, float $x1, float $y1, float $x2, float $y2, float $x
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @throws PsException
@@ -352,8 +313,6 @@ function ps_delete($psdoc): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @throws PsException
@@ -367,8 +326,6 @@ function ps_end_page($psdoc): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @throws PsException
@@ -382,8 +339,6 @@ function ps_end_pattern($psdoc): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @throws PsException
@@ -397,8 +352,6 @@ function ps_end_template($psdoc): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @throws PsException
@@ -412,8 +365,6 @@ function ps_fill_stroke($psdoc): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @throws PsException
@@ -427,8 +378,6 @@ function ps_fill($psdoc): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param string $name
@@ -450,8 +399,6 @@ function ps_get_parameter($psdoc, string $name, ?float $modifier = null): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $psdoc
  * @param string $text
@@ -468,8 +415,6 @@ function ps_hyphenate($psdoc, string $text): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $psdoc
  * @param string $file
@@ -484,8 +429,6 @@ function ps_include_file($psdoc, string $file): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param float $x
@@ -501,8 +444,6 @@ function ps_lineto($psdoc, float $x, float $y): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param float $x
@@ -518,8 +459,6 @@ function ps_moveto($psdoc, float $x, float $y): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @return resource
  * @throws PsException
@@ -534,8 +473,6 @@ function ps_new()
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $psdoc
  * @param string $filename
@@ -554,8 +491,6 @@ function ps_open_file($psdoc, ?string $filename = null): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param int $imageid
@@ -573,8 +508,6 @@ function ps_place_image($psdoc, int $imageid, float $x, float $y, float $scale):
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param float $x
@@ -592,8 +525,6 @@ function ps_rect($psdoc, float $x, float $y, float $width, float $height): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @throws PsException
@@ -607,8 +538,6 @@ function ps_restore($psdoc): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param float $rot
@@ -623,8 +552,6 @@ function ps_rotate($psdoc, float $rot): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @throws PsException
@@ -638,8 +565,6 @@ function ps_save($psdoc): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param float $x
@@ -655,8 +580,6 @@ function ps_scale($psdoc, float $x, float $y): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param float $red
@@ -673,8 +596,6 @@ function ps_set_border_color($psdoc, float $red, float $green, float $blue): voi
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param float $black
@@ -690,8 +611,6 @@ function ps_set_border_dash($psdoc, float $black, float $white): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param string $style
@@ -707,8 +626,6 @@ function ps_set_border_style($psdoc, string $style, float $width): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $p
  * @param string $key
@@ -724,8 +641,6 @@ function ps_set_info($p, string $key, string $val): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param string $name
@@ -741,8 +656,6 @@ function ps_set_parameter($psdoc, string $name, string $value): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param float $x
@@ -758,8 +671,6 @@ function ps_set_text_pos($psdoc, float $x, float $y): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param string $name
@@ -775,8 +686,6 @@ function ps_set_value($psdoc, string $name, float $value): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param string $type
@@ -796,8 +705,6 @@ function ps_setcolor($psdoc, string $type, string $colorspace, float $c1, float 
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param float $on
@@ -813,8 +720,6 @@ function ps_setdash($psdoc, float $on, float $off): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param float $value
@@ -829,8 +734,6 @@ function ps_setflat($psdoc, float $value): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param int $fontid
@@ -846,8 +749,6 @@ function ps_setfont($psdoc, int $fontid, float $size): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param float $gray
@@ -862,8 +763,6 @@ function ps_setgray($psdoc, float $gray): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param int $type
@@ -878,8 +777,6 @@ function ps_setlinecap($psdoc, int $type): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param int $type
@@ -894,8 +791,6 @@ function ps_setlinejoin($psdoc, int $type): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param float $width
@@ -910,8 +805,6 @@ function ps_setlinewidth($psdoc, float $width): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param float $value
@@ -926,8 +819,6 @@ function ps_setmiterlimit($psdoc, float $value): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param int $mode
@@ -942,8 +833,6 @@ function ps_setoverprintmode($psdoc, int $mode): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param float $arr
@@ -958,8 +847,6 @@ function ps_setpolydash($psdoc, float $arr): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param int $shadingid
@@ -977,8 +864,6 @@ function ps_shading_pattern($psdoc, int $shadingid, string $optlist): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $psdoc
  * @param string $type
@@ -1004,8 +889,6 @@ function ps_shading($psdoc, string $type, float $x0, float $y0, float $x1, float
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $psdoc
  * @param int $shadingid
@@ -1020,8 +903,6 @@ function ps_shfill($psdoc, int $shadingid): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param string $text
@@ -1038,8 +919,6 @@ function ps_show_xy($psdoc, string $text, float $x, float $y): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param string $text
@@ -1057,8 +936,6 @@ function ps_show_xy2($psdoc, string $text, int $len, float $xcoor, float $ycoor)
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param string $text
@@ -1073,8 +950,6 @@ function ps_show($psdoc, string $text): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param string $text
@@ -1090,8 +965,6 @@ function ps_show2($psdoc, string $text, int $len): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @throws PsException
@@ -1105,8 +978,6 @@ function ps_stroke($psdoc): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param int $ord
@@ -1121,8 +992,6 @@ function ps_symbol($psdoc, int $ord): void
         throw PsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $psdoc
  * @param float $x

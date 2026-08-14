@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\OutcontrolException;
-
 /**
  * @throws OutcontrolException
  *
@@ -16,8 +13,6 @@ function ob_clean(): void
         throw OutcontrolException::createFromPhpError();
     }
 }
-
-
 /**
  * @throws OutcontrolException
  *
@@ -30,8 +25,6 @@ function ob_end_clean(): void
         throw OutcontrolException::createFromPhpError();
     }
 }
-
-
 /**
  * @throws OutcontrolException
  *
@@ -44,8 +37,6 @@ function ob_end_flush(): void
         throw OutcontrolException::createFromPhpError();
     }
 }
-
-
 /**
  * @throws OutcontrolException
  *
@@ -58,8 +49,6 @@ function ob_flush(): void
         throw OutcontrolException::createFromPhpError();
     }
 }
-
-
 /**
  * @return string
  * @throws OutcontrolException
@@ -74,8 +63,6 @@ function ob_get_clean(): string
     }
     return $safeResult;
 }
-
-
 /**
  * @return string
  * @throws OutcontrolException
@@ -90,8 +77,6 @@ function ob_get_flush(): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param array|callable|null|string $callback
  * @param int $chunk_size
@@ -115,8 +100,6 @@ function ob_start($callback = null, int $chunk_size = 0, int $flags = PHP_OUTPUT
         throw OutcontrolException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $name
  * @param string $value
@@ -131,8 +114,6 @@ function output_add_rewrite_var(string $name, string $value): void
         throw OutcontrolException::createFromPhpError();
     }
 }
-
-
 /**
  * @throws OutcontrolException
  *

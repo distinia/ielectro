@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\FunchandException;
-
 /**
  * @param callable(): void $callback
  * @param mixed $args

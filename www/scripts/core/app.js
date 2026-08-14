@@ -2,7 +2,6 @@ import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
 import { Navbar } from "./navbar.js";
 import { Footer } from "./footer.js";
 import { Site } from "./site.js";
-
 export class App {
     constructor() {
         this.init();
@@ -17,7 +16,6 @@ export class App {
         Nesh.Icons.load(document.body);
         this.trackPageView();
     }
-
     trackPageView() {
         const fd = new FormData();
         fd.set("path", Site.pagePath());

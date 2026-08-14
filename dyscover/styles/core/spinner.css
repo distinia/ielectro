@@ -6,12 +6,10 @@
     width: 100%;
     padding: 2rem 1rem;
 }
-
 .page-spinner--compact {
     min-height: 160px;
     padding: 1.5rem 1rem;
 }
-
 .page-spinner__ring {
     width: 48px;
     height: 48px;
@@ -20,23 +18,19 @@
     border-radius: 50%;
     animation: page-spinner-spin 0.8s linear infinite;
 }
-
 .page-spinner--compact .page-spinner__ring {
     width: 36px;
     height: 36px;
     border-width: 3px;
 }
-
 .profile-page > .page-spinner {
     min-height: 50vh;
 }
-
 .conversations-list > .page-spinner,
 .profile-posts > .page-spinner,
 .feed-stage > .page-spinner {
     min-height: inherit;
 }
-
 @keyframes page-spinner-spin {
     from {
         transform: rotate(0deg);
@@ -45,7 +39,6 @@
         transform: rotate(360deg);
     }
 }
-
 .page-spinner-overlay {
     position: fixed;
     inset: 0;
@@ -55,12 +48,10 @@
     justify-content: center;
     background: var(--surface-base, #f8fafc);
 }
-
 .page-spinner-overlay .page-spinner {
     min-height: auto;
     padding: 0;
 }
-
 body.page-is-loading {
     overflow: hidden;
 }

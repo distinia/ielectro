@@ -1,6 +1,5 @@
 <?php
 namespace Safe\Exceptions;
-
 class ImageException extends \ErrorException implements SafeExceptionInterface
 {
     public static function createFromPhpError(): self

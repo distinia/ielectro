@@ -5,10 +5,8 @@
  * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
  */
 namespace Dompdf\Frame;
-
 use Iterator;
 use Dompdf\Frame;
-
 /**
  * Linked-list Iterator
  *
@@ -23,22 +21,18 @@ class FrameListIterator implements Iterator
      * @var Frame
      */
     protected $parent;
-
     /**
      * @var Frame|null
      */
     protected $cur;
-
     /**
      * @var Frame|null
      */
     protected $prev;
-
     /**
      * @var int
      */
     protected $num;
-
     /**
      * @param Frame $frame
      */
@@ -47,14 +41,12 @@ class FrameListIterator implements Iterator
         $this->parent = $frame;
         $this->rewind();
     }
-
     public function rewind(): void
     {
         $this->cur = $this->parent->get_first_child();
         $this->prev = null;
         $this->num = 0;
     }
-
     /**
      * @return bool
      */
@@ -62,7 +54,6 @@ class FrameListIterator implements Iterator
     {
         return $this->cur !== null;
     }
-
     /**
      * @return int
      */
@@ -70,7 +61,6 @@ class FrameListIterator implements Iterator
     {
         return $this->num;
     }
-
     /**
      * @return Frame|null
      */
@@ -78,13 +68,11 @@ class FrameListIterator implements Iterator
     {
         return $this->cur;
     }
-
     public function next(): void
     {
         if ($this->cur === null) {
             return;
         }
-
         if ($this->cur->get_parent() === $this->parent) {
             $this->prev = $this->cur;
             $this->cur = $this->cur->get_next_sibling();

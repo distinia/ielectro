@@ -2,7 +2,6 @@ import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
 import { Api } from "../core/api.js";
 import { Carousel } from "../core/carousel.js";
 import { AppCard } from "./app-card.js";
-
 export class Services {
     constructor() {
         this.container = document.querySelector(".services-showcase");

@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\PgsqlException;
-
 /**
  * @param \PgSql\Connection $connection
  * @throws PgsqlException
@@ -17,8 +14,6 @@ function pg_cancel_query(\PgSql\Connection $connection): void
         throw PgsqlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $connection_string
  * @param int $flags
@@ -35,8 +30,6 @@ function pg_connect(string $connection_string, int $flags = 0): \PgSql\Connectio
     }
     return $safeResult;
 }
-
-
 /**
  * @param \PgSql\Connection $connection
  * @throws PgsqlException
@@ -50,8 +43,6 @@ function pg_connection_reset(\PgSql\Connection $connection): void
         throw PgsqlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \PgSql\Connection $connection
  * @param string $table_name
@@ -70,8 +61,6 @@ function pg_convert(\PgSql\Connection $connection, string $table_name, array $va
     }
     return $safeResult;
 }
-
-
 /**
  * @param \PgSql\Connection $connection
  * @param string $table_name
@@ -89,8 +78,6 @@ function pg_copy_from(\PgSql\Connection $connection, string $table_name, array $
         throw PgsqlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \PgSql\Connection $connection
  * @param string $table_name
@@ -109,8 +96,6 @@ function pg_copy_to(\PgSql\Connection $connection, string $table_name, string $s
     }
     return $safeResult;
 }
-
-
 /**
  * @param \PgSql\Connection $connection
  * @param string $table_name
@@ -129,8 +114,6 @@ function pg_delete(\PgSql\Connection $connection, string $table_name, array $con
     }
     return $safeResult;
 }
-
-
 /**
  * @param \PgSql\Connection|null $connection
  * @throws PgsqlException
@@ -148,8 +131,6 @@ function pg_end_copy(?\PgSql\Connection $connection = null): void
         throw PgsqlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \PgSql\Connection $connection
  * @param string $stmtname
@@ -175,8 +156,6 @@ function pg_execute(?\PgSql\Connection $connection = null, ?string $stmtname = n
     }
     return $safeResult;
 }
-
-
 /**
  * @param \PgSql\Result $result
  * @param string $field
@@ -193,8 +172,6 @@ function pg_field_num(\PgSql\Result $result, string $field): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param \PgSql\Result $result
  * @param int $field
@@ -212,8 +189,6 @@ function pg_field_table(\PgSql\Result $result, int $field, bool $oid_only = fals
     }
     return $safeResult;
 }
-
-
 /**
  * @param \PgSql\Connection $connection
  * @return mixed
@@ -229,8 +204,6 @@ function pg_flush(\PgSql\Connection $connection)
     }
     return $safeResult;
 }
-
-
 /**
  * @param \PgSql\Result $result
  * @throws PgsqlException
@@ -244,8 +217,6 @@ function pg_free_result(\PgSql\Result $result): void
         throw PgsqlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \PgSql\Connection|null $connection
  * @return string
@@ -265,8 +236,6 @@ function pg_host(?\PgSql\Connection $connection = null): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param \PgSql\Connection $connection
  * @param string $table_name
@@ -285,8 +254,6 @@ function pg_insert(\PgSql\Connection $connection, string $table_name, array $val
     }
     return $safeResult;
 }
-
-
 /**
  * @param \PgSql\Result $result
  * @return string
@@ -302,8 +269,6 @@ function pg_last_oid(\PgSql\Result $result): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param \PgSql\Lob $lob
  * @throws PgsqlException
@@ -317,8 +282,6 @@ function pg_lo_close(\PgSql\Lob $lob): void
         throw PgsqlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \PgSql\Connection $connection
  * @param int $oid
@@ -342,8 +305,6 @@ function pg_lo_export(?\PgSql\Connection $connection = null, ?int $oid = null, ?
         throw PgsqlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \PgSql\Connection $connection
  * @param string $pathname
@@ -369,8 +330,6 @@ function pg_lo_import(?\PgSql\Connection $connection = null, ?string $pathname =
     }
     return $safeResult;
 }
-
-
 /**
  * @param \PgSql\Connection $connection
  * @param int $oid
@@ -388,8 +347,6 @@ function pg_lo_open(\PgSql\Connection $connection, int $oid, string $mode): \PgS
     }
     return $safeResult;
 }
-
-
 /**
  * @param \PgSql\Lob $lob
  * @param int $length
@@ -406,8 +363,6 @@ function pg_lo_read(\PgSql\Lob $lob, int $length = 8192): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param \PgSql\Lob $lob
  * @param int $offset
@@ -423,8 +378,6 @@ function pg_lo_seek(\PgSql\Lob $lob, int $offset, int $whence = SEEK_CUR): void
         throw PgsqlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \PgSql\Lob $lob
  * @param int $size
@@ -439,8 +392,6 @@ function pg_lo_truncate(\PgSql\Lob $lob, int $size): void
         throw PgsqlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \PgSql\Connection $connection
  * @param int $oid
@@ -455,8 +406,6 @@ function pg_lo_unlink(\PgSql\Connection $connection, int $oid): void
         throw PgsqlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \PgSql\Lob $lob
  * @param string $data
@@ -478,8 +427,6 @@ function pg_lo_write(\PgSql\Lob $lob, string $data, ?int $length = null): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param \PgSql\Connection $connection
  * @param string $table_name
@@ -497,8 +444,6 @@ function pg_meta_data(\PgSql\Connection $connection, string $table_name, bool $e
     }
     return $safeResult;
 }
-
-
 /**
  * @param \PgSql\Connection $connection
  * @param string $param_name
@@ -521,8 +466,6 @@ function pg_parameter_status(?\PgSql\Connection $connection = null, ?string $par
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $connection_string
  * @param int $flags
@@ -539,8 +482,6 @@ function pg_pconnect(string $connection_string, int $flags = 0): \PgSql\Connecti
     }
     return $safeResult;
 }
-
-
 /**
  * @param \PgSql\Connection|null $connection
  * @throws PgsqlException
@@ -558,8 +499,6 @@ function pg_ping(?\PgSql\Connection $connection = null): void
         throw PgsqlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \PgSql\Connection $connection
  * @param string $stmtname
@@ -585,8 +524,6 @@ function pg_prepare(?\PgSql\Connection $connection = null, ?string $stmtname = n
     }
     return $safeResult;
 }
-
-
 /**
  * @param \PgSql\Connection $connection
  * @param string $data
@@ -607,8 +544,6 @@ function pg_put_line(?\PgSql\Connection $connection = null, ?string $data = null
         throw PgsqlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \PgSql\Connection $connection
  * @param string $query
@@ -634,8 +569,6 @@ function pg_query_params(?\PgSql\Connection $connection = null, ?string $query =
     }
     return $safeResult;
 }
-
-
 /**
  * @param \PgSql\Connection $connection
  * @param string $query
@@ -658,8 +591,6 @@ function pg_query(?\PgSql\Connection $connection = null, ?string $query = null):
     }
     return $safeResult;
 }
-
-
 /**
  * @param \PgSql\Result $result
  * @param int $field_code
@@ -676,8 +607,6 @@ function pg_result_error_field(\PgSql\Result $result, int $field_code): ?string
     }
     return $safeResult;
 }
-
-
 /**
  * @param \PgSql\Result $result
  * @param int $row
@@ -692,8 +621,6 @@ function pg_result_seek(\PgSql\Result $result, int $row): void
         throw PgsqlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \PgSql\Connection $connection
  * @param string $table_name
@@ -713,8 +640,6 @@ function pg_select(\PgSql\Connection $connection, string $table_name, array $con
     }
     return $safeResult;
 }
-
-
 /**
  * @param \PgSql\Connection $connection
  * @param int $size
@@ -729,8 +654,6 @@ function pg_set_chunked_rows_size(\PgSql\Connection $connection, int $size): voi
         throw PgsqlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \PgSql\Connection $connection
  * @return resource
@@ -746,8 +669,6 @@ function pg_socket(\PgSql\Connection $connection)
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @param string $mode
@@ -770,8 +691,6 @@ function pg_trace(string $filename, string $mode = "w", ?\PgSql\Connection $conn
         throw PgsqlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \PgSql\Connection $connection
  * @param string $table_name

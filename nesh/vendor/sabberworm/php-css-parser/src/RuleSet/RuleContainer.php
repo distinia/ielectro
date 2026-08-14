@@ -1,11 +1,7 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\RuleSet;
-
 use function Safe\class_alias;
-
 // @phpstan-ignore function.impossibleType
 if (!\class_exists(RuleContainer::class, false) && !\interface_exists(RuleContainer::class, false)) {
     class_alias(DeclarationList::class, RuleContainer::class);

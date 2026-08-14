@@ -1,15 +1,12 @@
 <?php
 namespace Dyscover;
-
 use Nesh\Query;
 use Nesh\Request;
 use Nesh\Response;
 use Nesh\Routing;
 use Nesh\Schema;
 use Nesh\Validate;
-
 require_once __DIR__ . '/moderation.php';
-
 class Reports
 {
     public function index(): void
@@ -19,7 +16,6 @@ class Reports
             'POST' => fn() => $this->create(),
         ]);
     }
-
     private function reasons(): void
     {
         Request::get();
@@ -34,7 +30,6 @@ class Reports
             ),
         ]);
     }
-
     private function create(): void
     {
         Request::post();

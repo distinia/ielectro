@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\ZlibException;
-
 /**
  * @param \DeflateContext $context
  * @param string $data
@@ -21,8 +18,6 @@ function deflate_add(\DeflateContext $context, string $data, int $flush_mode = Z
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $encoding
  * @param array $options
@@ -39,8 +34,6 @@ function deflate_init(int $encoding, array $options = []): \DeflateContext
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $stream
  * @throws ZlibException
@@ -54,8 +47,6 @@ function gzclose($stream): void
         throw ZlibException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $data
  * @param int $level
@@ -73,8 +64,6 @@ function gzcompress(string $data, int $level = -1, int $encoding = ZLIB_ENCODING
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $data
  * @param int $max_length
@@ -91,8 +80,6 @@ function gzdecode(string $data, int $max_length = 0): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $data
  * @param int $level
@@ -110,8 +97,6 @@ function gzdeflate(string $data, int $level = -1, int $encoding = ZLIB_ENCODING_
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $data
  * @param int $level
@@ -129,8 +114,6 @@ function gzencode(string $data, int $level = -1, int $encoding = ZLIB_ENCODING_G
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @param  $use_include_path
@@ -147,8 +130,6 @@ function gzfile(string $filename, $use_include_path = 0): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $stream
  * @param int|null $length
@@ -169,8 +150,6 @@ function gzgets($stream, ?int $length = null): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $data
  * @param int $max_length
@@ -187,8 +166,6 @@ function gzinflate(string $data, int $max_length = 0): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @param string $mode
@@ -206,8 +183,6 @@ function gzopen(string $filename, string $mode, $use_include_path = 0)
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $stream
  * @return int
@@ -223,8 +198,6 @@ function gzpassthru($stream): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $stream
  * @param int $length
@@ -241,8 +214,6 @@ function gzread($stream, int $length): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $stream
  * @throws ZlibException
@@ -256,8 +227,6 @@ function gzrewind($stream): void
         throw ZlibException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $stream
  * @return int
@@ -273,8 +242,6 @@ function gztell($stream): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $data
  * @param int $max_length
@@ -291,8 +258,6 @@ function gzuncompress(string $data, int $max_length = 0): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $stream
  * @param string $data
@@ -314,8 +279,6 @@ function gzwrite($stream, string $data, ?int $length = null): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param \InflateContext $context
  * @return int
@@ -331,8 +294,6 @@ function inflate_get_read_len(\InflateContext $context): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param \InflateContext $context
  * @return int
@@ -348,8 +309,6 @@ function inflate_get_status(\InflateContext $context): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param \InflateContext $context
  * @param string $data
@@ -367,8 +326,6 @@ function inflate_add(\InflateContext $context, string $data, int $flush_mode = Z
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $encoding
  * @param array $options
@@ -385,8 +342,6 @@ function inflate_init(int $encoding, array $options = []): \InflateContext
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @param  $use_include_path
@@ -403,8 +358,6 @@ function readgzfile(string $filename, $use_include_path = 0): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $data
  * @param int $max_length

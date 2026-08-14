@@ -10,7 +10,6 @@
     min-height: 120px;
     overflow: hidden;
 }
-
 .file-preview img,
 .file-preview video {
     max-width: 100%;
@@ -18,11 +17,9 @@
     object-fit: contain;
     border-radius: 10px;
 }
-
 .file-preview audio {
     width: 100%;
 }
-
 .file-preview .pdf-preview-frame {
     width: 100%;
     min-height: 420px;
@@ -31,14 +28,12 @@
     border-radius: 8px;
     background: #fff;
 }
-
 .file-preview span,
 .file-preview p {
     font-size: 0.9em;
     color: var(--text-muted);
     text-align: center;
 }
-
 @media (max-width: 768px) {
     .file-preview .pdf-preview-frame {
         min-height: 320px;

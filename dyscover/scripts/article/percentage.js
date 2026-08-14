@@ -51,7 +51,6 @@ export class Percentage {
         const rounded = Math.round(Number(width) || 0);
         return `${rounded}%`;
     }
-
     static create(width, value) {
         const element = document.createElement("div");
         element.className = Percentage.className;

@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\GettextException;
-
 /**
  * @param string $domain
  * @param string $directory

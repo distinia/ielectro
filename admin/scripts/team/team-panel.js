@@ -11,12 +11,10 @@ import {
     bindBulkToolbar,
     bulkDeleteRows,
 } from "../core/index.js";
-
 export default class TeamPanel {
     constructor() {
         this.bulk = new BulkSelect();
     }
-
     formHtml(formId = "team-form-modal") {
         return `
             <form id="${formId}" class="admin-form team-form">
@@ -58,11 +56,9 @@ export default class TeamPanel {
             </form>
             <p class="admin-form-msg form-msg"></p>`;
     }
-
     displayName(row) {
         return row.display_name || row.full_name || row.account_username || "Unknown";
     }
-
     socialProfileUrl(platform, username) {
         const handle = String(username || "").trim().replace(/^@+/, "");
         if (!handle) return null;
@@ -74,7 +70,6 @@ export default class TeamPanel {
         }
         return null;
     }
-
     mountAccountPicker(root) {
         const pickerRoot = root.querySelector(".account-picker");
         if (!pickerRoot) return null;
@@ -83,7 +78,6 @@ export default class TeamPanel {
         picker.onClear = () => this.setAccountAvatarPreview(root, null);
         return picker;
     }
-
     setAccountAvatarPreview(root, accountId) {
         const wrap = root.querySelector(".team-account-avatar");
         const img = root.querySelector(".team-avatar-preview-img");
@@ -98,7 +92,6 @@ export default class TeamPanel {
         img.src = url;
         img.alt = "Account avatar";
     }
-
     buildFormData(form) {
         const fd = new FormData();
         fd.set("role_text", form.querySelector('[name="body"]').value.trim());
@@ -112,14 +105,12 @@ export default class TeamPanel {
         fd.set("account_id", accountId);
         return fd;
     }
-
     bindListFiltersOnce() {
         if (this._teamFiltersBound) return;
         this._teamFiltersBound = true;
         document.querySelector(".team-filter-q")?.addEventListener("input", () => this.renderTeamList());
         document.querySelector(".team-filter-sort")?.addEventListener("change", () => this.renderTeamList());
     }
-
     async renderTeamList() {
         const node = document.querySelector(".team-list");
         if (!node) return;
@@ -178,7 +169,6 @@ export default class TeamPanel {
         await AdminUi.refreshIcons(node);
         AdminUi.bindTableSelection(node, this.bulk, filtered, (id) => this.openView(id));
     }
-
     async bulkDelete() {
         const deleted = await bulkDeleteRows(
             this.bulk,
@@ -187,14 +177,12 @@ export default class TeamPanel {
         );
         if (deleted) await this.loadList();
     }
-
     async loadList() {
         const res = await Request.get("team");
         this._teamRows = Api.list(res);
         this.bindListFiltersOnce();
         await this.renderTeamList();
     }
-
     async openView(id) {
         try {
             const res = await Request.get(`team/${id}`);
@@ -244,7 +232,6 @@ export default class TeamPanel {
             Alert.error(Api.errorMessage(err) || "Unable to load.");
         }
     }
-
     openCreate() {
         const formId = "team-form-modal";
         const overlay = AdminModal.open({
@@ -271,7 +258,6 @@ export default class TeamPanel {
         });
         AdminUi.refreshIcons(overlay);
     }
-
     async openEdit(id) {
         const formId = "team-form-modal";
         const overlay = AdminModal.open({
@@ -336,13 +322,11 @@ export default class TeamPanel {
         });
         AdminUi.refreshIcons(overlay);
     }
-
     bindChrome() {
         bindBulkToolbar(this.bulk);
         document.querySelector(".admin-action-new")?.addEventListener("click", () => this.openCreate());
         document.querySelector(".admin-action-bulk-delete")?.addEventListener("click", () => this.bulkDelete());
     }
-
     async run() {
         AdminShell.mount("team", "Team");
         this.bindChrome();

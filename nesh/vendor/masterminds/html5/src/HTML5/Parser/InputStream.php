@@ -1,7 +1,5 @@
 <?php
-
 namespace Masterminds\HTML5\Parser;
-
 /**
  * Interface for stream readers.
  *
@@ -21,7 +19,6 @@ interface InputStream extends \Iterator
      * TODO: Move this to the scanner.
      */
     public function currentLine();
-
     /**
      * Returns the current column of the current line that the tokenizer is at.
      *
@@ -32,14 +29,12 @@ interface InputStream extends \Iterator
      * @return int The column number.
      */
     public function columnOffset();
-
     /**
      * Get all characters until EOF.
      *
      * This consumes characters until the EOF.
      */
     public function remainingChars();
-
     /**
      * Read to a particular match (or until $max bytes are consumed).
      *
@@ -57,7 +52,6 @@ interface InputStream extends \Iterator
      *               equality when checking the result, since index could be 0.
      */
     public function charsUntil($bytes, $max = null);
-
     /**
      * Returns the string so long as $bytes matches.
      *
@@ -72,14 +66,12 @@ interface InputStream extends \Iterator
      * @param int    $max   The max number of chars to read.
      */
     public function charsWhile($bytes, $max = null);
-
     /**
      * Unconsume one character.
      *
      * @param int $howMany The number of characters to move the pointer back.
      */
     public function unconsume($howMany = 1);
-
     /**
      * Retrieve the next character without advancing the pointer.
      */

@@ -1,6 +1,5 @@
 :root {
     --admin-sidebar-width: 260px;
-
     --brand-white: #ffffff;
     --brand-blue: #1d4ed8;
     --brand-blue-mid: #3b82f6;
@@ -8,14 +7,12 @@
     --brand-orange: #f97316;
     --brand-orange-dark: #ea580c;
     --brand-orange-light: #fff7ed;
-
     --primary-color: var(--brand-blue);
     --primary-hover: #1e40af;
     --primary-soft: rgba(59, 130, 246, 0.14);
     --primary-gradient: linear-gradient(135deg, #60a5fa 0%, #3b82f6 48%, #1d4ed8 100%);
     --secondary-color: var(--brand-blue);
     --secondary-soft: rgba(37, 99, 235, 0.08);
-
     --text-primary: #0f172a;
     --text-secondary: #475569;
     --text-muted: #64748b;
@@ -24,11 +21,9 @@
     --surface-alt: #f8fafc;
     --surface-sidebar: #f8fafc;
     --border-color: rgba(11, 31, 58, 0.08);
-
     --success-color: #10b981;
     --danger-color: #ef4444;
     --warning-color: #f59e0b;
-
     --radius-sm: 0.75rem;
     --radius-md: 1rem;
     --radius-lg: 1.35rem;

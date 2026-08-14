@@ -1,6 +1,5 @@
 import { Recents } from "./recents.js";
 import { Output } from "./output.js";
-
 export class Load {
     async init() {
         const params = new URLSearchParams(window.location.search);

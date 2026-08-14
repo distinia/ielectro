@@ -1,12 +1,8 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\CSSList;
-
 use Sabberworm\CSS\OutputFormat;
 use Sabberworm\CSS\Property\AtRule;
-
 /**
  * A `BlockList` constructed by an unknown at-rule. `@media` rules are rendered into `AtRuleBlockList` objects.
  */
@@ -16,12 +12,10 @@ class AtRuleBlockList extends CSSBlockList implements AtRule
      * @var non-empty-string
      */
     private $type;
-
     /**
      * @var string
      */
     private $arguments;
-
     /**
      * @param non-empty-string $type
      * @param int<1, max>|null $lineNumber
@@ -32,7 +26,6 @@ class AtRuleBlockList extends CSSBlockList implements AtRule
         $this->type = $type;
         $this->arguments = $arguments;
     }
-
     /**
      * @return non-empty-string
      */
@@ -40,12 +33,10 @@ class AtRuleBlockList extends CSSBlockList implements AtRule
     {
         return $this->type;
     }
-
     public function atRuleArgs(): string
     {
         return $this->arguments;
     }
-
     /**
      * @return non-empty-string
      */
@@ -64,7 +55,6 @@ class AtRuleBlockList extends CSSBlockList implements AtRule
         $result .= $outputFormat->getContentAfterAtRuleBlock();
         return $result;
     }
-
     public function isRootList(): bool
     {
         return false;

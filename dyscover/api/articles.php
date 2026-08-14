@@ -7,12 +7,10 @@ use Nesh\Request;
 use Nesh\Response;
 use Nesh\Routing;
 use Nesh\Validate;
-
 require_once __DIR__ . '/posts.php';
 require_once __DIR__ . '/article-content.php';
 require_once __DIR__ . '/article-pdf.php';
 require_once __DIR__ . '/article-generate.php';
-
 class Articles
 {
     public function index(): void
@@ -40,7 +38,6 @@ class Articles
             'PUT' => fn() => $this->update(),
         ]);
     }
-
     private function preview(): void
     {
         Request::get();
@@ -104,7 +101,6 @@ class Articles
             'url' => \APP_URL . '/article/' . $post['uuid'],
         ]);
     }
-
     public static function resolvePreviewImage(string $previewImage, string $cover): string
     {
         if (
@@ -120,7 +116,6 @@ class Articles
         }
         return PostAssets::defaultPreview();
     }
-
     private function show(): void
     {
         Request::get();
@@ -167,7 +162,6 @@ class Articles
             'can_edit' => $canEdit,
         ]);
     }
-
     private function update(): void
     {
         Request::put();

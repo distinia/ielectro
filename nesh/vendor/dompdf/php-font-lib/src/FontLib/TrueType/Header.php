@@ -4,9 +4,7 @@
  * @link    https://github.com/dompdf/php-font-lib
  * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
  */
-
 namespace FontLib\TrueType;
-
 /**
  * TrueType font file header.
  *
@@ -20,10 +18,8 @@ class Header extends \FontLib\Header {
     "entrySelector" => self::uint16,
     "rangeShift"    => self::uint16,
   );
-
   public function parse() {
     parent::parse();
-
     $format                   = $this->data["format"];
     $this->data["formatText"] = $this->convertUInt32ToStr($format);
   }

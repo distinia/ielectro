@@ -1,7 +1,6 @@
 import { Api } from "../core/api.js";
 import { Alert, App, Request, Mention, Overlay } from "../core/index.js";
 import { Informations } from "./informations.js";
-
 export class BiographyEditor {
     static async open(page) {
         const avatarEl = document.querySelector(".avatar");
@@ -40,7 +39,6 @@ export class BiographyEditor {
             </div>
           </div>
         </form>`;
-
             body.querySelector(".profile-edit-form")?.addEventListener(
                 "submit",
                 async (event) => {

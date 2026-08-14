@@ -11,17 +11,14 @@
     scrollbar-width: thin;
     scrollbar-color: rgba(30, 136, 229, 0.35) transparent;
 }
-
 .creator-table .table-wrapper::-webkit-scrollbar {
     width: 8px;
     height: 8px;
 }
-
 .creator-table .table-wrapper::-webkit-scrollbar-thumb {
     border-radius: 999px;
     background: rgba(30, 136, 229, 0.28);
 }
-
 .creator-table table,
 .tabs table {
     width: 100%;
@@ -31,26 +28,22 @@
     padding: 0.45rem 0.35rem 0.65rem;
     table-layout: fixed;
 }
-
 .creator-table th:nth-child(2),
 .creator-table td:nth-child(2),
 .tabs th:nth-child(2),
 .tabs td:nth-child(2) {
     width: 50%;
 }
-
 .creator-table thead,
 .tabs thead {
     position: sticky;
     top: 0;
     z-index: 3;
 }
-
 .creator-table thead tr,
 .tabs thead tr {
     background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 42%, #1565c0 100%);
 }
-
 .creator-table th,
 .tabs th {
     position: sticky;
@@ -67,19 +60,16 @@
     border: none;
     white-space: nowrap;
 }
-
 .creator-table th:first-child,
 .tabs th:first-child {
     border-radius: 14px 0 0 14px;
     text-align: center;
     width: 3.25rem;
 }
-
 .creator-table th:last-child,
 .tabs th:last-child {
     border-radius: 0 14px 14px 0;
 }
-
 .creator-table td,
 .tabs td {
     padding: 1rem 1.1rem;
@@ -94,7 +84,6 @@
         transform 0.12s ease;
     vertical-align: middle;
 }
-
 .creator-table td:first-child,
 .tabs td:first-child {
     border-left: 1px solid rgba(15, 23, 42, 0.05);
@@ -102,18 +91,15 @@
     text-align: center;
     width: 3.25rem;
 }
-
 .creator-table td:last-child,
 .tabs td:last-child {
     border-right: 1px solid rgba(15, 23, 42, 0.05);
     border-radius: 0 16px 16px 0;
 }
-
 .creator-table .item-row,
 .tabs .item-row {
     cursor: pointer;
 }
-
 .creator-table .item-row:hover td,
 .tabs .item-row:hover td {
     background: rgba(30, 136, 229, 0.05);
@@ -121,7 +107,6 @@
         inset 0 0 0 1px rgba(30, 136, 229, 0.1),
         0 4px 14px rgba(30, 136, 229, 0.06);
 }
-
 .creator-table .item-row.row-selected td,
 .tabs .item-row.row-selected td {
     background: rgba(30, 136, 229, 0.1);
@@ -129,7 +114,6 @@
         inset 3px 0 0 var(--blue-mid),
         inset 0 0 0 1px rgba(30, 136, 229, 0.16);
 }
-
 .creator-table .item-name,
 .tabs .item-name {
     font-weight: 700;
@@ -137,7 +121,6 @@
     color: var(--text-color);
     letter-spacing: -0.01em;
 }
-
 .creator-table .item-name-inner,
 .tabs .item-name-inner {
     display: inline-flex;
@@ -145,12 +128,10 @@
     gap: 0.45rem;
     min-width: 0;
 }
-
 .creator-table .item-name-text,
 .tabs .item-name-text {
     min-width: 0;
 }
-
 .creator-table .item-archived-mark,
 .tabs .item-archived-mark {
     display: inline-flex;
@@ -164,7 +145,6 @@
     background: rgba(245, 158, 11, 0.12);
     border: 1px solid rgba(245, 158, 11, 0.22);
 }
-
 .creator-table .item-archived-mark i,
 .creator-table .item-archived-mark .icon-image,
 .tabs .item-archived-mark i,
@@ -172,17 +152,14 @@
     width: 0.85rem;
     height: 0.85rem;
 }
-
 .creator-table .item-row--archived td,
 .tabs .item-row--archived td {
     background: rgba(245, 158, 11, 0.04);
 }
-
 .creator-table .item-row--archived .item-name-text,
 .tabs .item-row--archived .item-name-text {
     color: var(--text-muted);
 }
-
 .creator-table .item-created,
 .creator-table .item-updated,
 .tabs .item-created,
@@ -192,7 +169,6 @@
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
 }
-
 .creator-table .input-check,
 .tabs .input-check {
     width: 1.05rem;
@@ -200,14 +176,12 @@
     accent-color: var(--blue-mid);
     cursor: pointer;
 }
-
 .creator-table th .th-label,
 .tabs th .th-label {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
 }
-
 .creator-table .sort,
 .tabs .sort {
     display: inline-flex;
@@ -229,19 +203,16 @@
         transform 0.12s ease,
         box-shadow 0.15s ease;
 }
-
 .creator-table .sort:hover,
 .tabs .sort:hover {
     background: rgba(255, 255, 255, 0.24);
     border-color: rgba(255, 255, 255, 0.42);
     transform: translateY(-1px);
 }
-
 .creator-table .sort:active,
 .tabs .sort:active {
     transform: scale(0.94);
 }
-
 .creator-table .sort.is-active,
 .tabs .sort.is-active {
     background: rgba(255, 255, 255, 0.92);
@@ -249,7 +220,6 @@
     color: var(--blue-mid);
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
 }
-
 .creator-table .sort svg,
 .creator-table .sort .icon-image,
 .tabs .sort svg,
@@ -259,14 +229,12 @@
     stroke: currentColor;
     transition: transform 0.15s ease;
 }
-
 .creator-table .sort.is-asc svg,
 .creator-table .sort.is-asc .icon-image,
 .tabs .sort.is-asc svg,
 .tabs .sort.is-asc .icon-image {
     transform: rotate(180deg);
 }
-
 .creator-table .table-empty-row td,
 .tabs .table-empty-row td {
     border-radius: 18px;
@@ -274,14 +242,12 @@
     background: rgba(248, 250, 252, 0.85);
     box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.05);
 }
-
 @media (max-width: 768px) {
     .creator-table table,
     .tabs table {
         padding: 0.45rem 0.35rem 0.65rem;
         border-spacing: 0 0.4rem;
     }
-
     .creator-table td,
     .tabs td,
     .creator-table th,
@@ -289,14 +255,12 @@
         padding: 0.75rem 0.7rem;
         font-size: 0.8rem;
     }
-
     .creator-table .item-created,
     .creator-table .item-updated,
     .tabs .item-created,
     .tabs .item-updated {
         font-size: 0.75rem;
     }
-
     .creator-table .sort,
     .tabs .sort {
         width: 1.55rem;

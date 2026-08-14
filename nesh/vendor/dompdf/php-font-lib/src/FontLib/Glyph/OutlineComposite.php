@@ -5,9 +5,7 @@
  * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
  * @version $Id: Font_Table_glyf.php 46 2012-04-02 20:22:38Z fabien.menager $
  */
-
 namespace FontLib\Glyph;
-
 /**
  * Composite glyph outline
  *
@@ -24,56 +22,42 @@ class OutlineComposite extends Outline {
   const WE_HAVE_INSTRUCTIONS     = 0x0100;
   const USE_MY_METRICS           = 0x0200;
   const OVERLAP_COMPOUND         = 0x0400;
-
   /**
    * @var OutlineComponent[]
    */
   public $components = array();
-
   function getGlyphIDs() {
     if (empty($this->components)) {
       $this->parseData();
     }
-
     $glyphIDs = array();
     foreach ($this->components as $_component) {
       $glyphIDs[] = $_component->glyphIndex;
-
       $_glyph   = $this->table->data[$_component->glyphIndex];
-
       if ($_glyph !== $this) {
         $glyphIDs = array_merge($glyphIDs, $_glyph->getGlyphIDs());
       }
     }
-
     return $glyphIDs;
   }
-
   /*function parse() {
     //$this->parseData();
   }*/
-
   function parseData() {
     parent::parseData();
-
     $font = $this->getFont();
-
     do {
       $flags      = $font->readUInt16();
       $glyphIndex = $font->readUInt16();
-
       $a = 1.0;
       $b = 0.0;
       $c = 0.0;
       $d = 1.0;
       $e = 0.0;
       $f = 0.0;
-
       $point_compound  = null;
       $point_component = null;
-
       $instructions = null;
-
       if ($flags & self::ARG_1_AND_2_ARE_WORDS) {
         if ($flags & self::ARGS_ARE_XY_VALUES) {
           $e = $font->readInt16();
@@ -94,7 +78,6 @@ class OutlineComposite extends Outline {
           $point_component = $font->readUInt8();
         }
       }
-
       if ($flags & self::WE_HAVE_A_SCALE) {
         $a = $d = $font->readInt16();
       }
@@ -108,11 +91,9 @@ class OutlineComposite extends Outline {
         $c = $font->readInt16();
         $d = $font->readInt16();
       }
-
       //if ($flags & self::WE_HAVE_INSTRUCTIONS) {
       //
       //}
-
       $component                  = new OutlineComponent();
       $component->flags           = $flags;
       $component->glyphIndex      = $glyphIndex;
@@ -125,7 +106,6 @@ class OutlineComposite extends Outline {
       $component->point_compound  = $point_compound;
       $component->point_component = $point_component;
       $component->instructions    = $instructions;
-
       $this->components[] = $component;
     } while ($flags & self::MORE_COMPONENTS);
     if ($flags & self::WE_HAVE_INSTRUCTIONS) {
@@ -134,23 +114,18 @@ class OutlineComposite extends Outline {
       $this->components[count($this->components) - 1]->instructions = pack('n', $numInstr) . $instr;
     }
   }
-
   function encode() {
     $font = $this->getFont();
-
     $gids = $font->getSubset();
-
     $size = $font->writeInt16(-1);
     $size += $font->writeFWord($this->xMin);
     $size += $font->writeFWord($this->yMin);
     $size += $font->writeFWord($this->xMax);
     $size += $font->writeFWord($this->yMax);
-
     foreach ($this->components as $_i => $_component) {
       $flags = 0;
       if ($_component->point_component === null && $_component->point_compound === null) {
         $flags |= self::ARGS_ARE_XY_VALUES;
-
         if (abs($_component->e) > 0x7F || abs($_component->f) > 0x7F) {
           $flags |= self::ARG_1_AND_2_ARE_WORDS;
         }
@@ -158,7 +133,6 @@ class OutlineComposite extends Outline {
       elseif ($_component->point_component > 0xFF || $_component->point_compound > 0xFF) {
         $flags |= self::ARG_1_AND_2_ARE_WORDS;
       }
-
       if ($_component->b == 0 && $_component->c == 0) {
         if ($_component->a == $_component->d) {
           if ($_component->a != 1.0) {
@@ -172,18 +146,14 @@ class OutlineComposite extends Outline {
       else {
         $flags |= self::WE_HAVE_A_TWO_BY_TWO;
       }
-
       if ($_i < count($this->components) - 1) {
         $flags |= self::MORE_COMPONENTS;
       } elseif($_component->instructions !== null) {
         $flags |= self::WE_HAVE_INSTRUCTIONS;
       }
-
       $size += $font->writeUInt16($flags);
-
       $new_gid = array_search($_component->glyphIndex, $gids);
       $size += $font->writeUInt16($new_gid);
-
       if ($flags & self::ARG_1_AND_2_ARE_WORDS) {
         if ($flags & self::ARGS_ARE_XY_VALUES) {
           $size += $font->writeInt16($_component->e);
@@ -204,7 +174,6 @@ class OutlineComposite extends Outline {
           $size += $font->writeUInt8($_component->point_component);
         }
       }
-
       if ($flags & self::WE_HAVE_A_SCALE) {
         $size += $font->writeInt16($_component->a);
       }
@@ -219,26 +188,19 @@ class OutlineComposite extends Outline {
         $size += $font->writeInt16($_component->d);
       }
     }
-
     if($_component->instructions !== null) {
       $size += $font->write($_component->instructions, strlen($_component->instructions));
     }
-
     return $size;
   }
-
   public function getSVGContours() {
     $contours = array();
-
     /** @var \FontLib\Table\Type\glyf $glyph_data */
     $glyph_data = $this->getFont()->getTableObject("glyf");
-
     /** @var Outline[] $glyphs */
     $glyphs = $glyph_data->data;
-
     foreach ($this->components as $component) {
       $_glyph = $glyphs[$component->glyphIndex];
-
       if ($_glyph !== $this) {
         $contours[] = array(
           "contours"  => $_glyph->getSVGContours(),
@@ -246,7 +208,6 @@ class OutlineComposite extends Outline {
         );
       }
     }
-
     return $contours;
   }
 }

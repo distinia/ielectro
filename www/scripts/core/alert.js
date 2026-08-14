@@ -1,5 +1,4 @@
 import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
-
 export class Alert {
     static close(container) {
         if (!container) return;

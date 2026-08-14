@@ -1,7 +1,6 @@
 import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
 import { Api } from "../core/api.js";
 import { Site } from "../core/site.js";
-
 export class News {
     constructor() {
         this.list = document.querySelector(".news-list");

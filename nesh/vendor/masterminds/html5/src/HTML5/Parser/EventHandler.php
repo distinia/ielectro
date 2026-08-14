@@ -1,7 +1,5 @@
 <?php
-
 namespace Masterminds\HTML5\Parser;
-
 /**
  * Standard events for HTML5.
  *
@@ -22,11 +20,8 @@ namespace Masterminds\HTML5\Parser;
 interface EventHandler
 {
     const DOCTYPE_NONE = 0;
-
     const DOCTYPE_PUBLIC = 1;
-
     const DOCTYPE_SYSTEM = 2;
-
     /**
      * A doctype declaration.
      *
@@ -37,7 +32,6 @@ interface EventHandler
      * @param bool   $quirks Indicates whether the builder should enter quirks mode.
      */
     public function doctype($name, $idType = 0, $id = null, $quirks = false);
-
     /**
      * A start tag.
      *
@@ -66,34 +60,28 @@ interface EventHandler
      * @return int one of the Tokenizer::TEXTMODE_* constants
      */
     public function startTag($name, $attributes = array(), $selfClosing = false);
-
     /**
      * An end-tag.
      */
     public function endTag($name);
-
     /**
      * A comment section (unparsed character data).
      */
     public function comment($cdata);
-
     /**
      * A unit of parsed character data.
      *
      * Entities in this text are *already decoded*.
      */
     public function text($cdata);
-
     /**
      * Indicates that the document has been entirely processed.
      */
     public function eof();
-
     /**
      * Emitted when the parser encounters an error condition.
      */
     public function parseError($msg, $line, $col);
-
     /**
      * A CDATA section.
      *
@@ -101,7 +89,6 @@ interface EventHandler
      *                     The unparsed character data
      */
     public function cdata($data);
-
     /**
      * This is a holdover from the XML spec.
      *

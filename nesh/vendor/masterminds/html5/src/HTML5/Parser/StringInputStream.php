@@ -2,15 +2,11 @@
 /**
  * Loads a string to be parsed.
  */
-
 namespace Masterminds\HTML5\Parser;
-
 /*
  *
 * Based on code from html5lib:
-
 Copyright 2009 Geoffrey Sneddon <http://gsnedders.com/>
-
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the
     "Software"), to deal in the Software without restriction, including
@@ -18,10 +14,8 @@ without limitation the rights to use, copy, modify, merge, publish,
 distribute, sublicense, and/or sell copies of the Software, and to
 permit persons to whom the Software is furnished to do so, subject to
 the following conditions:
-
 The above copyright notice and this permission notice shall be included
 in all copies or substantial portions of the Software.
-
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -29,9 +23,7 @@ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
 CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
 */
-
 // Some conventions:
 // - /* */ indicates verbatim text from the HTML 5 specification
 //   MPB: Not sure which version of the spec. Moving from HTML5lib to
@@ -39,7 +31,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //   http://www.w3.org/TR/2012/CR-html5-20121217/Overview.html#contents
 //
 // - // indicates regular comments
-
 /**
  * @deprecated since 2.4, to remove in 3.0. Use a string in the scanner instead.
  */
@@ -49,22 +40,18 @@ class StringInputStream implements InputStream
      * The string data we're parsing.
      */
     private $data;
-
     /**
      * The current integer byte position we are in $data.
      */
     private $char;
-
     /**
      * Length of $data; when $char === $data, we are at the end-of-file.
      */
     private $EOF;
-
     /**
      * Parse errors.
      */
     public $errors = array();
-
     /**
      * Create a new InputStream wrapper.
      *
@@ -78,24 +65,19 @@ class StringInputStream implements InputStream
         if ($debug) {
             fprintf(STDOUT, $debug, $data, strlen($data));
         }
-
         // There is good reason to question whether it makes sense to
         // do this here, since most of these checks are done during
         // parsing, and since this check doesn't actually *do* anything.
         $this->errors = UTF8Utils::checkForIllegalCodepoints($data);
-
         $data = $this->replaceLinefeeds($data);
-
         $this->data = $data;
         $this->char = 0;
         $this->EOF = strlen($data);
     }
-
     public function __toString()
     {
         return $this->data;
     }
-
     /**
      * Replace linefeed characters according to the spec.
      */
@@ -113,10 +95,8 @@ class StringInputStream implements InputStream
             "\r\n" => "\n",
             "\r" => "\n",
         );
-
         return strtr($data, $crlfTable);
     }
-
     /**
      * Returns the current line that the tokenizer is at.
      */
@@ -129,7 +109,6 @@ class StringInputStream implements InputStream
         // byte to be processed.
         return substr_count($this->data, "\n", 0, min($this->char, $this->EOF)) + 1;
     }
-
     /**
      * @deprecated
      */
@@ -137,7 +116,6 @@ class StringInputStream implements InputStream
     {
         return $this->currentLine();
     }
-
     /**
      * Returns the current column of the current line that the tokenizer is at.
      * Newlines are column 0. The first char after a newline is column 1.
@@ -157,7 +135,6 @@ class StringInputStream implements InputStream
         // final offset byte.
         $backwardFrom = $this->char - 1 - strlen($this->data);
         $lastLine = strrpos($this->data, "\n", $backwardFrom);
-
         // However, for here we want the length up until the next byte to be
         // processed, so add one to the current byte ($this->char).
         if (false !== $lastLine) {
@@ -166,10 +143,8 @@ class StringInputStream implements InputStream
             // After a newline.
             $findLengthOf = substr($this->data, 0, $this->char);
         }
-
         return UTF8Utils::countChars($findLengthOf);
     }
-
     /**
      * @deprecated
      */
@@ -177,7 +152,6 @@ class StringInputStream implements InputStream
     {
         return $this->columnOffset();
     }
-
     /**
      * Get the current character.
      *
@@ -188,7 +162,6 @@ class StringInputStream implements InputStream
     {
         return $this->data[$this->char];
     }
-
     /**
      * Advance the pointer.
      * This is part of the Iterator interface.
@@ -198,7 +171,6 @@ class StringInputStream implements InputStream
     {
         ++$this->char;
     }
-
     /**
      * Rewind to the start of the string.
      */
@@ -207,7 +179,6 @@ class StringInputStream implements InputStream
     {
         $this->char = 0;
     }
-
     /**
      * Is the current pointer location valid.
      *
@@ -218,7 +189,6 @@ class StringInputStream implements InputStream
     {
         return $this->char < $this->EOF;
     }
-
     /**
      * Get all characters until EOF.
      *
@@ -235,13 +205,10 @@ class StringInputStream implements InputStream
         if ($this->char < $this->EOF) {
             $data = substr($this->data, $this->char);
             $this->char = $this->EOF;
-
             return $data;
         }
-
         return ''; // false;
     }
-
     /**
      * Read to a particular match (or until $max bytes are consumed).
      *
@@ -261,19 +228,15 @@ class StringInputStream implements InputStream
         if ($this->char >= $this->EOF) {
             return false;
         }
-
         if (0 === $max || $max) {
             $len = strcspn($this->data, $bytes, $this->char, $max);
         } else {
             $len = strcspn($this->data, $bytes, $this->char);
         }
-
         $string = (string) substr($this->data, $this->char, $len);
         $this->char += $len;
-
         return $string;
     }
-
     /**
      * Returns the string so long as $bytes matches.
      *
@@ -292,7 +255,6 @@ class StringInputStream implements InputStream
         if ($this->char >= $this->EOF) {
             return false;
         }
-
         if (0 === $max || $max) {
             $len = strspn($this->data, $bytes, $this->char, $max);
         } else {
@@ -300,10 +262,8 @@ class StringInputStream implements InputStream
         }
         $string = (string) substr($this->data, $this->char, $len);
         $this->char += $len;
-
         return $string;
     }
-
     /**
      * Unconsume characters.
      *
@@ -315,7 +275,6 @@ class StringInputStream implements InputStream
             $this->char -= $howMany;
         }
     }
-
     /**
      * Look ahead without moving cursor.
      */
@@ -324,10 +283,8 @@ class StringInputStream implements InputStream
         if (($this->char + 1) <= $this->EOF) {
             return $this->data[$this->char + 1];
         }
-
         return false;
     }
-
     #[\ReturnTypeWillChange]
     public function key()
     {

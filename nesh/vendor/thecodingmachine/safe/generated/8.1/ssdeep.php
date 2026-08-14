@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\SsdeepException;
-
 /**
  * @param string $signature1
  * @param string $signature2
@@ -20,8 +17,6 @@ function ssdeep_fuzzy_compare(string $signature1, string $signature2): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $file_name
  * @return string
@@ -37,8 +32,6 @@ function ssdeep_fuzzy_hash_filename(string $file_name): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $to_hash
  * @return string

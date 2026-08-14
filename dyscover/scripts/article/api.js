@@ -1,7 +1,6 @@
 import { Api } from "../core/api.js";
 import { App, Request } from "../core/index.js";
 import { PostResolver } from "./post-resolver.js";
-
 const TOOLBAR_ACTIONS = {
     Save: "save",
     ReplaceText: "replace",
@@ -20,7 +19,6 @@ const TOOLBAR_ACTIONS = {
     table: "table",
     template: "template",
 };
-
 const ELEMENT_ACTIONS = {
     heading: "heading",
     "sub-heading": "subheading",
@@ -31,7 +29,6 @@ const ELEMENT_ACTIONS = {
     "point-list": "pointList",
     "number-list": "numberList",
 };
-
 export class API {
     static normalizeElement(item) {
         if (!item || typeof item !== "object") {
@@ -50,25 +47,21 @@ export class API {
             text: item.title || item.text || item.class || item.element || "",
         };
     }
-
     static async getElements() {
         const raw = await Request.get(`${Api.origin}/data/elements.json`);
         const list = Array.isArray(raw) ? raw : Api.list(raw);
         return list.map((item) => API.normalizeElement(item)).filter(Boolean);
     }
-
     static async saveArticle(content) {
         const uuid = App.urlLastPart().replace(/\.html$/i, "");
         const res = await Request.put(Api.article(uuid), { content });
         return Api.message(res) || "Article saved";
     }
-
     static async getArticleInfo() {
         const uuid = App.urlLastPart().replace(/\.html$/i, "");
         const res = await Request.get(Api.article(uuid));
         return Api.record(res);
     }
-
     static async search(type, term) {
         const map = {
             article: "articles",
@@ -92,7 +85,6 @@ export class API {
             preview_image: row.preview_image || row.preview || "",
         }));
     }
-
     static async searchLinkPosts(term) {
         const [articles, documents] = await Promise.all([
             API.search("article", term),
@@ -104,14 +96,12 @@ export class API {
             }),
         );
     }
-
     static async getTemplate(idOrTitle) {
         const raw = String(idOrTitle || "").trim();
         if (/^\d+$/.test(raw)) {
             const res = await Request.get(Api.templateFields(raw));
             return Api.list(res);
         }
-
         const name = raw.replace(/ /g, "_");
         if (!name) {
             throw new Error("Missing template name");
@@ -138,7 +128,6 @@ export class API {
         const res = await Request.get(Api.templateFields(match.id));
         return Api.list(res);
     }
-
     static async getArticlePreview(uuidOrSlug) {
         let raw = String(uuidOrSlug || "").replace(/\.html$/i, "").split("#")[0];
         raw = decodeURIComponent(raw).trim();
@@ -168,7 +157,6 @@ export class API {
             articleUrl: record.url || `${Api.origin}/article/${raw}`,
         };
     }
-
     static async resolveArticleUuid(slugOrUuid) {
         const raw = decodeURIComponent(String(slugOrUuid || ""))
             .trim()
@@ -207,4 +195,3 @@ export class API {
         return "";
     }
 }
-

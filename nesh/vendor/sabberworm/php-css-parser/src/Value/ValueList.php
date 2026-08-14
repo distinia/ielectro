@@ -1,12 +1,8 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\Value;
-
 use Sabberworm\CSS\OutputFormat;
 use Sabberworm\CSS\ShortClassNameProvider;
-
 /**
  * A `ValueList` represents a lists of `Value`s, separated by some separation character
  * (mostly `,`, whitespace, or `/`).
@@ -16,21 +12,18 @@ use Sabberworm\CSS\ShortClassNameProvider;
 abstract class ValueList extends Value
 {
     use ShortClassNameProvider;
-
     /**
      * @var array<Value|string>
      *
      * @internal since 8.8.0
      */
     protected $components;
-
     /**
      * @var non-empty-string
      *
      * @internal since 8.8.0
      */
     protected $separator;
-
     /**
      * @param array<Value|string>|Value|string $components
      * @param non-empty-string $separator
@@ -45,7 +38,6 @@ abstract class ValueList extends Value
         $this->components = $components;
         $this->separator = $separator;
     }
-
     /**
      * @param Value|string $component
      */
@@ -53,7 +45,6 @@ abstract class ValueList extends Value
     {
         $this->components[] = $component;
     }
-
     /**
      * @return array<Value|string>
      */
@@ -61,7 +52,6 @@ abstract class ValueList extends Value
     {
         return $this->components;
     }
-
     /**
      * @param array<Value|string> $components
      */
@@ -69,7 +59,6 @@ abstract class ValueList extends Value
     {
         $this->components = $components;
     }
-
     /**
      * @return non-empty-string
      */
@@ -77,7 +66,6 @@ abstract class ValueList extends Value
     {
         return $this->separator;
     }
-
     /**
      * @param non-empty-string $separator
      */
@@ -85,18 +73,15 @@ abstract class ValueList extends Value
     {
         $this->separator = $separator;
     }
-
     public function render(OutputFormat $outputFormat): string
     {
         $formatter = $outputFormat->getFormatter();
-
         return $formatter->implode(
             $formatter->spaceBeforeListArgumentSeparator($this->separator) . $this->separator
             . $formatter->spaceAfterListArgumentSeparator($this->separator),
             $this->components
         );
     }
-
     /**
      * @return array<string, bool|int|float|string|array<mixed>|null>
      *

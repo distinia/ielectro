@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\ShmopException;
-
 /**
  * @param \Shmop $shmop
  * @throws ShmopException
@@ -17,8 +14,6 @@ function shmop_delete(\Shmop $shmop): void
         throw ShmopException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \Shmop $shmop
  * @param int $offset

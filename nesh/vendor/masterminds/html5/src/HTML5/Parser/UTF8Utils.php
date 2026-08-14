@@ -1,12 +1,8 @@
 <?php
-
 namespace Masterminds\HTML5\Parser;
-
 /*
 Portions based on code from html5lib files with the following copyright:
-
 Copyright 2009 Geoffrey Sneddon <http://gsnedders.com/>
-
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the
     "Software"), to deal in the Software without restriction, including
@@ -14,10 +10,8 @@ without limitation the rights to use, copy, modify, merge, publish,
 distribute, sublicense, and/or sell copies of the Software, and to
 permit persons to whom the Software is furnished to do so, subject to
 the following conditions:
-
 The above copyright notice and this permission notice shall be included
 in all copies or substantial portions of the Software.
-
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -26,16 +20,13 @@ CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-
 use Masterminds\HTML5\Exception;
-
 class UTF8Utils
 {
     /**
      * The Unicode replacement character.
      */
     const FFFD = "\xEF\xBF\xBD";
-
     /**
      * Count the number of characters in a string.
      * UTF-8 aware. This will try (in order) iconv, MB, and finally a custom counter.
@@ -50,18 +41,14 @@ class UTF8Utils
         if (function_exists('mb_strlen')) {
             return mb_strlen($string, 'utf-8');
         }
-
         if (function_exists('iconv_strlen')) {
             return iconv_strlen($string, 'utf-8');
         }
-
         $count = count_chars($string);
-
         // 0x80 = 0x7F - 0 + 1 (one added to get inclusive range)
         // 0x33 = 0xF4 - 0x2C + 1 (one added to get inclusive range)
         return array_sum(array_slice($count, 0, 0x80)) + array_sum(array_slice($count, 0xC2, 0x33));
     }
-
     /**
      * Convert data from the given encoding to UTF-8.
      *
@@ -83,7 +70,6 @@ class UTF8Utils
          * in the original byte stream that could not be converted to Unicode characters must be
          * converted to U+FFFD REPLACEMENT CHARACTER code points.
          */
-
         // mb_convert_encoding is chosen over iconv because of a bug. The best
         // details for the bug are on http://us1.php.net/manual/en/function.iconv.php#108643
         // which contains links to the actual but reports as well as work around
@@ -92,7 +78,6 @@ class UTF8Utils
             // mb library has the following behaviors:
             // - UTF-16 surrogates result in false.
             // - Overlongs and outside Plane 16 result in empty strings.
-
             // Before we run mb_convert_encoding we need to tell it what to do with
             // characters it does not know. This could be different than the parent
             // application executing this library so we store the value, change it
@@ -114,17 +99,14 @@ class UTF8Utils
         } else {
             throw new Exception('Not implemented, please install mbstring or iconv');
         }
-
         /*
          * One leading U+FEFF BYTE ORDER MARK character must be ignored if any are present.
          */
         if ("\xEF\xBB\xBF" === substr($data, 0, 3)) {
             $data = substr($data, 3);
         }
-
         return $data;
     }
-
     /**
      * Checks for Unicode code points that are not valid in a document.
      *
@@ -136,7 +118,6 @@ class UTF8Utils
     {
         // Vestigal error handling.
         $errors = array();
-
         /*
          * All U+0000 null characters in the input must be replaced by U+FFFD REPLACEMENT CHARACTERs.
          * Any occurrences of such characters is a parse error.
@@ -144,7 +125,6 @@ class UTF8Utils
         for ($i = 0, $count = substr_count($data, "\0"); $i < $count; ++$i) {
             $errors[] = 'null-character';
         }
-
         /*
          * Any occurrences of any characters in the ranges U+0001 to U+0008, U+000B, U+000E to U+001F, U+007F
          * to U+009F, U+D800 to U+DFFF , U+FDD0 to U+FDEF, and characters U+FFFE, U+FFFF, U+1FFFE, U+1FFFF,
@@ -171,7 +151,6 @@ class UTF8Utils
         for ($i = 0; $i < $count; ++$i) {
             $errors[] = 'invalid-codepoint';
         }
-
         return $errors;
     }
 }

@@ -1,19 +1,16 @@
 body.creator-page {
     background: linear-gradient(180deg, rgba(30, 136, 229, 0.06), transparent 240px);
 }
-
 body.creator-page main {
     padding-left: 1rem;
     padding-right: 1rem;
 }
-
 .manager-container {
     width: min(96vw, 1600px);
     max-width: 100%;
     margin: 0 auto;
     padding: 1.5rem 0.5rem 2.5rem;
 }
-
 .creator-toolbar {
     display: flex;
     align-items: center;
@@ -26,14 +23,12 @@ body.creator-page main {
     box-shadow: var(--card-shadow);
     flex-wrap: wrap;
 }
-
 .creator-toolbar h1 {
     margin: 0;
     font-size: clamp(1.35rem, 2.4vw, 1.75rem);
     letter-spacing: -0.03em;
     white-space: nowrap;
 }
-
 .creator-stats {
     display: flex;
     flex-wrap: wrap;
@@ -41,7 +36,6 @@ body.creator-page main {
     flex: 1;
     justify-content: center;
 }
-
 .creator-stat-pill {
     display: inline-flex;
     align-items: center;
@@ -59,41 +53,34 @@ body.creator-page main {
         background 0.15s ease,
         box-shadow 0.15s ease;
 }
-
 .creator-stat-pill:hover {
     border-color: rgba(30, 136, 229, 0.28);
 }
-
 .creator-stat-pill.is-active {
     border-color: rgba(30, 136, 229, 0.35);
     box-shadow: 0 4px 16px rgba(30, 136, 229, 0.1);
     background: rgba(30, 136, 229, 0.08);
 }
-
 .creator-stat-pill strong {
     color: var(--blue-mid);
 }
-
 .creator-toolbar-actions {
     display: flex;
     align-items: center;
     gap: 0.75rem;
     margin-left: auto;
 }
-
 .creator-toolbar-actions .search-item {
     margin: 0;
     min-width: min(100%, 16rem);
     border-radius: 999px;
 }
-
 .action-buttons {
     display: flex;
     gap: 0.45rem;
     flex-wrap: wrap;
     align-items: center;
 }
-
 .action-buttons .button.action-btn {
     display: inline-flex;
     align-items: center;
@@ -112,16 +99,13 @@ body.creator-page main {
         border-color 0.15s ease,
         color 0.15s ease;
 }
-
 .action-buttons .button.action-btn i {
     font-size: 1.05rem;
     line-height: 1;
 }
-
 .action-buttons .button.action-btn:active {
     transform: scale(0.94);
 }
-
 .action-buttons .button.action-btn.create {
     color: #fff;
     background: var(--primary-gradient);
@@ -130,73 +114,60 @@ body.creator-page main {
         0 4px 14px rgba(21, 101, 192, 0.32),
         0 0 0 1px rgba(255, 255, 255, 0.16) inset;
 }
-
 .action-buttons .button.action-btn.create:hover {
     box-shadow:
         0 6px 18px rgba(21, 101, 192, 0.38),
         0 0 0 1px rgba(255, 255, 255, 0.2) inset;
 }
-
 .action-buttons .button.action-btn.edit {
     color: var(--blue-mid);
     background: rgba(30, 136, 229, 0.08);
     border-color: rgba(30, 136, 229, 0.2);
 }
-
 .action-buttons .button.action-btn.edit:hover {
     background: rgba(30, 136, 229, 0.14);
     border-color: rgba(30, 136, 229, 0.3);
 }
-
 .action-buttons .button.action-btn.archive {
     color: #b45309;
     background: rgba(245, 158, 11, 0.1);
     border-color: rgba(245, 158, 11, 0.22);
 }
-
 .action-buttons .button.action-btn.archive:hover {
     background: rgba(245, 158, 11, 0.16);
     border-color: rgba(245, 158, 11, 0.32);
 }
-
 .action-buttons .button.action-btn.delete {
     color: #b91c1c;
     background: rgba(220, 38, 38, 0.08);
     border-color: rgba(220, 38, 38, 0.18);
 }
-
 .action-buttons .button.action-btn.delete:hover {
     background: rgba(220, 38, 38, 0.12);
     border-color: rgba(220, 38, 38, 0.28);
 }
-
 .number-elements:empty {
     display: none;
 }
-
 @media (max-width: 992px) {
     .creator-toolbar {
         gap: 0.75rem;
     }
-
     .creator-stats {
         order: 3;
         width: 100%;
         justify-content: flex-start;
     }
-
     .creator-toolbar-actions {
         margin-left: 0;
         width: 100%;
         justify-content: space-between;
     }
 }
-
 @media (max-width: 640px) {
     .manager-container {
         padding: 1rem 0.75rem 2rem;
     }
-
     .creator-toolbar-actions {
         flex-direction: column;
         align-items: stretch;

@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\DirException;
-
 /**
  * @param string $directory
  * @throws DirException
@@ -17,8 +14,6 @@ function chdir(string $directory): void
         throw DirException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $directory
  * @throws DirException
@@ -32,8 +27,6 @@ function chroot(string $directory): void
         throw DirException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $directory
  * @param null|resource $context
@@ -54,8 +47,6 @@ function dir(string $directory, $context = null): \Directory
     }
     return $safeResult;
 }
-
-
 /**
  * @return non-empty-string
  * @throws DirException
@@ -70,8 +61,6 @@ function getcwd(): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $directory
  * @param null|resource $context
@@ -92,8 +81,6 @@ function opendir(string $directory, $context = null)
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $directory
  * @param SCANDIR_SORT_ASCENDING|SCANDIR_SORT_DESCENDING|SCANDIR_SORT_NONE $sorting_order

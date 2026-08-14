@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\SwooleException;
-
 /**
  * @param string $hostname
  * @param callable $callback
@@ -18,8 +15,6 @@ function swoole_async_dns_lookup(string $hostname, callable $callback): void
         throw SwooleException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $filename
  * @param string $callback
@@ -34,8 +29,6 @@ function swoole_async_readfile(string $filename, string $callback): void
         throw SwooleException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $filename
  * @param string $content
@@ -58,8 +51,6 @@ function swoole_async_write(string $filename, string $content, ?int $offset = nu
         throw SwooleException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $filename
  * @param string $content
@@ -82,8 +73,6 @@ function swoole_async_writefile(string $filename, string $content, ?callable $ca
         throw SwooleException::createFromPhpError();
     }
 }
-
-
 /**
  * @param callable $callback
  * @throws SwooleException
@@ -97,8 +86,6 @@ function swoole_event_defer(callable $callback): void
         throw SwooleException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $fd
  * @throws SwooleException
@@ -112,8 +99,6 @@ function swoole_event_del(int $fd): void
         throw SwooleException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $fd
  * @param string $data

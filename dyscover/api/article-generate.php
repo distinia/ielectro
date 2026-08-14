@@ -1,34 +1,26 @@
 <?php
-
 namespace Dyscover;
-
 use Nesh\Identity;
 use Nesh\Ai\Client;
 use Nesh\Query;
 use Nesh\Request;
 use Nesh\Response;
 use Nesh\Validate;
-
 require_once __DIR__ . '/posts.php';
 require_once __DIR__ . '/article-knowledge.php';
 require_once __DIR__ . '/article-playbook.php';
-
 class ArticleGenerate
 {
     private const MIN_TEMPLATE_SCORE = 10;
-
     public static function create(string $uuid): void
     {
         Request::post();
         Identity::required();
-
         @set_time_limit(240);
-
         $uuid = trim($uuid);
         if (!Validate::required($uuid)) {
             Response::badRequest('Missing article uuid');
         }
-
         $prompt = trim((string) Request::value('prompt'));
         if (!Validate::required($prompt)) {
             Response::badRequest('Missing prompt');
@@ -36,15 +28,12 @@ class ArticleGenerate
         if (mb_strlen($prompt) > 4000) {
             Response::badRequest('Prompt is too long');
         }
-
         $post = self::loadArticle($uuid);
         if ($post === null) {
             return;
         }
-
         $title = trim((string) ($post['title'] ?? 'Article'));
         $stage = trim((string) Request::value('stage'));
-
         try {
             if ($stage === 'write') {
                 $context = Request::value('context');
@@ -52,27 +41,21 @@ class ArticleGenerate
                     Response::badRequest('Missing generation context');
                 }
                 self::respondWrite($uuid, $prompt, $title, $context);
-
                 return;
             }
-
             $context = self::buildResearchContext($uuid, $prompt, $title);
-
             if ($stage === 'research') {
                 Response::success([
                     'stage' => 'research',
                     'context' => $context,
                 ]);
-
                 return;
             }
-
             self::respondWrite($uuid, $prompt, $title, $context);
         } catch (\Throwable $exception) {
             Response::error($exception->getMessage() ?: 'Article generation failed');
         }
     }
-
     private static function loadArticle(string $uuid): ?array
     {
         $post = Query::fetch(
@@ -83,22 +66,16 @@ class ArticleGenerate
             LIMIT 1",
             [$uuid]
         );
-
         if (!$post || $post['status'] !== 'active') {
             Response::notFound('Article not found');
-
             return null;
         }
-
         if (!self::isOwner((int) $post['user_id'])) {
             Response::forbidden();
-
             return null;
         }
-
         return $post;
     }
-
     private static function relatedSearchTags(string $primaryEntity, array $relatedTags): array
     {
         $entity = mb_strtolower(trim($primaryEntity));
@@ -111,10 +88,8 @@ class ArticleGenerate
                 'destenia',
             ]);
         }
-
         return array_values(array_unique(array_merge($relatedTags, $extra)));
     }
-
     private static function buildResearchContext(string $uuid, string $prompt, string $title): array
     {
         $topic = ArticleKnowledge::extractTopicTerms($prompt, $title);
@@ -128,7 +103,6 @@ class ArticleGenerate
         $primaryEntity = self::normalizeScalar($topic['primary_entity'] ?? '');
         $archetype = $topic['archetype'];
         $playbook = ArticlePlaybook::match($prompt, $title, $terms, $archetype);
-
         $articles = ArticleKnowledge::searchRelatedArticles(
             $terms,
             $primaryEntity,
@@ -154,14 +128,12 @@ class ArticleGenerate
         );
         $media = ArticleKnowledge::appendPortraitMedia($media, $terms, $primaryEntity, $uuid, $title);
         $media = ArticleKnowledge::filterMediaForTopic($media, $primaryEntity, $title);
-
         $corpus = ArticleKnowledge::loadArticleCorpus($articles, 4500);
         Client::pause();
         $facts = self::extractFacts($prompt, $title, $corpus, $topic);
         $referenceOutline = ArticleKnowledge::extractReferenceOutline($articles);
         Client::pause();
         $outline = self::planOutline($prompt, $title, $facts, $playbook, $referenceOutline);
-
         $templates = ArticleKnowledge::rankedTemplates($prompt, $title, 6);
         Client::pause();
         $template = self::pickAndValidateTemplate($prompt, $title, $templates, $playbook, $topic);
@@ -169,7 +141,6 @@ class ArticleGenerate
         $templateBlock = $template !== null
             ? self::buildTemplateBlock($template, $facts, $links, $media, $terms, $primaryEntity, $title)
             : '';
-
         return [
             'topic' => $topic,
             'terms' => $terms,
@@ -186,7 +157,6 @@ class ArticleGenerate
             'template_block' => $templateBlock,
         ];
     }
-
     private static function respondWrite(string $uuid, string $prompt, string $title, array $context): void
     {
         $topic = is_array($context['topic'] ?? null) ? $context['topic'] : [];
@@ -206,7 +176,6 @@ class ArticleGenerate
         );
         $template = is_array($context['template'] ?? null) ? $context['template'] : null;
         $templateBlock = trim((string) ($context['template_block'] ?? ''));
-
         Client::pause();
         $body = self::generateBody(
             $prompt,
@@ -218,7 +187,6 @@ class ArticleGenerate
             $terms,
             $primaryEntity
         );
-
         $source = self::postProcessSource(
             self::assembleSource($templateBlock, $body),
             $title,
@@ -226,14 +194,12 @@ class ArticleGenerate
             $links,
             $media
         );
-
         $playbookId = (string) ($context['playbook_id'] ?? '');
         if ($playbookId !== '') {
             ArticlePlaybook::recordSuccess($playbookId, $terms, $outline);
         } elseif (!empty($topic['archetype']) && ($topic['archetype'] ?? '') !== 'other') {
             ArticlePlaybook::createFromGeneration((string) $topic['archetype'], $terms, $outline);
         }
-
         Response::success([
             'stage' => 'write',
             'source' => $source,
@@ -243,7 +209,6 @@ class ArticleGenerate
             'references' => $context['articles'] ?? [],
         ]);
     }
-
     private static function compactReferences(array $articles): array
     {
         return array_map(
@@ -256,7 +221,6 @@ class ArticleGenerate
             $articles
         );
     }
-
     private static function compactLinks(array $links): array
     {
         return array_map(
@@ -267,7 +231,6 @@ class ArticleGenerate
             $links
         );
     }
-
     private static function compactMedia(array $media): array
     {
         return array_map(
@@ -279,7 +242,6 @@ class ArticleGenerate
             $media
         );
     }
-
     private static function expandLinks(array $links): array
     {
         $expanded = [];
@@ -293,10 +255,8 @@ class ArticleGenerate
                 'type' => 'article',
             ];
         }
-
         return $expanded;
     }
-
     private static function expandMedia(array $media): array
     {
         $expanded = [];
@@ -310,25 +270,20 @@ class ArticleGenerate
                 'media_url' => (string) $item['media_url'],
             ];
         }
-
         return $expanded;
     }
-
     private static function isOwner(int $postUserId): bool
     {
         $accountId = Identity::id();
         if ($accountId === null) {
             return false;
         }
-
         $owner = Query::fetch(
             'SELECT id FROM ielectro_dyscover.dyscover_users WHERE account_id = ? LIMIT 1',
             [$accountId]
         );
-
         return $owner && (int) $owner['id'] === $postUserId;
     }
-
     private static function extractFacts(string $prompt, string $title, string $corpus, array $topic): array
     {
         $raw = Client::chat([
@@ -344,14 +299,12 @@ class ArticleGenerate
                 'content' => "Title: {$title}\nBrief: {$prompt}\nPrimary entity: {$topic['primary_entity']}\n\nCorpus:\n{$corpus}",
             ],
         ], 0.2, 600, Client::fastModel());
-
         if (preg_match('/\{[\s\S]*\}/', $raw, $match)) {
             $json = json_decode($match[0], true);
             if (is_array($json)) {
                 return $json;
             }
         }
-
         return [
             'official_name' => $title,
             'summary' => $prompt,
@@ -365,7 +318,6 @@ class ArticleGenerate
             'previous_officeholders' => [],
         ];
     }
-
     private static function planOutline(
         string $prompt,
         string $title,
@@ -376,11 +328,9 @@ class ArticleGenerate
         if ($playbook !== null && !empty($playbook['outline'])) {
             return $playbook['outline'];
         }
-
         if ($referenceOutline !== []) {
             return $referenceOutline;
         }
-
         $factsJson = json_encode($facts, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?: '{}';
         $raw = Client::chat([
             [
@@ -393,14 +343,12 @@ class ArticleGenerate
                 'content' => "Title: {$title}\nBrief: {$prompt}\nFacts: {$factsJson}",
             ],
         ], 0.2, 600, Client::fastModel());
-
         if (preg_match('/\[[\s\S]*\]/', $raw, $match)) {
             $json = json_decode($match[0], true);
             if (is_array($json) && $json !== []) {
                 return $json;
             }
         }
-
         return [
             ['heading' => 'Overview', 'subsections' => ['Role', 'Institutional context']],
             ['heading' => 'History', 'subsections' => ['Origins', 'Modern period']],
@@ -409,7 +357,6 @@ class ArticleGenerate
             ['heading' => 'References', 'subsections' => []],
         ];
     }
-
     private static function pickAndValidateTemplate(
         string $prompt,
         string $title,
@@ -420,7 +367,6 @@ class ArticleGenerate
         if ($templates === []) {
             return null;
         }
-
         $candidates = array_slice($templates, 0, 5);
         if ($playbook !== null) {
             $avoid = $playbook['template']['avoid_title_keywords'] ?? [];
@@ -433,16 +379,13 @@ class ArticleGenerate
                             return false;
                         }
                     }
-
                     return true;
                 }
             ));
         }
-
         if ($candidates === []) {
             return null;
         }
-
         $lines = [];
         foreach ($candidates as $template) {
             $fieldNames = array_map(
@@ -452,7 +395,6 @@ class ArticleGenerate
             $lines[] = 'ID ' . $template['id'] . ' (score ' . (int) ($template['score'] ?? 0) . '): "'
                 . $template['title'] . '" — fields: ' . implode(', ', $fieldNames);
         }
-
         $raw = Client::chat([
             [
                 'role' => 'system',
@@ -466,7 +408,6 @@ class ArticleGenerate
                     . implode("\n", $lines),
             ],
         ], 0.05, 120, Client::fastModel());
-
         $templateId = null;
         $valid = false;
         if (preg_match('/\{[\s\S]*\}/', $raw, $match)) {
@@ -476,29 +417,23 @@ class ArticleGenerate
                 $templateId = isset($json['template_id']) ? (int) $json['template_id'] : null;
             }
         }
-
         if (!$valid || $templateId === null) {
             return null;
         }
-
         $picked = self::findTemplate($candidates, $templateId);
         if ($picked === null || (int) ($picked['score'] ?? 0) < self::MIN_TEMPLATE_SCORE) {
             return null;
         }
-
         return $picked;
     }
-
     private static function resolveInfoboxTitle(string $title, array $facts, string $primaryEntity): string
     {
         $official = self::normalizeScalar($facts['official_name'] ?? '');
         if ($official !== '') {
             return $official;
         }
-
         return $title !== '' ? $title : $primaryEntity;
     }
-
     private static function normalizeScalar(mixed $value, string $default = ''): string
     {
         if (is_array($value)) {
@@ -509,21 +444,16 @@ class ArticleGenerate
                     $parts[] = $text;
                 }
             }
-
             return $parts !== [] ? implode(', ', $parts) : $default;
         }
-
         if (is_bool($value)) {
             return $value ? 'yes' : 'no';
         }
-
         if ($value === null) {
             return $default;
         }
-
         return trim((string) $value);
     }
-
     private static function normalizeTemplateFieldValue(mixed $value): string
     {
         if (is_array($value)) {
@@ -539,12 +469,10 @@ class ArticleGenerate
                     }
                     continue;
                 }
-
                 $text = self::normalizeScalar($item);
                 if ($text === '') {
                     continue;
                 }
-
                 if (
                     str_starts_with($text, '-')
                     || str_starts_with($text, '**')
@@ -556,26 +484,21 @@ class ArticleGenerate
                     $lines[] = '- ' . $text;
                 }
             }
-
             return implode("\n", $lines);
         }
-
         return self::normalizeScalar($value);
     }
-
     private static function cleanTemplateFieldValue(string $slug, string $value): string
     {
         $value = trim($value);
         if ($value === '') {
             return '';
         }
-
         $slug = mb_strtolower($slug);
         $stripLinks = (bool) preg_match(
             '/formation|term|salary|date|holder|length|instrument|precursor|style|abbreviation|incumbent|deputy|seat|nominator|appointer|reports|unofficial|part-of|type|image|photo|portrait|map|audio|anthem|flag|emblem/',
             $slug
         );
-
         if ($stripLinks) {
             $value = (string) preg_replace(
                 '/\s*\(\[\[[^\]]+\|[^\]]+\]\](?:,\s*\[\[[^\]]+\|[^\]]+\]\])*\)\.?/u',
@@ -584,10 +507,8 @@ class ArticleGenerate
             );
             $value = (string) preg_replace('/\[\[[^\]|]+\|[^\]]+\]\]/u', '', $value);
         }
-
         return trim((string) preg_replace("/\n{3,}/", "\n\n", $value));
     }
-
     private static function buildTemplateBlock(
         array $template,
         array $facts,
@@ -600,13 +521,11 @@ class ArticleGenerate
         $fieldValues = self::fillTemplateFields($template, $facts, $links, $media, $terms, $primaryEntity, $title);
         $lines = ['{{template|' . (int) $template['id']];
         $lines[] = '| _title = ' . self::resolveInfoboxTitle($title, $facts, $primaryEntity);
-
         foreach ($template['fields'] as $field) {
             $slug = (string) ($field['slug'] ?? '');
             if ($slug === '' || $slug === '_title') {
                 continue;
             }
-
             $value = self::cleanTemplateFieldValue($slug, self::normalizeTemplateFieldValue($fieldValues[$slug] ?? ''));
             $mediaValue = self::resolveTemplateFieldMedia($field, $media, $terms, $primaryEntity, $title);
             if ($mediaValue !== '') {
@@ -614,15 +533,11 @@ class ArticleGenerate
             } elseif ($value === '') {
                 continue;
             }
-
             $lines[] = '| ' . $slug . ' = ' . $value;
         }
-
         $lines[] = '}}';
-
         return ArticleKnowledge::sanitizeTemplateBlock(implode("\n", $lines));
     }
-
     private static function resolveTemplateFieldMedia(
         array $field,
         array $media,
@@ -632,7 +547,6 @@ class ArticleGenerate
     ): string {
         $type = (string) ($field['type'] ?? 'text');
         $slug = mb_strtolower((string) ($field['slug'] ?? '') . ' ' . (string) ($field['name'] ?? ''));
-
         if ($type === 'double-image' || str_contains($slug, 'flag') || str_contains($slug, 'emblem')) {
             $pair = ArticleKnowledge::pickMediaPairForField($media, $field, $terms, $primaryEntity, $articleTitle);
             if (is_array($pair) && count($pair) >= 2) {
@@ -642,21 +556,17 @@ class ArticleGenerate
                 return self::formatTemplateMediaField($field, (string) $pair[0]['media_url']);
             }
         }
-
         if (in_array($type, ['single-image', 'large-image', 'double-image'], true) || preg_match('/image|photo|portrait|map|audio|anthem/', $slug)) {
             $picked = ArticleKnowledge::pickMediaForField($media, $field, $terms, $primaryEntity, $articleTitle);
             if ($picked !== null) {
                 if (($picked['type'] ?? '') === 'audio' && str_contains($slug, 'anthem')) {
                     return '- ' . ($picked['title'] ?? 'Anthem') . "\n- {{audio|" . ($picked['media_url'] ?? '') . '}}';
                 }
-
                 return self::formatTemplateMediaField($field, (string) ($picked['media_url'] ?? ''));
             }
         }
-
         return '';
     }
-
     private static function fillTemplateFields(
         array $template,
         array $facts,
@@ -671,7 +581,6 @@ class ArticleGenerate
             $fieldLines[] = (string) ($field['slug'] ?? '') . ' (' . ($field['name'] ?? '') . ', type '
                 . ($field['type'] ?? 'text') . ')';
         }
-
         $factsJson = json_encode($facts, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?: '{}';
         $linksBlock = ArticleKnowledge::formatLinkCatalog(
             ArticleKnowledge::filterLinksForTopic($links, $primaryEntity, $title),
@@ -697,17 +606,13 @@ class ArticleGenerate
                     . implode("\n", $fieldLines),
             ],
         ], 0.25, 900, Client::fastModel());
-
         if (!preg_match('/\{[\s\S]*\}/', $raw, $match)) {
             return [];
         }
-
         $json = json_decode($match[0], true);
-
         if (!is_array($json)) {
             return [];
         }
-
         $normalized = [];
         foreach ($json as $slug => $value) {
             $key = self::normalizeScalar($slug);
@@ -716,10 +621,8 @@ class ArticleGenerate
             }
             $normalized[$key] = self::normalizeTemplateFieldValue($value);
         }
-
         return $normalized;
     }
-
     private static function formatTemplateMediaField(array $field, string $url): string
     {
         $type = (string) ($field['type'] ?? 'single-image');
@@ -728,18 +631,14 @@ class ArticleGenerate
         if ($url === '') {
             return '';
         }
-
         if (str_contains($slug, 'map') || $type === 'large-image') {
             return '{{template-large-image|' . $url . '}}';
         }
-
         if ($type === 'double-image') {
             return '{{template-double-image|' . $url . '}}';
         }
-
         return '{{template-single-image|' . $url . '}}';
     }
-
     private static function generateBody(
         string $prompt,
         string $title,
@@ -757,7 +656,6 @@ class ArticleGenerate
         $linkBlock = ArticleKnowledge::formatLinkCatalog($links, 14);
         $mediaBlock = ArticleKnowledge::formatMediaCatalogGrouped($media, 12);
         $dictionary = ArticleKnowledge::formatElementsDictionary();
-
         $messages = [
             ['role' => 'system', 'content' => self::bodySystemPrompt()],
             [
@@ -773,9 +671,7 @@ class ArticleGenerate
                     . "\n\nWrite the article body ONLY (no {{template}}). Start with exactly 5 long lead paragraphs, then the outline sections.",
             ],
         ];
-
         $source = self::cleanSource(Client::chat($messages, 0.55, 4096));
-
         if (!self::looksValid($source)) {
             Client::pause();
             $source = self::cleanSource(Client::chat([
@@ -791,73 +687,59 @@ class ArticleGenerate
                 ],
             ], 0.35, 4096));
         }
-
         return trim($source);
     }
-
     private static function bodySystemPrompt(): string
     {
         return <<<'PROMPT'
 You write encyclopedic Dyscover Source article bodies. Output ONLY Dyscover Source. No fences. No commentary.
-
 NEVER output {{template|...}} blocks.
-
 Tone:
 - Formal academic encyclopedia voice
 - NEVER say data is missing, not provided, not specified, unknown, or unavailable
 - If lists/tables/history are missing, invent plausible names, dates, and rows in consistent style
-
 Structure:
 1) Exactly 5 long lead paragraphs first (NO headings, NO media, NO lists yet)
 2) Then follow the required outline with # and ## headings
 3) A # heading NEVER has paragraphs directly beneath it — only ## subsections follow
 4) EVERY ## subsection must contain exactly 5 long paragraphs
 5) End with # See also as bullet links and # References when useful
-
 Bold rules:
 - Use **bold** very heavily: 5-10 bold terms per paragraph
 - Bold country names, institutions, offices, key concepts, numbers, and proper nouns
-
 Link rules (critical):
 - Use ONLY verified [[Label|url]] links from the catalog when the linked article is clearly about the SAME country, office, or institution as this page
 - Link naturally inside sentences when the topic is already mentioned — never force unrelated links
 - NEVER append parenthetical link lists like "( [[Topic|url]], [[Other|url]] )." at the end of sentences or fields
 - If no relevant verified link exists for a mention, keep plain **bold** text — do NOT link to a different country or unrelated topic
 - For office articles (president, prime minister, minister), link the country, constitution, parliament, and related offices of the SAME country only
-
 Topic focus:
 - Write strictly about the page title subject: powers, institutions, selection, history, and officeholder tables for that exact office and country
 - Do not discuss unrelated countries unless comparing briefly with a relevant verified link
-
 Media rules (outside template):
 - NEVER place media before the first # or ## heading
 - After a ## heading, add {{image|verified-url|caption}} when a verified image fits
 - Use {{image-table|url}} inside table cells for people, ministers, flags, officials
 - Use {{icon-image|url}} beside country or entity names in tables
 - Prefer using many verified media across sections when titles match the topic
-
 Links:
 - Use ONLY verified [[Label|url]] links from the catalog
 - Never write "click here", "to learn more", or "for more information"
-
 See also:
 - Before some major ## sections you MAY use a standalone caption line: > See also: [[Topic|url]]
 - The final # See also section MUST be a bullet list only:
   - [[Topic|url]]
   - [[Topic|url]]
 - Do NOT use caption blocks inside # See also
-
 Formatting (use abundantly):
 - **Bold** and *italic*
 - - bullet lists and 1. numbered lists in every major section
 - | tables | in at least 3 sections, including historical officeholder tables when relevant
 - {{percent|50%}} and {{legend|#008000|Label}} when useful
 - Long paragraphs: one continuous line, 100-180 words, blank line between blocks
-
 Do not copy corpus text verbatim. Write original detailed prose at Wikipedia country/office article scale.
 PROMPT;
     }
-
     private static function formatOutlineForPrompt(array $outline): string
     {
         $lines = [];
@@ -877,37 +759,29 @@ PROMPT;
                 }
             }
         }
-
         return implode("\n", $lines);
     }
-
     private static function assembleSource(string $templateBlock, string $body): string
     {
         $templateBlock = trim($templateBlock);
         $body = trim($body);
-
         if ($templateBlock === '') {
             return $body;
         }
-
         return $body === '' ? $templateBlock : $templateBlock . "\n\n" . $body;
     }
-
     private static function findTemplate(array $templates, ?int $templateId): ?array
     {
         if ($templateId === null) {
             return null;
         }
-
         foreach ($templates as $template) {
             if ((int) $template['id'] === $templateId) {
                 return $template;
             }
         }
-
         return null;
     }
-
     private static function postProcessSource(
         string $source,
         string $title,
@@ -918,78 +792,61 @@ PROMPT;
         $source = trim($source);
         $source = self::stripMainTitle($source, $title);
         $source = ArticleKnowledge::finalizeSource($source, $links, $media, $title, $title);
-
         if ($template === null) {
             $source = self::stripTemplateBlocks($source);
         } else {
             $source = self::ensureTemplateFirst($source);
         }
-
         return trim($source);
     }
-
     private static function stripMainTitle(string $source, string $title): string
     {
         $quoted = preg_quote(trim($title), '/');
         if ($quoted !== '') {
             $source = preg_replace('/^#\s+' . $quoted . '\s*\n+/iu', '', $source) ?? $source;
         }
-
         return preg_replace('/^#\s+.+\n+/u', '', $source, 1) ?? $source;
     }
-
     private static function stripTemplateBlocks(string $source): string
     {
         return trim((string) preg_replace('/\{\{template\|\d+[\s\S]*?\n\}\}\s*/i', '', $source));
     }
-
     private static function ensureTemplateFirst(string $source): string
     {
         if (!preg_match('/\{\{template\|\d+[\s\S]*?\n\}\}/i', $source, $match)) {
             return $source;
         }
-
         $block = trim($match[0]);
         if (str_starts_with(trim($source), '{{template|')) {
             return $source;
         }
-
         $position = strpos($source, $match[0]);
         if ($position === false) {
             return $source;
         }
-
         $rest = trim(substr($source, 0, $position) . substr($source, $position + strlen($match[0])));
-
         return $rest === '' ? $block : $block . "\n\n" . $rest;
     }
-
     private static function cleanSource(string $source): string
     {
         $source = trim($source);
         $source = preg_replace('/^```[\w]*\s*\n?/m', '', $source) ?? $source;
         $source = preg_replace('/\n?```\s*$/m', '', $source) ?? $source;
-
         return trim($source);
     }
-
     private static function looksValid(string $source): bool
     {
         if ($source === '' || mb_strlen($source) < 1200) {
             return false;
         }
-
         $sections = preg_match_all('/^#\s+/m', $source);
         $subsections = preg_match_all('/^##\s+/m', $source);
         $bold = preg_match_all('/\*\*[^*]+\*\*/', $source);
-
         if ($sections < 4 || $subsections < 4 || $bold < 20) {
             return false;
         }
-
         return self::structureLooksValid($source);
     }
-
     private static function structureLooksValid(string $source): bool
     {
         $lines = preg_split("/\r\n|\n|\r/", $source) ?: [];
@@ -999,12 +856,10 @@ PROMPT;
         $inSubsection = false;
         $subsectionParagraphs = 0;
         $subsectionCounts = [];
-
         foreach ($lines as $line) {
             if (preg_match('/^\{\{template\|/', trim($line))) {
                 continue;
             }
-
             $trimmed = trim($line);
             if (!$leadDone) {
                 if (preg_match('/^#\s+/', $trimmed) && !preg_match('/^##\s+/', $trimmed)) {
@@ -1020,7 +875,6 @@ PROMPT;
                 }
                 continue;
             }
-
             if (preg_match('/^#\s+/', $trimmed) && !preg_match('/^##\s+/', $trimmed)) {
                 if ($inSubsection) {
                     $subsectionCounts[] = $subsectionParagraphs;
@@ -1030,7 +884,6 @@ PROMPT;
                 $subsectionParagraphs = 0;
                 continue;
             }
-
             if (preg_match('/^##\s+/', $trimmed)) {
                 if ($inSubsection) {
                     $subsectionCounts[] = $subsectionParagraphs;
@@ -1040,30 +893,24 @@ PROMPT;
                 $subsectionParagraphs = 0;
                 continue;
             }
-
             if ($afterTopHeading && ArticleKnowledge::isParagraphLine($line)) {
                 return false;
             }
-
             if ($inSubsection && ArticleKnowledge::isParagraphLine($line)) {
                 $subsectionParagraphs++;
             }
         }
-
         if ($inSubsection) {
             $subsectionCounts[] = $subsectionParagraphs;
         }
-
         if (!$leadDone || $leadParagraphs !== 5) {
             return false;
         }
-
         foreach ($subsectionCounts as $count) {
             if ($count < 4) {
                 return false;
             }
         }
-
         return true;
     }
 }

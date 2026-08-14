@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\InfoException;
-
 /**
  * @param int $option
  * @param mixed $value
@@ -20,8 +17,6 @@ function assert_options(int $option, $value = null)
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $title
  * @throws InfoException
@@ -35,8 +30,6 @@ function cli_set_process_title(string $title): void
         throw InfoException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $extension_filename
  * @throws InfoException
@@ -50,8 +43,6 @@ function dl(string $extension_filename): void
         throw InfoException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $option
  * @return mixed
@@ -67,8 +58,6 @@ function get_cfg_var(string $option)
     }
     return $safeResult;
 }
-
-
 /**
  * @return string
  * @throws InfoException
@@ -83,8 +72,6 @@ function get_include_path(): string
     }
     return $safeResult;
 }
-
-
 /**
  * @return int
  * @throws InfoException
@@ -99,8 +86,6 @@ function getlastmod(): int
     }
     return $safeResult;
 }
-
-
 /**
  * @return int
  * @throws InfoException
@@ -115,8 +100,6 @@ function getmygid(): int
     }
     return $safeResult;
 }
-
-
 /**
  * @return int
  * @throws InfoException
@@ -131,8 +114,6 @@ function getmyinode(): int
     }
     return $safeResult;
 }
-
-
 /**
  * @return int
  * @throws InfoException
@@ -147,8 +128,6 @@ function getmypid(): int
     }
     return $safeResult;
 }
-
-
 /**
  * @return int
  * @throws InfoException
@@ -163,8 +142,6 @@ function getmyuid(): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $short_options
  * @param array $long_options
@@ -182,8 +159,6 @@ function getopt(string $short_options, array $long_options = [], ?int &$rest_ind
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $mode
  * @return array
@@ -199,8 +174,6 @@ function getrusage(int $mode = 0): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $option
  * @return string
@@ -216,8 +189,6 @@ function ini_get(string $option): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $option
  * @param bool|float|int|null|string $value
@@ -234,8 +205,6 @@ function ini_set(string $option, $value): string
     }
     return $safeResult;
 }
-
-
 /**
  * @return non-empty-string
  * @throws InfoException
@@ -250,8 +219,6 @@ function php_sapi_name(): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $flags
  * @return bool
@@ -263,8 +230,6 @@ function phpcredits(int $flags = CREDITS_ALL): bool
     $safeResult = \phpcredits($flags);
     return $safeResult;
 }
-
-
 /**
  * @param int $flags
  * @return bool
@@ -276,8 +241,6 @@ function phpinfo(int $flags = INFO_ALL): bool
     $safeResult = \phpinfo($flags);
     return $safeResult;
 }
-
-
 /**
  * @param string $assignment
  * @throws InfoException
@@ -291,8 +254,6 @@ function putenv(string $assignment): void
         throw InfoException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $include_path
  * @return string
@@ -308,8 +269,6 @@ function set_include_path(string $include_path): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $seconds
  * @throws InfoException

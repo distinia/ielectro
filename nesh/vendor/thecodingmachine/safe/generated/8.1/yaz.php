@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\YazException;
-
 /**
  * @param resource $id
  * @param string $query
@@ -19,8 +16,6 @@ function yaz_ccl_parse($id, string $query, ?array &$result): void
         throw YazException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $id
  * @throws YazException
@@ -34,8 +29,6 @@ function yaz_close($id): void
         throw YazException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $zurl
  * @param mixed $options
@@ -56,8 +49,6 @@ function yaz_connect(string $zurl, $options = null)
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $id
  * @param string $databases
@@ -72,8 +63,6 @@ function yaz_database($id, string $databases): void
         throw YazException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $id
  * @param string $elementset
@@ -88,8 +77,6 @@ function yaz_element($id, string $elementset): void
         throw YazException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $id
  * @throws YazException
@@ -103,8 +90,6 @@ function yaz_present($id): void
         throw YazException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $id
  * @param string $type
@@ -120,8 +105,6 @@ function yaz_search($id, string $type, string $query): void
         throw YazException::createFromPhpError();
     }
 }
-
-
 /**
  * @param array $options
  * @return mixed

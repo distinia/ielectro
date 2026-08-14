@@ -5,7 +5,6 @@
  * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
  */
 namespace Dompdf;
-
 /**
  * Standard exception thrown by DOMPDF classes
  *
@@ -13,7 +12,6 @@ namespace Dompdf;
  */
 class Exception extends \Exception
 {
-
     /**
      * Class constructor
      *

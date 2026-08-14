@@ -1,6 +1,5 @@
 <?php
 namespace Dyscover;
-
 class ArticleContent
 {
     public static function extractCoverImage(string $html): string
@@ -21,7 +20,6 @@ class ArticleContent
         }
         return '';
     }
-
     public static function extractFirstParagraph(string $html): string
     {
         if (preg_match(
@@ -36,7 +34,6 @@ class ArticleContent
         }
         return '';
     }
-
     public static function extractPlainText(string $html, int $maxLength = 8000): string
     {
         $html = preg_replace('/<script\b[^>]*>.*?<\/script>/is', '', $html) ?? $html;
@@ -49,14 +46,11 @@ class ArticleContent
         $text = preg_replace('/[ \t]+/u', ' ', $text) ?? $text;
         $text = preg_replace("/\n{3,}/", "\n\n", $text) ?? $text;
         $text = trim($text);
-
         if ($maxLength > 0 && mb_strlen($text) > $maxLength) {
             $text = mb_substr($text, 0, $maxLength) . '…';
         }
-
         return $text;
     }
-
     public static function extractOutline(string $html): array
     {
         $outline = [];
@@ -67,7 +61,6 @@ class ArticleContent
         )) {
             return $outline;
         }
-
         foreach ($headings[1] as $headingHtml) {
             $heading = trim(strip_tags(html_entity_decode($headingHtml, ENT_QUOTES | ENT_HTML5, 'UTF-8')));
             if ($heading === '') {
@@ -78,7 +71,6 @@ class ArticleContent
                 'subsections' => [],
             ];
         }
-
         if (preg_match_all(
             '/<h3\b[^>]*\bclass="[^"]*\bsub-heading\b[^"]*"[^>]*>(.*?)<\/h3>/is',
             $html,
@@ -93,10 +85,8 @@ class ArticleContent
                 $outline[$last]['subsections'][] = $sub;
             }
         }
-
         return $outline;
     }
-
     private static function decode(string $value): string
     {
         return html_entity_decode(trim($value), ENT_QUOTES | ENT_HTML5, 'UTF-8');

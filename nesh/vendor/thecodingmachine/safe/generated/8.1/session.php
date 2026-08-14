@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\SessionException;
-
 /**
  * @throws SessionException
  *
@@ -16,8 +13,6 @@ function session_abort(): void
         throw SessionException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int|null $value
  * @return int
@@ -37,8 +32,6 @@ function session_cache_expire(?int $value = null): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param null|string $value
  * @return string
@@ -58,8 +51,6 @@ function session_cache_limiter(?string $value = null): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $prefix
  * @return string
@@ -75,8 +66,6 @@ function session_create_id(string $prefix = ""): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $data
  * @throws SessionException
@@ -90,8 +79,6 @@ function session_decode(string $data): void
         throw SessionException::createFromPhpError();
     }
 }
-
-
 /**
  * @throws SessionException
  *
@@ -104,8 +91,6 @@ function session_destroy(): void
         throw SessionException::createFromPhpError();
     }
 }
-
-
 /**
  * @return string
  * @throws SessionException
@@ -120,8 +105,6 @@ function session_encode(): string
     }
     return $safeResult;
 }
-
-
 /**
  * @return int
  * @throws SessionException
@@ -136,8 +119,6 @@ function session_gc(): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param null|string $id
  * @return string
@@ -157,8 +138,6 @@ function session_id(?string $id = null): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param null|string $module
  * @return string
@@ -178,8 +157,6 @@ function session_module_name(?string $module = null): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param null|string $name
  * @return non-falsy-string
@@ -199,8 +176,6 @@ function session_name(?string $name = null): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param bool $delete_old_session
  * @throws SessionException
@@ -214,8 +189,6 @@ function session_regenerate_id(bool $delete_old_session = false): void
         throw SessionException::createFromPhpError();
     }
 }
-
-
 /**
  * @throws SessionException
  *
@@ -228,8 +201,6 @@ function session_reset(): void
         throw SessionException::createFromPhpError();
     }
 }
-
-
 /**
  * @param null|string $path
  * @return string
@@ -249,8 +220,6 @@ function session_save_path(?string $path = null): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param array $options
  * @throws SessionException
@@ -264,8 +233,6 @@ function session_start(array $options = []): void
         throw SessionException::createFromPhpError();
     }
 }
-
-
 /**
  * @throws SessionException
  *
@@ -278,8 +245,6 @@ function session_unset(): void
         throw SessionException::createFromPhpError();
     }
 }
-
-
 /**
  * @throws SessionException
  *

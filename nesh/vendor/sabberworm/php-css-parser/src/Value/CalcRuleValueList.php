@@ -1,11 +1,7 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\Value;
-
 use Sabberworm\CSS\OutputFormat;
-
 class CalcRuleValueList extends RuleValueList
 {
     /**
@@ -15,12 +11,10 @@ class CalcRuleValueList extends RuleValueList
     {
         parent::__construct(',', $lineNumber);
     }
-
     public function render(OutputFormat $outputFormat): string
     {
         return $outputFormat->getFormatter()->implode(' ', $this->components);
     }
-
     /**
      * @return array<string, bool|int|float|string|array<mixed>|null>
      *

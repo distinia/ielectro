@@ -1,10 +1,8 @@
 import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
-
 export class TeamCard {
     constructor(member) {
         this.member = member;
     }
-
     socialUrl(platform, username) {
         const handle = String(username || "").trim().replace(/^@+/, "");
         if (!handle) return "";
@@ -16,7 +14,6 @@ export class TeamCard {
         }
         return "";
     }
-
     render() {
         const element = document.createElement("div");
         element.className = "card team-member";

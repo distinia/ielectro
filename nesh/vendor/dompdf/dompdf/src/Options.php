@@ -5,7 +5,6 @@
  * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
  */
 namespace Dompdf;
-
 class Options
 {
     /**
@@ -14,7 +13,6 @@ class Options
      * @var string
      */
     private $rootDir;
-
     /**
      * The location of a temporary directory.
      *
@@ -25,7 +23,6 @@ class Options
      * @var string
      */
     private $tempDir;
-
     /**
      * The location of the DOMPDF font directory
      *
@@ -35,7 +32,6 @@ class Options
      * @var string
      */
     private $fontDir;
-
     /**
      * The location of the DOMPDF font cache directory
      *
@@ -47,7 +43,6 @@ class Options
      * @var string
      */
     private $fontCache;
-
     /**
      * dompdf's "chroot"
      *
@@ -66,7 +61,6 @@ class Options
      * @var array
      */
     private $chroot;
-
     /**
     * Protocol whitelist
     *
@@ -83,19 +77,16 @@ class Options
         "http://" => ["rules" => []],
         "https://" => ["rules" => []]
     ];
-
     /**
     * Operational artifact (log files, temporary files) path validation
     *
     * @var callable
     */
     private $artifactPathValidation = null;
-
     /**
      * @var string
      */
     private $logOutputFile = '';
-
     /**
      * Styles targeted to this media type are applied to the document.
      * This is on top of the media types that are always applied:
@@ -104,7 +95,6 @@ class Options
      * @var string
      */
     private $defaultMediaType = "screen";
-
     /**
      * The default paper size.
      *
@@ -114,7 +104,6 @@ class Options
      * @var string|float[]
      */
     private $defaultPaperSize = "letter";
-
     /**
      * The default paper orientation.
      *
@@ -123,7 +112,6 @@ class Options
      * @var string
      */
     private $defaultPaperOrientation = "portrait";
-
     /**
      * The default font family
      *
@@ -132,7 +120,6 @@ class Options
      * @var string
      */
     private $defaultFont = "serif";
-
     /**
      * Image DPI setting
      *
@@ -155,21 +142,18 @@ class Options
      * @var int
      */
     private $dpi = 96;
-
     /**
      * A ratio applied to the fonts height to be more like browsers' line height
      *
      * @var float
      */
     private $fontHeightRatio = 1.1;
-
     /**
      * The maximum estimated in-memory size of an image allowed to be rendered, in bytes.
      *
      * @var int
      */
     private $imageByteSizeLimit = -1;
-
     /**
      * Enable embedded PHP
      *
@@ -190,7 +174,6 @@ class Options
      * @var bool
      */
     private $isPhpEnabled = false;
-
     /**
      * Enable remote file access
      *
@@ -212,7 +195,6 @@ class Options
      * @var bool
      */
     private $isRemoteEnabled = false;
-
     /**
      * List of allowed remote hosts
      *
@@ -226,7 +208,6 @@ class Options
      * @var array|null
      */
     private $allowedRemoteHosts = null;
-
     /**
      * Enable PDF/A-3 compliance mode
      *
@@ -240,7 +221,6 @@ class Options
      * @var bool
      */
     private $isPdfAEnabled = false;
-
     /**
      * Enable inline JavaScript
      *
@@ -254,7 +234,6 @@ class Options
      * @var bool
      */
     private $isJavascriptEnabled = true;
-
     /**
      * Use the HTML5 Lib parser
      *
@@ -262,54 +241,44 @@ class Options
      * @var bool
      */
     private $isHtml5ParserEnabled = true;
-
     /**
      * Whether to enable font subsetting or not.
      *
      * @var bool
      */
     private $isFontSubsettingEnabled = true;
-
     /**
      * @var bool
      */
     private $debugPng = false;
-
     /**
      * @var bool
      */
     private $debugKeepTemp = false;
-
     /**
      * @var bool
      */
     private $debugCss = false;
-
     /**
      * @var bool
      */
     private $debugLayout = false;
-
     /**
      * @var bool
      */
     private $debugLayoutLines = true;
-
     /**
      * @var bool
      */
     private $debugLayoutBlocks = true;
-
     /**
      * @var bool
      */
     private $debugLayoutInline = true;
-
     /**
      * @var bool
      */
     private $debugLayoutPaddingBox = true;
-
     /**
      * The PDF rendering backend to use
      *
@@ -322,7 +291,6 @@ class Options
      * @var string
      */
     private $pdfBackend = "CPDF";
-
     /**
      * PDFlib license key
      *
@@ -338,7 +306,6 @@ class Options
      * @var string
      */
     private $pdflibLicense = "";
-
     /**
      * HTTP context created with stream_context_create()
      * Will be used for file_get_contents
@@ -348,7 +315,6 @@ class Options
      * @var resource
      */
     private $httpContext;
-
     /**
      * @param array $attributes
      */
@@ -360,7 +326,6 @@ class Options
         $this->setTempDir(sys_get_temp_dir());
         $this->setFontDir($rootDir . "/lib/fonts");
         $this->setFontCache($this->getFontDir());
-
         $ver = "";
         $versionFile = realpath(__DIR__ . '/../VERSION');
         if (file_exists($versionFile) && ($version = file_get_contents($versionFile)) !== false) {
@@ -375,20 +340,15 @@ class Options
                 "user_agent" => "Dompdf$ver https://github.com/dompdf/dompdf"
             ]
         ]);
-
         $this->setAllowedProtocols(["data://", "file://", "http://", "https://"]);
-
         $this->setArtifactPathValidation([$this, "validateArtifactPath"]);
-
         // Get the memory limit
         $memory_limit = ini_get('memory_limit');
         $this->setImageByteSizeLimit($memory_limit);
-
         if (null !== $attributes) {
             $this->set($attributes);
         }
     }
-
     /**
      * @param array|string $attributes
      * @param null|mixed $value
@@ -399,11 +359,9 @@ class Options
         if (!is_array($attributes)) {
             $attributes = [$attributes => $value];
         }
-
         foreach ($attributes as $key => $value) {
             $methodForMatch = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $key))));
             $methodForCall = "set" . ucfirst($methodForMatch);
-
             if ($methodForMatch === 'enablePhp') {
                 $methodForCall = "setIsPhpEnabled";
             } elseif ($methodForMatch === 'enableRemote') {
@@ -417,15 +375,12 @@ class Options
             } elseif ($methodForMatch === 'enableFontSubsetting') {
                 $methodForCall = "setIsFontSubsettingEnabled";
             }
-
             if (method_exists($this, $methodForCall)) {
                 $this->{$methodForCall}($value);
             }
         }
-
         return $this;
     }
-
     /**
      * @param string $key
      * @return mixed
@@ -434,7 +389,6 @@ class Options
     {
         $methodForMatch = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $key))));
         $methodForCall = "get" . ucfirst($methodForMatch);
-        
         if ($methodForMatch === 'enablePhp') {
             $methodForCall = "getIsPhpEnabled";
         } elseif ($methodForMatch === 'enableRemote') {
@@ -448,14 +402,11 @@ class Options
         } elseif ($methodForMatch === 'enableFontSubsetting') {
             $methodForCall = "getIsFontSubsettingEnabled";
         }
-
         if (method_exists($this, $methodForCall)) {
             return $this->{$methodForCall}();
         }
-        
         return null;
     }
-
     /**
      * @param string $pdfBackend
      * @return $this
@@ -465,7 +416,6 @@ class Options
         $this->pdfBackend = $pdfBackend;
         return $this;
     }
-
     /**
      * @return string
      */
@@ -473,7 +423,6 @@ class Options
     {
         return $this->pdfBackend;
     }
-
     /**
      * @param string $pdflibLicense
      * @return $this
@@ -483,7 +432,6 @@ class Options
         $this->pdflibLicense = $pdflibLicense;
         return $this;
     }
-
     /**
      * @return string
      */
@@ -491,7 +439,6 @@ class Options
     {
         return $this->pdflibLicense;
     }
-
     /**
      * @param array|string $chroot
      * @return $this
@@ -505,7 +452,6 @@ class Options
         }
         return $this;
     }
-
     /**
      * @return array
      */
@@ -513,7 +459,6 @@ class Options
     {
         return $this->allowedProtocols;
     }
-
     /**
      * @param array $allowedProtocols The protocols to allow, as an array
      * formatted as ["protocol://" => ["rules" => [callable]], ...]
@@ -540,7 +485,6 @@ class Options
         }
         return $this;
     }
-
     /**
      * Adds a new protocol to the allowed protocols collection
      *
@@ -571,7 +515,6 @@ class Options
         $this->allowedProtocols[$protocol] = ["rules" => $rules];
         return $this;
     }
-
     /**
      * @return array
      */
@@ -579,7 +522,6 @@ class Options
     {
         return $this->artifactPathValidation;
     }
-
     /**
      * @param callable $validator
      * @return $this
@@ -589,7 +531,6 @@ class Options
         $this->artifactPathValidation = $validator;
         return $this;
     }
-
     /**
      * @return array
      */
@@ -601,7 +542,6 @@ class Options
         }
         return $chroot;
     }
-
     /**
      * @param boolean $debugCss
      * @return $this
@@ -611,7 +551,6 @@ class Options
         $this->debugCss = $debugCss;
         return $this;
     }
-
     /**
      * @return boolean
      */
@@ -619,7 +558,6 @@ class Options
     {
         return $this->debugCss;
     }
-
     /**
      * @param boolean $debugKeepTemp
      * @return $this
@@ -629,7 +567,6 @@ class Options
         $this->debugKeepTemp = $debugKeepTemp;
         return $this;
     }
-
     /**
      * @return boolean
      */
@@ -637,7 +574,6 @@ class Options
     {
         return $this->debugKeepTemp;
     }
-
     /**
      * @param boolean $debugLayout
      * @return $this
@@ -647,7 +583,6 @@ class Options
         $this->debugLayout = $debugLayout;
         return $this;
     }
-
     /**
      * @return boolean
      */
@@ -655,7 +590,6 @@ class Options
     {
         return $this->debugLayout;
     }
-
     /**
      * @param boolean $debugLayoutBlocks
      * @return $this
@@ -665,7 +599,6 @@ class Options
         $this->debugLayoutBlocks = $debugLayoutBlocks;
         return $this;
     }
-
     /**
      * @return boolean
      */
@@ -673,7 +606,6 @@ class Options
     {
         return $this->debugLayoutBlocks;
     }
-
     /**
      * @param boolean $debugLayoutInline
      * @return $this
@@ -683,7 +615,6 @@ class Options
         $this->debugLayoutInline = $debugLayoutInline;
         return $this;
     }
-
     /**
      * @return boolean
      */
@@ -691,7 +622,6 @@ class Options
     {
         return $this->debugLayoutInline;
     }
-
     /**
      * @param boolean $debugLayoutLines
      * @return $this
@@ -701,7 +631,6 @@ class Options
         $this->debugLayoutLines = $debugLayoutLines;
         return $this;
     }
-
     /**
      * @return boolean
      */
@@ -709,7 +638,6 @@ class Options
     {
         return $this->debugLayoutLines;
     }
-
     /**
      * @param boolean $debugLayoutPaddingBox
      * @return $this
@@ -719,7 +647,6 @@ class Options
         $this->debugLayoutPaddingBox = $debugLayoutPaddingBox;
         return $this;
     }
-
     /**
      * @return boolean
      */
@@ -727,7 +654,6 @@ class Options
     {
         return $this->debugLayoutPaddingBox;
     }
-
     /**
      * @param boolean $debugPng
      * @return $this
@@ -737,7 +663,6 @@ class Options
         $this->debugPng = $debugPng;
         return $this;
     }
-
     /**
      * @return boolean
      */
@@ -745,7 +670,6 @@ class Options
     {
         return $this->debugPng;
     }
-
     /**
      * @param string $defaultFont
      * @return $this
@@ -759,7 +683,6 @@ class Options
         }
         return $this;
     }
-
     /**
      * @return string
      */
@@ -767,7 +690,6 @@ class Options
     {
         return $this->defaultFont;
     }
-
     /**
      * @param string $defaultMediaType
      * @return $this
@@ -777,7 +699,6 @@ class Options
         $this->defaultMediaType = $defaultMediaType;
         return $this;
     }
-
     /**
      * @return string
      */
@@ -785,7 +706,6 @@ class Options
     {
         return $this->defaultMediaType;
     }
-
     /**
      * @param string|float[] $defaultPaperSize
      * @return $this
@@ -795,7 +715,6 @@ class Options
         $this->defaultPaperSize = $defaultPaperSize;
         return $this;
     }
-
     /**
      * @param string $defaultPaperOrientation
      * @return $this
@@ -805,7 +724,6 @@ class Options
         $this->defaultPaperOrientation = $defaultPaperOrientation;
         return $this;
     }
-
     /**
      * @return string|float[]
      */
@@ -813,7 +731,6 @@ class Options
     {
         return $this->defaultPaperSize;
     }
-
     /**
      * @return string
      */
@@ -821,7 +738,6 @@ class Options
     {
         return $this->defaultPaperOrientation;
     }
-
     /**
      * @param int $dpi
      * @return $this
@@ -831,7 +747,6 @@ class Options
         $this->dpi = $dpi;
         return $this;
     }
-
     /**
      * @return int
      */
@@ -839,7 +754,6 @@ class Options
     {
         return $this->dpi;
     }
-
     /**
      * @param string $fontCache
      * @return $this
@@ -851,7 +765,6 @@ class Options
         }
         return $this;
     }
-
     /**
      * @return string
      */
@@ -859,7 +772,6 @@ class Options
     {
         return $this->fontCache;
     }
-
     /**
      * @param string $fontDir
      * @return $this
@@ -871,7 +783,6 @@ class Options
         }
         return $this;
     }
-
     /**
      * @return string
      */
@@ -879,7 +790,6 @@ class Options
     {
         return $this->fontDir;
     }
-
     /**
      * @param float $fontHeightRatio
      * @return $this
@@ -889,7 +799,6 @@ class Options
         $this->fontHeightRatio = $fontHeightRatio;
         return $this;
     }
-
     /**
      * @return float
      */
@@ -897,7 +806,6 @@ class Options
     {
         return $this->fontHeightRatio;
     }
-
     /**
      * @param int $imageMemoryLimit
      * @return $this
@@ -919,7 +827,6 @@ class Options
         }
         return $this;
     }
-
     /**
      * @return int
      */
@@ -927,7 +834,6 @@ class Options
     {
         return $this->imageByteSizeLimit;
     }
-
     /**
      * @param boolean $isFontSubsettingEnabled
      * @return $this
@@ -937,7 +843,6 @@ class Options
         $this->isFontSubsettingEnabled = $isFontSubsettingEnabled;
         return $this;
     }
-
     /**
      * @return boolean
      */
@@ -945,7 +850,6 @@ class Options
     {
         return $this->isFontSubsettingEnabled;
     }
-
     /**
      * @return boolean
      */
@@ -953,7 +857,6 @@ class Options
     {
         return $this->getIsFontSubsettingEnabled();
     }
-
     /**
      * @deprecated
      * @param boolean $isHtml5ParserEnabled
@@ -964,7 +867,6 @@ class Options
         $this->isHtml5ParserEnabled = $isHtml5ParserEnabled;
         return $this;
     }
-
     /**
      * @deprecated
      * @return boolean
@@ -973,7 +875,6 @@ class Options
     {
         return $this->isHtml5ParserEnabled;
     }
-
     /**
      * @deprecated
      * @return boolean
@@ -982,7 +883,6 @@ class Options
     {
         return $this->getIsHtml5ParserEnabled();
     }
-
     /**
      * @param boolean $isJavascriptEnabled
      * @return $this
@@ -992,7 +892,6 @@ class Options
         $this->isJavascriptEnabled = $isJavascriptEnabled;
         return $this;
     }
-
     /**
      * @return boolean
      */
@@ -1000,7 +899,6 @@ class Options
     {
         return $this->isJavascriptEnabled;
     }
-
     /**
      * @return boolean
      */
@@ -1008,7 +906,6 @@ class Options
     {
         return $this->getIsJavascriptEnabled();
     }
-
     /**
      * @param boolean $isPhpEnabled
      * @return $this
@@ -1018,7 +915,6 @@ class Options
         $this->isPhpEnabled = $isPhpEnabled;
         return $this;
     }
-
     /**
      * @return boolean
      */
@@ -1026,7 +922,6 @@ class Options
     {
         return $this->isPhpEnabled;
     }
-
     /**
      * @return boolean
      */
@@ -1034,7 +929,6 @@ class Options
     {
         return $this->getIsPhpEnabled();
     }
-
     /**
      * @param boolean $isRemoteEnabled
      * @return $this
@@ -1044,7 +938,6 @@ class Options
         $this->isRemoteEnabled = $isRemoteEnabled;
         return $this;
     }
-
     /**
      * @return boolean
      */
@@ -1052,7 +945,6 @@ class Options
     {
         return $this->isRemoteEnabled;
     }
-
     /**
      * @return boolean
      */
@@ -1060,7 +952,6 @@ class Options
     {
         return $this->getIsRemoteEnabled();
     }
-
     /**
      * @param array|null $allowedRemoteHosts
      * @return $this
@@ -1072,14 +963,11 @@ class Options
             foreach ($allowedRemoteHosts as &$host) {
                 $host = mb_strtolower($host, "UTF-8");
             }
-
             unset($host);
         }
-
         $this->allowedRemoteHosts = $allowedRemoteHosts;
         return $this;
     }
-
     /**
      * @return array|null
      */
@@ -1087,7 +975,6 @@ class Options
     {
         return $this->allowedRemoteHosts;
     }
-
     /**
      * @param boolean $isRemoteEnabled
      * @return $this
@@ -1097,7 +984,6 @@ class Options
         $this->isPdfAEnabled = $isPdfAEnabled;
         return $this;
     }
-
     /**
      * @return boolean
      */
@@ -1105,7 +991,6 @@ class Options
     {
         return $this->isPdfAEnabled;
     }
-
     /**
      * @return boolean
      */
@@ -1113,7 +998,6 @@ class Options
     {
         return $this->getIsPdfAEnabled();
     }
-
     /**
      * @param string $logOutputFile
      * @return $this
@@ -1125,7 +1009,6 @@ class Options
         }
         return $this;
     }
-
     /**
      * @return string
      */
@@ -1133,7 +1016,6 @@ class Options
     {
         return $this->logOutputFile;
     }
-
     /**
      * @param string $tempDir
      * @return $this
@@ -1145,7 +1027,6 @@ class Options
         }
         return $this;
     }
-
     /**
      * @return string
      */
@@ -1153,7 +1034,6 @@ class Options
     {
         return $this->tempDir;
     }
-
     /**
      * @param string $rootDir
      * @return $this
@@ -1165,7 +1045,6 @@ class Options
         }
         return $this;
     }
-
     /**
      * @return string
      */
@@ -1173,7 +1052,6 @@ class Options
     {
         return $this->rootDir;
     }
-
     /**
      * Sets the HTTP context
      *
@@ -1185,7 +1063,6 @@ class Options
         $this->httpContext = is_array($httpContext) ? stream_context_create($httpContext) : $httpContext;
         return $this;
     }
-
     /**
      * Returns the HTTP context
      *
@@ -1195,8 +1072,6 @@ class Options
     {
         return $this->httpContext;
     }
-
-
     public function validateArtifactPath(?string $path, string $option)
     {
         if ($path === null) {
@@ -1208,18 +1083,15 @@ class Options
         }
         return true;
     }
-
     public function validateLocalUri(string $uri)
     {
         if ($uri === null || strlen($uri) === 0) {
             return [false, "The URI must not be empty."];
         }
-
         $realfile = realpath(str_replace("file://", "", $uri));
         if ($realfile === false) {
             return [false, "File not found."];
         }
-
         $dirs = $this->chroot;
         $dirs[] = $this->rootDir;
         $chrootValid = false;
@@ -1228,7 +1100,6 @@ class Options
             if ($chrootPath === false) {
                 continue;
             }
-
             $normalizedChrootPath = rtrim($chrootPath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
             if ($realfile === $chrootPath || strncmp($realfile, $normalizedChrootPath, strlen($normalizedChrootPath)) === 0) {
                 $chrootValid = true;
@@ -1238,39 +1109,31 @@ class Options
         if ($chrootValid !== true) {
             return [false, "Permission denied. The file could not be found under the paths specified by Options::chroot."];
         }
-
         return [true, null];
     }
-
     public function validatePharUri(string $uri)
     {
         if ($uri === null || strlen($uri) === 0) {
             return [false, "The URI must not be empty."];
         }
-
         $file = substr(substr($uri, 0, strpos($uri, ".phar") + 5), 7);
         return $this->validateLocalUri($file);
     }
-
     public function validateRemoteUri(string $uri)
     {
         if ($uri === null || strlen($uri) === 0) {
             return [false, "The URI must not be empty."];
         }
-
         if (!$this->isRemoteEnabled) {
             return [false, "Remote file requested, but remote file download is disabled."];
         }
-
         if (is_array($this->allowedRemoteHosts) && count($this->allowedRemoteHosts) > 0) {
             $host = parse_url($uri, PHP_URL_HOST);
             $host = mb_strtolower($host, "UTF-8");
-
             if (!in_array($host, $this->allowedRemoteHosts, true)) {
                 return [false, "Remote host is not in allowed list: " . $host];
             }
         }
-
         return [true, null];
     }
 }

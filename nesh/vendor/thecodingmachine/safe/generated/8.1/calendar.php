@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\CalendarException;
-
 /**
  * @param int|null $timestamp
  * @return int

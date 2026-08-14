@@ -5,7 +5,6 @@
  * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
  * @version $Id: Font_Table_glyf.php 46 2012-04-02 20:22:38Z fabien.menager $
  */
-
 namespace FontLib\Glyph;
 /**
  * Glyph outline component
@@ -19,7 +18,6 @@ class OutlineComponent {
   public $point_compound;
   public $point_component;
   public $instructions;
-
   function getMatrix() {
     return array(
       $this->a, $this->b,

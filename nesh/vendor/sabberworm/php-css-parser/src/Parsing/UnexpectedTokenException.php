@@ -1,9 +1,6 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\Parsing;
-
 /**
  * Thrown if the CSS parser encounters a token it did not expect.
  */
@@ -25,7 +22,6 @@ class UnexpectedTokenException extends SourceException
         } elseif ($matchType === 'custom') {
             $message = \trim("$expected $found");
         }
-
         parent::__construct($message, $lineNumber);
     }
 }

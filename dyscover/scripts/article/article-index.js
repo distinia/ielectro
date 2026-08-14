@@ -5,7 +5,6 @@ import { Editor } from "./editor.js";
 import { EditorHelp } from "./editor-help.js";
 import { ArticlePdf } from "./article-pdf.js";
 import { ArticleGenerate } from "./article-generate.js";
-
 export class Index {
     constructor() {
         this.sidebar = document.querySelector(".article-index-sidebar");
@@ -19,7 +18,6 @@ export class Index {
         this.subsection = 0;
         this.headings = [];
     }
-
     async refresh() {
         this.headings = this.getHeadings();
         this.section = 0;
@@ -27,17 +25,14 @@ export class Index {
         this.buildList();
         await this.buildSidebar();
     }
-
     async startEditing() {
         this.headings = [];
         this.buildList();
         await this.buildSidebar();
     }
-
     async closeEditing() {
         await this.refresh();
     }
-
     getHeadings() {
         return [...Heading.list.values()]
             .map((instance) => instance.element)
@@ -45,7 +40,6 @@ export class Index {
                 return element && element.parentNode && element.innerText.trim();
             });
     }
-
     async buildSidebar() {
         if (!this.sidebar) return;
         this.editButton = this.sidebar.querySelector(".index-edit-button");
@@ -58,7 +52,6 @@ export class Index {
         const isTextMode = !!Editor.current?.isTextMode;
         const canExportPdf = isEditor && !isEditing;
         const canGenerate = isEditor && isEditing;
-
         if (helpButton) {
             helpButton.classList.toggle("is-visible", isEditor);
             helpButton.onclick = isEditor ? () => EditorHelp.open() : null;
@@ -66,12 +59,10 @@ export class Index {
                 ? "Text editor guide"
                 : "Graphic editor guide";
         }
-
         if (pdfButton) {
             pdfButton.classList.toggle("is-visible", canExportPdf);
             pdfButton.onclick = canExportPdf ? () => ArticlePdf.export() : null;
         }
-
         if (generateButton) {
             generateButton.classList.toggle("is-visible", canGenerate);
             generateButton.title = "Generate article";
@@ -79,7 +70,6 @@ export class Index {
                 ? () => ArticleGenerate.open()
                 : null;
         }
-
         if (this.editButton) {
             this.editButton.classList.toggle("is-visible", isEditor);
             this.editButton.classList.toggle(
@@ -93,7 +83,6 @@ export class Index {
                 ? "Edit article"
                 : "";
         }
-
         if (modeButton) {
             modeButton.classList.toggle("is-visible", isEditor && isEditing);
             modeButton.classList.toggle("is-text-mode", isTextMode);
@@ -116,7 +105,6 @@ export class Index {
                 );
             }
         }
-
         this.sidebar?.querySelector(".index-edit-hint")?.remove();
         await Icons.load(this.sidebar);
         if (this.box && !this.sidebar.contains(this.box)) {
@@ -127,16 +115,13 @@ export class Index {
             }
         }
     }
-
     buildList() {
         if (!this.list) return;
         this.list.innerHTML = "";
         this.currentList = null;
-
         if (Editor.current?.isEditing) {
             return;
         }
-
         const topItem = document.createElement("li");
         topItem.innerHTML = `
             <span>0</span>
@@ -151,7 +136,6 @@ export class Index {
             window.scrollTo({ top: 0, behavior: "smooth" });
         };
         this.list.appendChild(topItem);
-
         this.headings.forEach((element) => {
             if (element.classList.contains("heading")) {
                 this.addHeading(element);
@@ -160,7 +144,6 @@ export class Index {
                 this.addSubHeading(element);
             }
         });
-
         if (this.headings.length === 0) {
             const empty = document.createElement("li");
             empty.className = "list-empty";
@@ -168,7 +151,6 @@ export class Index {
             this.list.appendChild(empty);
         }
     }
-
     addHeading(element) {
         this.section++;
         this.subsection = 0;
@@ -185,7 +167,6 @@ export class Index {
             element.scrollIntoView({ behavior: "smooth", block: "start" });
         });
     }
-
     addSubHeading(element) {
         if (!this.currentList) return;
         this.subsection++;

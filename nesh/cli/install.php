@@ -21,18 +21,15 @@ class Install
     private function applications(): int
     {
         $count = 0;
-
         foreach (App::all() as $app) {
             if ($app->database === null) {
                 continue;
             }
-
             Database::create($app->database);
             Database::tables($app->database, $app->paths['database']);
             Database::close();
             $count++;
         }
-
         return $count;
     }
     private function javascript(): int

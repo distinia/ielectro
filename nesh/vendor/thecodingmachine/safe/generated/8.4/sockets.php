@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\SocketsException;
-
 /**
  * @param \Socket $socket
  * @return \Socket
@@ -19,8 +16,6 @@ function socket_accept(\Socket $socket): \Socket
     }
     return $safeResult;
 }
-
-
 /**
  * @param \AddressInfo $address
  * @return \Socket
@@ -36,8 +31,6 @@ function socket_addrinfo_bind(\AddressInfo $address): \Socket
     }
     return $safeResult;
 }
-
-
 /**
  * @param \AddressInfo $address
  * @return \Socket
@@ -53,8 +46,6 @@ function socket_addrinfo_connect(\AddressInfo $address): \Socket
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $host
  * @param mixed $service
@@ -78,8 +69,6 @@ function socket_addrinfo_lookup(string $host, $service = null, array $hints = []
     }
     return $safeResult;
 }
-
-
 /**
  * @param \Socket $socket
  * @throws SocketsException
@@ -93,8 +82,6 @@ function socket_atmark(\Socket $socket): void
         throw SocketsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \Socket $socket
  * @param string $address
@@ -110,8 +97,6 @@ function socket_bind(\Socket $socket, string $address, int $port = 0): void
         throw SocketsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \Socket $socket
  * @param string $address
@@ -131,8 +116,6 @@ function socket_connect(\Socket $socket, string $address, ?int $port = null): vo
         throw SocketsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $port
  * @param int $backlog
@@ -149,8 +132,6 @@ function socket_create_listen(int $port, int $backlog = SOMAXCONN): \Socket
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $domain
  * @param int $type
@@ -167,8 +148,6 @@ function socket_create_pair(int $domain, int $type, int $protocol, ?array &$pair
         throw SocketsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $domain
  * @param int $type
@@ -186,8 +165,6 @@ function socket_create(int $domain, int $type, int $protocol): \Socket
     }
     return $safeResult;
 }
-
-
 /**
  * @param \Socket $socket
  * @return resource
@@ -203,8 +180,6 @@ function socket_export_stream(\Socket $socket)
     }
     return $safeResult;
 }
-
-
 /**
  * @param \Socket $socket
  * @param int $level
@@ -222,8 +197,6 @@ function socket_get_option(\Socket $socket, int $level, int $option)
     }
     return $safeResult;
 }
-
-
 /**
  * @param \Socket $socket
  * @param null|string $address
@@ -239,8 +212,6 @@ function socket_getpeername(\Socket $socket, ?string &$address, ?int &$port = nu
         throw SocketsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \Socket $socket
  * @param null|string $address
@@ -256,8 +227,6 @@ function socket_getsockname(\Socket $socket, ?string &$address, ?int &$port = nu
         throw SocketsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $stream
  * @return \Socket
@@ -273,8 +242,6 @@ function socket_import_stream($stream): \Socket
     }
     return $safeResult;
 }
-
-
 /**
  * @param \Socket $socket
  * @param int $backlog
@@ -289,8 +256,6 @@ function socket_listen(\Socket $socket, int $backlog = 0): void
         throw SocketsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \Socket $socket
  * @param int $length
@@ -308,8 +273,6 @@ function socket_read(\Socket $socket, int $length, int $mode = PHP_BINARY_READ):
     }
     return $safeResult;
 }
-
-
 /**
  * @param \Socket $socket
  * @param string $data
@@ -328,8 +291,6 @@ function socket_send(\Socket $socket, string $data, int $length, int $flags): in
     }
     return $safeResult;
 }
-
-
 /**
  * @param \Socket $socket
  * @param array $message
@@ -347,8 +308,6 @@ function socket_sendmsg(\Socket $socket, array $message, int $flags = 0): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param \Socket $socket
  * @param string $data
@@ -373,8 +332,6 @@ function socket_sendto(\Socket $socket, string $data, int $length, int $flags, s
     }
     return $safeResult;
 }
-
-
 /**
  * @param \Socket $socket
  * @throws SocketsException
@@ -388,8 +345,6 @@ function socket_set_block(\Socket $socket): void
         throw SocketsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \Socket $socket
  * @throws SocketsException
@@ -403,8 +358,6 @@ function socket_set_nonblock(\Socket $socket): void
         throw SocketsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \Socket $socket
  * @param int $level
@@ -421,8 +374,6 @@ function socket_set_option(\Socket $socket, int $level, int $option, $value): vo
         throw SocketsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \Socket $socket
  * @param int $mode
@@ -437,8 +388,6 @@ function socket_shutdown(\Socket $socket, int $mode = 2): void
         throw SocketsException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \Socket $socket
  * @param int $process_id
@@ -455,8 +404,6 @@ function socket_wsaprotocol_info_export(\Socket $socket, int $process_id): strin
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $info_id
  * @return \Socket
@@ -472,8 +419,6 @@ function socket_wsaprotocol_info_import(string $info_id): \Socket
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $info_id
  * @throws SocketsException

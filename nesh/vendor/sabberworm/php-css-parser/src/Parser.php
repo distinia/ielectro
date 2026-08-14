@@ -1,13 +1,9 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS;
-
 use Sabberworm\CSS\CSSList\Document;
 use Sabberworm\CSS\Parsing\ParserState;
 use Sabberworm\CSS\Parsing\SourceException;
-
 /**
  * This class parses CSS from text into a data structure.
  */
@@ -17,7 +13,6 @@ class Parser
      * @var ParserState
      */
     private $parserState;
-
     /**
      * @param string $text the complete CSS as text (i.e., usually the contents of a CSS file)
      * @param int<1, max> $lineNumber the line number (starting from 1, not from 0)
@@ -29,7 +24,6 @@ class Parser
         }
         $this->parserState = new ParserState($text, $parserSettings, $lineNumber);
     }
-
     /**
      * Parses the CSS provided to the constructor and creates a `Document` from it.
      *

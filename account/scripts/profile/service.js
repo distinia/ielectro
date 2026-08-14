@@ -1,7 +1,6 @@
 import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
 import { Api } from "../core/api.js";
 import { Alert } from "../core/alert.js";
-
 export class ProfileService {
     constructor() {
         this.user = null;

@@ -1,14 +1,10 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\Value;
-
 use Sabberworm\CSS\OutputFormat;
 use Sabberworm\CSS\Parsing\ParserState;
 use Sabberworm\CSS\Parsing\UnexpectedEOFException;
 use Sabberworm\CSS\Parsing\UnexpectedTokenException;
-
 /**
  * A name for a named CSS grid line.
  *
@@ -25,7 +21,6 @@ class LineName extends ValueList
     {
         parent::__construct($components, ' ', $lineNumber);
     }
-
     /**
      * @throws UnexpectedTokenException
      * @throws UnexpectedEOFException
@@ -54,7 +49,6 @@ class LineName extends ValueList
         $parserState->consume(']');
         return new LineName($names, $parserState->currentLine());
     }
-
     /**
      * @return non-empty-string
      */

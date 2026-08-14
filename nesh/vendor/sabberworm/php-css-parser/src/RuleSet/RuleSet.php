@@ -1,9 +1,6 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\RuleSet;
-
 use Sabberworm\CSS\Comment\CommentContainer;
 use Sabberworm\CSS\CSSElement;
 use Sabberworm\CSS\CSSList\CSSListItem;
@@ -15,7 +12,6 @@ use Sabberworm\CSS\Position\Position;
 use Sabberworm\CSS\Position\Positionable;
 use Sabberworm\CSS\Property\Declaration;
 use Sabberworm\CSS\ShortClassNameProvider;
-
 /**
  * This class is a container for individual `Declaration`s.
  *
@@ -33,7 +29,6 @@ class RuleSet implements CSSElement, CSSListItem, Positionable, DeclarationList
     use LegacyDeclarationListMethods;
     use Position;
     use ShortClassNameProvider;
-
     /**
      * the declarations in this rule set, using the property name as the key,
      * with potentially multiple declarations per property name.
@@ -41,7 +36,6 @@ class RuleSet implements CSSElement, CSSListItem, Positionable, DeclarationList
      * @var array<string, array<int<0, max>, Declaration>>
      */
     private $declarations = [];
-
     /**
      * @param int<1, max>|null $lineNumber
      */
@@ -49,7 +43,6 @@ class RuleSet implements CSSElement, CSSListItem, Positionable, DeclarationList
     {
         $this->setPosition($lineNumber);
     }
-
     /**
      * @throws UnexpectedTokenException
      * @throws UnexpectedEOFException
@@ -96,7 +89,6 @@ class RuleSet implements CSSElement, CSSListItem, Positionable, DeclarationList
         }
         $parserState->consume('}');
     }
-
     /**
      * @throws \UnexpectedValueException
      *         if the last `Declaration` is needed as a basis for setting position, but does not have a valid position,
@@ -108,9 +100,7 @@ class RuleSet implements CSSElement, CSSListItem, Positionable, DeclarationList
         if (!isset($this->declarations[$propertyName])) {
             $this->declarations[$propertyName] = [];
         }
-
         $position = \count($this->declarations[$propertyName]);
-
         if ($sibling !== null) {
             $siblingPosition = \array_search($sibling, $this->declarations[$propertyName], true);
             if ($siblingPosition !== false) {
@@ -146,7 +136,6 @@ class RuleSet implements CSSElement, CSSListItem, Positionable, DeclarationList
                 $declarationToAdd->setPosition($siblingLineNumber, $siblingColumnNumber);
             }
         }
-
         if ($declarationToAdd->getLineNumber() === null) {
             //this node is added manually, give it the next best line
             $columnNumber = $declarationToAdd->getColumnNumber() ?? 0;
@@ -168,10 +157,8 @@ class RuleSet implements CSSElement, CSSListItem, Positionable, DeclarationList
         } elseif ($declarationToAdd->getColumnNumber() === null) {
             $declarationToAdd->setPosition($declarationToAdd->getLineNumber(), 0);
         }
-
         \array_splice($this->declarations[$propertyName], $position, 0, [$declarationToAdd]);
     }
-
     /**
      * Returns all declarations matching the given property name
      *
@@ -207,10 +194,8 @@ class RuleSet implements CSSElement, CSSListItem, Positionable, DeclarationList
             }
         }
         \usort($result, [self::class, 'comparePositionable']);
-
         return $result;
     }
-
     /**
      * Overrides all the declarations of this set.
      *
@@ -223,7 +208,6 @@ class RuleSet implements CSSElement, CSSListItem, Positionable, DeclarationList
             $this->addDeclaration($declaration);
         }
     }
-
     /**
      * Returns all declarations with property names matching the given pattern and returns them in an associative array
      * with the property names as keys.
@@ -247,10 +231,8 @@ class RuleSet implements CSSElement, CSSListItem, Positionable, DeclarationList
         foreach ($this->getDeclarations($searchPattern) as $declaration) {
             $result[$declaration->getPropertyName()] = $declaration;
         }
-
         return $result;
     }
-
     /**
      * Removes a `Declaration` from this `RuleSet` by identity.
      */
@@ -266,7 +248,6 @@ class RuleSet implements CSSElement, CSSListItem, Positionable, DeclarationList
             }
         }
     }
-
     /**
      * Removes declarations by property name or search pattern.
      *
@@ -292,12 +273,10 @@ class RuleSet implements CSSElement, CSSListItem, Positionable, DeclarationList
             }
         }
     }
-
     public function removeAllDeclarations(): void
     {
         $this->declarations = [];
     }
-
     /**
      * @internal
      */
@@ -305,7 +284,6 @@ class RuleSet implements CSSElement, CSSListItem, Positionable, DeclarationList
     {
         return $this->renderDeclarations($outputFormat);
     }
-
     protected function renderDeclarations(OutputFormat $outputFormat): string
     {
         $result = '';
@@ -329,16 +307,13 @@ class RuleSet implements CSSElement, CSSListItem, Positionable, DeclarationList
             }
             $result .= $renderedDeclaration;
         }
-
         $formatter = $outputFormat->getFormatter();
         if (!$isFirst) {
             // Had some output
             $result .= $formatter->spaceAfterRules();
         }
-
         return $formatter->removeLastSemicolon($result);
     }
-
     /**
      * @return array<string, bool|int|float|string|array<mixed>|null>
      *
@@ -355,13 +330,11 @@ class RuleSet implements CSSElement, CSSListItem, Positionable, DeclarationList
                 $declarationsForOneProperty
             );
         }
-
         return [
             'class' => $this->getShortClassName(),
             'declarations' => $declarationsArrayRepresentation,
         ];
     }
-
     /**
      * @return int negative if `$first` is before `$second`; zero if they have the same position; positive otherwise
      *
@@ -377,7 +350,6 @@ class RuleSet implements CSSElement, CSSListItem, Positionable, DeclarationList
                 1750637683
             );
         }
-
         if ($firstsLineNumber === $secondsLineNumber) {
             $firstsColumnNumber = $first->getColumnNumber();
             $secondsColumnNumber = $second->getColumnNumber();
@@ -389,10 +361,8 @@ class RuleSet implements CSSElement, CSSListItem, Positionable, DeclarationList
             }
             return $firstsColumnNumber - $secondsColumnNumber;
         }
-
         return $firstsLineNumber - $secondsLineNumber;
     }
-
     private function hasDeclaration(Declaration $declaration): bool
     {
         foreach ($this->declarations as $declarationsForAProperty) {
@@ -400,7 +370,6 @@ class RuleSet implements CSSElement, CSSListItem, Positionable, DeclarationList
                 return true;
             }
         }
-
         return false;
     }
 }

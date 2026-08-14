@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\Bzip2Exception;
-
 /**
  * @param resource $bz
  * @throws Bzip2Exception
@@ -17,8 +14,6 @@ function bzclose($bz): void
         throw Bzip2Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $bz
  * @throws Bzip2Exception
@@ -32,8 +27,6 @@ function bzflush($bz): void
         throw Bzip2Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource|string $file
  * @param string $mode
@@ -50,8 +43,6 @@ function bzopen($file, string $mode)
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $bz
  * @param int $length
@@ -68,8 +59,6 @@ function bzread($bz, int $length = 1024): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $bz
  * @param string $data

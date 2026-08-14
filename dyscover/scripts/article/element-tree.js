@@ -1,5 +1,4 @@
 import { Editor } from "./editor.js";
-
 export class ElementTree {
     static findClass(value) {
         return ElementTree.getClasses().find((Class) => {
@@ -20,11 +19,9 @@ export class ElementTree {
             return false;
         });
     }
-
     static getClasses() {
         return Editor.current?.elements || [];
     }
-
     static async exportElement(element) {
         const Class = ElementTree.findClass(element);
         if (!Class) return null;
@@ -34,7 +31,6 @@ export class ElementTree {
         }
         return await instance.export();
     }
-
     static async exportChildren(element) {
         if (!element) return [];
         return (
@@ -48,7 +44,6 @@ export class ElementTree {
             )
         ).filter(Boolean);
     }
-
     static addChildren(parent, children) {
         children?.forEach((child) => {
             parent.append(child);

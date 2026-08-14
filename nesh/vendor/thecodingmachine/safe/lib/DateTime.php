@@ -1,12 +1,9 @@
 <?php
-
 namespace Safe;
-
 use DateInterval;
 use DateTimeInterface;
 use DateTimeZone;
 use Safe\Exceptions\DatetimeException;
-
 /** this class implements a safe version of the Datetime class */
 class DateTime extends \DateTime
 {
@@ -15,7 +12,6 @@ class DateTime extends \DateTime
     {
         return new self($datetime->format('Y-m-d H:i:s.u'), $datetime->getTimezone());
     }
-
     /**
      * @param string $format
      * @param string $time
@@ -30,7 +26,6 @@ class DateTime extends \DateTime
         }
         return self::createFromRegular($datetime);
     }
-
     /**
      * @param DateTimeInterface $datetime2 The date to compare to.
      * @param boolean $absolute [optional] Whether to return absolute difference.
@@ -46,7 +41,6 @@ class DateTime extends \DateTime
         }
         return $result;
     }
-
     /**
      * @param string $modify A date/time string. Valid formats are explained in <a href="https://secure.php.net/manual/en/datetime.formats.php">Date and Time Formats</a>.
      * @return DateTime Returns the DateTime object for method chaining.
@@ -61,7 +55,6 @@ class DateTime extends \DateTime
         }
         return $result;
     }
-
     /**
      * @param int $year
      * @param int $month

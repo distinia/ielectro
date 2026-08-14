@@ -1,6 +1,5 @@
 <?php
 namespace Admin;
-
 use Dyscover\Moderation;
 use Nesh\Avatar;
 use Nesh\Query;
@@ -8,10 +7,8 @@ use Nesh\Request;
 use Nesh\Response;
 use Nesh\Schema;
 use Nesh\Validate;
-
 require_once __DIR__ . '/access.php';
 require_once __DIR__ . '/../../dyscover/api/moderation.php';
-
 class Dyscover
 {
     public function overview(): void
@@ -33,7 +30,6 @@ class Dyscover
             ),
         ]);
     }
-
     public function reports(): void
     {
         Request::get();
@@ -93,7 +89,6 @@ class Dyscover
             ];
         }, $rows));
     }
-
     public function reportReview(): void
     {
         Request::post();
@@ -115,7 +110,6 @@ class Dyscover
         );
         Response::success(['message' => 'Report updated']);
     }
-
     public function users(): void
     {
         Request::get();
@@ -159,7 +153,6 @@ class Dyscover
         );
         Response::success(array_map([self::class, 'mapDyscoverUser'], $rows));
     }
-
     public function moderateUser(): void
     {
         Request::post();
@@ -201,7 +194,6 @@ class Dyscover
         }
         Response::success(['message' => 'User updated']);
     }
-
     public function trends(): void
     {
         Request::get();
@@ -263,7 +255,6 @@ class Dyscover
             ], $postRows),
         ]);
     }
-
     public function terms(): void
     {
         Request::get();
@@ -275,7 +266,6 @@ class Dyscover
         );
         Response::success($rows);
     }
-
     public function termSave(): void
     {
         Request::post();
@@ -306,7 +296,6 @@ class Dyscover
         }
         Response::success(['message' => 'Term saved']);
     }
-
     public function termDelete(): void
     {
         Request::post();
@@ -318,7 +307,6 @@ class Dyscover
         Query::execute('DELETE FROM ' . Schema::DYSCOVER_BANNED_TERMS . ' WHERE id = ?', [$id]);
         Response::success(['message' => 'Term deleted']);
     }
-
     public function posts(): void
     {
         Request::get();
@@ -353,7 +341,6 @@ class Dyscover
         );
         Response::success($rows);
     }
-
     public function postRemove(): void
     {
         Request::post();
@@ -368,12 +355,10 @@ class Dyscover
         );
         Response::success(['message' => 'Post removed']);
     }
-
     private static function mapDyscoverUser(array $row): array
     {
         $accountId = (int) $row['account_id'];
         $name = trim(((string) ($row['name'] ?? '')) . ' ' . ((string) ($row['surname'] ?? '')));
-
         return [
             'id' => (int) $row['id'],
             'account_id' => $accountId,
@@ -388,7 +373,6 @@ class Dyscover
             'avatar' => Avatar::url($accountId),
         ];
     }
-
     private static function countSafe(string $sql, array $params = []): int
     {
         try {
@@ -397,7 +381,6 @@ class Dyscover
             return 0;
         }
     }
-
     private static function fetchSafe(string $sql, array $params = []): array
     {
         try {

@@ -4,39 +4,32 @@
     border-top: 1px solid var(--border-subtle);
     min-height: 0;
 }
-
 .post-comments-list {
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
-
 .post-comment-thread {
     display: flex;
     flex-direction: column;
     gap: 0.45rem;
 }
-
 .post-comment {
     display: flex;
     align-items: flex-start;
     gap: 0.7rem;
     font-size: 0.86rem;
 }
-
 .post-comment.is-reply-target .post-comment-content {
     background: rgba(30, 136, 229, 0.06);
     border-radius: 12px;
 }
-
 .post-comment--reply {
     margin-left: 0;
 }
-
 .post-comment-replies[hidden] {
     display: none !important;
 }
-
 .post-comment-replies {
     display: flex;
     flex-direction: column;
@@ -44,11 +37,9 @@
     margin-top: 0.15rem;
     margin-left: 2.35rem;
 }
-
 .post-comment-avatar-link {
     flex-shrink: 0;
 }
-
 .post-comment-avatar {
     width: 2rem;
     height: 2rem;
@@ -57,12 +48,10 @@
     display: block;
     background: #e2e8f0;
 }
-
 .post-comment--reply .post-comment-avatar {
     width: 1.55rem;
     height: 1.55rem;
 }
-
 .post-comment-shell {
     flex: 1;
     min-width: 0;
@@ -70,37 +59,30 @@
     align-items: flex-start;
     gap: 0.55rem;
 }
-
 .post-comment-content {
     flex: 1;
     min-width: 0;
     padding: 0.05rem 0;
 }
-
 .post-comment-line {
     margin: 0;
     line-height: 1.45;
     word-break: break-word;
 }
-
 .post-comment-user {
     color: inherit;
     text-decoration: none;
     margin-right: 0.35rem;
 }
-
 .post-comment-user strong {
     font-weight: 700;
 }
-
 .post-comment-text {
     color: var(--text-color);
 }
-
 .post-comment-reply-to {
     margin-right: 0.2rem;
 }
-
 .post-comment-meta {
     display: flex;
     flex-wrap: wrap;
@@ -108,14 +90,12 @@
     gap: 0.7rem;
     margin-top: 0.35rem;
 }
-
 .post-comment-date,
 .post-comment-likes-count {
     font-size: 0.72rem;
     color: var(--text-muted);
     text-transform: lowercase;
 }
-
 .post-comment-action,
 .post-comment-menu-btn {
     border: none;
@@ -127,12 +107,10 @@
     color: var(--text-muted);
     cursor: pointer;
 }
-
 .post-comment-action:hover,
 .post-comment-menu-btn:hover {
     color: var(--text-color);
 }
-
 .post-comment-like-btn {
     flex-shrink: 0;
     width: 1.5rem;
@@ -147,26 +125,21 @@
     cursor: pointer;
     padding: 0;
 }
-
 .post-comment-like-btn i,
 .post-comment-like-btn svg {
     width: 0.95rem;
     height: 0.95rem;
 }
-
 .post-comment-like-btn.is-liked {
     color: #e53935;
 }
-
 .post-comment-like-btn.is-liked i,
 .post-comment-like-btn.is-liked svg {
     fill: currentColor;
 }
-
 .post-comment-menu {
     position: relative;
 }
-
 .post-comment-menu-pop {
     position: absolute;
     top: calc(100% + 0.35rem);
@@ -179,7 +152,6 @@
     border: 1px solid var(--border-subtle);
     box-shadow: 0 10px 28px rgba(15, 23, 42, 0.12);
 }
-
 .post-comment-menu-pop button {
     width: 100%;
     border: none;
@@ -193,11 +165,9 @@
     color: #c62828;
     cursor: pointer;
 }
-
 .post-comment-menu-pop button:hover {
     background: rgba(198, 40, 40, 0.08);
 }
-
 .post-comment-view-replies {
     display: inline-flex;
     align-items: center;
@@ -212,23 +182,19 @@
     color: var(--text-muted);
     cursor: pointer;
 }
-
 .post-comment-view-replies:hover {
     color: var(--text-color);
 }
-
 .post-comment-view-replies-line {
     display: inline-block;
     width: 1.6rem;
     height: 1px;
     background: var(--border-subtle);
 }
-
 .post-comment-empty {
     color: var(--text-muted);
     font-size: 0.85rem;
 }
-
 .post-comment-input {
     flex: 1;
     border: none;
@@ -237,11 +203,9 @@
     font-size: 0.88rem;
     background: transparent;
 }
-
 .post-comment-input:focus {
     outline: none;
 }
-
 .post-comment-compose,
 .post-comment-compose-inline {
     display: flex;
@@ -251,24 +215,20 @@
     padding-top: 0.65rem;
     margin-top: 0.5rem;
 }
-
 .post-comment-compose .post-comment-input,
 .post-comment-compose-inline .post-comment-input {
     border-top: none;
     padding: 0.55rem 0;
 }
-
 .post-comment-compose .post-comment-send-btn,
 .post-comment-compose-inline .post-comment-send-btn {
     margin-right: 0.15rem;
 }
-
 .comments-overlay-list {
     max-height: min(52vh, 420px);
     overflow: auto;
     padding-right: 0.15rem;
 }
-
 @media (max-width: 768px) {
     .post-comment-replies,
     .post-comment-view-replies {

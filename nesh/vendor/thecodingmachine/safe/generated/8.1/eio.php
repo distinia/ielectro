@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\EioException;
-
 /**
  * @param int $delay
  * @param int $pri
@@ -22,8 +19,6 @@ function eio_busy(int $delay, int $pri = EIO_PRI_DEFAULT, ?callable $callback = 
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $path
  * @param int $mode
@@ -43,8 +38,6 @@ function eio_chmod(string $path, int $mode, int $pri = EIO_PRI_DEFAULT, ?callabl
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $path
  * @param int $uid
@@ -65,8 +58,6 @@ function eio_chown(string $path, int $uid, int $gid = -1, int $pri = EIO_PRI_DEF
     }
     return $safeResult;
 }
-
-
 /**
  * @param mixed $fd
  * @param int $pri
@@ -85,8 +76,6 @@ function eio_close($fd, int $pri = EIO_PRI_DEFAULT, ?callable $callback = null, 
     }
     return $safeResult;
 }
-
-
 /**
  * @param callable $execute
  * @param int $pri
@@ -105,8 +94,6 @@ function eio_custom(callable $execute, int $pri, callable $callback, $data = nul
     }
     return $safeResult;
 }
-
-
 /**
  * @param mixed $fd
  * @param mixed $fd2
@@ -126,8 +113,6 @@ function eio_dup2($fd, $fd2, int $pri = EIO_PRI_DEFAULT, ?callable $callback = n
     }
     return $safeResult;
 }
-
-
 /**
  * @throws EioException
  *
@@ -140,8 +125,6 @@ function eio_event_loop(): void
         throw EioException::createFromPhpError();
     }
 }
-
-
 /**
  * @param mixed $fd
  * @param int $mode
@@ -163,8 +146,6 @@ function eio_fallocate($fd, int $mode, int $offset, int $length, int $pri = EIO_
     }
     return $safeResult;
 }
-
-
 /**
  * @param mixed $fd
  * @param int $mode
@@ -184,8 +165,6 @@ function eio_fchmod($fd, int $mode, int $pri = EIO_PRI_DEFAULT, ?callable $callb
     }
     return $safeResult;
 }
-
-
 /**
  * @param mixed $fd
  * @param int $uid
@@ -206,8 +185,6 @@ function eio_fchown($fd, int $uid, int $gid = -1, int $pri = EIO_PRI_DEFAULT, ?c
     }
     return $safeResult;
 }
-
-
 /**
  * @param mixed $fd
  * @param int $pri
@@ -226,8 +203,6 @@ function eio_fdatasync($fd, int $pri = EIO_PRI_DEFAULT, ?callable $callback = nu
     }
     return $safeResult;
 }
-
-
 /**
  * @param mixed $fd
  * @param int $pri
@@ -250,8 +225,6 @@ function eio_fstat($fd, int $pri, callable $callback, $data = null)
     }
     return $safeResult;
 }
-
-
 /**
  * @param mixed $fd
  * @param int $pri
@@ -274,8 +247,6 @@ function eio_fstatvfs($fd, int $pri, callable $callback, $data = null)
     }
     return $safeResult;
 }
-
-
 /**
  * @param mixed $fd
  * @param int $pri
@@ -294,8 +265,6 @@ function eio_fsync($fd, int $pri = EIO_PRI_DEFAULT, ?callable $callback = null, 
     }
     return $safeResult;
 }
-
-
 /**
  * @param mixed $fd
  * @param int $offset
@@ -315,8 +284,6 @@ function eio_ftruncate($fd, int $offset = 0, int $pri = EIO_PRI_DEFAULT, ?callab
     }
     return $safeResult;
 }
-
-
 /**
  * @param mixed $fd
  * @param float $atime
@@ -337,8 +304,6 @@ function eio_futime($fd, float $atime, float $mtime, int $pri = EIO_PRI_DEFAULT,
     }
     return $safeResult;
 }
-
-
 /**
  * @param callable $callback
  * @param null|string $data
@@ -355,8 +320,6 @@ function eio_grp(callable $callback, ?string $data = null)
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $path
  * @param int $pri
@@ -375,8 +338,6 @@ function eio_lstat(string $path, int $pri, callable $callback, $data = null)
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $path
  * @param int $mode
@@ -396,8 +357,6 @@ function eio_mkdir(string $path, int $mode, int $pri = EIO_PRI_DEFAULT, ?callabl
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $path
  * @param int $mode
@@ -418,8 +377,6 @@ function eio_mknod(string $path, int $mode, int $dev, int $pri = EIO_PRI_DEFAULT
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $pri
  * @param callable|null $callback
@@ -437,8 +394,6 @@ function eio_nop(int $pri = EIO_PRI_DEFAULT, ?callable $callback = null, $data =
     }
     return $safeResult;
 }
-
-
 /**
  * @param mixed $fd
  * @param int $offset
@@ -459,8 +414,6 @@ function eio_readahead($fd, int $offset, int $length, int $pri = EIO_PRI_DEFAULT
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $path
  * @param int $flags
@@ -480,8 +433,6 @@ function eio_readdir(string $path, int $flags, int $pri, callable $callback, ?st
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $path
  * @param int $pri
@@ -500,8 +451,6 @@ function eio_readlink(string $path, int $pri, callable $callback, ?string $data 
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $path
  * @param string $new_path
@@ -521,8 +470,6 @@ function eio_rename(string $path, string $new_path, int $pri = EIO_PRI_DEFAULT, 
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $path
  * @param int $pri
@@ -541,8 +488,6 @@ function eio_rmdir(string $path, int $pri = EIO_PRI_DEFAULT, ?callable $callback
     }
     return $safeResult;
 }
-
-
 /**
  * @param mixed $fd
  * @param int $offset
@@ -563,8 +508,6 @@ function eio_seek($fd, int $offset, int $whence, int $pri = EIO_PRI_DEFAULT, ?ca
     }
     return $safeResult;
 }
-
-
 /**
  * @param mixed $out_fd
  * @param mixed $in_fd
@@ -594,8 +537,6 @@ function eio_sendfile($out_fd, $in_fd, int $offset, int $length, ?int $pri = nul
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $path
  * @param int $pri
@@ -614,8 +555,6 @@ function eio_stat(string $path, int $pri, callable $callback, $data = null)
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $path
  * @param int $pri
@@ -638,8 +577,6 @@ function eio_statvfs(string $path, int $pri, callable $callback, $data = null)
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $path
  * @param string $new_path
@@ -659,8 +596,6 @@ function eio_symlink(string $path, string $new_path, int $pri = EIO_PRI_DEFAULT,
     }
     return $safeResult;
 }
-
-
 /**
  * @param mixed $fd
  * @param int $offset
@@ -682,8 +617,6 @@ function eio_sync_file_range($fd, int $offset, int $nbytes, int $flags, int $pri
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $pri
  * @param callable|null $callback
@@ -701,8 +634,6 @@ function eio_sync(int $pri = EIO_PRI_DEFAULT, ?callable $callback = null, $data 
     }
     return $safeResult;
 }
-
-
 /**
  * @param mixed $fd
  * @param int $pri
@@ -721,8 +652,6 @@ function eio_syncfs($fd, int $pri = EIO_PRI_DEFAULT, ?callable $callback = null,
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $path
  * @param int $offset
@@ -742,8 +671,6 @@ function eio_truncate(string $path, int $offset = 0, int $pri = EIO_PRI_DEFAULT,
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $path
  * @param int $pri
@@ -762,8 +689,6 @@ function eio_unlink(string $path, int $pri = EIO_PRI_DEFAULT, ?callable $callbac
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $path
  * @param float $atime
@@ -784,8 +709,6 @@ function eio_utime(string $path, float $atime, float $mtime, int $pri = EIO_PRI_
     }
     return $safeResult;
 }
-
-
 /**
  * @param mixed $fd
  * @param string $str

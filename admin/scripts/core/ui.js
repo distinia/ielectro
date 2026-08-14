@@ -1,24 +1,19 @@
 import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
 import { App } from "./app.js";
-
 export class AdminUi {
     static iconBtn(icon, label, extraClass = "", attrs = "") {
         return `<button type="button" class="admin-icon-btn ${extraClass}" aria-label="${App.esc(label)}" title="${App.esc(label)}" ${attrs}><i data-icon="${icon}"></i></button>`;
     }
-
     static iconLink(href, icon, label, extraClass = "") {
         return `<a href="${App.esc(href)}" class="admin-icon-btn ${extraClass}" aria-label="${App.esc(label)}" title="${App.esc(label)}" target="_blank" rel="noopener"><i data-icon="${icon}"></i></a>`;
     }
-
     static checkAllCell() {
         return `<div class="col-check"><input type="checkbox" class="admin-check-all" aria-label="Select all"></div>`;
     }
-
     static checkCell(id, checked = false) {
         const sid = App.esc(String(id));
         return `<div class="col-check"><input type="checkbox" class="admin-row-check" data-id="${sid}" ${checked ? "checked" : ""} aria-label="Select row"></div>`;
     }
-
     static statusPill(status) {
         const s = String(status || "").toLowerCase();
         const tone =
@@ -31,11 +26,9 @@ export class AdminUi {
                     : "default";
         return `<span class="admin-status admin-status-${tone}">${App.esc(status || "")}</span>`;
     }
-
     static emptyState(text) {
         return `<div class="admin-data-empty">${App.esc(text)}</div>`;
     }
-
     static avatarHtml(url, name, className = "admin-data-avatar") {
         if (url) {
             return `<div class="${className}"><img src="${App.esc(url)}" alt="${App.esc(name)}" loading="lazy"></div>`;
@@ -43,13 +36,11 @@ export class AdminUi {
         const initial = App.esc((name || "?").trim().slice(0, 1).toUpperCase());
         return `<div class="${className} admin-data-avatar-fallback">${initial}</div>`;
     }
-
     static accountAvatarUrl(accountId) {
         const id = Number(accountId);
         if (!id || id <= 0) return null;
         return `https://account.ielectro.com/assets/users/${id}/avatar.png`;
     }
-
     static bindTableSelection(root, bulk, rows, onRowOpen) {
         if (!root) return;
         root.querySelector(".admin-check-all")?.addEventListener("change", (e) => {
@@ -83,7 +74,6 @@ export class AdminUi {
             onRowOpen?.(row.dataset.id);
         });
     }
-
     static refreshIcons(root) {
         try {
             return Nesh.Icons.load(root || document.body);

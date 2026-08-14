@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\LzfException;
-
 /**
  * @param string $data
  * @return string
@@ -19,8 +16,6 @@ function lzf_compress(string $data): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $data
  * @return string

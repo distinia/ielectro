@@ -2,17 +2,14 @@ import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
 import { Api } from "./api.js";
 import { Request } from "./request.js";
 import { Sidebar } from "./sidebar.js";
-
 export class App {
     static esc(value) {
         return Nesh.Html.escape(String(value ?? ""));
     }
-
     static pageFromLocation() {
         const parts = window.location.pathname.replace(/\/$/, "").split("/").filter(Boolean);
         return parts[parts.length - 1] || "home";
     }
-
     static filterRows(rows, query, sort, mappers = {}) {
         const q = String(query || "")
             .trim()
@@ -42,23 +39,19 @@ export class App {
         }
         return list;
     }
-
     static loginUrl() {
         const returnUrl = encodeURIComponent(window.location.href);
         return `https://account.ielectro.com/login?service=admin&return=${returnUrl}`;
     }
-
     async init() {
         Nesh.Input.enablePlainTextPaste();
         Nesh.Input.disableAutocomplete();
         Nesh.Input.disableTextCorrection();
         Nesh.Input.bind();
-
         if (!(await Nesh.Auth.logged())) {
             window.location.replace(App.loginUrl());
             return false;
         }
-
         try {
             const res = await Request.get("me");
             const data = Api.record(res);
@@ -71,7 +64,6 @@ export class App {
             window.location.replace(App.loginUrl());
             return false;
         }
-
         Sidebar.mount(App.pageFromLocation());
         document.body.classList.add("admin-app");
         if (window.location.search) {

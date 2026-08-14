@@ -5,7 +5,6 @@ import { CreateBirthday } from "./birthday.js";
 import { CreateValidation } from "./validation.js";
 import { CreateAvailability } from "./availability.js";
 import { CreateRequest } from "./request.js";
-
 document.addEventListener("DOMContentLoaded", async () => {
     new GuestApp();
     const form = document.querySelector("#create-form");

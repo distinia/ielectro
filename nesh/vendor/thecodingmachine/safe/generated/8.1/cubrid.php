@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\CubridException;
-
 /**
  * @param resource $req_identifier
  * @param int $bind_index
@@ -24,8 +21,6 @@ function cubrid_bind($req_identifier, int $bind_index, $bind_value, ?string $bin
         throw CubridException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $conn_identifier
  * @param string $oid
@@ -43,8 +38,6 @@ function cubrid_col_size($conn_identifier, string $oid, string $attr_name): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $req_identifier
  * @return array
@@ -60,8 +53,6 @@ function cubrid_column_names($req_identifier): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $req_identifier
  * @return array
@@ -77,8 +68,6 @@ function cubrid_column_types($req_identifier): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $conn_identifier
  * @throws CubridException
@@ -92,8 +81,6 @@ function cubrid_commit($conn_identifier): void
         throw CubridException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $conn_url
  * @param string $userid
@@ -120,8 +107,6 @@ function cubrid_connect_with_url(string $conn_url, ?string $userid = null, ?stri
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $host
  * @param int $port
@@ -150,8 +135,6 @@ function cubrid_connect(string $host, int $port, string $dbname, ?string $userid
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $req_identifier
  * @return string
@@ -167,8 +150,6 @@ function cubrid_current_oid($req_identifier): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $conn_identifier
  * @throws CubridException
@@ -186,8 +167,6 @@ function cubrid_disconnect($conn_identifier = null): void
         throw CubridException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $conn_identifier
  * @param string $oid
@@ -202,8 +181,6 @@ function cubrid_drop($conn_identifier, string $oid): void
         throw CubridException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $req_identifier
  * @throws CubridException
@@ -217,8 +194,6 @@ function cubrid_free_result($req_identifier): void
         throw CubridException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $conn_identifier
  * @return string
@@ -234,8 +209,6 @@ function cubrid_get_charset($conn_identifier): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $conn_identifier
  * @param string $oid
@@ -252,8 +225,6 @@ function cubrid_get_class_name($conn_identifier, string $oid): string
     }
     return $safeResult;
 }
-
-
 /**
  * @return string
  * @throws CubridException
@@ -268,8 +239,6 @@ function cubrid_get_client_info(): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $conn_identifier
  * @return array
@@ -285,8 +254,6 @@ function cubrid_get_db_parameter($conn_identifier): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $req_identifier
  * @return int
@@ -302,8 +269,6 @@ function cubrid_get_query_timeout($req_identifier): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $conn_identifier
  * @return string
@@ -319,8 +284,6 @@ function cubrid_get_server_info($conn_identifier): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $conn_identifier
  * @return string
@@ -340,8 +303,6 @@ function cubrid_insert_id($conn_identifier = null): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param array $lob_identifier_array
  * @throws CubridException
@@ -355,8 +316,6 @@ function cubrid_lob_close(array $lob_identifier_array): void
         throw CubridException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $conn_identifier
  * @param resource $lob_identifier
@@ -372,8 +331,6 @@ function cubrid_lob_export($conn_identifier, $lob_identifier, string $path_name)
         throw CubridException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $conn_identifier
  * @param string $sql
@@ -390,8 +347,6 @@ function cubrid_lob_get($conn_identifier, string $sql): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $conn_identifier
  * @param resource $lob_identifier
@@ -406,8 +361,6 @@ function cubrid_lob_send($conn_identifier, $lob_identifier): void
         throw CubridException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $lob_identifier
  * @return string
@@ -423,8 +376,6 @@ function cubrid_lob_size($lob_identifier): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $req_identifier
  * @param int $bind_index
@@ -445,8 +396,6 @@ function cubrid_lob2_bind($req_identifier, int $bind_index, $bind_value, ?string
         throw CubridException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $lob_identifier
  * @throws CubridException
@@ -460,8 +409,6 @@ function cubrid_lob2_close($lob_identifier): void
         throw CubridException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $lob_identifier
  * @param string $file_name
@@ -476,8 +423,6 @@ function cubrid_lob2_export($lob_identifier, string $file_name): void
         throw CubridException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $lob_identifier
  * @param string $file_name
@@ -492,8 +437,6 @@ function cubrid_lob2_import($lob_identifier, string $file_name): void
         throw CubridException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $conn_identifier
  * @param string $type
@@ -516,8 +459,6 @@ function cubrid_lob2_new($conn_identifier = null, string $type = "BLOB")
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $lob_identifier
  * @param int $len
@@ -534,8 +475,6 @@ function cubrid_lob2_read($lob_identifier, int $len): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $lob_identifier
  * @param int $offset
@@ -551,8 +490,6 @@ function cubrid_lob2_seek($lob_identifier, int $offset, int $origin = CUBRID_CUR
         throw CubridException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $lob_identifier
  * @param string $offset
@@ -568,8 +505,6 @@ function cubrid_lob2_seek64($lob_identifier, string $offset, int $origin = CUBRI
         throw CubridException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $lob_identifier
  * @return int
@@ -585,8 +520,6 @@ function cubrid_lob2_size($lob_identifier): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $lob_identifier
  * @return string
@@ -602,8 +535,6 @@ function cubrid_lob2_size64($lob_identifier): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $lob_identifier
  * @return int
@@ -619,8 +550,6 @@ function cubrid_lob2_tell($lob_identifier): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $lob_identifier
  * @return string
@@ -636,8 +565,6 @@ function cubrid_lob2_tell64($lob_identifier): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $lob_identifier
  * @param string $buf
@@ -652,8 +579,6 @@ function cubrid_lob2_write($lob_identifier, string $buf): void
         throw CubridException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $conn_identifier
  * @param string $oid
@@ -668,8 +593,6 @@ function cubrid_lock_read($conn_identifier, string $oid): void
         throw CubridException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $conn_identifier
  * @param string $oid
@@ -684,8 +607,6 @@ function cubrid_lock_write($conn_identifier, string $oid): void
         throw CubridException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $req_identifier
  * @param int $offset
@@ -703,8 +624,6 @@ function cubrid_move_cursor($req_identifier, int $offset, int $origin = CUBRID_C
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $result
  * @throws CubridException
@@ -718,8 +637,6 @@ function cubrid_next_result($result): void
         throw CubridException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $conn_url
  * @param string $userid
@@ -743,8 +660,6 @@ function cubrid_pconnect_with_url(string $conn_url, ?string $userid = null, ?str
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $host
  * @param int $port
@@ -770,8 +685,6 @@ function cubrid_pconnect(string $host, int $port, string $dbname, ?string $useri
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $conn_identifier
  * @param string $prepare_stmt
@@ -789,8 +702,6 @@ function cubrid_prepare($conn_identifier, string $prepare_stmt, int $option = 0)
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $conn_identifier
  * @param string $oid
@@ -813,8 +724,6 @@ function cubrid_put($conn_identifier, string $oid, ?string $attr = null, $value 
         throw CubridException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $conn_identifier
  * @throws CubridException
@@ -828,8 +737,6 @@ function cubrid_rollback($conn_identifier): void
         throw CubridException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $conn_identifier
  * @param int $schema_type
@@ -854,8 +761,6 @@ function cubrid_schema($conn_identifier, int $schema_type, ?string $class_name =
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $conn_identifier
  * @param string $oid
@@ -872,8 +777,6 @@ function cubrid_seq_drop($conn_identifier, string $oid, string $attr_name, int $
         throw CubridException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $conn_identifier
  * @param string $oid
@@ -891,8 +794,6 @@ function cubrid_seq_insert($conn_identifier, string $oid, string $attr_name, int
         throw CubridException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $conn_identifier
  * @param string $oid
@@ -910,8 +811,6 @@ function cubrid_seq_put($conn_identifier, string $oid, string $attr_name, int $i
         throw CubridException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $conn_identifier
  * @param string $oid
@@ -928,8 +827,6 @@ function cubrid_set_add($conn_identifier, string $oid, string $attr_name, string
         throw CubridException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $conn_identifier
  * @param bool $mode
@@ -944,8 +841,6 @@ function cubrid_set_autocommit($conn_identifier, bool $mode): void
         throw CubridException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $conn_identifier
  * @param int $param_type
@@ -961,8 +856,6 @@ function cubrid_set_db_parameter($conn_identifier, int $param_type, int $param_v
         throw CubridException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $conn_identifier
  * @param string $oid
@@ -979,8 +872,6 @@ function cubrid_set_drop($conn_identifier, string $oid, string $attr_name, strin
         throw CubridException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $req_identifier
  * @param int $timeout

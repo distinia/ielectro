@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\IbaseException;
-
 /**
  * @param resource $blob_handle
  * @throws IbaseException
@@ -17,8 +14,6 @@ function fbird_blob_cancel($blob_handle): void
         throw IbaseException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $service_handle
  * @param string $user_name
@@ -45,8 +40,6 @@ function ibase_add_user($service_handle, string $user_name, string $password, ?s
         throw IbaseException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $service_handle
  * @param string $source_db
@@ -66,8 +59,6 @@ function ibase_backup($service_handle, string $source_db, string $dest_file, int
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $blob_handle
  * @throws IbaseException
@@ -81,8 +72,6 @@ function ibase_blob_cancel($blob_handle): void
         throw IbaseException::createFromPhpError();
     }
 }
-
-
 /**
  * @param null|resource $link_identifier
  * @return resource
@@ -102,8 +91,6 @@ function ibase_blob_create($link_identifier = null)
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $blob_handle
  * @param int $len
@@ -120,8 +107,6 @@ function ibase_blob_get($blob_handle, int $len): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param null|resource $connection_id
  * @throws IbaseException
@@ -139,8 +124,6 @@ function ibase_close($connection_id = null): void
         throw IbaseException::createFromPhpError();
     }
 }
-
-
 /**
  * @param null|resource $link_or_trans_identifier
  * @throws IbaseException
@@ -158,8 +141,6 @@ function ibase_commit_ret($link_or_trans_identifier = null): void
         throw IbaseException::createFromPhpError();
     }
 }
-
-
 /**
  * @param null|resource $link_or_trans_identifier
  * @throws IbaseException
@@ -177,8 +158,6 @@ function ibase_commit($link_or_trans_identifier = null): void
         throw IbaseException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $database
  * @param string $username
@@ -219,8 +198,6 @@ function ibase_connect(?string $database = null, ?string $username = null, ?stri
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $service_handle
  * @param string $user_name
@@ -235,8 +212,6 @@ function ibase_delete_user($service_handle, string $user_name): void
         throw IbaseException::createFromPhpError();
     }
 }
-
-
 /**
  * @param null|resource $connection
  * @throws IbaseException
@@ -254,8 +229,6 @@ function ibase_drop_db($connection = null): void
         throw IbaseException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $event
  * @throws IbaseException
@@ -269,8 +242,6 @@ function ibase_free_event_handler($event): void
         throw IbaseException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $query
  * @throws IbaseException
@@ -284,8 +255,6 @@ function ibase_free_query($query): void
         throw IbaseException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $result_identifier
  * @throws IbaseException
@@ -299,8 +268,6 @@ function ibase_free_result($result_identifier): void
         throw IbaseException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $service_handle
  * @param string $db
@@ -317,8 +284,6 @@ function ibase_maintain_db($service_handle, string $db, int $action, int $argume
         throw IbaseException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $service_handle
  * @param string $user_name
@@ -345,8 +310,6 @@ function ibase_modify_user($service_handle, string $user_name, string $password,
         throw IbaseException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $result
  * @param string $name
@@ -361,8 +324,6 @@ function ibase_name_result($result, string $name): void
         throw IbaseException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $database
  * @param string $username
@@ -403,8 +364,6 @@ function ibase_pconnect(?string $database = null, ?string $username = null, ?str
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $service_handle
  * @param string $source_file
@@ -424,8 +383,6 @@ function ibase_restore($service_handle, string $source_file, string $dest_db, in
     }
     return $safeResult;
 }
-
-
 /**
  * @param null|resource $link_or_trans_identifier
  * @throws IbaseException
@@ -443,8 +400,6 @@ function ibase_rollback_ret($link_or_trans_identifier = null): void
         throw IbaseException::createFromPhpError();
     }
 }
-
-
 /**
  * @param null|resource $link_or_trans_identifier
  * @throws IbaseException
@@ -462,8 +417,6 @@ function ibase_rollback($link_or_trans_identifier = null): void
         throw IbaseException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $host
  * @param string $dba_username
@@ -481,8 +434,6 @@ function ibase_service_attach(string $host, string $dba_username, string $dba_pa
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $service_handle
  * @throws IbaseException

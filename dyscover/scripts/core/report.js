@@ -1,6 +1,5 @@
 import { Api } from "./api.js";
 import { Alert, Request } from "./index.js";
-
 const REPORT_LABELS = {
     spam: "Spam or misleading content",
     harassment: "Harassment or bullying",
@@ -12,7 +11,6 @@ const REPORT_LABELS = {
     copyright: "Copyright infringement",
     other: "Other",
 };
-
 export class Report {
     static async openPost(postId) {
         await this.open({
@@ -21,7 +19,6 @@ export class Report {
             title: "Report post",
         });
     }
-
     static async openUser(userId) {
         await this.open({
             target_type: "user",
@@ -29,7 +26,6 @@ export class Report {
             title: "Report user",
         });
     }
-
     static async open(payload) {
         const overlay = document.createElement("div");
         overlay.className = "report-overlay";

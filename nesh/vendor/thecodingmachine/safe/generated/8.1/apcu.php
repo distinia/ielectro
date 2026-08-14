@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\ApcuException;
-
 /**
  * @param bool $limited
  * @return array
@@ -19,8 +16,6 @@ function apcu_cache_info(bool $limited = false): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $key
  * @param int $old
@@ -36,8 +31,6 @@ function apcu_cas(string $key, int $old, int $new): void
         throw ApcuException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $key
  * @param int $step
@@ -56,8 +49,6 @@ function apcu_dec(string $key, int $step = 1, ?bool &$success = null, int $ttl =
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $key
  * @param int $step
@@ -76,8 +67,6 @@ function apcu_inc(string $key, int $step = 1, ?bool &$success = null, int $ttl =
     }
     return $safeResult;
 }
-
-
 /**
  * @param bool $limited
  * @return array

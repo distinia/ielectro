@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\MbstringException;
-
 /**
  * @param int $codepoint
  * @param null|string $encoding
@@ -24,8 +21,6 @@ function mb_chr(int $codepoint, ?string $encoding = null): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param array|string $string
  * @param string $to_encoding
@@ -47,8 +42,6 @@ function mb_convert_encoding($string, string $to_encoding, $from_encoding = null
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $to_encoding
  * @param array|string $from_encoding
@@ -67,8 +60,6 @@ function mb_convert_variables(string $to_encoding, $from_encoding, &$var, ...$va
     }
     return $safeResult;
 }
-
-
 /**
  * @param non-empty-list|non-falsy-string|null $encoding
  * @return bool|list
@@ -88,8 +79,6 @@ function mb_detect_order($encoding = null)
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $encoding
  * @return false|list
@@ -101,8 +90,6 @@ function mb_encoding_aliases(string $encoding)
     $safeResult = \mb_encoding_aliases($encoding);
     return $safeResult;
 }
-
-
 /**
  * @param string $pattern
  * @param callable(array):string $callback
@@ -125,8 +112,6 @@ function mb_ereg_replace_callback(string $pattern, callable $callback, string $s
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $pattern
  * @param string $replacement
@@ -149,8 +134,6 @@ function mb_ereg_replace(string $pattern, string $replacement, string $string, ?
     }
     return $safeResult;
 }
-
-
 /**
  * @return array
  * @throws MbstringException
@@ -165,8 +148,6 @@ function mb_ereg_search_getregs(): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $string
  * @param null|string $pattern
@@ -188,8 +169,6 @@ function mb_ereg_search_init(string $string, ?string $pattern = null, ?string $o
         throw MbstringException::createFromPhpError();
     }
 }
-
-
 /**
  * @param null|string $pattern
  * @param null|string $options
@@ -212,8 +191,6 @@ function mb_ereg_search_regs(?string $pattern = null, ?string $options = null): 
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $offset
  * @throws MbstringException
@@ -227,8 +204,6 @@ function mb_ereg_search_setpos(int $offset): void
         throw MbstringException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $pattern
  * @param string $replacement
@@ -251,8 +226,6 @@ function mb_eregi_replace(string $pattern, string $replacement, string $string, 
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $type
  * @return mixed
@@ -268,8 +241,6 @@ function mb_get_info(string $type = "all")
     }
     return $safeResult;
 }
-
-
 /**
  * @param null|string $encoding
  * @return bool|string
@@ -289,8 +260,6 @@ function mb_http_output(?string $encoding = null)
     }
     return $safeResult;
 }
-
-
 /**
  * @param null|string $encoding
  * @return bool|string
@@ -310,8 +279,6 @@ function mb_internal_encoding(?string $encoding = null)
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $string
  * @param null|string $encoding
@@ -332,8 +299,6 @@ function mb_ord(string $string, ?string $encoding = null): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $string
  * @param array|null $result
@@ -348,8 +313,6 @@ function mb_parse_str(string $string, ?array &$result): void
         throw MbstringException::createFromPhpError();
     }
 }
-
-
 /**
  * @param null|string $encoding
  * @return bool|string
@@ -369,8 +332,6 @@ function mb_regex_encoding(?string $encoding = null)
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $to
  * @param string $subject
@@ -392,8 +353,6 @@ function mb_send_mail(string $to, string $subject, string $message, $additional_
         throw MbstringException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $pattern
  * @param string $string

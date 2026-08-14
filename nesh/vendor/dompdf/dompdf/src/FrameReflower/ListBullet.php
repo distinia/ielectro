@@ -5,10 +5,8 @@
  * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
  */
 namespace Dompdf\FrameReflower;
-
 use Dompdf\FrameDecorator\Block as BlockFrameDecorator;
 use Dompdf\FrameDecorator\ListBullet as ListBulletFrameDecorator;
-
 /**
  * Reflows list bullets
  *
@@ -16,7 +14,6 @@ use Dompdf\FrameDecorator\ListBullet as ListBulletFrameDecorator;
  */
 class ListBullet extends AbstractFrameReflower
 {
-
     /**
      * ListBullet constructor.
      * @param ListBulletFrameDecorator $frame
@@ -25,7 +22,6 @@ class ListBullet extends AbstractFrameReflower
     {
         parent::__construct($frame);
     }
-
     /**
      * @param BlockFrameDecorator|null $block
      */
@@ -34,14 +30,11 @@ class ListBullet extends AbstractFrameReflower
         if ($block === null) {
             return;
         }
-
         /** @var ListBulletFrameDecorator */
         $frame = $this->_frame;
         $style = $frame->get_style();
-
         $style->set_used("width", $frame->get_width());
         $frame->position();
-
         if ($style->list_style_position === "inside") {
             $block->add_frame_to_line($frame);
         } else {

@@ -17,21 +17,17 @@
         box-shadow 0.2s ease,
         transform 0.15s ease;
 }
-
 .template:hover {
     box-shadow:
         0 4px 8px rgba(15, 23, 42, 0.06),
         0 16px 40px rgba(15, 23, 42, 0.1);
 }
-
 .template tr:nth-child(even) {
     background-color: #fafbfc;
 }
-
 .template tr:nth-child(odd) {
     background-color: #fff;
 }
-
 .template td,
 .template th {
     vertical-align: top;
@@ -40,65 +36,53 @@
     word-break: break-word;
     border-bottom: 1px solid rgba(15, 23, 42, 0.06);
 }
-
 .template tr:last-child td,
 .template tr:last-child th {
     border-bottom: none;
 }
-
 .template td {
     width: 50%;
 }
-
 .template-cell-info {
     line-height: inherit;
     list-style: none;
     margin: 0;
     padding: 0;
 }
-
 .template-cell-info li {
     margin-bottom: 8px;
 }
-
 .template-cell-info li:last-child {
     margin-bottom: 0;
 }
-
 .template td[colspan="2"] audio,
 .template td[colspan="2"] .audio {
     margin-left: auto;
     margin-right: auto;
 }
-
 .template td[colspan="2"],
 .template th[colspan="2"] {
     text-align: center;
 }
-
 .template tbody > tr > th[colspan="2"]:only-child {
     text-align: left;
 }
-
 .template thead tr {
     font-size: 1.05rem;
     background: linear-gradient(135deg, #1565c0 0%, #42a5f5 100%);
     color: #fff;
 }
-
 .template thead th,
 .template thead td {
     border-bottom: none;
     font-weight: 700;
     letter-spacing: -0.01em;
 }
-
 .template-cell-label,
 .template b {
     text-align: left;
     font-weight: bold;
 }
-
 .template-single-image {
     width: 50%;
     margin: 0 auto;
@@ -107,7 +91,6 @@
     height: auto;
     display: block;
 }
-
 .template-large-image {
     width: 100%;
     margin: 0 auto;
@@ -117,11 +100,9 @@
     height: auto;
     display: block;
 }
-
 .template td:has(> img.template-large-image) {
     padding: 0;
 }
-
 .template-first-image,
 .template-second-image {
     width: auto;
@@ -135,12 +116,10 @@
         transform var(--transition),
         box-shadow var(--transition);
 }
-
 .template-first-image:hover,
 .template-second-image:hover {
     transform: scale(1.05);
 }
-
 @media only screen and (max-width: 768px) {
     .template {
         max-width: 100%;

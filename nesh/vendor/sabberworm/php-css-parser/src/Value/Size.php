@@ -1,25 +1,19 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\Value;
-
 use Sabberworm\CSS\OutputFormat;
 use Sabberworm\CSS\Parsing\ParserState;
 use Sabberworm\CSS\Parsing\UnexpectedEOFException;
 use Sabberworm\CSS\Parsing\UnexpectedTokenException;
 use Sabberworm\CSS\ShortClassNameProvider;
-
 use function Safe\preg_match;
 use function Safe\preg_replace;
-
 /**
  * A `Size` consists of a numeric `size` value and a unit.
  */
 class Size extends PrimitiveValue
 {
     use ShortClassNameProvider;
-
     /**
      * vh/vw/vm(ax)/vmin/rem are absolute insofar as they don’t scale to the immediate parent (only the viewport)
      */
@@ -40,31 +34,24 @@ class Size extends PrimitiveValue
         'vmax',
         'rem',
     ];
-
     private const RELATIVE_SIZE_UNITS = ['%', 'em', 'ex', 'ch', 'fr'];
-
     private const NON_SIZE_UNITS = ['deg', 'grad', 'rad', 's', 'ms', 'turn', 'Hz', 'kHz'];
-
     /**
      * @var array<int<1, max>, array<lowercase-string, non-empty-string>>|null
      */
     private static $SIZE_UNITS = null;
-
     /**
      * @var float
      */
     private $size;
-
     /**
      * @var string|null
      */
     private $unit;
-
     /**
      * @var bool
      */
     private $isColorComponent;
-
     /**
      * @param float|int|string $size
      * @param int<1, max>|null $lineNumber
@@ -76,7 +63,6 @@ class Size extends PrimitiveValue
         $this->unit = $unit;
         $this->isColorComponent = $isColorComponent;
     }
-
     /**
      * @throws UnexpectedEOFException
      * @throws UnexpectedTokenException
@@ -103,7 +89,6 @@ class Size extends PrimitiveValue
                 $size .= $parserState->consume(1);
             }
         }
-
         $unit = null;
         $sizeUnits = self::getSizeUnits();
         foreach ($sizeUnits as $length => &$values) {
@@ -117,7 +102,6 @@ class Size extends PrimitiveValue
         }
         return new Size((float) $size, $unit, $isColorComponent, $parserState->currentLine());
     }
-
     /**
      * @return array<int<1, max>, array<lowercase-string, non-empty-string>>
      */
@@ -133,23 +117,18 @@ class Size extends PrimitiveValue
                 }
                 self::$SIZE_UNITS[$tokenLength][\strtolower($sizeUnit)] = $sizeUnit;
             }
-
             \krsort(self::$SIZE_UNITS, SORT_NUMERIC);
         }
-
         return self::$SIZE_UNITS;
     }
-
     public function setUnit(string $unit): void
     {
         $this->unit = $unit;
     }
-
     public function getUnit(): ?string
     {
         return $this->unit;
     }
-
     /**
      * @param float|int|string $size
      */
@@ -157,17 +136,14 @@ class Size extends PrimitiveValue
     {
         $this->size = (float) $size;
     }
-
     public function getSize(): float
     {
         return $this->size;
     }
-
     public function isColorComponent(): bool
     {
         return $this->isColorComponent;
     }
-
     /**
      * Returns whether the number stored in this Size really represents a size (as in a length of something on screen).
      *
@@ -181,7 +157,6 @@ class Size extends PrimitiveValue
         }
         return !$this->isColorComponent();
     }
-
     public function isRelative(): bool
     {
         if (\in_array($this->unit, self::RELATIVE_SIZE_UNITS, true)) {
@@ -192,7 +167,6 @@ class Size extends PrimitiveValue
         }
         return false;
     }
-
     /**
      * @return non-empty-string
      */
@@ -202,10 +176,8 @@ class Size extends PrimitiveValue
         $decimalPoint = \preg_quote($locale['decimal_point'], '/');
         $size = preg_match('/[\\d\\.]+e[+-]?\\d+/i', (string) $this->size) === 1
             ? preg_replace("/$decimalPoint?0+$/", '', \sprintf('%f', $this->size)) : (string) $this->size;
-
         return preg_replace(["/$decimalPoint/", '/^(-?)0\\./'], ['.', '$1.'], $size) . ($this->unit ?? '');
     }
-
     /**
      * @return array<string, bool|int|float|string|array<mixed>|null>
      *

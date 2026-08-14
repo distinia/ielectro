@@ -1,9 +1,6 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\Position;
-
 /**
  * Provides a standard reusable implementation of `Positionable`.
  *
@@ -17,12 +14,10 @@ trait Position
      * @var int<1, max>|null
      */
     protected $lineNumber;
-
     /**
      * @var int<0, max>|null
      */
     protected $columnNumber;
-
     /**
      * @return int<1, max>|null
      */
@@ -30,7 +25,6 @@ trait Position
     {
         return $this->lineNumber;
     }
-
     /**
      * @return int<0, max>|null
      */
@@ -38,7 +32,6 @@ trait Position
     {
         return $this->columnNumber;
     }
-
     /**
      * @param int<1, max>|null $lineNumber
      * @param int<0, max>|null $columnNumber
@@ -49,7 +42,6 @@ trait Position
     {
         $this->lineNumber = $lineNumber;
         $this->columnNumber = $columnNumber;
-
         return $this;
     }
 }

@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\ZipException;
-
 /**
  * @param resource $zip_entry
  * @throws ZipException
@@ -17,8 +14,6 @@ function zip_entry_close($zip_entry): void
         throw ZipException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $zip_entry
  * @return int
@@ -34,8 +29,6 @@ function zip_entry_compressedsize($zip_entry): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $zip_entry
  * @return string
@@ -51,8 +44,6 @@ function zip_entry_compressionmethod($zip_entry): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $zip_entry
  * @return int
@@ -68,8 +59,6 @@ function zip_entry_filesize($zip_entry): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $zip_entry
  * @return string
@@ -85,8 +74,6 @@ function zip_entry_name($zip_entry): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $zip_dp
  * @param resource $zip_entry
@@ -102,8 +89,6 @@ function zip_entry_open($zip_dp, $zip_entry, string $mode = "rb"): void
         throw ZipException::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $zip_entry
  * @param int $len

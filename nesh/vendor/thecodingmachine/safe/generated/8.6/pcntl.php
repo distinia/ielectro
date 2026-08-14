@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\PcntlException;
-
 /**
  * @param int|null $process_id
  * @return array
@@ -23,8 +20,6 @@ function pcntl_getcpuaffinity(?int $process_id = null): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param int|null $process_id
  * @param int $mode
@@ -47,8 +42,6 @@ function pcntl_getpriority(?int $process_id = null, int $mode = PRIO_PROCESS): i
     }
     return $safeResult;
 }
-
-
 /**
  * @param int|null $process_id
  * @param array $cpu_ids
@@ -69,8 +62,6 @@ function pcntl_setcpuaffinity(?int $process_id = null, array $cpu_ids = []): voi
         throw PcntlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $priority
  * @param int|null $process_id
@@ -92,8 +83,6 @@ function pcntl_setpriority(int $priority, ?int $process_id = null, int $mode = P
         throw PcntlException::createFromPhpError();
     }
 }
-
-
 /**
  * @throws PcntlException
  *
@@ -106,8 +95,6 @@ function pcntl_signal_dispatch(): void
         throw PcntlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $signal
  * @param callable|int $handler
@@ -123,8 +110,6 @@ function pcntl_signal(int $signal, $handler, bool $restart_syscalls = true): voi
         throw PcntlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $mode
  * @param array $signals
@@ -140,8 +125,6 @@ function pcntl_sigprocmask(int $mode, array $signals, ?array &$old_signals = nul
         throw PcntlException::createFromPhpError();
     }
 }
-
-
 /**
  * @param array $signals
  * @param array|null $info
@@ -160,8 +143,6 @@ function pcntl_sigtimedwait(array $signals, ?array &$info = [], int $seconds = 0
     }
     return $safeResult;
 }
-
-
 /**
  * @param array $signals
  * @param array|null $info

@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\RpminfoException;
-
 /**
  * @param int $tag
  * @throws RpminfoException

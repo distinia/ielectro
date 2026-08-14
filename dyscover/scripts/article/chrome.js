@@ -23,21 +23,17 @@ const SIDEBAR_HTML = `
         <ul class="list" aria-label="Table of contents"></ul>
     </div>
 `;
-
 function upgradeSidebarHeader(sidebar) {
     const header = sidebar.querySelector(".index-sidebar-header");
     if (!header) {
         return;
     }
-
     const title = header.querySelector("h4");
     if (title) {
         title.classList.add("index-sidebar-title");
     }
-
     let actions = header.querySelector(".index-sidebar-actions");
     const editButton = header.querySelector(".index-edit-button");
-
     if (!actions) {
         actions = document.createElement("div");
         actions.className = "index-sidebar-actions";
@@ -48,7 +44,6 @@ function upgradeSidebarHeader(sidebar) {
     } else if (editButton && editButton.parentElement !== actions) {
         actions.prepend(editButton);
     }
-
     if (!header.querySelector(".index-mode-button")) {
         const modeButton = document.createElement("button");
         modeButton.type = "button";
@@ -58,7 +53,6 @@ function upgradeSidebarHeader(sidebar) {
         modeButton.innerHTML = `<i data-icon="file-text"></i>`;
         actions.appendChild(modeButton);
     }
-
     if (!header.querySelector(".index-help-button")) {
         const helpButton = document.createElement("button");
         helpButton.type = "button";
@@ -68,7 +62,6 @@ function upgradeSidebarHeader(sidebar) {
         helpButton.innerHTML = `<span aria-hidden="true">?</span>`;
         actions.prepend(helpButton);
     }
-
     if (!header.querySelector(".index-pdf-button")) {
         const pdfButton = document.createElement("button");
         pdfButton.type = "button";
@@ -83,7 +76,6 @@ function upgradeSidebarHeader(sidebar) {
             actions.appendChild(pdfButton);
         }
     }
-
     if (!header.querySelector(".index-generate-button")) {
         const generateButton = document.createElement("button");
         generateButton.type = "button";
@@ -108,10 +100,8 @@ function upgradeSidebarHeader(sidebar) {
         }
     }
 }
-
 export function ensureArticleChrome() {
     document.body.classList.add("article-page");
-
     let main = document.querySelector(".article-main-content");
     if (!main) {
         main = document.createElement("article");
@@ -126,7 +116,6 @@ export function ensureArticleChrome() {
         `;
         document.body.appendChild(main);
     }
-
     if (!main.querySelector(".article-scroll")) {
         const content = main.querySelector(".content");
         const scroll = document.createElement("div");
@@ -139,7 +128,6 @@ export function ensureArticleChrome() {
             main.appendChild(scroll);
         }
     }
-
     if (!main.querySelector(".article-header")) {
         const title = main.querySelector(".title");
         const header = document.createElement("header");
@@ -157,7 +145,6 @@ export function ensureArticleChrome() {
             main.prepend(header);
         }
     }
-
     let sidebar = document.querySelector(".article-index-sidebar");
     if (!sidebar) {
         sidebar = document.createElement("aside");
@@ -167,18 +154,15 @@ export function ensureArticleChrome() {
     } else {
         upgradeSidebarHeader(sidebar);
     }
-
     if (!document.querySelector(".article-stage")) {
         const shell = document.createElement("main");
         shell.className = "article-shell";
         const stage = document.createElement("div");
         stage.className = "article-stage";
-
         const parent = main.parentNode;
         parent.insertBefore(shell, main);
         stage.append(main, sidebar);
         shell.appendChild(stage);
     }
-
     return { main, sidebar };
 }

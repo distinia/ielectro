@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\Ssh2Exception;
-
 /**
  * @param resource $session
  * @param string $username
@@ -18,8 +15,6 @@ function ssh2_auth_agent($session, string $username): void
         throw Ssh2Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $session
  * @param string $username
@@ -45,8 +40,6 @@ function ssh2_auth_hostbased_file($session, string $username, string $hostname, 
         throw Ssh2Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $session
  * @param string $username
@@ -62,8 +55,6 @@ function ssh2_auth_password($session, string $username, string $password): void
         throw Ssh2Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $session
  * @param string $username
@@ -85,8 +76,6 @@ function ssh2_auth_pubkey_file($session, string $username, string $pubkeyfile, s
         throw Ssh2Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $host
  * @param int $port
@@ -111,8 +100,6 @@ function ssh2_connect(string $host, int $port = 22, ?array $methods = null, ?arr
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $session
  * @throws Ssh2Exception
@@ -126,8 +113,6 @@ function ssh2_disconnect($session): void
         throw Ssh2Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $session
  * @param string $command
@@ -161,8 +146,6 @@ function ssh2_exec($session, string $command, ?string $pty = null, ?array $env =
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $listener
  * @return resource
@@ -178,8 +161,6 @@ function ssh2_forward_accept($listener)
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $session
  * @param int $port
@@ -204,8 +185,6 @@ function ssh2_forward_listen($session, int $port, ?string $host = null, int $max
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $pkey
  * @param string $algoname
@@ -227,8 +206,6 @@ function ssh2_publickey_add($pkey, string $algoname, string $blob, bool $overwri
         throw Ssh2Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $session
  * @return resource
@@ -244,8 +221,6 @@ function ssh2_publickey_init($session)
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $pkey
  * @param string $algoname
@@ -261,8 +236,6 @@ function ssh2_publickey_remove($pkey, string $algoname, string $blob): void
         throw Ssh2Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $session
  * @param string $remote_file
@@ -278,8 +251,6 @@ function ssh2_scp_recv($session, string $remote_file, string $local_file): void
         throw Ssh2Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $session
  * @param string $local_file
@@ -296,8 +267,6 @@ function ssh2_scp_send($session, string $local_file, string $remote_file, int $c
         throw Ssh2Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $channel
  * @throws Ssh2Exception
@@ -311,8 +280,6 @@ function ssh2_send_eof($channel): void
         throw Ssh2Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $sftp
  * @param string $filename
@@ -328,8 +295,6 @@ function ssh2_sftp_chmod($sftp, string $filename, int $mode): void
         throw Ssh2Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $sftp
  * @param string $dirname
@@ -346,8 +311,6 @@ function ssh2_sftp_mkdir($sftp, string $dirname, int $mode = 0777, bool $recursi
         throw Ssh2Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $sftp
  * @param string $from
@@ -363,8 +326,6 @@ function ssh2_sftp_rename($sftp, string $from, string $to): void
         throw Ssh2Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $sftp
  * @param string $dirname
@@ -379,8 +340,6 @@ function ssh2_sftp_rmdir($sftp, string $dirname): void
         throw Ssh2Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $sftp
  * @param string $target
@@ -396,8 +355,6 @@ function ssh2_sftp_symlink($sftp, string $target, string $link): void
         throw Ssh2Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $sftp
  * @param string $filename
@@ -412,8 +369,6 @@ function ssh2_sftp_unlink($sftp, string $filename): void
         throw Ssh2Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $session
  * @return resource
@@ -429,8 +384,6 @@ function ssh2_sftp($session)
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $session
  * @param string $termtype

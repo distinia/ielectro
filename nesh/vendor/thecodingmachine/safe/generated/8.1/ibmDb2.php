@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\IbmDb2Exception;
-
 /**
  * @param resource $connection
  * @param \DB2_AUTOCOMMIT_OFF|\DB2_AUTOCOMMIT_ON $value
@@ -24,8 +21,6 @@ function db2_autocommit($connection, $value = null)
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $stmt
  * @param int $parameter_number
@@ -55,8 +50,6 @@ function db2_bind_param($stmt, int $parameter_number, string $variable_name, ?in
         throw IbmDb2Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $connection
  * @return \stdClass
@@ -72,8 +65,6 @@ function db2_client_info($connection): \stdClass
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $connection
  * @throws IbmDb2Exception
@@ -87,8 +78,6 @@ function db2_close($connection): void
         throw IbmDb2Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $connection
  * @throws IbmDb2Exception
@@ -102,8 +91,6 @@ function db2_commit($connection): void
         throw IbmDb2Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $stmt
  * @param array $parameters
@@ -122,8 +109,6 @@ function db2_execute($stmt, ?array $parameters = null): void
         throw IbmDb2Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $stmt
  * @throws IbmDb2Exception
@@ -137,8 +122,6 @@ function db2_free_result($stmt): void
         throw IbmDb2Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $stmt
  * @throws IbmDb2Exception
@@ -152,8 +135,6 @@ function db2_free_stmt($stmt): void
         throw IbmDb2Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $resource
  * @param string $option
@@ -170,8 +151,6 @@ function db2_get_option($resource, string $option): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $resource
  * @throws IbmDb2Exception
@@ -185,8 +164,6 @@ function db2_pclose($resource): void
         throw IbmDb2Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $connection
  * @throws IbmDb2Exception
@@ -200,8 +177,6 @@ function db2_rollback($connection): void
         throw IbmDb2Exception::createFromPhpError();
     }
 }
-
-
 /**
  * @param resource $connection
  * @return \stdClass
@@ -217,8 +192,6 @@ function db2_server_info($connection): \stdClass
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource $resource
  * @param array $options

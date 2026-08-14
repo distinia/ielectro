@@ -1,7 +1,5 @@
 <?php
-
 namespace Masterminds\HTML5\Parser;
-
 /**
  * The FileInputStream loads a file to be parsed.
  *
@@ -27,7 +25,6 @@ class FileInputStream extends StringInputStream implements InputStream
     {
         // Get the contents of the file.
         $content = file_get_contents($data);
-
         parent::__construct($content, $encoding, $debug);
     }
 }

@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\UrlException;
-
 /**
  * @param string $string
  * @param bool $strict
@@ -20,8 +17,6 @@ function base64_decode(string $string, bool $strict = false): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $url
  * @param bool $associative
@@ -43,8 +38,6 @@ function get_headers(string $url, bool $associative = false, $context = null): a
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @param bool $use_include_path
@@ -61,8 +54,6 @@ function get_meta_tags(string $filename, bool $use_include_path = false): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $url
  * @param int $component

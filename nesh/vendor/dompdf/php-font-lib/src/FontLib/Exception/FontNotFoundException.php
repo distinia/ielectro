@@ -1,7 +1,5 @@
 <?php
-
 namespace FontLib\Exception;
-
 class FontNotFoundException extends \Exception
 {
     public function __construct($fontPath)

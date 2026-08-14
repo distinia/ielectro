@@ -1,7 +1,6 @@
 .tabs {
     width: 100%;
 }
-
 .tabs-list {
     display: flex;
     justify-content: center;
@@ -17,7 +16,6 @@
     border: 1px solid rgba(255, 255, 255, 0.9);
     box-shadow: 0 4px 18px rgba(15, 23, 42, 0.07);
 }
-
 .tab-trigger {
     padding: 0.62rem 1.2rem;
     background: transparent;
@@ -33,30 +31,25 @@
     font-size: 0.88rem;
     color: var(--text-muted);
 }
-
 .tab-trigger:hover {
     color: var(--text-color);
     background: rgba(30, 136, 229, 0.08);
     transform: translateY(-1px);
 }
-
 .tab-trigger.active {
     background: var(--primary-gradient);
     color: #fff;
     box-shadow: 0 6px 18px rgba(21, 101, 192, 0.32);
 }
-
 .tab-trigger:focus-visible {
     outline: none;
     box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.28);
 }
-
 @media (prefers-reduced-motion: reduce) {
     .tab-trigger:hover {
         transform: none;
     }
 }
-
 @media (max-width: 768px) {
     .tabs-list {
         flex-direction: column;
@@ -64,7 +57,6 @@
         border-radius: var(--radius-lg);
         gap: 0.25rem;
     }
-
     .tab-trigger {
         width: 100%;
         padding: 0.55rem 1rem;

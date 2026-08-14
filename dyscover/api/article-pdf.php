@@ -1,7 +1,5 @@
 <?php
-
 namespace Dyscover;
-
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Nesh\Identity;
@@ -9,21 +7,17 @@ use Nesh\Query;
 use Nesh\Request;
 use Nesh\Response;
 use Nesh\Validate;
-
 require_once __DIR__ . '/posts.php';
-
 class ArticlePdfExport
 {
     public static function stream(string $uuid): void
     {
         Request::get();
         Identity::required();
-
         $uuid = trim($uuid);
         if (!Validate::required($uuid)) {
             Response::badRequest('Missing article uuid');
         }
-
         $post = Query::fetch(
             "SELECT p.id, p.user_id, p.uuid, p.title, p.status
             FROM ielectro_dyscover.dyscover_posts p
@@ -32,40 +26,31 @@ class ArticlePdfExport
             LIMIT 1",
             [$uuid]
         );
-
         if (!$post || $post['status'] !== 'active') {
             Response::notFound('Article not found');
         }
-
         if (!self::isOwner((int) $post['user_id'])) {
             Response::forbidden();
         }
-
         $path = PostAssets::articlePath((int) $post['user_id'], (string) $post['uuid']);
         if (!is_file($path)) {
             Response::notFound('Article not found');
         }
-
         $content = (string) file_get_contents($path);
         $title = (string) ($post['title'] ?? 'Article');
         $html = self::buildDocument($title, $content);
-
         if (!is_file(NESH_PATH . '/vendor/autoload.php')) {
             Response::error('PDF export unavailable');
         }
-
         require_once NESH_PATH . '/vendor/autoload.php';
-
         $options = new Options();
         $options->set('isRemoteEnabled', false);
         $options->set('isHtml5ParserEnabled', true);
         $options->set('defaultFont', 'DejaVu Sans');
-
         $dompdf = new Dompdf($options);
         $dompdf->loadHtml($html);
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
-
         $filename = self::fileName($title);
         header('Content-Type: application/pdf');
         header('Content-Disposition: ' . self::contentDisposition($filename));
@@ -73,27 +58,22 @@ class ArticlePdfExport
         echo $dompdf->output();
         exit;
     }
-
     private static function isOwner(int $postUserId): bool
     {
         $accountId = Identity::id();
         if ($accountId === null) {
             return false;
         }
-
         $owner = Query::fetch(
             'SELECT id FROM ielectro_dyscover.dyscover_users WHERE account_id = ? LIMIT 1',
             [$accountId]
         );
-
         return $owner && (int) $owner['id'] === $postUserId;
     }
-
     private static function buildDocument(string $title, string $content): string
     {
         $safeTitle = htmlspecialchars($title, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $body = self::prepareContent($content);
-
         return '<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -106,7 +86,6 @@ class ArticlePdfExport
 </body>
 </html>';
     }
-
     private static function prepareContent(string $html): string
     {
         $html = preg_replace('/<script\b[^>]*>.*?<\/script>/is', '', $html) ?? $html;
@@ -124,16 +103,13 @@ class ArticlePdfExport
         $html = self::simplifyLegendAndPercentage($html);
         $html = self::stripEmptyBlocks($html);
         $html = self::stripEmptyTemplateRows($html);
-
         return self::absolutizeUrls($html);
     }
-
     private static function simplifyLegendAndPercentage(string $html): string
     {
         if (trim($html) === '') {
             return $html;
         }
-
         $doc = new \DOMDocument();
         libxml_use_internal_errors(true);
         $doc->loadHTML(
@@ -141,58 +117,46 @@ class ArticlePdfExport
             LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
         );
         libxml_clear_errors();
-
         $root = $doc->getElementById('pdf-root');
         if (!$root instanceof \DOMElement) {
             return $html;
         }
-
         self::replaceElementsByClass($doc, $root, 'legend', static function (\DOMElement $element): string {
             foreach ($element->getElementsByTagName('*') as $node) {
                 if ($node instanceof \DOMElement && self::hasClass($node, 'legend-text')) {
                     return trim($node->textContent);
                 }
             }
-
             return trim($element->textContent);
         });
-
         self::replaceElementsByClass($doc, $root, 'percentage', static function (\DOMElement $element): string {
             $display = trim((string) $element->getAttribute('data-percentage'));
             if ($display !== '') {
                 return $display;
             }
-
             $value = trim((string) $element->getAttribute('data-value'));
             if ($value === '') {
                 return '';
             }
-
             if (str_contains($value, '/')) {
                 return $value;
             }
-
             $number = (float) $value;
             if (!is_finite($number)) {
                 return $value;
             }
-
             return (string) round($number) . '%';
         });
-
         $result = '';
         foreach ($root->childNodes as $child) {
             $result .= $doc->saveHTML($child);
         }
-
         return $result;
     }
-
     private static function hasClass(\DOMElement $element, string $class): bool
     {
         return preg_match('/\b' . preg_quote($class, '/') . '\b/', $element->getAttribute('class') ?? '') === 1;
     }
-
     private static function replaceElementsByClass(
         \DOMDocument $doc,
         \DOMElement $root,
@@ -207,41 +171,34 @@ class ArticlePdfExport
         if ($nodes === false) {
             return;
         }
-
         $targets = [];
         foreach ($nodes as $node) {
             if ($node instanceof \DOMElement && self::hasClass($node, $className)) {
                 $targets[] = $node;
             }
         }
-
         foreach ($targets as $element) {
             $text = trim((string) $textExtractor($element));
             $parent = $element->parentNode;
             if ($parent === null) {
                 continue;
             }
-
             if ($text === '') {
                 $parent->removeChild($element);
                 continue;
             }
-
             $span = $doc->createElement('span');
             $span->setAttribute('class', 'pdf-text');
             $span->appendChild($doc->createTextNode($text));
             $parent->replaceChild($span, $element);
         }
     }
-
     private static function stripEmptyBlocks(string $html): string
     {
         $html = preg_replace('/^(?:\s|<p[^>]*>\s*(?:<br\s*\/?>)?\s*<\/p>)+/i', '', $html) ?? $html;
         $html = preg_replace('/<p[^>]*>\s*(?:<br\s*\/?>)?\s*<\/p>/i', '', $html) ?? $html;
-
         return $html;
     }
-
     private static function stripEmptyTemplateRows(string $html): string
     {
         return (string) preg_replace_callback(
@@ -253,11 +210,9 @@ class ArticlePdfExport
             $html
         );
     }
-
     private static function absolutizeUrls(string $html): string
     {
         $base = rtrim((string) APP_URL, '/');
-
         return (string) preg_replace_callback(
             '/\s(src|href)=(["\'])([^"\']+)\2/i',
             static function (array $matches) use ($base): string {
@@ -274,13 +229,11 @@ class ArticlePdfExport
                 } elseif (!preg_match('#^https?://#i', $url)) {
                     $url = $base . '/' . ltrim($url, '/');
                 }
-
                 return ' ' . $attr . '=' . $quote . htmlspecialchars($url, ENT_QUOTES, 'UTF-8') . $quote;
             },
             $html
         );
     }
-
     private static function styles(): string
     {
         return <<<'CSS'
@@ -383,7 +336,6 @@ table.template thead th {
 }
 CSS;
     }
-
     private static function fileName(string $title): string
     {
         $base = trim($title);
@@ -391,19 +343,15 @@ CSS;
         if ($base === '') {
             $base = 'Article';
         }
-
         if (strlen($base) > 120) {
             $base = substr($base, 0, 120);
         }
-
         return $base . ' - iElectro Dyscover.pdf';
     }
-
     private static function contentDisposition(string $filename): string
     {
         $ascii = preg_replace('/[^\x20-\x7E]/', '_', $filename) ?? 'Article - iElectro Dyscover.pdf';
         $ascii = str_replace('"', '', $ascii);
-
         return 'attachment; filename="' . $ascii . '"; filename*=UTF-8\'\'' . rawurlencode($filename);
     }
 }

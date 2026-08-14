@@ -1,6 +1,5 @@
 # Enable URL rewriting
 RewriteEngine On
-
 # Allow CORS only from *.ielectro.com
 <IfModule mod_headers.c>
     SetEnvIf Origin "^https://([A-Za-z0-9-]+\.)?ielectro\.com$" CORS_ORIGIN=$0
@@ -11,25 +10,20 @@ RewriteEngine On
         Header always set Access-Control-Allow-Methods "GET, OPTIONS" env=CORS_ORIGIN
     </FilesMatch>
 </IfModule>
-
 <IfModule mod_mime.c>
     AddType image/svg+xml svg svgz
 </IfModule>
-
 # Block sensitive directories
 RewriteRule ^ai(?:/.*)?$ - [F,L,NC]
 RewriteRule ^cli(?:/.*)?$ - [F,L,NC]
 RewriteRule ^src(?:/.*)?$ - [F,L,NC]
 RewriteRule ^vendor(?:/.*)?$ - [F,L,NC]
-
-
 # Block sensitive files
 RewriteRule ^composer\.json$ - [F,L,NC]
 RewriteRule ^composer\.lock$ - [F,L,NC]
 RewriteRule ^\.env(?:\..*)?$ - [F,L,NC]
 RewriteRule ^\.git - [F,L,NC]
 RewriteRule ^\.ht - [F,L,NC]
-
 # Serve existing files
 RewriteCond %{REQUEST_FILENAME} -f
 RewriteRule ^ - [L]

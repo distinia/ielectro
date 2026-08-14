@@ -1,9 +1,6 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\Property;
-
 use Sabberworm\CSS\Comment\Comment;
 use Sabberworm\CSS\Comment\Commentable;
 use Sabberworm\CSS\Comment\CommentContainer;
@@ -17,9 +14,7 @@ use Sabberworm\CSS\Position\Positionable;
 use Sabberworm\CSS\ShortClassNameProvider;
 use Sabberworm\CSS\Value\RuleValueList;
 use Sabberworm\CSS\Value\Value;
-
 use function Safe\preg_match;
-
 /**
  * `Declaration`s just have a string key (the property name) and a 'Value'.
  *
@@ -30,22 +25,18 @@ class Declaration implements Commentable, CSSElement, Positionable
     use CommentContainer;
     use Position;
     use ShortClassNameProvider;
-
     /**
      * @var non-empty-string
      */
     private $propertyName;
-
     /**
      * @var RuleValueList|string|null
      */
     private $value;
-
     /**
      * @var bool
      */
     private $isImportant = false;
-
     /**
      * @param non-empty-string $propertyName
      * @param int<1, max>|null $lineNumber
@@ -56,7 +47,6 @@ class Declaration implements Commentable, CSSElement, Positionable
         $this->propertyName = $propertyName;
         $this->setPosition($lineNumber, $columnNumber);
     }
-
     /**
      * @param list<Comment> $commentsBefore
      *
@@ -90,10 +80,8 @@ class Declaration implements Commentable, CSSElement, Positionable
         while ($parserState->comes(';')) {
             $parserState->consume(';');
         }
-
         return $declaration;
     }
-
     /**
      * Returns a list of delimiters (or separators).
      * The first item is the innermost separator (or, put another way, the highest-precedence operator).
@@ -108,7 +96,6 @@ class Declaration implements Commentable, CSSElement, Positionable
         if (preg_match('/^font($|-)/', $propertyName) === 1) {
             return [',', '/', ' '];
         }
-
         switch ($propertyName) {
             case 'src':
                 return [' ', ','];
@@ -116,7 +103,6 @@ class Declaration implements Commentable, CSSElement, Positionable
                 return [',', ' ', '/'];
         }
     }
-
     /**
      * @param non-empty-string $propertyName
      */
@@ -124,7 +110,6 @@ class Declaration implements Commentable, CSSElement, Positionable
     {
         $this->propertyName = $propertyName;
     }
-
     /**
      * @return non-empty-string
      */
@@ -132,7 +117,6 @@ class Declaration implements Commentable, CSSElement, Positionable
     {
         return $this->propertyName;
     }
-
     /**
      * @param non-empty-string $propertyName
      *
@@ -142,7 +126,6 @@ class Declaration implements Commentable, CSSElement, Positionable
     {
         $this->propertyName = $propertyName;
     }
-
     /**
      * @return non-empty-string
      *
@@ -152,7 +135,6 @@ class Declaration implements Commentable, CSSElement, Positionable
     {
         return $this->propertyName;
     }
-
     /**
      * @return RuleValueList|string|null
      */
@@ -160,7 +142,6 @@ class Declaration implements Commentable, CSSElement, Positionable
     {
         return $this->value;
     }
-
     /**
      * @param RuleValueList|string|null $value
      */
@@ -168,7 +149,6 @@ class Declaration implements Commentable, CSSElement, Positionable
     {
         $this->value = $value;
     }
-
     /**
      * Adds a value to the existing value. Value will be appended if a `RuleValueList` exists of the given type.
      * Otherwise, the existing value will be wrapped by one.
@@ -191,17 +171,14 @@ class Declaration implements Commentable, CSSElement, Positionable
             $this->value->addListComponent($valueItem);
         }
     }
-
     public function setIsImportant(bool $isImportant): void
     {
         $this->isImportant = $isImportant;
     }
-
     public function getIsImportant(): bool
     {
         return $this->isImportant;
     }
-
     /**
      * @return non-empty-string
      */
@@ -220,7 +197,6 @@ class Declaration implements Commentable, CSSElement, Positionable
         $result .= ';';
         return $result;
     }
-
     /**
      * @return array<string, bool|int|float|string|array<mixed>|null>
      *

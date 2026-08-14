@@ -1,7 +1,6 @@
 import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
 import { Api } from "../core/api.js";
 import { TeamCard } from "./team-card.js";
-
 export class Team {
     constructor() {
         this.container = document.querySelector(".team-grid");

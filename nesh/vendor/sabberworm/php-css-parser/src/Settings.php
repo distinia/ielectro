@@ -1,9 +1,6 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS;
-
 /**
  * Parser settings class.
  *
@@ -20,31 +17,26 @@ class Settings
      * @var bool
      */
     private $multibyteSupport;
-
     /**
      * The default charset for the CSS if no `@charset` declaration is found. Defaults to utf-8.
      *
      * @var non-empty-string
      */
     private $defaultCharset = 'utf-8';
-
     /**
      * Whether the parser silently ignore invalid rules instead of choking on them.
      *
      * @var bool
      */
     private $lenientParsing = true;
-
     private function __construct()
     {
         $this->multibyteSupport = \extension_loaded('mbstring');
     }
-
     public static function create(): self
     {
         return new Settings();
     }
-
     /**
      * Enables/disables multi-byte string support.
      *
@@ -56,10 +48,8 @@ class Settings
     public function withMultibyteSupport(bool $multibyteSupport = true): self
     {
         $this->multibyteSupport = $multibyteSupport;
-
         return $this;
     }
-
     /**
      * Sets the charset to be used if the CSS does not contain an `@charset` declaration.
      *
@@ -70,10 +60,8 @@ class Settings
     public function withDefaultCharset(string $defaultCharset): self
     {
         $this->defaultCharset = $defaultCharset;
-
         return $this;
     }
-
     /**
      * Configures whether the parser should silently ignore invalid rules.
      *
@@ -82,10 +70,8 @@ class Settings
     public function withLenientParsing(bool $usesLenientParsing = true): self
     {
         $this->lenientParsing = $usesLenientParsing;
-
         return $this;
     }
-
     /**
      * Configures the parser to choke on invalid rules.
      *
@@ -95,7 +81,6 @@ class Settings
     {
         return $this->withLenientParsing(false);
     }
-
     /**
      * @internal
      */
@@ -103,7 +88,6 @@ class Settings
     {
         return $this->multibyteSupport;
     }
-
     /**
      * @return non-empty-string
      *
@@ -113,7 +97,6 @@ class Settings
     {
         return $this->defaultCharset;
     }
-
     /**
      * @internal
      */

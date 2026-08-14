@@ -1,12 +1,10 @@
 export default class LazyMedia {
     static observer = null;
-
     static skipSelectors = [
         ".profile-edit-avatar-preview",
         ".profile-avatar-crop-image",
         "[data-eager]",
     ];
-
     static bind(root = document) {
         LazyMedia.apply(root);
         if (LazyMedia.observer || typeof MutationObserver === "undefined") {
@@ -25,7 +23,6 @@ export default class LazyMedia {
             subtree: true,
         });
     }
-
     static shouldSkip(el) {
         if (!el || el.nodeType !== 1) return true;
         if (el.dataset?.lazyApplied === "1") return true;
@@ -35,11 +32,9 @@ export default class LazyMedia {
         }
         return false;
     }
-
     static mark(el) {
         el.dataset.lazyApplied = "1";
     }
-
     static apply(root) {
         if (!root) return;
         if (root.nodeType === 1) {
@@ -57,21 +52,18 @@ export default class LazyMedia {
             if (!LazyMedia.shouldSkip(el)) LazyMedia.iframe(el);
         });
     }
-
     static img(el) {
         if (!el.hasAttribute("loading")) {
             el.loading = "lazy";
         }
         LazyMedia.mark(el);
     }
-
     static iframe(el) {
         if (!el.hasAttribute("loading")) {
             el.loading = "lazy";
         }
         LazyMedia.mark(el);
     }
-
     static enrichHtml(html) {
         if (typeof html !== "string" || html === "") return html;
         let out = html.replace(

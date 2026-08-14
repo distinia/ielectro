@@ -4845,7 +4845,6 @@ U 65533 ; WX 1113 ; N uniFFFD ; G 4821
 EndCharMetrics
 StartKernData 
 StartKernPairs 1921
-
 KPX dollar ampersand -63
 KPX dollar two -63
 KPX dollar seven -196
@@ -4898,7 +4897,6 @@ KPX dollar uni01DD -112
 KPX dollar uni01F0 -63
 KPX dollar uni01F4 -235
 KPX dollar uni01F5 -149
-
 KPX percent nine -83
 KPX percent colon -112
 KPX percent less -112
@@ -4906,19 +4904,16 @@ KPX percent Kcommaaccent -112
 KPX percent kgreenlandic -112
 KPX percent lacute -112
 KPX percent uni01F4 -112
-
 KPX ampersand six -73
 KPX ampersand Gcircumflex -73
 KPX ampersand Gbreve -73
 KPX ampersand Gdotaccent -73
 KPX ampersand Gcommaaccent -73
 KPX ampersand uni01DA -73
-
 KPX quotesingle less -159
 KPX quotesingle kgreenlandic -159
 KPX quotesingle lacute -159
 KPX quotesingle uni01F4 -159
-
 KPX parenright dollar -264
 KPX parenright D -235
 KPX parenright H -159
@@ -4979,12 +4974,10 @@ KPX parenright uni01AD -159
 KPX parenright Uhorn -159
 KPX parenright uni01F1 -159
 KPX parenright uni01F5 -188
-
 KPX asterisk seven -36
 KPX asterisk less -83
 KPX asterisk Hbar -36
 KPX asterisk lacute -83
-
 KPX period ampersand -131
 KPX period two -131
 KPX period eight -73
@@ -5016,7 +5009,6 @@ KPX period Ebreve -178
 KPX period ebreve -112
 KPX period Idot -73
 KPX period dotlessi -112
-
 KPX slash two -73
 KPX slash seven -339
 KPX slash eight -112
@@ -5030,12 +5022,10 @@ KPX slash Ebreve -73
 KPX slash Hbar -339
 KPX slash Idot -112
 KPX slash lacute -319
-
 KPX two nine -73
 KPX two semicolon -73
 KPX two less -149
 KPX two lacute -149
-
 KPX three dollar -188
 KPX three D -131
 KPX three H -55
@@ -5063,8 +5053,6 @@ KPX three ecaron -63
 KPX three gdotaccent -73
 KPX three gcommaaccent -73
 KPX three dotlessi -73
-
-
 KPX five seven -92
 KPX five less -188
 KPX five H -102
@@ -5092,11 +5080,9 @@ KPX five ebreve -102
 KPX five Hbar -92
 KPX five dotlessi -112
 KPX five lacute -188
-
 KPX six six -73
 KPX six Gdotaccent -73
 KPX six Gcommaaccent -73
-
 KPX seven dollar -159
 KPX seven seven 47
 KPX seven D -243
@@ -5142,9 +5128,7 @@ KPX seven gdotaccent -243
 KPX seven gcommaaccent -243
 KPX seven Hbar 47
 KPX seven dotlessi -264
-
 KPX eight dollar -92
-
 KPX nine dollar -139
 KPX nine two -36
 KPX nine D -159
@@ -5177,7 +5161,6 @@ KPX nine Yacute -149
 KPX nine Ebreve -45
 KPX nine ebreve -149
 KPX nine dotlessi -149
-
 KPX colon dollar -73
 KPX colon D -139
 KPX colon H -131
@@ -5204,7 +5187,6 @@ KPX colon Yacute -131
 KPX colon ebreve -112
 KPX colon edotaccent -120
 KPX colon ecaron -120
-
 KPX semicolon ampersand -73
 KPX semicolon two -73
 KPX semicolon H -131
@@ -5216,7 +5198,6 @@ KPX semicolon Egrave -73
 KPX semicolon Icircumflex -73
 KPX semicolon Yacute -131
 KPX semicolon Ebreve -112
-
 KPX less dollar -196
 KPX less ampersand -73
 KPX less two -73
@@ -5251,13 +5232,9 @@ KPX less Yacute -264
 KPX less Ebreve -120
 KPX less ebreve -264
 KPX less dotlessi -225
-
-
 KPX D backslash -63
 KPX D questiondown -63
 KPX D Aacute -63
-
-
 KPX N H -73
 KPX N R -73
 KPX N ordfeminine -73
@@ -5272,37 +5249,24 @@ KPX N cedilla -73
 KPX N ordmasculine -45
 KPX N Yacute -73
 KPX N ebreve -73
-
-
-
-
-
 KPX cent backslash -63
 KPX cent questiondown -63
 KPX cent Aacute -63
-
 KPX sterling backslash -63
 KPX sterling questiondown -63
 KPX sterling Aacute -63
-
 KPX currency backslash -63
 KPX currency questiondown -63
 KPX currency Aacute -63
-
 KPX yen backslash -63
 KPX yen questiondown -63
 KPX yen Aacute -63
-
 KPX brokenbar backslash -63
 KPX brokenbar questiondown -63
 KPX brokenbar Aacute -63
-
 KPX section backslash -63
 KPX section questiondown -63
 KPX section Aacute -63
-
-
-
 KPX Acircumflex ampersand -63
 KPX Acircumflex two -63
 KPX Acircumflex seven -196
@@ -5355,7 +5319,6 @@ KPX Acircumflex uni01DD -112
 KPX Acircumflex uni01F0 -63
 KPX Acircumflex uni01F4 -235
 KPX Acircumflex uni01F5 -149
-
 KPX Adieresis ampersand -63
 KPX Adieresis two -63
 KPX Adieresis seven -196
@@ -5408,7 +5371,6 @@ KPX Adieresis uni01DD -112
 KPX Adieresis uni01F0 -63
 KPX Adieresis uni01F4 -235
 KPX Adieresis uni01F5 -149
-
 KPX AE ampersand -63
 KPX AE two -63
 KPX AE seven -196
@@ -5461,50 +5423,42 @@ KPX AE uni01DD -112
 KPX AE uni01F0 -63
 KPX AE uni01F4 -235
 KPX AE uni01F5 -149
-
 KPX Egrave six -73
 KPX Egrave Gcircumflex -73
 KPX Egrave Gbreve -73
 KPX Egrave Gdotaccent -73
 KPX Egrave Gcommaaccent -73
 KPX Egrave uni01DA -73
-
 KPX Ecircumflex six -73
 KPX Ecircumflex Gcircumflex -73
 KPX Ecircumflex Gbreve -73
 KPX Ecircumflex Gdotaccent -73
 KPX Ecircumflex Gcommaaccent -73
 KPX Ecircumflex uni01DA -73
-
 KPX Igrave six -73
 KPX Igrave Gcircumflex -73
 KPX Igrave Gbreve -73
 KPX Igrave Gdotaccent -73
 KPX Igrave Gcommaaccent -73
 KPX Igrave uni01DA -73
-
 KPX Icircumflex six -73
 KPX Icircumflex Gcircumflex -73
 KPX Icircumflex Gbreve -73
 KPX Icircumflex Gdotaccent -73
 KPX Icircumflex Gcommaaccent -73
 KPX Icircumflex uni01DA -73
-
 KPX Eth less -159
 KPX Eth kgreenlandic -159
 KPX Eth lacute -159
 KPX Eth uni01F4 -159
-
 KPX Ograve less -159
 KPX Ograve kgreenlandic -159
 KPX Ograve lacute -159
 KPX Ograve uni01F4 -159
-
 KPX agrave seven -36
 KPX agrave less -83
 KPX agrave Hbar -36
 KPX agrave lacute -83
-
 KPX ucircumflex two -73
 KPX ucircumflex seven -339
 KPX ucircumflex eight -112
@@ -5518,7 +5472,6 @@ KPX ucircumflex Ebreve -73
 KPX ucircumflex Hbar -339
 KPX ucircumflex Idot -112
 KPX ucircumflex lacute -319
-
 KPX ydieresis two -73
 KPX ydieresis seven -339
 KPX ydieresis eight -112
@@ -5532,9 +5485,7 @@ KPX ydieresis Ebreve -73
 KPX ydieresis Hbar -339
 KPX ydieresis Idot -112
 KPX ydieresis lacute -319
-
 KPX Abreve O -8
-
 KPX abreve two -73
 KPX abreve seven -339
 KPX abreve eight -73
@@ -5548,7 +5499,6 @@ KPX abreve Ebreve -73
 KPX abreve Hbar -339
 KPX abreve Idot -73
 KPX abreve lacute -319
-
 KPX Edotaccent seven -92
 KPX Edotaccent less -188
 KPX Edotaccent H -102
@@ -5576,8 +5526,6 @@ KPX Edotaccent ebreve -102
 KPX Edotaccent Hbar -92
 KPX Edotaccent dotlessi -112
 KPX Edotaccent lacute -188
-
-
 KPX Ecaron seven -92
 KPX Ecaron less -188
 KPX Ecaron H -102
@@ -5605,16 +5553,12 @@ KPX Ecaron ebreve -102
 KPX Ecaron Hbar -92
 KPX Ecaron dotlessi -112
 KPX Ecaron lacute -188
-
-
 KPX Gdotaccent six -73
 KPX Gdotaccent Gdotaccent -73
 KPX Gdotaccent Gcommaaccent -73
-
 KPX Gcommaaccent six -73
 KPX Gcommaaccent Gdotaccent -73
 KPX Gcommaaccent Gcommaaccent -73
-
 KPX Hbar dollar -159
 KPX Hbar seven 47
 KPX Hbar D -243
@@ -5660,12 +5604,9 @@ KPX Hbar gdotaccent -243
 KPX Hbar gcommaaccent -243
 KPX Hbar Hbar 47
 KPX Hbar dotlessi -264
-
 KPX hbar Hbar -112
-
 KPX Idot dollar -92
 KPX Idot Idot -92
-
 KPX lacute dollar -196
 KPX lacute ampersand -73
 KPX lacute two -73
@@ -5700,8 +5641,6 @@ KPX lacute Yacute -264
 KPX lacute Ebreve -120
 KPX lacute ebreve -264
 KPX lacute dotlessi -225
-
-
 KPX uni027D dollar -272
 KPX uni027D hyphen -92
 KPX uni027D nine 38

@@ -1,17 +1,14 @@
 import { App, Api, Request } from "../core/index.js";
-
 export default class HomePanel {
     formatNumber(value) {
         return new Intl.NumberFormat("en-US").format(Number(value) || 0);
     }
-
     formatPercent(value) {
         const num = Number(value);
         if (!Number.isFinite(num)) return "—";
         const sign = num > 0 ? "+" : "";
         return `${sign}${num.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
     }
-
     formatDate(value) {
         if (!value) return "—";
         const date = new Date(value);
@@ -22,7 +19,6 @@ export default class HomePanel {
             year: "numeric",
         });
     }
-
     formatRelative(value) {
         if (!value) return "—";
         const date = new Date(value);
@@ -37,7 +33,6 @@ export default class HomePanel {
         if (days < 7) return `${days}d ago`;
         return this.formatDate(value);
     }
-
     trendValue(value) {
         const num = Number(value);
         if (!Number.isFinite(num)) {
@@ -51,7 +46,6 @@ export default class HomePanel {
         }
         return `<span class="dash-trend dash-trend-neutral">0.00%</span>`;
     }
-
     lineChart(series, className = "dash-line-chart") {
         const max = Math.max(...series.map((item) => item.count), 1);
         const tickCount = 4;
@@ -82,7 +76,6 @@ export default class HomePanel {
             </div>
         </div>`;
     }
-
     renderViewsChart(viewsSeries, availableMonths = []) {
         const views = viewsSeries?.views || [];
         const month = viewsSeries?.month || "";
@@ -94,7 +87,6 @@ export default class HomePanel {
                     `<option value="${App.esc(item.value)}"${item.value === month ? " selected" : ""}>${App.esc(item.label)}</option>`,
             )
             .join("");
-
         return `<section class="dash-card dash-panel dash-panel-wide dash-chart-panel">
                 <div class="dash-panel-head">
                     <div>
@@ -111,7 +103,6 @@ export default class HomePanel {
                 ${views.length ? this.lineChart(views, "dash-line-chart dash-line-chart-large") : `<p class="admin-muted">No page views recorded for this month yet.</p>`}
             </section>`;
     }
-
     barChart(series, className = "dash-bars") {
         const max = Math.max(...series.map((item) => item.count), 1);
         return `<div class="${className}">${series
@@ -124,7 +115,6 @@ export default class HomePanel {
             )
             .join("")}</div>`;
     }
-
     avatar(user, size = "") {
         const cls = size ? ` dash-avatar ${size}` : " dash-avatar";
         if (user?.avatar) {
@@ -132,7 +122,6 @@ export default class HomePanel {
         }
         return `<span class="${cls.trim()}">${App.esc(user?.initials || "?")}</span>`;
     }
-
     trendCard(title, rows) {
         return `<article class="dash-card dash-trend-card">
             <header class="dash-trend-card-head"><i data-icon="bar-chart-2"></i><span>${App.esc(title)}</span></header>
@@ -147,7 +136,6 @@ export default class HomePanel {
                 .join("")}</div>
         </article>`;
     }
-
     render(data) {
         const overview = data?.overview || {};
         const content = data?.content || {};
@@ -160,7 +148,6 @@ export default class HomePanel {
         const recentAccounts = data?.recent_accounts || [];
         const recentDyscover = data?.recent_dyscover || [];
         const signupTotal = signups.reduce((sum, item) => sum + item.count, 0);
-
         return `
         <div class="dash-grid dash-kpis">
             <article class="dash-card dash-kpi">
@@ -187,7 +174,6 @@ export default class HomePanel {
                 </div>
             </article>
         </div>
-
         <div class="dash-grid dash-trends">
             ${this.trendCard("Previous week trend", [
                 { label: "www page views vs previous week", value: trends.week?.views },
@@ -196,10 +182,8 @@ export default class HomePanel {
                 { label: "www page views vs previous month", value: trends.month?.views },
             ])}
         </div>
-
         <div class="dash-grid dash-main">
             ${this.renderViewsChart(viewsSeries, availableMonths)}
-
             <section class="dash-card dash-panel">
                 <div class="dash-panel-head">
                     <div>
@@ -232,7 +216,6 @@ export default class HomePanel {
                 }
             </section>
         </div>
-
         <div class="dash-grid dash-secondary">
             <section class="dash-card dash-panel">
                 <div class="dash-panel-head">
@@ -255,7 +238,6 @@ export default class HomePanel {
                         : `<p class="admin-muted">No accounts yet.</p>`
                 }
             </section>
-
             <section class="dash-card dash-panel">
                 <div class="dash-panel-head">
                     <h2>iElectro content</h2>
@@ -281,7 +263,6 @@ export default class HomePanel {
                 </div>
             </section>
         </div>
-
         <section class="dash-card dash-panel">
             <div class="dash-panel-head">
                 <h2>Recent Dyscover activity</h2>
@@ -305,7 +286,6 @@ export default class HomePanel {
             }
         </section>`;
     }
-
     bindChartFilter(root) {
         const select = root.querySelector(".dash-month-select");
         if (!select) return;
@@ -332,14 +312,11 @@ export default class HomePanel {
         });
         select.dataset.previous = select.value;
     }
-
     async run() {
         document.body.classList.add("admin-page-dashboard");
         const root = document.querySelector(".dashboard-root");
         if (!root) return;
-
         root.innerHTML = `<div class="dash-loading">Loading analytics…</div>`;
-
         try {
             const res = await Request.get("analytics");
             const data = Api.record(res);

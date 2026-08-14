@@ -13,7 +13,6 @@ export class AvatarCrop {
         this.naturalW = 0;
         this.naturalH = 0;
     }
-
     bind() {
         const zoom = this.root.querySelector(".avatar-crop-zoom");
         this.fit();
@@ -50,7 +49,6 @@ export class AvatarCrop {
             this.setZoom(Number(zoom.value) || 1);
         });
     }
-
     fit() {
         this.naturalW = this.image.naturalWidth;
         this.naturalH = this.image.naturalHeight;
@@ -67,11 +65,9 @@ export class AvatarCrop {
         this.clampOffset();
         this.applyTransform();
     }
-
     scale() {
         return this.baseScale * this.zoom;
     }
-
     setZoom(nextZoom, clientX = null, clientY = null) {
         const prevScale = this.scale();
         this.zoom = Math.min(3, Math.max(1, nextZoom));
@@ -89,7 +85,6 @@ export class AvatarCrop {
         this.clampOffset();
         this.applyTransform();
     }
-
     clampOffset() {
         const drawW = this.naturalW * this.scale();
         const drawH = this.naturalH * this.scale();
@@ -98,12 +93,10 @@ export class AvatarCrop {
         this.offsetX = Math.min(maxX, Math.max(-maxX, this.offsetX));
         this.offsetY = Math.min(maxY, Math.max(-maxY, this.offsetY));
     }
-
     applyTransform() {
         const s = this.scale();
         this.image.style.transform = `translate(calc(-50% + ${this.offsetX}px), calc(-50% + ${this.offsetY}px)) scale(${s})`;
     }
-
     async toBlob(size = 512) {
         const canvas = document.createElement("canvas");
         canvas.width = size;

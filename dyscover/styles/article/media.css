@@ -77,19 +77,16 @@ figure.video {
     border-radius: 12px;
     box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
 }
-
 .video-left,
 figure.video.video-left {
     float: left;
     margin: 0.5em 1.5em 1em 0;
 }
-
 .video-right,
 figure.video.video-right {
     float: right;
     margin: 0.5em 0 1em 1.5em;
 }
-
 figure.video video,
 .video video,
 video.video {
@@ -101,18 +98,15 @@ video.video {
     background: #000;
     object-fit: contain;
 }
-
 figure.video.video-wide {
     clear: both;
     float: none;
     max-width: min(100%, 720px);
     width: 100%;
 }
-
 figure.video.video-wide video {
     max-height: 420px;
 }
-
 figure.video figcaption,
 .video figcaption {
     padding-top: 0.65rem;
@@ -121,7 +115,6 @@ figure.video figcaption,
     font-size: 0.88rem;
     font-style: italic;
 }
-
 .audio,
 audio.audio,
 .content audio {
@@ -135,30 +128,24 @@ audio.audio,
     background: linear-gradient(180deg, #f8fafc 0%, #fff 100%);
     border: 1px solid rgba(15, 23, 42, 0.08);
 }
-
 .media-openable {
     cursor: pointer;
 }
-
 img.media-openable,
 video.media-openable,
 audio.media-openable {
     cursor: pointer;
 }
-
 .image img.media-openable {
     cursor: pointer;
 }
-
 .image img.media-openable:hover {
     transform: scale(1.03);
     filter: brightness(1.05);
 }
-
 .media-openable:hover {
     box-shadow: 0 14px 34px rgba(15, 23, 42, 0.12);
 }
-
 .media-box {
     display: none;
 }

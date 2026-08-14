@@ -1,16 +1,13 @@
 import { Alert, Icons } from "../core/index.js";
 import { Select } from "./select.js";
-
 export class ReplaceText {
     static list = new Map();
-
     constructor() {
         this.box = null;
         this.findInput = null;
         this.replaceInput = null;
         this.countEl = null;
     }
-
     static init() {
         const existing = document.querySelector(".find-replace-bar");
         if (existing) {
@@ -19,7 +16,6 @@ export class ReplaceText {
         }
         void ReplaceText.open();
     }
-
     static async open() {
         const instance = new ReplaceText();
         await instance.create();
@@ -27,7 +23,6 @@ export class ReplaceText {
             ReplaceText.list.set(instance.box, instance);
         }
     }
-
     async create() {
         const main = document.querySelector(".article-main-content");
         this.box = document.createElement("div");
@@ -60,18 +55,15 @@ export class ReplaceText {
                 </button>
             </div>
         `;
-
         const instruments = main?.querySelector(".instruments");
         if (instruments) {
             instruments.insertAdjacentElement("afterend", this.box);
         } else {
             main?.prepend(this.box);
         }
-
         this.findInput = this.box.querySelector(".find-input");
         this.replaceInput = this.box.querySelector(".replace-input");
         this.countEl = this.box.querySelector(".find-replace-count");
-
         this.findInput.addEventListener("input", () => this.scheduleHighlight());
         this.findInput.addEventListener("keydown", (e) => {
             if (e.key === "Enter") {
@@ -97,11 +89,9 @@ export class ReplaceText {
             this.replaceAll();
         this.box.querySelector(".find-replace-close").onclick = () =>
             this.closeEditing();
-
         await Icons.load(this.box);
         requestAnimationFrame(() => this.findInput?.focus());
     }
-
     scheduleHighlight() {
         clearTimeout(this._highlightTimer);
         this._highlightTimer = setTimeout(() => {
@@ -114,14 +104,12 @@ export class ReplaceText {
             this.updateCount(this.highlight(find));
         }, 100);
     }
-
     static suspendForTextMode() {
         ReplaceText.list.forEach((instance) => {
             clearTimeout(instance._highlightTimer);
             instance.clearHighlights();
         });
     }
-
     static resumeFromTextMode() {
         ReplaceText.list.forEach((instance) => {
             if (instance.findInput?.value.trim()) {
@@ -129,7 +117,6 @@ export class ReplaceText {
             }
         });
     }
-
     closeEditing() {
         clearTimeout(this._highlightTimer);
         this.clearHighlights();
@@ -142,11 +129,9 @@ export class ReplaceText {
         this.replaceInput = null;
         this.countEl = null;
     }
-
     content() {
         return Select.container();
     }
-
     textNodes(element) {
         const nodes = [];
         const walk = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
@@ -156,7 +141,6 @@ export class ReplaceText {
         }
         return nodes;
     }
-
     validNode(node) {
         let parent = node.parentElement;
         while (parent) {
@@ -170,11 +154,9 @@ export class ReplaceText {
         }
         return true;
     }
-
     escape(text) {
         return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     }
-
     clearHighlights() {
         const content = this.content();
         if (!content) {
@@ -189,7 +171,6 @@ export class ReplaceText {
             parent.normalize();
         });
     }
-
     highlight(findText) {
         const content = this.content();
         if (!content || !findText) {
@@ -200,7 +181,6 @@ export class ReplaceText {
             this.validNode(node),
         );
         let count = 0;
-
         nodes.forEach((node) => {
             const text = node.textContent;
             if (!text || !regex.test(text)) {
@@ -234,10 +214,8 @@ export class ReplaceText {
             }
             node.parentNode?.replaceChild(fragment, node);
         });
-
         return count;
     }
-
     updateCount(count) {
         if (!this.countEl) {
             return;
@@ -249,7 +227,6 @@ export class ReplaceText {
         this.countEl.textContent =
             count === 0 ? "No matches" : `${count} match${count === 1 ? "" : "es"}`;
     }
-
     replaceAll() {
         if (!this.box) {
             return;
@@ -260,19 +237,16 @@ export class ReplaceText {
             Alert.error("Please enter text to find");
             return;
         }
-
         this.clearHighlights();
         const content = this.content();
         if (!content) {
             return;
         }
-
         const nodes = this.textNodes(content).filter((node) =>
             this.validNode(node),
         );
         const regex = new RegExp(this.escape(find), "gi");
         let count = 0;
-
         nodes.forEach((node) => {
             const matches = node.textContent.match(regex);
             if (!matches) {
@@ -281,7 +255,6 @@ export class ReplaceText {
             count += matches.length;
             node.textContent = node.textContent.replace(regex, replace);
         });
-
         if (count > 0) {
             this.scheduleHighlight();
         } else {

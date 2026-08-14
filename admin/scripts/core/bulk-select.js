@@ -1,18 +1,15 @@
 import { Alert } from "./alert.js";
-
 export class BulkSelect {
     constructor(onChange = null) {
         this.ids = new Set();
         this.onChange = onChange;
     }
-
     toggle(id, checked) {
         const key = String(id);
         if (checked) this.ids.add(key);
         else this.ids.delete(key);
         this.onChange?.(this);
     }
-
     setAll(ids, checked) {
         this.ids.clear();
         if (checked) {
@@ -20,25 +17,20 @@ export class BulkSelect {
         }
         this.onChange?.(this);
     }
-
     clear() {
         this.ids.clear();
         this.onChange?.(this);
     }
-
     has(id) {
         return this.ids.has(String(id));
     }
-
     size() {
         return this.ids.size;
     }
-
     values() {
         return [...this.ids];
     }
 }
-
 export function bindBulkToolbar(bulk, deleteBtnSelector = ".admin-action-bulk-delete") {
     const update = () => {
         const btn = document.querySelector(deleteBtnSelector);
@@ -48,7 +40,6 @@ export function bindBulkToolbar(bulk, deleteBtnSelector = ".admin-action-bulk-de
     update();
     return update;
 }
-
 export async function bulkDeleteRows(bulk, deleteOne, confirmLabel) {
     const ids = bulk.values();
     if (!ids.length) return false;

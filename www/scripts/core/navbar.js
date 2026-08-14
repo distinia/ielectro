@@ -1,5 +1,4 @@
 import { Site } from "./site.js";
-
 export class Navbar {
     static links = [
         { slug: "home", href: "/", label: "Home" },

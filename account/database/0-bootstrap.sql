@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS `ielectro_account`.`account_activity` (
   `action` ENUM(
     'register',
     'login',
+    'login_failed',
     'logout',
     'email_verified',
     'email_changed',

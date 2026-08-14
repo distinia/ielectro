@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\ImapException;
-
 /**
  * @param string $string
  * @return string
@@ -19,8 +16,6 @@ function imap_8bit(string $string): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param string $folder
@@ -44,8 +39,6 @@ function imap_append(\IMAP\Connection $imap, string $folder, string $message, ?s
         throw ImapException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $string
  * @return string
@@ -61,8 +54,6 @@ function imap_base64(string $string): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $string
  * @return string
@@ -78,8 +69,6 @@ function imap_binary(string $string): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param int $message_num
@@ -97,8 +86,6 @@ function imap_body(\IMAP\Connection $imap, int $message_num, int $flags = 0): st
     }
     return $safeResult;
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param int $message_num
@@ -116,8 +103,6 @@ function imap_bodystruct(\IMAP\Connection $imap, int $message_num, string $secti
     }
     return $safeResult;
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @return \stdClass
@@ -133,8 +118,6 @@ function imap_check(\IMAP\Connection $imap): \stdClass
     }
     return $safeResult;
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param string $sequence
@@ -149,8 +132,6 @@ function imap_clearflag_full(\IMAP\Connection $imap, string $sequence, string $f
     $safeResult = \imap_clearflag_full($imap, $sequence, $flag, $options);
     return $safeResult;
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param int $flags
@@ -163,8 +144,6 @@ function imap_close(\IMAP\Connection $imap, int $flags = 0): bool
     $safeResult = \imap_close($imap, $flags);
     return $safeResult;
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param string $mailbox
@@ -179,8 +158,6 @@ function imap_createmailbox(\IMAP\Connection $imap, string $mailbox): void
         throw ImapException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param string $mailbox
@@ -195,8 +172,6 @@ function imap_deletemailbox(\IMAP\Connection $imap, string $mailbox): void
         throw ImapException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param string $sequence
@@ -214,8 +189,6 @@ function imap_fetch_overview(\IMAP\Connection $imap, string $sequence, int $flag
     }
     return $safeResult;
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param int $message_num
@@ -234,8 +207,6 @@ function imap_fetchbody(\IMAP\Connection $imap, int $message_num, string $sectio
     }
     return $safeResult;
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param int $message_num
@@ -253,8 +224,6 @@ function imap_fetchheader(\IMAP\Connection $imap, int $message_num, int $flags =
     }
     return $safeResult;
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param int $message_num
@@ -273,8 +242,6 @@ function imap_fetchmime(\IMAP\Connection $imap, int $message_num, string $sectio
     }
     return $safeResult;
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param int $message_num
@@ -292,8 +259,6 @@ function imap_fetchstructure(\IMAP\Connection $imap, int $message_num, int $flag
     }
     return $safeResult;
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param int $flags
@@ -306,8 +271,6 @@ function imap_gc(\IMAP\Connection $imap, int $flags): bool
     $safeResult = \imap_gc($imap, $flags);
     return $safeResult;
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param string $mailbox
@@ -324,8 +287,6 @@ function imap_getacl(\IMAP\Connection $imap, string $mailbox): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param string $reference
@@ -343,8 +304,6 @@ function imap_getmailboxes(\IMAP\Connection $imap, string $reference, string $pa
     }
     return $safeResult;
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param string $reference
@@ -362,8 +321,6 @@ function imap_getsubscribed(\IMAP\Connection $imap, string $reference, string $p
     }
     return $safeResult;
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param int $message_num
@@ -382,8 +339,6 @@ function imap_headerinfo(\IMAP\Connection $imap, int $message_num, int $from_len
     }
     return $safeResult;
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @return array
@@ -399,8 +354,6 @@ function imap_headers(\IMAP\Connection $imap): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param string $reference
@@ -419,8 +372,6 @@ function imap_listscan(\IMAP\Connection $imap, string $reference, string $patter
     }
     return $safeResult;
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param string $reference
@@ -438,8 +389,6 @@ function imap_lsub(\IMAP\Connection $imap, string $reference, string $pattern): 
     }
     return $safeResult;
 }
-
-
 /**
  * @param array $envelope
  * @param array $bodies
@@ -456,8 +405,6 @@ function imap_mail_compose(array $envelope, array $bodies): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param string $message_nums
@@ -474,8 +421,6 @@ function imap_mail_copy(\IMAP\Connection $imap, string $message_nums, string $ma
         throw ImapException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param string $message_nums
@@ -492,8 +437,6 @@ function imap_mail_move(\IMAP\Connection $imap, string $message_nums, string $ma
         throw ImapException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $to
  * @param string $subject
@@ -523,8 +466,6 @@ function imap_mail(string $to, string $subject, string $message, ?string $additi
         throw ImapException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @return \stdClass|false
@@ -536,8 +477,6 @@ function imap_mailboxmsginfo(\IMAP\Connection $imap)
     $safeResult = \imap_mailboxmsginfo($imap);
     return $safeResult;
 }
-
-
 /**
  * @param string $string
  * @return array
@@ -553,8 +492,6 @@ function imap_mime_header_decode(string $string): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $string
  * @return string
@@ -570,8 +507,6 @@ function imap_mutf7_to_utf8(string $string): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @return int
@@ -587,8 +522,6 @@ function imap_num_msg(\IMAP\Connection $imap): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $mailbox
  * @param string $user
@@ -609,8 +542,6 @@ function imap_open(string $mailbox, string $user, string $password, int $flags =
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $string
  * @return string
@@ -626,8 +557,6 @@ function imap_qprint(string $string): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param string $from
@@ -643,8 +572,6 @@ function imap_renamemailbox(\IMAP\Connection $imap, string $from, string $to): v
         throw ImapException::createFromPhpError();
     }
 }
-
-
 /**
  * @param null|string $mailbox
  * @param null|string $hostname
@@ -662,8 +589,6 @@ function imap_rfc822_write_address(?string $mailbox, ?string $hostname, ?string 
     }
     return $safeResult;
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param int|resource|string $file
@@ -681,8 +606,6 @@ function imap_savebody(\IMAP\Connection $imap, $file, int $message_num, string $
         throw ImapException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param string $quota_root
@@ -698,8 +621,6 @@ function imap_set_quota(\IMAP\Connection $imap, string $quota_root, int $mailbox
         throw ImapException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param string $mailbox
@@ -716,8 +637,6 @@ function imap_setacl(\IMAP\Connection $imap, string $mailbox, string $user_id, s
         throw ImapException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param string $sequence
@@ -732,8 +651,6 @@ function imap_setflag_full(\IMAP\Connection $imap, string $sequence, string $fla
     $safeResult = \imap_setflag_full($imap, $sequence, $flag, $options);
     return $safeResult;
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param int $criteria
@@ -760,8 +677,6 @@ function imap_sort(\IMAP\Connection $imap, int $criteria, int $reverse, int $fla
     }
     return $safeResult;
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param string $mailbox
@@ -779,8 +694,6 @@ function imap_status(\IMAP\Connection $imap, string $mailbox, int $flags): \stdC
     }
     return $safeResult;
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param string $mailbox
@@ -795,8 +708,6 @@ function imap_subscribe(\IMAP\Connection $imap, string $mailbox): void
         throw ImapException::createFromPhpError();
     }
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param int $flags
@@ -813,8 +724,6 @@ function imap_thread(\IMAP\Connection $imap, int $flags = SE_FREE): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $timeout_type
  * @param int $timeout
@@ -831,8 +740,6 @@ function imap_timeout(int $timeout_type, int $timeout = -1)
     }
     return $safeResult;
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param string $message_nums
@@ -846,8 +753,6 @@ function imap_undelete(\IMAP\Connection $imap, string $message_nums, int $flags 
     $safeResult = \imap_undelete($imap, $message_nums, $flags);
     return $safeResult;
 }
-
-
 /**
  * @param \IMAP\Connection $imap
  * @param string $mailbox
@@ -862,8 +767,6 @@ function imap_unsubscribe(\IMAP\Connection $imap, string $mailbox): void
         throw ImapException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $string
  * @return string

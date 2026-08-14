@@ -4,10 +4,8 @@
  * @link    https://github.com/dompdf/php-font-lib
  * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
  */
-
 namespace FontLib\Table\Type;
 use FontLib\Table\Table;
-
 /**
  * `hhea` font table.
  *
@@ -33,11 +31,9 @@ class hhea extends Table {
     "metricDataFormat"    => self::int16,
     "numOfLongHorMetrics" => self::uint16,
   );
-
   function _encode() {
     $font                              = $this->getFont();
     $this->data["numOfLongHorMetrics"] = count($font->getSubset());
-
     return parent::_encode();
   }
 }

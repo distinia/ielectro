@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\ReadlineException;
-
 /**
  * @param string $prompt
  * @throws ReadlineException
@@ -17,8 +14,6 @@ function readline_add_history(string $prompt): void
         throw ReadlineException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $prompt
  * @param callable $callback
@@ -33,8 +28,6 @@ function readline_callback_handler_install(string $prompt, callable $callback): 
         throw ReadlineException::createFromPhpError();
     }
 }
-
-
 /**
  * @throws ReadlineException
  *
@@ -47,8 +40,6 @@ function readline_clear_history(): void
         throw ReadlineException::createFromPhpError();
     }
 }
-
-
 /**
  * @param callable $callback
  * @throws ReadlineException
@@ -62,8 +53,6 @@ function readline_completion_function(callable $callback): void
         throw ReadlineException::createFromPhpError();
     }
 }
-
-
 /**
  * @param null|string $filename
  * @throws ReadlineException
@@ -81,8 +70,6 @@ function readline_read_history(?string $filename = null): void
         throw ReadlineException::createFromPhpError();
     }
 }
-
-
 /**
  * @param null|string $filename
  * @throws ReadlineException

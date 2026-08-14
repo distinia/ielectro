@@ -16,7 +16,6 @@
         box-shadow 0.2s ease,
         border-color 0.2s ease;
 }
-
 .user-card:hover {
     transform: translateY(-4px);
     box-shadow:
@@ -24,7 +23,6 @@
         0 0 0 1px rgba(30, 136, 229, 0.1);
     border-color: rgba(30, 136, 229, 0.18);
 }
-
 .user-avatar {
     width: 72px;
     height: 72px;
@@ -34,62 +32,51 @@
     background: linear-gradient(145deg, #e3f2fd, #bbdefb);
     box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12);
 }
-
 .user-avatar img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
-
 .user-info {
     flex-grow: 1;
     min-width: 0;
 }
-
 .user-name {
     font-size: 1.05rem;
     margin: 0;
     font-weight: 700;
     color: var(--text-color);
 }
-
 .user-username {
     font-size: 0.88rem;
     color: var(--text-muted);
 }
-
 @media (max-width: 768px) {
     .user-card {
         padding: 0.85rem;
         border-radius: 14px;
     }
-
     .user-avatar {
         width: 56px;
         height: 56px;
     }
-
     .user-name {
         font-size: 0.98rem;
     }
 }
-
 @media (prefers-reduced-motion: reduce) {
     .user-card:hover {
         transform: none;
     }
 }
-
 .mention-link {
     color: var(--blue-mid, #1565c0);
     font-weight: 700;
     text-decoration: none;
 }
-
 .mention-link:hover {
     text-decoration: underline;
 }
-
 .mention-link strong {
     font-weight: inherit;
 }

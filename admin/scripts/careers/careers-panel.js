@@ -11,7 +11,6 @@ import {
     bindBulkToolbar,
     bulkDeleteRows,
 } from "../core/index.js";
-
 export default class CareersPanel {
     constructor() {
         this.bulk = new BulkSelect();
@@ -39,13 +38,11 @@ export default class CareersPanel {
             </form>
             <p class="admin-form-msg form-msg"></p>`;
     }
-
     cvPublicUrl(row) {
         if (row.cv_url) return row.cv_url;
         if (!row.cv_file) return null;
         return adminAssetUrl(`assets/applications/${encodeURIComponent(row.cv_file)}`);
     }
-
     buildJobFormData(form) {
         const fd = new FormData();
         fd.set("title", form.querySelector('[name="title"]').value.trim());
@@ -53,7 +50,6 @@ export default class CareersPanel {
         fd.set("status", form.querySelector('[name="status"]').value);
         return fd;
     }
-
     bindOverviewFiltersOnce() {
         if (this._careersFiltersBound) return;
         this._careersFiltersBound = true;
@@ -62,7 +58,6 @@ export default class CareersPanel {
         document.querySelector(".apps-filter-q")?.addEventListener("input", () => this.renderApplicationsList());
         document.querySelector(".apps-filter-sort")?.addEventListener("change", () => this.renderApplicationsList());
     }
-
     async renderJobsList() {
         const jobsNode = document.querySelector(".jobs-list");
         if (!jobsNode) return;
@@ -104,7 +99,6 @@ export default class CareersPanel {
         await AdminUi.refreshIcons(jobsNode);
         AdminUi.bindTableSelection(jobsNode, this.bulk, filtered, (id) => this.openJobView(id));
     }
-
     async bulkDeleteJobs() {
         const deleted = await bulkDeleteRows(
             this.bulk,
@@ -113,7 +107,6 @@ export default class CareersPanel {
         );
         if (deleted) await this.loadOverview();
     }
-
     applicationStatusOptions(current = "reviewing") {
         const statuses = [
             ["reviewing", "Reviewing"],
@@ -127,7 +120,6 @@ export default class CareersPanel {
             )
             .join("");
     }
-
     applicationStatusConfirm(name, status) {
         const who = name || "this applicant";
         if (status === "accepted") {
@@ -138,7 +130,6 @@ export default class CareersPanel {
         }
         return `Move ${who}'s application back to reviewing?`;
     }
-
     bindApplicationStatusHandlers(root) {
         root?.querySelectorAll(".app-status-select").forEach((select) => {
             select.addEventListener("change", async () => {
@@ -147,13 +138,11 @@ export default class CareersPanel {
                 const previous = select.dataset.status || "reviewing";
                 const next = select.value;
                 if (!id || next === previous) return;
-
                 const name = row?.querySelector(".admin-app-name")?.textContent?.trim() || "";
                 if (!(await Alert.confirm(this.applicationStatusConfirm(name, next)))) {
                     select.value = previous;
                     return;
                 }
-
                 select.disabled = true;
                 try {
                     const res = await Request.patch(`careers/applications/${id}`, { status: next });
@@ -181,7 +170,6 @@ export default class CareersPanel {
             });
         });
     }
-
     async renderApplicationsList() {
         const appNode = document.querySelector(".applications-list");
         if (!appNode) return;
@@ -235,7 +223,6 @@ export default class CareersPanel {
         await AdminUi.refreshIcons(appNode);
         this.bindApplicationStatusHandlers(appNode);
     }
-
     async deleteJobRow(id) {
         if (!(await Alert.confirm("Delete this job listing?"))) return;
         try {
@@ -245,7 +232,6 @@ export default class CareersPanel {
             Alert.error(Api.errorMessage(err));
         }
     }
-
     async loadOverview() {
         const [jobsRes, appsRes] = await Promise.all([
             Request.get("careers"),
@@ -257,7 +243,6 @@ export default class CareersPanel {
         await this.renderJobsList();
         await this.renderApplicationsList();
     }
-
     openJobCreate() {
         const formId = "job-form-modal";
         const overlay = AdminModal.open({
@@ -282,7 +267,6 @@ export default class CareersPanel {
         });
         AdminUi.refreshIcons(overlay);
     }
-
     async openJobView(id) {
         try {
             const res = await Request.get(`careers/${id}`);
@@ -314,7 +298,6 @@ export default class CareersPanel {
             Alert.error(Api.errorMessage(err) || "Unable to load.");
         }
     }
-
     async openJobEdit(id) {
         const formId = "job-form-modal";
         const overlay = AdminModal.open({
@@ -371,13 +354,11 @@ export default class CareersPanel {
         });
         AdminUi.refreshIcons(overlay);
     }
-
     bindChrome() {
         bindBulkToolbar(this.bulk);
         document.querySelector(".admin-action-new")?.addEventListener("click", () => this.openJobCreate());
         document.querySelector(".admin-action-bulk-delete")?.addEventListener("click", () => this.bulkDeleteJobs());
     }
-
     async run() {
         AdminShell.mount("careers", "Careers");
         this.bindChrome();

@@ -1,5 +1,4 @@
 import { Icons } from "../core/index.js";
-
 const MENU_ICONS = {
     "Add row up": "arrow-up",
     "Add row down": "arrow-down",
@@ -14,10 +13,8 @@ const MENU_ICONS = {
     "Change Position": "move-horizontal",
     "Set As Cover": "image",
 };
-
 export class Menu {
     static current = null;
-
     constructor(instance) {
         if (!instance) return;
         this.instance = instance;
@@ -25,7 +22,6 @@ export class Menu {
         this.actions = instance.menuActions || [];
         this.element = null;
     }
-
     startEditing() {
         if (!this.instanceElement) return;
         this.contextHandler = (e) => {
@@ -47,7 +43,6 @@ export class Menu {
         this.instanceElement.addEventListener("contextmenu", this.contextHandler);
         document.addEventListener("click", this.clickHandler);
     }
-
     open(x, y) {
         this.hide();
         Menu.current = this;
@@ -78,7 +73,6 @@ export class Menu {
             }
         });
     }
-
     hide() {
         if (!this.element) return;
         if (Menu.current === this) {
@@ -95,7 +89,6 @@ export class Menu {
             { once: true },
         );
     }
-
     closeEditing() {
         if (this.contextHandler) {
             this.instanceElement.removeEventListener(

@@ -1,12 +1,8 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS;
-
 use Sabberworm\CSS\Comment\Commentable;
 use Sabberworm\CSS\Parsing\OutputException;
-
 /**
  * @internal since 8.8.0
  */
@@ -16,12 +12,10 @@ class OutputFormatter
      * @var OutputFormat
      */
     private $outputFormat;
-
     public function __construct(OutputFormat $outputFormat)
     {
         $this->outputFormat = $outputFormat;
     }
-
     /**
      * @param non-empty-string $name
      *
@@ -69,80 +63,64 @@ class OutputFormatter
             default:
                 throw new \InvalidArgumentException("Unknown space type: $name", 1740049248);
         }
-
         return $this->prepareSpace($spaceString);
     }
-
     public function spaceAfterRuleName(): string
     {
         return $this->space('AfterRuleName');
     }
-
     public function spaceBeforeRules(): string
     {
         return $this->space('BeforeRules');
     }
-
     public function spaceAfterRules(): string
     {
         return $this->space('AfterRules');
     }
-
     public function spaceBetweenRules(): string
     {
         return $this->space('BetweenRules');
     }
-
     public function spaceBeforeBlocks(): string
     {
         return $this->space('BeforeBlocks');
     }
-
     public function spaceAfterBlocks(): string
     {
         return $this->space('AfterBlocks');
     }
-
     public function spaceBetweenBlocks(): string
     {
         return $this->space('BetweenBlocks');
     }
-
     public function spaceBeforeSelectorSeparator(): string
     {
         return $this->space('BeforeSelectorSeparator');
     }
-
     public function spaceAfterSelectorSeparator(): string
     {
         return $this->space('AfterSelectorSeparator');
     }
-
     /**
      * @param non-empty-string $separator
      */
     public function spaceBeforeListArgumentSeparator(string $separator): string
     {
         $spaceForSeparator = $this->outputFormat->getSpaceBeforeListArgumentSeparators();
-
         return $spaceForSeparator[$separator] ?? $this->space('BeforeListArgumentSeparator');
     }
-
     /**
      * @param non-empty-string $separator
      */
     public function spaceAfterListArgumentSeparator(string $separator): string
     {
         $spaceForSeparator = $this->outputFormat->getSpaceAfterListArgumentSeparators();
-
         return $spaceForSeparator[$separator] ?? $this->space('AfterListArgumentSeparator');
     }
-
     public function spaceBeforeOpeningBrace(): string
     {
         return $this->space('BeforeOpeningBrace');
     }
-
     /**
      * Runs the given code, either swallowing or passing exceptions, depending on the `ignoreExceptions` setting.
      */
@@ -160,7 +138,6 @@ class OutputFormatter
             return $callable();
         }
     }
-
     /**
      * Clone of the `implode` function, but calls `render` with the current output format.
      *
@@ -188,13 +165,11 @@ class OutputFormatter
         }
         return $result;
     }
-
     public function removeLastSemicolon(string $string): string
     {
         if ($this->outputFormat->shouldRenderSemicolonAfterLastRule()) {
             return $string;
         }
-
         $parts = \explode(';', $string);
         if (\count($parts) < 2) {
             return $parts[0];
@@ -202,32 +177,26 @@ class OutputFormatter
         $lastPart = \array_pop($parts);
         $nextToLastPart = \array_pop($parts);
         \array_push($parts, $nextToLastPart . $lastPart);
-
         return \implode(';', $parts);
     }
-
     public function comments(Commentable $commentable): string
     {
         if (!$this->outputFormat->shouldRenderComments()) {
             return '';
         }
-
         $result = '';
         $comments = $commentable->getComments();
         $lastCommentIndex = \count($comments) - 1;
-
         foreach ($comments as $i => $comment) {
             $result .= $comment->render($this->outputFormat);
             $result .= $i === $lastCommentIndex ? $this->spaceAfterBlocks() : $this->spaceBetweenBlocks();
         }
         return $result;
     }
-
     private function prepareSpace(string $spaceString): string
     {
         return \str_replace("\n", "\n" . $this->indent(), $spaceString);
     }
-
     private function indent(): string
     {
         return \str_repeat($this->outputFormat->getIndentation(), $this->outputFormat->getIndentationLevel());

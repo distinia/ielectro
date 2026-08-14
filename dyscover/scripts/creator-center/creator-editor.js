@@ -6,7 +6,6 @@ import { CreatorModal } from "./creator-modal.js";
 import { creatorTypeConfig, CREATOR_TYPES } from "./creator-types.js";
 import { CreatorRegistry } from "./registry.js";
 import { refreshCreatorStats } from "./creator-stats.js";
-
 const FIELD_TYPES = [
     ["text", "Text"],
     ["definition", "Definition"],
@@ -16,12 +15,10 @@ const FIELD_TYPES = [
     ["double-column", "Double column"],
     ["double-column-extended", "Double column extended"],
 ];
-
 export class CreatorEditor {
     static open(post, method = "POST") {
         new CreatorEditor(post, method).show();
     }
-
     constructor(post, method) {
         this.post = post;
         this.method = method;
@@ -39,7 +36,6 @@ export class CreatorEditor {
         this.form = null;
         this.dragCard = null;
     }
-
     async show() {
         const locked = this.method === "PUT";
         const headerActions = CreatorModal.headerActions({
@@ -47,7 +43,6 @@ export class CreatorEditor {
             showChoose: this.config.showPreview,
             submitAction: this.needsUploadAction() ? "upload" : "save",
         });
-
         this.modal = new Box(this.method === "POST" ? "Create" : "Edit", {
             variant: "creator",
             help: this.config.help,
@@ -55,7 +50,6 @@ export class CreatorEditor {
             headerLayout: "creator",
             headerActions,
         });
-
         await this.modal.create();
         this.mountBody(locked);
         await this.bindHeader();
@@ -68,7 +62,6 @@ export class CreatorEditor {
             }
         }
     }
-
     mountBody(typeLocked) {
         const allowComments = this.item.allow_comments !== false;
         this.modal.body((body) => {
@@ -116,24 +109,20 @@ export class CreatorEditor {
         this.bindFields();
         this.bindPreviewInput();
     }
-
     async bindHeader() {
         const headerActions = this.modal.container.querySelector(
             ".select-item-header-actions",
         );
         const chooseBtn = headerActions?.querySelector(".creator-choose-file");
         chooseBtn?.addEventListener("click", () => this.activeFileInput()?.click());
-
         const typeSelect = this.form.querySelector(".creator-type-select");
         if (typeSelect && this.method === "POST") {
             typeSelect.addEventListener("change", () => {
                 this.applyType(typeSelect.value);
             });
         }
-
         await Icons.load(headerActions);
     }
-
     bindPreviewInput() {
         const mediaInput = this.form.querySelector("#creator-file-media");
         const previewInput = this.form.querySelector("#creator-file-preview");
@@ -149,32 +138,26 @@ export class CreatorEditor {
         mediaInput?.addEventListener("change", handler);
         previewInput?.addEventListener("change", handler);
     }
-
     activeFileInput() {
         const field = this.config.fileField || "media";
         return this.form.querySelector(
             field === "preview" ? "#creator-file-preview" : "#creator-file-media",
         );
     }
-
     applyType(type, { initial = false } = {}) {
         this.type = type;
         this.config = creatorTypeConfig(type);
         this.form.dataset.type = type;
-
         const layout = this.form.querySelector(".creator-editor-layout");
         layout?.classList.toggle("is-template", type === "template");
-
         const fieldsCol = this.form.querySelector(".creator-fields-col");
         if (fieldsCol) {
             fieldsCol.hidden = type !== "template";
         }
-
         const typeSelect = this.form.querySelector(".creator-type-select");
         if (typeSelect && typeSelect.value !== type) {
             typeSelect.value = type;
         }
-
         const mediaInput = this.form.querySelector("#creator-file-media");
         const previewInput = this.form.querySelector("#creator-file-preview");
         if (mediaInput) {
@@ -187,12 +170,10 @@ export class CreatorEditor {
         if (previewInput) {
             previewInput.required = false;
         }
-
         const helpBox = this.modal.container.querySelector(".select-item-help-box");
         if (helpBox) {
             helpBox.innerHTML = this.config.help;
         }
-
         const submitBtn = this.modal.container.querySelector(".creator-submit-btn");
         if (submitBtn) {
             const upload = this.needsUploadAction();
@@ -203,43 +184,35 @@ export class CreatorEditor {
             submitBtn.innerHTML = `<i data-icon="${upload ? "upload" : "check"}"></i>`;
             Icons.load(submitBtn);
         }
-
         const chooseBtn = this.modal.container.querySelector(".creator-choose-file");
         if (chooseBtn) {
             chooseBtn.hidden = !this.config.showPreview;
         }
-
         if (!initial && this.method === "POST") {
             this.form.querySelector(".media-file-preview").innerHTML = "";
             if (mediaInput) mediaInput.value = "";
             if (previewInput) previewInput.value = "";
         }
-
         this.modal.box?.classList.toggle(
             "select-item-box--template",
             type === "template",
         );
     }
-
     readAllowComments() {
         return !!this.form.querySelector('[name="allow_comments"]')?.checked;
     }
-
     payloadExtras() {
         return { allow_comments: this.readAllowComments() };
     }
-
     mediaAccept() {
         if (this.type === "article" || this.type === "template") {
             return "image/*";
         }
         return this.config.accept;
     }
-
     needsUploadAction() {
         return this.method === "POST" && this.config.mediaOnCreate;
     }
-
     showExistingPreview() {
         const preview = this.form.querySelector(".media-file-preview");
         const item = App.enrichPost(this.item);
@@ -261,7 +234,6 @@ export class CreatorEditor {
             name: item.title || "Current file",
         });
     }
-
     bindFields() {
         const button = this.form.querySelector(".field-add");
         const input = this.form.querySelector(".field-input");
@@ -287,7 +259,6 @@ export class CreatorEditor {
         this.bindFieldDrag(list);
         Icons.load(this.form.querySelector(".template-field-add"));
     }
-
     createFieldCard(name, type, id) {
         const card = document.createElement("article");
         card.className = "template-field-card";
@@ -314,7 +285,6 @@ export class CreatorEditor {
         });
         return card;
     }
-
     bindFieldDrag(list) {
         if (!list || list.dataset.dragBound === "1") return;
         list.dataset.dragBound = "1";
@@ -347,7 +317,6 @@ export class CreatorEditor {
             }
         });
     }
-
     async loadFields() {
         try {
             const res = await Request.get(Api.templateFields(this.post.id));
@@ -365,7 +334,6 @@ export class CreatorEditor {
             /* optional */
         }
     }
-
     getFields() {
         return Array.from(
             this.form.querySelectorAll(".template-field-card"),
@@ -376,14 +344,12 @@ export class CreatorEditor {
             position: index,
         }));
     }
-
     bindForm() {
         const submitBtn = this.modal.container.querySelector(".creator-submit-btn");
         this.form.addEventListener("submit", async (event) => {
             event.preventDefault();
             const title = String(this.form.title.value || "").trim();
             if (!title) return Alert.error("Title is required");
-
             const tags = CreatorMeta.readTags(this.form);
             if (!CreatorMeta.validateTags(tags)) return;
             const done = await CreatorMeta.withSubmitLock(submitBtn, async () => {
@@ -400,7 +366,6 @@ export class CreatorEditor {
             if (done === null) return;
         });
     }
-
     async submitCreate(title, tags) {
         const uuid = crypto.randomUUID();
         const extras = this.payloadExtras();
@@ -425,7 +390,6 @@ export class CreatorEditor {
             });
             return;
         }
-
         if (this.type === "template") {
             const fields = this.getFields();
             const data = new FormData(this.form);
@@ -442,7 +406,6 @@ export class CreatorEditor {
             await Request.post(Api.posts, data);
             return;
         }
-
         const file = this.activeFileInput()?.files?.[0];
         if (!file) {
             throw { text: "Choose a file first" };
@@ -460,12 +423,10 @@ export class CreatorEditor {
         data.set("allow_comments", extras.allow_comments ? "1" : "0");
         await Request.post(Api.posts, data);
     }
-
     async submitUpdate(title, tags) {
         const id = this.post.id;
         if (!id) throw { text: "Missing item id" };
         const extras = this.payloadExtras();
-
         if (this.type === "template") {
             const fields = this.getFields();
             const patchFields = fields.map(({ id: fieldId, name, type }, position) => ({
@@ -493,7 +454,6 @@ export class CreatorEditor {
             }
             return;
         }
-
         const file = this.activeFileInput()?.files?.[0];
         if (file) {
             if (this.config.maxBytes && file.size > this.config.maxBytes) {
@@ -508,7 +468,6 @@ export class CreatorEditor {
             await Request.patch(Api.post(id), data);
             return;
         }
-
         await Request.patch(Api.post(id), {
             title,
             description: String(this.form.description.value || "").trim(),
@@ -517,5 +476,4 @@ export class CreatorEditor {
         });
     }
 }
-
 export { CREATOR_TYPES };

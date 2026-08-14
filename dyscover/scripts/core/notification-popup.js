@@ -9,7 +9,6 @@ import {
     formatRelativeTime,
 } from "./post-message.js";
 import { Mention } from "./mention.js";
-
 export class NotificationPopup {
     static stack = null;
     static templates = null;
@@ -17,7 +16,6 @@ export class NotificationPopup {
     static seenMessages = new Set();
     static started = false;
     static bootstrapped = false;
-
     static async start() {
         if (this.started) return;
         this.started = true;
@@ -31,7 +29,6 @@ export class NotificationPopup {
         }
         await this.bootstrap();
     }
-
     static ensureStack() {
         if (this.stack) return;
         this.stack = document.createElement("div");
@@ -39,7 +36,6 @@ export class NotificationPopup {
         this.stack.setAttribute("aria-live", "polite");
         document.body.appendChild(this.stack);
     }
-
     static async bootstrap() {
         try {
             const res = await Request.get(Api.activity);
@@ -51,7 +47,6 @@ export class NotificationPopup {
         }
         this.bootstrapped = true;
     }
-
     static template(key, vars = {}) {
         let text =
             this.templates?.[key] ||
@@ -62,14 +57,12 @@ export class NotificationPopup {
         });
         return text;
     }
-
     static formatMessageHtml(text, username) {
         const safe = App.escapeHtml(text);
         const user = App.escapeHtml(username || "Someone");
         if (!user) return safe;
         return safe.replace(user, `<strong>${user}</strong>`);
     }
-
     static async poll() {
         if (!this.bootstrapped) await this.bootstrap();
         try {
@@ -83,7 +76,6 @@ export class NotificationPopup {
             });
         } catch {}
     }
-
     static showActivity(item) {
         const user = item.actor_username || "Someone";
         const type = resolveNotificationType(item);
@@ -110,7 +102,6 @@ export class NotificationPopup {
             },
         });
     }
-
     static showChat(item) {
         const user = item.sender || item.username || "Someone";
         const post = decodePostMessage(item.body);
@@ -131,7 +122,6 @@ export class NotificationPopup {
             href: `${Api.origin}/inbox`,
         });
     }
-
     static show({
         type = "default",
         username,
@@ -158,13 +148,11 @@ export class NotificationPopup {
             <span class="notify-popup-close" role="button" aria-label="Dismiss">
                 <i data-icon="x"></i>
             </span>`;
-
         const dismiss = (e) => {
             e?.preventDefault();
             e?.stopPropagation();
             this.hide(node);
         };
-
         inner.querySelector(".notify-popup-close")?.addEventListener(
             "click",
             dismiss,
@@ -180,17 +168,14 @@ export class NotificationPopup {
                 window.location.href = href;
             }
         });
-
         node.appendChild(inner);
         this.stack.appendChild(node);
         App.wireAvatarImg(inner.querySelector(".notify-popup-avatar"));
         Icons.load(node).catch(() => {});
         requestAnimationFrame(() => node.classList.add("notify-popup--show"));
-
         const timer = window.setTimeout(() => this.hide(node), 6000);
         node.dataset.timer = String(timer);
     }
-
     static hide(node) {
         if (!node?.isConnected) return;
         const timer = Number(node.dataset.timer);

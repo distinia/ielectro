@@ -6,7 +6,6 @@ import LazyMedia from "./lazy-media.js";
 import Request from "./request.js";
 import Table from "./table.js";
 import Validate from "./validate.js";
-
 export default class Nesh
 {
     static Auth = Auth;
@@ -18,7 +17,6 @@ export default class Nesh
     static Table = Table;
     static Validate = Validate;
 }
-
 if (typeof document !== "undefined") {
     const start = () => LazyMedia.bind();
     if (document.readyState === "loading") {

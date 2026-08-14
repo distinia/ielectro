@@ -5,9 +5,7 @@
  * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
  */
 namespace Dompdf\Exception;
-
 use Dompdf\Exception;
-
 /**
  * Image exception thrown by DOMPDF
  *
@@ -15,7 +13,6 @@ use Dompdf\Exception;
  */
 class ImageException extends Exception
 {
-
     /**
      * Class constructor
      *
@@ -26,5 +23,4 @@ class ImageException extends Exception
     {
         parent::__construct($message, $code);
     }
-
 }

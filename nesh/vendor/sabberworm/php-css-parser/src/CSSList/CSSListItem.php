@@ -1,12 +1,8 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\CSSList;
-
 use Sabberworm\CSS\Comment\Commentable;
 use Sabberworm\CSS\Renderable;
-
 /**
  * Represents anything that can be in the `$contents` of a `CSSList`.
  *

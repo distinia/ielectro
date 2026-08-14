@@ -3,7 +3,6 @@ import { ProfilePage } from "./profile-page.js";
 import { UI } from "./ui.js";
 import { Informations } from "./informations.js";
 import { Posts } from "./posts.js";
-
 export class UserPageBoot {
     static async start() {
         const page = new ProfilePage(App.profileUsername());
@@ -14,7 +13,6 @@ export class UserPageBoot {
         new Posts(page);
     }
 }
-
 export { ProfilePage } from "./profile-page.js";
 export { Actions } from "./actions.js";
 export { UI } from "./ui.js";

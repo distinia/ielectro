@@ -1,5 +1,4 @@
 import { Site } from "./site.js";
-
 export class Footer {
     constructor() {
         this.year = new Date().getFullYear();

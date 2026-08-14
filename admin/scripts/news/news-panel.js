@@ -1,5 +1,4 @@
 import { App, Api, Alert, Request, AdminShell, AdminUi, AdminModal, BulkSelect, bindBulkToolbar, bulkDeleteRows } from "../core/index.js";
-
 export default class NewsPanel {
     constructor() {
         this.bulk = new BulkSelect();
@@ -37,7 +36,6 @@ export default class NewsPanel {
             </form>
             <p class="admin-form-msg form-msg"></p>`;
     }
-
     bindImagePreview(root) {
         const input = root.querySelector(".news-image");
         const preview = root.querySelector(".news-image-preview");
@@ -53,7 +51,6 @@ export default class NewsPanel {
             preview.innerHTML = `<img src="${URL.createObjectURL(file)}" alt="">`;
         });
     }
-
     setImagePreview(root, url) {
         const preview = root.querySelector(".news-image-preview");
         if (!preview) return;
@@ -65,7 +62,6 @@ export default class NewsPanel {
         preview.classList.remove("panel-hidden");
         preview.innerHTML = `<img src="${App.esc(url)}" alt="">`;
     }
-
     buildFormData(form) {
         const fd = new FormData();
         fd.set("title", form.querySelector('[name="title"]').value.trim());
@@ -75,14 +71,12 @@ export default class NewsPanel {
         if (file) fd.append("image", file);
         return fd;
     }
-
     bindListFiltersOnce() {
         if (this._newsFiltersBound) return;
         this._newsFiltersBound = true;
         document.querySelector(".news-filter-q")?.addEventListener("input", () => this.renderNewsList());
         document.querySelector(".news-filter-sort")?.addEventListener("change", () => this.renderNewsList());
     }
-
     async renderNewsList() {
         const node = document.querySelector(".news-list");
         if (!node) return;
@@ -136,7 +130,6 @@ export default class NewsPanel {
         await AdminUi.refreshIcons(node);
         AdminUi.bindTableSelection(node, this.bulk, filtered, (id) => this.openView(id));
     }
-
     async bulkDelete() {
         const deleted = await bulkDeleteRows(
             this.bulk,
@@ -145,14 +138,12 @@ export default class NewsPanel {
         );
         if (deleted) await this.loadList();
     }
-
     async loadList() {
         const res = await Request.get("news");
         this._newsRows = Api.list(res);
         this.bindListFiltersOnce();
         await this.renderNewsList();
     }
-
     async openView(id) {
         try {
             const res = await Request.get(`news/${id}`);
@@ -188,7 +179,6 @@ export default class NewsPanel {
             Alert.error(Api.errorMessage(err) || "Unable to load.");
         }
     }
-
     openCreate() {
         const formId = "news-form-modal";
         const overlay = AdminModal.open({
@@ -215,7 +205,6 @@ export default class NewsPanel {
         });
         AdminUi.refreshIcons(overlay);
     }
-
     async openEdit(id) {
         const formId = "news-form-modal";
         const overlay = AdminModal.open({
@@ -274,13 +263,11 @@ export default class NewsPanel {
         });
         AdminUi.refreshIcons(overlay);
     }
-
     bindChrome() {
         bindBulkToolbar(this.bulk);
         document.querySelector(".admin-action-new")?.addEventListener("click", () => this.openCreate());
         document.querySelector(".admin-action-bulk-delete")?.addEventListener("click", () => this.bulkDelete());
     }
-
     async run() {
         AdminShell.mount("news", "News");
         this.bindChrome();

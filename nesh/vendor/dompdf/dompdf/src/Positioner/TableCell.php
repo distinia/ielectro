@@ -5,11 +5,9 @@
  * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
  */
 namespace Dompdf\Positioner;
-
 use Dompdf\Exception;
 use Dompdf\FrameDecorator\AbstractFrameDecorator;
 use Dompdf\FrameDecorator\Table;
-
 /**
  * Positions table cells
  *
@@ -17,7 +15,6 @@ use Dompdf\FrameDecorator\Table;
  */
 class TableCell extends AbstractPositioner
 {
-
     /**
      * @param AbstractFrameDecorator $frame
      */

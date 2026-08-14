@@ -1,7 +1,5 @@
 <?php
-
 namespace Masterminds\HTML5\Parser;
-
 /**
  * Handles special-case rules for the DOM tree builder.
  *
@@ -31,7 +29,6 @@ class TreeBuildingRules
         'optgroup' => 1,
         'option' => 1,
     );
-
     /**
      * Returns true if the given tagname has special processing rules.
      */
@@ -39,7 +36,6 @@ class TreeBuildingRules
     {
         return isset(static::$tags[$tagname]);
     }
-
     /**
      * Evaluate the rule for the current tag name.
      *
@@ -86,17 +82,14 @@ class TreeBuildingRules
                     'tbody',
                 ));
         }
-
         return $current;
     }
-
     protected function handleLI($ele, $current)
     {
         return $this->closeIfCurrentMatches($ele, $current, array(
             'li',
         ));
     }
-
     protected function handleDT($ele, $current)
     {
         return $this->closeIfCurrentMatches($ele, $current, array(
@@ -104,7 +97,6 @@ class TreeBuildingRules
             'dd',
         ));
     }
-
     protected function handleRT($ele, $current)
     {
         return $this->closeIfCurrentMatches($ele, $current, array(
@@ -112,7 +104,6 @@ class TreeBuildingRules
             'rp',
         ));
     }
-
     protected function closeIfCurrentMatches($ele, $current, $match)
     {
         if (in_array($current->tagName, $match, true)) {
@@ -120,7 +111,6 @@ class TreeBuildingRules
         } else {
             $current->appendChild($ele);
         }
-
         return $ele;
     }
 }

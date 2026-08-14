@@ -1,12 +1,10 @@
 <?php
 namespace Dyscover;
-
 use Nesh\Avatar as AccountAvatar;
 use Nesh\Query;
 use Nesh\Request;
 use Nesh\Response;
 use Nesh\Routing;
-
 class Avatar
 {
     public function index(): void
@@ -18,7 +16,6 @@ class Avatar
             'DELETE' => fn() => $this->deprecated(),
         ]);
     }
-
     private function deprecated(): void
     {
         Request::post();
@@ -26,7 +23,6 @@ class Avatar
             'Avatar uploads are managed from iElectro Account. Use https://account.ielectro.com/profile'
         );
     }
-
     public static function url(int $userId): string
     {
         $accountId = self::accountId($userId);
@@ -34,12 +30,10 @@ class Avatar
             ? AccountAvatar::url($accountId)
             : AccountAvatar::defaultUrl();
     }
-
     public static function urlForAccount(int $accountId): string
     {
         return AccountAvatar::url($accountId);
     }
-
     public static function provision(int $userId): void
     {
         $accountId = self::accountId($userId);
@@ -47,12 +41,10 @@ class Avatar
             AccountAvatar::provision($accountId);
         }
     }
-
     public static function provisionForAccount(int $accountId): void
     {
         AccountAvatar::provision($accountId);
     }
-
     private static function accountId(int $userId): int
     {
         if ($userId <= 0) {

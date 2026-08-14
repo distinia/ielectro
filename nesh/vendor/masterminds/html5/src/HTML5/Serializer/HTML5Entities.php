@@ -8,9 +8,7 @@
  * not entirely proper such as &am; which maps to &. This list is meant to be
  * a fallback for PHP versions prior to PHP 5.4 when dealing with encoding.
  */
-
 namespace Masterminds\HTML5\Serializer;
-
 /**
  * A mapping of entities to their html5 representation.
  * Used for older PHP

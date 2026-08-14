@@ -1,5 +1,4 @@
 import { Icons } from "./nesh.js";
-
 export class Box {
     constructor(title, options = {}) {
         this.title = title;

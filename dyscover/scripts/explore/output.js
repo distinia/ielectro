@@ -4,7 +4,6 @@ import { EmptyState } from "../core/empty-state.js";
 import { ExploreHelpers } from "./helpers.js";
 import { ExploreGrid } from "./recents.js";
 import { UserCard } from "./user-card.js";
-
 export class Output {
     static keys = {
         user: "users",
@@ -15,13 +14,11 @@ export class Output {
         document: "documents",
         template: "templates",
     };
-
     constructor(value) {
         this.value = value;
         this.types = ["user", ...ExploreHelpers.types];
         this._last = null;
     }
-
     async load() {
         if (this._last === this.value) return;
         this._last = this.value;

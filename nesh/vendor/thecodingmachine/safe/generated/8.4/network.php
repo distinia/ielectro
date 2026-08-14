@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\NetworkException;
-
 /**
  * @return bool
  *
@@ -14,8 +11,6 @@ function closelog(): bool
     $safeResult = \closelog();
     return $safeResult;
 }
-
-
 /**
  * @param string $hostname
  * @param int $type
@@ -35,8 +30,6 @@ function dns_get_record(string $hostname, int $type = DNS_ANY, ?array &$authorit
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $hostname
  * @param int $port
@@ -60,8 +53,6 @@ function fsockopen(string $hostname, int $port = -1, ?int &$error_code = null, ?
     }
     return $safeResult;
 }
-
-
 /**
  * @return string
  * @throws NetworkException
@@ -76,8 +67,6 @@ function gethostname(): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $protocol
  * @return int
@@ -93,8 +82,6 @@ function getprotobyname(string $protocol): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $protocol
  * @return string
@@ -110,8 +97,6 @@ function getprotobynumber(int $protocol): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $port
  * @param string $protocol
@@ -128,8 +113,6 @@ function getservbyport(int $port, string $protocol): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param callable $callback
  * @throws NetworkException
@@ -143,8 +126,6 @@ function header_register_callback(callable $callback): void
         throw NetworkException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $ip
  * @return string
@@ -160,8 +141,6 @@ function inet_ntop(string $ip): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $ip
  * @return string
@@ -177,8 +156,6 @@ function inet_pton(string $ip): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $ip
  * @return false|string
@@ -190,8 +167,6 @@ function long2ip(int $ip)
     $safeResult = \long2ip($ip);
     return $safeResult;
 }
-
-
 /**
  * @return array
  * @throws NetworkException
@@ -206,8 +181,6 @@ function net_get_interfaces(): array
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $prefix
  * @param int $flags
@@ -221,8 +194,6 @@ function openlog(string $prefix, int $flags, int $facility): bool
     $safeResult = \openlog($prefix, $flags, $facility);
     return $safeResult;
 }
-
-
 /**
  * @param string $hostname
  * @param int $port
@@ -246,8 +217,6 @@ function pfsockopen(string $hostname, int $port = -1, ?int &$error_code = null, 
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $priority
  * @param string $message

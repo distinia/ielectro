@@ -1,9 +1,7 @@
 import { API } from "./api.js";
 import { PostResolver } from "./post-resolver.js";
-
 export class ArticlePreview {
     static list = new Map();
-
     constructor(link) {
         if (!link) return;
         this.link = link;
@@ -26,14 +24,12 @@ export class ArticlePreview {
         }
         ArticlePreview.list.set(this.link.element, this);
     }
-
     kind() {
         const explicit = this.link.element?.dataset?.postType;
         if (explicit === "document") return "document";
         if (explicit === "article") return "article";
         return PostResolver.linkKind(this.url);
     }
-
     isValid() {
         if (/Mobi|Android/i.test(navigator.userAgent)) {
             return false;
@@ -44,14 +40,12 @@ export class ArticlePreview {
         const kind = this.kind();
         return kind === "article" || kind === "document";
     }
-
     startEditing() {
         this.unbindListeners();
         clearTimeout(this.timer);
         this.hovering = false;
         this.hide();
     }
-
     unbindListeners() {
         if (this.showEvent) {
             this.link.element.removeEventListener("mouseenter", this.showEvent);
@@ -64,7 +58,6 @@ export class ArticlePreview {
         }
         this.unbindViewportListeners();
     }
-
     bindViewportListeners() {
         if (this.viewportHandler) {
             return;
@@ -77,7 +70,6 @@ export class ArticlePreview {
         window.addEventListener("scroll", this.viewportHandler, true);
         window.addEventListener("resize", this.viewportHandler);
     }
-
     unbindViewportListeners() {
         if (!this.viewportHandler) {
             return;
@@ -86,15 +78,12 @@ export class ArticlePreview {
         window.removeEventListener("resize", this.viewportHandler);
         this.viewportHandler = null;
     }
-
     isPointerOverLink() {
         return this.link.element.matches(":hover");
     }
-
     shouldStayOpen() {
         return this.hovering || this.isPointerOverLink();
     }
-
     closeEditing() {
         this.unbindListeners();
         if (this.kind() === "document") {
@@ -108,7 +97,6 @@ export class ArticlePreview {
             this.link.element.addEventListener("click", this.clickEvent);
             return;
         }
-
         this.showEvent = () => {
             this.hovering = true;
             clearTimeout(this.timer);
@@ -131,7 +119,6 @@ export class ArticlePreview {
         this.link.element.addEventListener("mouseenter", this.showEvent);
         this.link.element.addEventListener("mouseleave", this.hideEvent);
     }
-
     async show() {
         if (this.loading || this.loaded) {
             return;
@@ -174,7 +161,6 @@ export class ArticlePreview {
             this.loading = false;
         }
     }
-
     measureImage() {
         return new Promise((resolve) => {
             const img = new Image();
@@ -186,7 +172,6 @@ export class ArticlePreview {
             img.onerror = () => resolve();
         });
     }
-
     hide() {
         if (!this.isOpen || !this.element) {
             return;
@@ -196,7 +181,6 @@ export class ArticlePreview {
         this.element = null;
         this.isOpen = false;
     }
-
     position() {
         if (!this.element || !this.link.element) {
             return;
@@ -208,15 +192,12 @@ export class ArticlePreview {
         const height = this.element.offsetHeight || 320;
         const margin = 14;
         const padding = 12;
-
         let x = rect.left + rect.width / 2 - width / 2;
         x = Math.max(padding, Math.min(x, window.innerWidth - width - padding));
-
         const spaceAbove = rect.top - padding;
         const spaceBelow = window.innerHeight - rect.bottom - padding;
         let top;
         let placement = "above";
-
         if (spaceAbove >= height + margin || spaceAbove >= spaceBelow) {
             top = rect.top - height - margin;
             placement = "above";
@@ -224,18 +205,15 @@ export class ArticlePreview {
             top = rect.bottom + margin;
             placement = "below";
         }
-
         top = Math.max(
             padding,
             Math.min(top, window.innerHeight - height - padding),
         );
-
         this.element.style.left = `${x}px`;
         this.element.style.top = `${top}px`;
         this.element.style.width = `${width}px`;
         this.element.dataset.placement = placement;
     }
-
     bindBoxHover() {
         this.element.addEventListener("mouseenter", () => {
             this.hovering = true;
@@ -246,7 +224,6 @@ export class ArticlePreview {
             this.hide();
         });
     }
-
     async openLinkedPost(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -255,7 +232,6 @@ export class ArticlePreview {
             this.url,
         );
     }
-
     create() {
         if (!this.shouldStayOpen()) {
             return;
@@ -267,13 +243,11 @@ export class ArticlePreview {
             this.element.classList.add("is-vertical");
         }
         this.element.setAttribute("role", "tooltip");
-
         const body = document.createElement("div");
         body.className = "article-box-body";
         const paragraph = document.createElement("p");
         paragraph.innerHTML = this.text;
         body.appendChild(paragraph);
-
         if (this.imageExist && this.image) {
             const media = document.createElement("button");
             media.type = "button";
@@ -294,7 +268,6 @@ export class ArticlePreview {
         } else {
             this.element.appendChild(body);
         }
-
         document.body.appendChild(this.element);
         this.bindBoxHover();
         this.position();
@@ -307,7 +280,6 @@ export class ArticlePreview {
             }
         });
     }
-
     delete() {
         this.startEditing();
         ArticlePreview.list.delete(this.link.element);

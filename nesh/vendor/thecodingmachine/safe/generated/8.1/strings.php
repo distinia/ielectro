@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\StringsException;
-
 /**
  * @param string $string
  * @return string
@@ -19,8 +16,6 @@ function convert_uudecode(string $string): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $string
  * @return string
@@ -36,8 +31,6 @@ function hex2bin(string $string): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @param bool $binary
@@ -54,8 +47,6 @@ function md5_file(string $filename, bool $binary = false): string
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @param bool $binary

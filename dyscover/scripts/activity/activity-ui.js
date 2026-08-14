@@ -6,12 +6,10 @@ import {
     notificationPostType,
     formatRelativeTime,
 } from "../core/post-message.js";
-
 export class ActivityUI {
     static overlay = null;
     static templates = null;
     static _visBound = false;
-
     constructor() {
         this.list = null;
         this.isOverlay = false;
@@ -20,7 +18,6 @@ export class ActivityUI {
         this.pollTimer = null;
         this.ready = this.mount(document.querySelector(".activity-list"));
     }
-
     static async openOverlay() {
         if (ActivityUI.overlay) {
             ActivityUI.overlay.classList.add("activity-overlay--open");
@@ -55,19 +52,16 @@ export class ActivityUI {
         await Icons.load(shell);
         App.setScrollEnabled(false);
     }
-
     static closeOverlay() {
         ActivityUI.overlay?.classList.remove("activity-overlay--open");
         App.setScrollEnabled(true);
     }
-
     static async openNotification(notification) {
         await ActivityUI.openOverlay();
         if (notification?.id) {
             await ActivityUI.instance?.openItem(notification);
         }
     }
-
     mount(list) {
         this.list = list;
         if (!this.list) return Promise.resolve();
@@ -94,14 +88,12 @@ export class ActivityUI {
         }
         return this.load();
     }
-
     async markAllRead() {
         try {
             await Request.patch(Api.activityMarkAllRead);
             Navbar.refresh().catch(() => {});
         } catch {}
     }
-
     setupObserver() {
         if (!this.list || this.isOverlay) return;
         if (this.observer) {
@@ -129,7 +121,6 @@ export class ActivityUI {
             this.observer.observe(n),
         );
     }
-
     async load(opts = {}) {
         if (!this.list) return;
         try {
@@ -160,13 +151,11 @@ export class ActivityUI {
             }
         }
     }
-
     userProfileUrl(username = "") {
         const raw = String(username || "").replace(/^@/, "").trim();
         if (!raw) return `${Api.origin}/explore`;
         return `${Api.origin}/users/${encodeURIComponent(raw)}`;
     }
-
     userLink(username = "") {
         const raw = String(username || "").replace(/^@/, "").trim();
         if (!raw) {
@@ -175,7 +164,6 @@ export class ActivityUI {
         const href = this.userProfileUrl(raw);
         return `<a class="notification-user-link" href="${App.escapeAttr(href)}"><strong>${App.escapeHtml(raw)}</strong></a>`;
     }
-
     buildUsersHtml(notification) {
         const actors =
             Array.isArray(notification.actors) && notification.actors.length
@@ -211,7 +199,6 @@ export class ActivityUI {
         }
         return links.join(", ");
     }
-
     buildMessage(notification) {
         const type = resolveNotificationType(notification);
         const template =
@@ -229,7 +216,6 @@ export class ActivityUI {
             .replaceAll("{details}", notification.message || "");
         return `${usersHtml}${App.escapeHtml(rest)}`;
     }
-
     thumbUrl(notification) {
         const post = notification.post;
         if (!post?.id) return "";
@@ -242,7 +228,6 @@ export class ActivityUI {
         });
         return enriched.preview_image || enriched.preview || "";
     }
-
     async openItem(notification) {
         const type = resolveNotificationType(notification);
         const user =
@@ -263,7 +248,6 @@ export class ActivityUI {
             await card.openOverlay();
         }
     }
-
     render(activity) {
         if (!this.list) return;
         if (this.observer) {
@@ -340,7 +324,6 @@ export class ActivityUI {
             </article>`;
             })
             .join("");
-
         this.list.querySelectorAll(".notification-main").forEach((btn) => {
             btn.addEventListener("click", () => {
                 const id = Number(btn.dataset.notificationId);
@@ -352,17 +335,14 @@ export class ActivityUI {
                 }
             });
         });
-
         this.list.querySelectorAll(".notification-avatar-img").forEach((img) => {
             App.wireAvatarImg(img);
         });
-
         this.list.querySelectorAll(".notification-user-link").forEach((link) => {
             link.addEventListener("click", (e) => {
                 e.stopPropagation();
             });
         });
-
         this.list.querySelectorAll(".notification-follow-btn").forEach((btn) => {
             btn.addEventListener("click", (e) => {
                 e.preventDefault();
@@ -370,7 +350,6 @@ export class ActivityUI {
                 this.toggleFollow(btn).catch(() => {});
             });
         });
-
         this.list.querySelectorAll(".notification-delete").forEach((btn) => {
             btn.addEventListener("click", async (e) => {
                 e.preventDefault();
@@ -393,7 +372,6 @@ export class ActivityUI {
             });
         });
     }
-
     async toggleFollow(btn) {
         const actorId = Number(btn.dataset.actorId);
         if (!actorId) return;
@@ -417,5 +395,4 @@ export class ActivityUI {
         }
     }
 }
-
 ActivityUI.instance = null;

@@ -4,7 +4,6 @@
     margin-bottom: 1rem;
     flex-wrap: wrap;
 }
-
 .stat-pill {
     display: inline-flex;
     align-items: baseline;
@@ -16,29 +15,24 @@
     cursor: default;
     transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
 }
-
 .stat-pill strong {
     font-size: 0.95rem;
     color: var(--text-color);
 }
-
 .stat-pill span {
     font-size: 0.82rem;
     color: var(--text-muted);
 }
-
 .followers-stat,
 .followings-stat {
     cursor: pointer;
 }
-
 .followers-stat:hover,
 .followings-stat:hover {
     border-color: rgba(30, 136, 229, 0.35);
     background: rgba(30, 136, 229, 0.06);
     transform: translateY(-1px);
 }
-
 @media (max-width: 768px) {
     .user-stats {
         justify-content: center;

@@ -27,7 +27,6 @@ export const ArticleHelp = {
             <li>The article title is never modified.</li>
             <li>Leave replace empty to delete matched text.</li>
         </ul>`,
-
     graphicEditor: `
         <p>Use the toolbar above the article to format content visually.</p>
         <ul>
@@ -44,7 +43,6 @@ export const ArticleHelp = {
             <li><strong>Percentage</strong> — progress bar (<code>50%</code> or <code>1/2</code>).</li>
         </ul>
         <p>Press <strong>Esc</strong> or the red <strong>×</strong> button to exit editing. Use the page icon to switch to the text editor.</p>`,
-
     sourceEditor: `
         <p>The text editor uses <strong>Dyscover Source</strong>. One blank line separates blocks. Paragraphs are a single continuous line.</p>
         <table class="article-help-table">
@@ -89,11 +87,9 @@ export const ArticleHelp = {
             <li><code>;;</code> separates left and right columns in double-column fields.</li>
             <li>Do not break paragraphs manually — HTML indentation is ignored on export.</li>
         </ul>`,
-
     forEditorMode(isTextMode) {
         return isTextMode ? this.sourceEditor : this.graphicEditor;
     },
-
     editorTitle(isTextMode) {
         return isTextMode ? "Text editor guide" : "Graphic editor guide";
     },

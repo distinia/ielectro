@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\FileinfoException;
-
 /**
  * @param \finfo $finfo
  * @throws FileinfoException
@@ -17,8 +14,6 @@ function finfo_close(\finfo $finfo): void
         throw FileinfoException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $flags
  * @param null|string $magic_database
@@ -39,8 +34,6 @@ function finfo_open(int $flags = FILEINFO_NONE, ?string $magic_database = null):
     }
     return $safeResult;
 }
-
-
 /**
  * @param resource|string $filename
  * @return string

@@ -1,6 +1,5 @@
 import { CreatorRegistry } from "./registry.js";
 import { Search } from "./search.js";
-
 const TYPES = [
     "article",
     "image",
@@ -9,15 +8,12 @@ const TYPES = [
     "document",
     "template",
 ];
-
 export class Table {
     static switchHandler = null;
-
     constructor() {
         this.sections();
         this.sort();
     }
-
     static bindStatPills() {
         if (Table.switchHandler) {
             document.querySelectorAll(".creator-stat-pill").forEach((pill) => {
@@ -32,7 +28,6 @@ export class Table {
             pill.addEventListener("click", Table.switchHandler);
         });
     }
-
     static switchTo(type) {
         if (!TYPES.includes(type)) return;
         CreatorRegistry.classes.forEach((Class) => {
@@ -49,12 +44,10 @@ export class Table {
         });
         Search.instance?.apply();
     }
-
     sections() {
         Table.bindStatPills();
         Table.switchTo("article");
     }
-
     sort() {
         document.querySelectorAll(".table").forEach((table) => {
             table.querySelectorAll("thead th").forEach((th, index) => {
@@ -87,7 +80,6 @@ export class Table {
             });
         });
     }
-
     static sort(table, index, button) {
         const tbody = table.querySelector("tbody");
         const rows = Array.from(tbody.children).filter(

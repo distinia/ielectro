@@ -2,9 +2,7 @@
 /**
  * Provide general element functions.
  */
-
 namespace Masterminds\HTML5;
-
 /**
  * This class provides general information about HTML5 elements,
  * including syntactic and semantic issues.
@@ -22,7 +20,6 @@ class Elements
      * Indicates an element is described in the specification.
      */
     const KNOWN_ELEMENT = 1;
-
     // From section 8.1.2: "script", "style"
     // From 8.2.5.4.7 ("in body" insertion mode): "noembed"
     // From 8.4 "style", "xmp", "iframe", "noembed", "noframes"
@@ -30,18 +27,15 @@ class Elements
      * Indicates the contained text should be processed as raw text.
      */
     const TEXT_RAW = 2;
-
     // From section 8.1.2: "textarea", "title"
     /**
      * Indicates the contained text should be processed as RCDATA.
      */
     const TEXT_RCDATA = 4;
-
     /**
      * Indicates the tag cannot have content.
      */
     const VOID_TAG = 8;
-
     // "address", "article", "aside", "blockquote", "center", "details", "dialog", "dir", "div", "dl",
     // "fieldset", "figcaption", "figure", "footer", "header", "hgroup", "menu",
     // "nav", "ol", "p", "section", "summary", "ul"
@@ -54,23 +48,19 @@ class Elements
      * should be considered closed.
      */
     const AUTOCLOSE_P = 16;
-
     /**
      * Indicates that the text inside is plaintext (pre).
      */
     const TEXT_PLAINTEXT = 32;
-
     // See https://developer.mozilla.org/en-US/docs/HTML/Block-level_elements
     /**
      * Indicates that the tag is a block.
      */
     const BLOCK_TAG = 64;
-
     /**
      * Indicates that the tag allows only inline elements as child nodes.
      */
     const BLOCK_ONLY_INLINE = 128;
-
     /**
      * Elements with optional end tags that cause auto-closing of previous and parent tags,
      * as example most of the table related tags, see https://www.w3.org/TR/html401/struct/tables.html
@@ -88,7 +78,6 @@ class Elements
         'tfoot' => array('td', 'th', 'tr', 'tbody', 'thead'),
         'tbody' => array('td', 'th', 'tr', 'thead'),
     );
-
     /**
      * The HTML5 elements as defined in http://dev.w3.org/html5/markup/elements.html.
      *
@@ -205,7 +194,6 @@ class Elements
         'var' => 1,
         'video' => 1,
         'wbr' => 9, // NORMAL | VOID_TAG
-
         // Legacy?
         'basefont' => 8, // VOID_TAG
         'bgsound' => 8, // VOID_TAG
@@ -222,7 +210,6 @@ class Elements
         'xmp' => 20, // AUTOCLOSE_P | VOID_TAG | RAW_TEXT
         'noembed' => 2, // RAW_TEXT
         );
-
     /**
      * The MathML elements.
      * See http://www.w3.org/wiki/MathML/Elements.
@@ -273,7 +260,6 @@ class Elements
         'munder' => 1,
         'munderover' => 1,
     );
-
     /**
      * The svg elements.
      *
@@ -368,7 +354,6 @@ class Elements
         'view' => 1,
         'vkern' => 1,
     );
-
     /**
      * Some attributes in SVG are case sensitive.
      *
@@ -439,7 +424,6 @@ class Elements
         'ychannelselector' => 'yChannelSelector',
         'zoomandpan' => 'zoomAndPan',
     );
-
     /**
      * Some SVG elements are case sensitive.
      * This map contains these.
@@ -485,7 +469,6 @@ class Elements
         'radialgradient' => 'radialGradient',
         'textpath' => 'textPath',
     );
-
     /**
      * Check whether the given element meets the given criterion.
      *
@@ -504,7 +487,6 @@ class Elements
     {
         return (static::element($name) & $mask) === $mask;
     }
-
     /**
      * Test if an element is a valid html5 element.
      *
@@ -518,7 +500,6 @@ class Elements
         // Do we need this check or will all data passed here already be lowercase?
         return isset(static::$html5[strtolower($name)]);
     }
-
     /**
      * Test if an element name is a valid MathML presentation element.
      *
@@ -531,7 +512,6 @@ class Elements
         // MathML is case-sensitive unlike html5 elements.
         return isset(static::$mathml[$name]);
     }
-
     /**
      * Test if an element is a valid SVG element.
      *
@@ -544,7 +524,6 @@ class Elements
         // SVG is case-sensitive unlike html5 elements.
         return isset(static::$svg[$name]);
     }
-
     /**
      * Is an element name valid in an html5 document.
      * This includes html5 elements along with other allowed embedded content
@@ -558,7 +537,6 @@ class Elements
     {
         return static::isHtml5Element($name) || static::isMathMLElement($name) || static::isSvgElement($name);
     }
-
     /**
      * Get the element mask for the given element name.
      *
@@ -577,10 +555,8 @@ class Elements
         if (isset(static::$mathml[$name])) {
             return static::$mathml[$name];
         }
-
         return 0;
     }
-
     /**
      * Normalize a SVG element name to its proper case and form.
      *
@@ -594,10 +570,8 @@ class Elements
         if (isset(static::$svgCaseSensitiveElementMap[$name])) {
             $name = static::$svgCaseSensitiveElementMap[$name];
         }
-
         return $name;
     }
-
     /**
      * Normalize a SVG attribute name to its proper case and form.
      *
@@ -611,10 +585,8 @@ class Elements
         if (isset(static::$svgCaseSensitiveAttributeMap[$name])) {
             $name = static::$svgCaseSensitiveAttributeMap[$name];
         }
-
         return $name;
     }
-
     /**
      * Normalize a MathML attribute name to its proper case and form.
      * Note, all MathML element names are lowercase.
@@ -626,12 +598,10 @@ class Elements
     public static function normalizeMathMlAttribute($name)
     {
         $name = strtolower($name);
-
         // Only one attribute has a mixed case form for MathML.
         if ('definitionurl' === $name) {
             $name = 'definitionURL';
         }
-
         return $name;
     }
 }

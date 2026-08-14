@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\XmlrpcException;
-
 /**
  * @param \DateTime|string $value
  * @param string $type

@@ -5,27 +5,22 @@ import { encodePostMessage } from "./post-message.js";
 import { Alert } from "./alert.js";
 import { Overlay } from "./overlay.js";
 import { UsersList } from "./users-list.js";
-
 export class Share {
     constructor(card) {
         this.card = card;
     }
-
     get item() {
         return this.card.item;
     }
-
     isArticle() {
         return String(this.item?.type || "").toLowerCase() === "article";
     }
-
     shareLink() {
         if (this.isArticle()) {
             return this.item.url || "";
         }
         return "";
     }
-
     async open() {
         await this.card.ensureData();
         const canCopy = this.isArticle() && !!this.shareLink();
@@ -53,7 +48,6 @@ export class Share {
             Icons.load(body);
         });
     }
-
     loadShareUsers(term, me) {
         if (term) {
             return Request.get(Api.exploreSearchAll(term)).then((res) => {
@@ -68,7 +62,6 @@ export class Share {
             return Request.get(Api.userFollowing(selfId)).then((res) => Api.list(res));
         });
     }
-
     async openInboxPicker() {
         const me = await Auth.username();
         const list = new UsersList({
@@ -81,7 +74,6 @@ export class Share {
         });
         await list.open();
     }
-
     async sendToMany(users) {
         const usernames = [
             ...new Set(
@@ -112,7 +104,6 @@ export class Share {
             Alert.error("Send failed");
         }
     }
-
     async sendTo(username, opts = {}) {
         if (!username) return;
         const participantId = await App.resolveUserId(username);
@@ -134,7 +125,6 @@ export class Share {
             }
         }
     }
-
     async recordShareOnce() {
         try {
             await Request.post(Api.postShares(this.item.id));

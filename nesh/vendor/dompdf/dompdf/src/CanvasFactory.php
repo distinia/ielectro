@@ -5,7 +5,6 @@
  * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
  */
 namespace Dompdf;
-
 /**
  * Create canvas instances
  *
@@ -22,7 +21,6 @@ class CanvasFactory
     private function __construct()
     {
     }
-
     /**
      * @param Dompdf         $dompdf
      * @param string|float[] $paper
@@ -34,7 +32,6 @@ class CanvasFactory
     static function get_instance(Dompdf $dompdf, $paper, string $orientation, ?string $class = null)
     {
         $backend = strtolower($dompdf->getOptions()->getPdfBackend());
-
         if (isset($class) && class_exists($class, false)) {
             $class .= "_Adapter";
         } else {
@@ -43,7 +40,6 @@ class CanvasFactory
             ) {
                 $class = "Dompdf\\Adapter\\PDFLib";
             }
-
             else {
                 if (class_exists($backend, false)) {
                     $class = $backend;
@@ -54,15 +50,12 @@ class CanvasFactory
                 }
             }
         }
-
         $instance = new $class($paper, $orientation, $dompdf);
-
         $class_interfaces = class_implements($class, false);
         if (!$class_interfaces || !in_array("Dompdf\\Canvas", $class_interfaces)) {
             $class = "Dompdf\\Adapter\\CPDF";
             $instance = new $class($paper, $orientation, $dompdf);
         }
-
         return $instance;
     }
 }

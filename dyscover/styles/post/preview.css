@@ -16,27 +16,23 @@
         box-shadow 0.22s ease,
         opacity 0.2s ease;
 }
-
 .post-preview:hover {
     transform: translateY(-6px) scale(1.015);
     box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
     opacity: 1;
 }
-
 .post-preview-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
 }
-
 .post-preview-video {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
 }
-
 .post-preview-header {
     position: absolute;
     top: 0;
@@ -49,13 +45,11 @@
     z-index: 2;
     width: 100%;
 }
-
 .post-preview-user {
     display: flex;
     align-items: center;
     color: #fff;
 }
-
 .post-preview-avatar {
     width: 36px;
     height: 36px;
@@ -65,7 +59,6 @@
     margin: 10px;
     border: 2px solid rgba(255, 255, 255, 0.85);
 }
-
 .post-preview-username {
     display: flex;
     align-items: center;
@@ -75,7 +68,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
 .post-preview-type {
     position: absolute;
     bottom: 0;
@@ -87,11 +79,9 @@
     background: linear-gradient(transparent, rgba(0, 0, 0, 0.78));
     color: #fff;
 }
-
 .post-preview-icon {
     flex-shrink: 0;
 }
-
 .post-preview-icon i,
 .post-preview-icon svg {
     width: 22px;
@@ -101,7 +91,6 @@
     justify-content: center;
     margin: 10px;
 }
-
 .post-preview-title {
     flex: 1;
     min-width: 0;
@@ -112,13 +101,11 @@
     text-overflow: ellipsis;
     padding-right: 0.75rem;
 }
-
 .post-preview-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1.15rem;
 }
-
 .post-preview-placeholder {
     display: flex;
     align-items: center;
@@ -128,25 +115,21 @@
     background: linear-gradient(145deg, #1565c0, #0d47a1 55%, #1b5e20);
     color: #fff;
 }
-
 .post-preview-placeholder i {
     width: 2.75rem;
     height: 2.75rem;
     opacity: 0.92;
 }
-
 @media (max-width: 768px) {
     .post-preview-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 0.65rem;
     }
-
     .post-preview {
         min-height: 150px;
         border-radius: 14px;
     }
 }
-
 @media (prefers-reduced-motion: reduce) {
     .post-preview:hover {
         transform: none;

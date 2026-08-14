@@ -1,20 +1,15 @@
 DirectoryIndex index.php
 RewriteEngine On
-
 RewriteRule ^database(?:/.*)?$ - [F,L,NC]
 RewriteRule ^storage(?:/.*)?$ - [F,L,NC]
 RewriteRule ^assets/users/[0-9]+/articles/.+\.html$ - [F,L,NC]
-
 <IfModule mod_headers.c>
     <FilesMatch "\.(?:png|jpe?g|gif|webp|svg|ico|mp3|mp4|webm|pdf|woff2?)$">
         Header set Cache-Control "public, max-age=2592000"
     </FilesMatch>
 </IfModule>
-
 RewriteCond %{REQUEST_FILENAME} -f
 RewriteRule ^ - [L]
-
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^assets/users/[0-9]+/avatar\.png$ assets/default-user/avatar.png [L,NC]
-
 RewriteRule ^ index.php [L,QSA]

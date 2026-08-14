@@ -6,7 +6,6 @@
     align-items: center;
     justify-content: center;
 }
-
 .post-media img,
 .post-media video {
     width: 100%;
@@ -15,24 +14,20 @@
     display: block;
     background: transparent;
 }
-
 .post-media-article .post-preview-image {
     object-fit: contain;
 }
-
 .post-media-article .post-preview-placeholder--overlay {
     flex-direction: column;
     gap: 0.85rem;
     padding: 2rem;
     text-align: center;
 }
-
 .post-media-article .post-preview-placeholder--overlay i {
     width: 3.25rem;
     height: 3.25rem;
     opacity: 0.95;
 }
-
 .post-preview-placeholder-label {
     max-width: min(320px, 80%);
     font-size: 1rem;
@@ -40,7 +35,6 @@
     line-height: 1.35;
     color: rgba(255, 255, 255, 0.92);
 }
-
 .post-preview-placeholder--overlay {
     display: flex;
     align-items: center;
@@ -53,21 +47,17 @@
         linear-gradient(145deg, #1565c0, #0d47a1 55%, #1a237e);
     color: #fff;
 }
-
 .post-preview-placeholder--overlay i {
     width: 2.75rem;
     height: 2.75rem;
     opacity: 0.92;
 }
-
 .post-media-audio {
     padding: 2rem 1.5rem;
 }
-
 .post-media-audio audio {
     width: 100%;
 }
-
 .post-media-doc iframe {
     width: 100%;
     height: 100%;

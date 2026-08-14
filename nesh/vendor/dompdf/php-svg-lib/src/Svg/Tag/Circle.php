@@ -4,17 +4,13 @@
  * @link    http://github.com/dompdf/php-svg-lib
  * @license GNU LGPLv3+ http://www.gnu.org/copyleft/lesser.html
  */
-
 namespace Svg\Tag;
-
 use Svg\Style;
-
 class Circle extends Shape
 {
     protected $cx = 0;
     protected $cy = 0;
     protected $r;
-
     public function start($attributes)
     {
         if (isset($attributes['cx'])) {
@@ -29,7 +25,6 @@ class Circle extends Shape
             $diagonal = $this->document->getDiagonal();
             $this->r = $this->convertSize($attributes['r'], $diagonal);
         }
-
         $this->document->getSurface()->circle($this->cx, $this->cy, $this->r);
     }
 } 

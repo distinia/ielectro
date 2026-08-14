@@ -1,9 +1,6 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\Comment;
-
 /**
  * Provides a standard reusable implementation of `Commentable`.
  *
@@ -17,7 +14,6 @@ trait CommentContainer
      * @var list<Comment>
      */
     protected $comments = [];
-
     /**
      * @param list<Comment> $comments
      */
@@ -25,7 +21,6 @@ trait CommentContainer
     {
         $this->comments = \array_merge($this->comments, $comments);
     }
-
     /**
      * @return list<Comment>
      */
@@ -33,7 +28,6 @@ trait CommentContainer
     {
         return $this->comments;
     }
-
     /**
      * @param list<Comment> $comments
      */

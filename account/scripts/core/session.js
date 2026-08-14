@@ -1,7 +1,6 @@
 import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
 import { Alert } from "./alert.js";
 import { Api } from "./api.js";
-
 export class Session {
     static bindLogout() {
         document.querySelector(".sidebar a.logout")?.addEventListener("click", async (event) => {

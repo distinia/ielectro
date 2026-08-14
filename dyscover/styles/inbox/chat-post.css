@@ -1,38 +1,31 @@
 .chat-msg--post {
     align-items: flex-end;
 }
-
 .chat-msg--post.mine {
     align-self: flex-end;
 }
-
 .chat-msg-post-shell {
     width: 100%;
 }
-
 .chat-msg-post {
     width: 100%;
     border-radius: 16px;
     overflow: hidden;
     box-shadow: 0 10px 28px rgba(15, 23, 42, 0.16);
 }
-
 .chat-msg-post .post-preview {
     aspect-ratio: 4 / 5;
     min-height: 280px;
     border-radius: 16px;
     box-shadow: none;
 }
-
 .chat-msg-post .post-preview:hover {
     transform: none;
     opacity: 1;
 }
-
 .chat-msg-text:empty {
     display: none;
 }
-
 .chat-msg-post-unavailable {
     display: flex;
     align-items: center;

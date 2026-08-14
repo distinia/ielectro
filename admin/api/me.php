@@ -1,12 +1,9 @@
 <?php
 namespace Admin;
-
 use Nesh\Identity;
 use Nesh\Request;
 use Nesh\Response;
-
 require_once __DIR__ . '/access.php';
-
 class Me
 {
     public function index(): void

@@ -9,7 +9,6 @@ use Nesh\Request;
 use Nesh\Response;
 use Nesh\Routing;
 use Nesh\Validate;
-
 require_once __DIR__ . '/access.php';
 require_once __DIR__ . '/paths.php';
 class News

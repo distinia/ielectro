@@ -1,7 +1,6 @@
 import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
 import { Alert } from "../core/alert.js";
 import { Api } from "../core/api.js";
-
 export class OAuthCreate {
     constructor(form) {
         this.form = form;
@@ -44,18 +43,15 @@ export class OAuthCreate {
         const formData = new FormData(this.form);
         formData.append("name", this.oauth.name);
         formData.append("surname", this.oauth.surname);
-
         const day = formData.get("day");
         const month = formData.get("month");
         const year = formData.get("year");
-
         if (day && month && year) {
             formData.set(
                 "birthday",
                 `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
             );
         }
-
         try {
             const response = await Nesh.Request.post(
                 "https://account.ielectro.com/api/user",
@@ -70,7 +66,6 @@ export class OAuthCreate {
         }
     }
 }
-
 class BirthdaySelector {
     constructor(form) {
         this.form = form;

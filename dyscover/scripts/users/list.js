@@ -1,7 +1,6 @@
 import { Alert, Auth, UsersList } from "../core/index.js";
 import { Actions } from "./actions.js";
 import { Informations } from "./informations.js";
-
 export class List {
     constructor(type, data, canManage = false, page = null) {
         this.type = type;
@@ -10,7 +9,6 @@ export class List {
         this.page = page;
         this.open();
     }
-
     open() {
         const actionLabel = this.canManage
             ? (user) => {

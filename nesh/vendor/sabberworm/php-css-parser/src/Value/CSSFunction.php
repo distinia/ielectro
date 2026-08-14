@@ -1,15 +1,11 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\Value;
-
 use Sabberworm\CSS\OutputFormat;
 use Sabberworm\CSS\Parsing\ParserState;
 use Sabberworm\CSS\Parsing\SourceException;
 use Sabberworm\CSS\Parsing\UnexpectedEOFException;
 use Sabberworm\CSS\Parsing\UnexpectedTokenException;
-
 /**
  * A `CSSFunction` represents a special kind of value that also contains a function name and where the values are the
  * function’s arguments. It also handles equals-sign-separated argument lists like `filter: alpha(opacity=90);`.
@@ -22,7 +18,6 @@ class CSSFunction extends ValueList
      * @internal since 8.8.0
      */
     protected $name;
-
     /**
      * @param non-empty-string $name
      * @param RuleValueList|array<Value|string> $arguments
@@ -39,7 +34,6 @@ class CSSFunction extends ValueList
         $this->setPosition($lineNumber); // TODO: redundant?
         parent::__construct($arguments, $separator, $lineNumber);
     }
-
     /**
      * @throws SourceException
      * @throws UnexpectedEOFException
@@ -52,13 +46,10 @@ class CSSFunction extends ValueList
         $name = self::parseName($parserState, $ignoreCase);
         $parserState->consume('(');
         $arguments = self::parseArguments($parserState);
-
         $result = new CSSFunction($name, $arguments, ',', $parserState->currentLine());
         $parserState->consume(')');
-
         return $result;
     }
-
     /**
      * @throws SourceException
      * @throws UnexpectedEOFException
@@ -68,7 +59,6 @@ class CSSFunction extends ValueList
     {
         return $parserState->parseIdentifier($ignoreCase);
     }
-
     /**
      * @return Value|string
      *
@@ -80,7 +70,6 @@ class CSSFunction extends ValueList
     {
         return Value::parseValue($parserState, ['=', ' ', ',']);
     }
-
     /**
      * @return non-empty-string
      */
@@ -88,7 +77,6 @@ class CSSFunction extends ValueList
     {
         return $this->name;
     }
-
     /**
      * @param non-empty-string $name
      */
@@ -96,7 +84,6 @@ class CSSFunction extends ValueList
     {
         $this->name = $name;
     }
-
     /**
      * @return array<Value|string>
      */
@@ -104,7 +91,6 @@ class CSSFunction extends ValueList
     {
         return $this->components;
     }
-
     /**
      * @return non-empty-string
      */
@@ -113,7 +99,6 @@ class CSSFunction extends ValueList
         $arguments = parent::render($outputFormat);
         return "{$this->name}({$arguments})";
     }
-
     /**
      * @return array<string, bool|int|float|string|array<mixed>|null>
      *

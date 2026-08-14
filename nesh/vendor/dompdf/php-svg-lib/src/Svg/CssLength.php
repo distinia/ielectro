@@ -1,7 +1,5 @@
 <?php
-
 namespace Svg;
-
 class CssLength
 {
     /**
@@ -29,7 +27,6 @@ class CssLength
         '%',
         'q',
     ];
-
     /**
      * A list of units that are inch-relative, and their unit division within an inch.
      *
@@ -43,7 +40,6 @@ class CssLength
         'pc' => 6,
         'pt' => 72,
     ];
-
     /**
      * The CSS length unit indicator.
      * Will be lower-case and one of the units listed in the '$units' array or empty.
@@ -51,34 +47,29 @@ class CssLength
      * @var string
      */
     protected $unit = '';
-
     /**
      * The numeric value of the given length.
      *
      * @var float
      */
     protected $value = 0;
-
     /**
      * The original unparsed length provided.
      *
      * @var string
      */
     protected $unparsed;
-
     public function __construct(string $length)
     {
         $this->unparsed = $length;
         $this->parseLengthComponents($length);
     }
-
     /**
      * Parse out the unit and value components from the given string length.
      */
     protected function parseLengthComponents(string $length): void
     {
         $length = strtolower($length);
-
         foreach (self::$units as $unit) {
             $pos = strpos($length, $unit);
             if ($pos) {
@@ -87,11 +78,9 @@ class CssLength
                 return;
             }
         }
-
         $this->unit = '';
         $this->value = floatval($length);
     }
-
     /**
      * Get the unit type of this css length.
      * Units are standardised to be lower-cased.
@@ -102,7 +91,6 @@ class CssLength
     {
         return $this->unit;
     }
-
     /**
      * Get this CSS length in the equivalent pixel count size.
      *
@@ -117,19 +105,16 @@ class CssLength
         if (in_array($this->unit, ['em', 'rem', 'ex', 'ch'])) {
             return $this->value * $referenceSize;
         }
-
         // Percentage relative units
         if (in_array($this->unit, ['%', 'vw', 'vh', 'vmin', 'vmax'])) {
             return $this->value * ($referenceSize / 100);
         }
-
         // Inch relative units
         if (in_array($this->unit, array_keys(static::$inchDivisions))) {
             $inchValue = $this->value * $dpi;
             $division = static::$inchDivisions[$this->unit];
             return $inchValue / $division;
         }
-
         return $this->value;
     }
 }

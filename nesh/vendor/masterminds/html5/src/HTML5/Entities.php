@@ -1,7 +1,5 @@
 <?php
-
 namespace Masterminds\HTML5;
-
 /**
  * Entity lookup tables.
  * This class is automatically generated.

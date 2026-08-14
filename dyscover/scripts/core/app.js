@@ -9,19 +9,16 @@ export class App {
     static peerAvatarCache = Object.create(null);
     static ready = null;
     static blocked = false;
-
     constructor() {
         if (!App.ready) {
             App.ready = this.init();
         }
     }
-
     static async boot() {
         new App();
         await App.ready;
         return !App.blocked;
     }
-
     static async runPage(pageInit) {
         if (!(await App.boot())) return false;
         if (pageInit) await pageInit();
@@ -32,22 +29,17 @@ export class App {
         Nesh.Input.disableAutocomplete();
         Nesh.Input.disableTextCorrection();
         Nesh.Input.bind();
-
         const authed = await App.authenticated();
-
         if (!authed) {
             window.location.href =
                 "https://account.ielectro.com/login?service=dyscover";
             App.blocked = true;
             return;
         }
-
         new Navbar();
         document.body.classList.add("has-navbar");
-
         await Nesh.Icons.load(document.body);
     }
-
     static page() {
         const parts = window.location.pathname
             .replace(/\/$/, "")
@@ -56,11 +48,9 @@ export class App {
         if (!parts.length) return "home";
         return parts[0];
     }
-
     static async authenticated() {
         return Nesh.Auth.logged();
     }
-
     static escapeHtml(text) {
         return String(text ?? "")
             .replace(/&/g, "&amp;")
@@ -68,11 +58,9 @@ export class App {
             .replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;");
     }
-
     static escapeAttr(text) {
         return this.escapeHtml(text).replace(/'/g, "&#39;");
     }
-
     static initialsOf(value) {
         const parts = String(value || "?")
             .trim()
@@ -82,7 +70,6 @@ export class App {
         if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
         return (parts[0][0] + parts[1][0]).toUpperCase();
     }
-
     static urlLastPart() {
         const parts = window.location.pathname
             .replace(/\/$/, "")
@@ -90,7 +77,6 @@ export class App {
             .filter(Boolean);
         return parts[parts.length - 1] || "";
     }
-
     static profileUsername() {
         const page = App.page();
         if (page === "users") {
@@ -105,12 +91,10 @@ export class App {
         }
         return App.urlLastPart().replace(/^@/, "");
     }
-
     static setScrollEnabled(on) {
         App.scrollLocked = !on;
         document.body.style.overflow = on ? "" : "hidden";
     }
-
     static enrichPost(item = {}) {
         if (!item || typeof item !== "object") return {};
         const type = String(item.type || "article").toLowerCase();
@@ -164,13 +148,10 @@ export class App {
             created_at: item.created_at || item.published_at || null,
         };
     }
-
     static defaultPostPreview() {
         return `${Api.origin}/assets/brand/default-post.jpg`;
     }
-
     static accountOrigin = "https://account.ielectro.com";
-
     static userAvatarUrl(userId, username, explicit = "", accountId = 0) {
         if (explicit) return String(explicit);
         const accId = Number(accountId);
@@ -179,7 +160,6 @@ export class App {
         }
         return App.peerAvatarUrl(username, explicit);
     }
-
     static bustAvatarUrl(userId, explicit = "", version = null, accountId = 0) {
         const base = App.userAvatarUrl(userId, "", explicit, accountId).split("?")[0];
         const token =
@@ -188,7 +168,6 @@ export class App {
                 : Date.now();
         return `${base}?t=${token}`;
     }
-
     static refreshAvatarImages(userId, explicit = "", accountId = 0) {
         const url = App.bustAvatarUrl(userId, explicit, null, accountId);
         document
@@ -200,7 +179,6 @@ export class App {
             });
         return url;
     }
-
     static async resolveUserId(username) {
         const raw = String(username || "").replace(/^@/, "").trim();
         const key = raw.toLowerCase();
@@ -218,7 +196,6 @@ export class App {
             return null;
         }
     }
-
     static async resolveSelfUserId(force = false) {
         if (!force && App.selfUserIdCache) {
             return App.selfUserIdCache;
@@ -233,7 +210,6 @@ export class App {
         }
         return id;
     }
-
     static async isFollowing(targetUserId) {
         const selfId = await App.resolveSelfUserId();
         if (!selfId || !targetUserId || selfId === targetUserId) return false;
@@ -242,7 +218,6 @@ export class App {
             (user) => Number(user.id) === Number(targetUserId),
         );
     }
-
     static async isFollowedBy(userId) {
         const selfId = await App.resolveSelfUserId();
         if (!selfId || !userId || selfId === userId) return false;
@@ -251,14 +226,12 @@ export class App {
             (user) => Number(user.id) === Number(userId),
         );
     }
-
     static normalizePeerKey(username) {
         return String(username || "")
             .replace(/^@/, "")
             .trim()
             .toLowerCase();
     }
-
     static peerAvatarUrl(username, explicitUrl) {
         const raw = String(username || "").replace(/^@/, "").trim();
         const key = App.normalizePeerKey(raw);
@@ -276,7 +249,6 @@ export class App {
         App.peerAvatarCache[key] = built;
         return built;
     }
-
     static wireAvatarImg(img) {
         if (!img) return;
         const wrap =
@@ -294,7 +266,6 @@ export class App {
             wrap?.classList.remove("avatar--fallback");
         });
     }
-
     static normalizeInboxThread(row = {}) {
         const peer = row.peer && typeof row.peer === "object" ? row.peer : {};
         const username =
@@ -310,7 +281,6 @@ export class App {
             last_message: row.last_message || "",
         };
     }
-
     static normalizeInboxMessage(row = {}) {
         return {
             id: Number(row.id) || 0,

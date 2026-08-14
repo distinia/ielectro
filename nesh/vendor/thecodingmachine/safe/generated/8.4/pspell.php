@@ -1,9 +1,6 @@
 <?php
-
 namespace Safe;
-
 use Safe\Exceptions\PspellException;
-
 /**
  * @param int $dictionary
  * @param string $word
@@ -18,8 +15,6 @@ function pspell_add_to_personal(int $dictionary, string $word): void
         throw PspellException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $dictionary
  * @param string $word
@@ -34,8 +29,6 @@ function pspell_add_to_session(int $dictionary, string $word): void
         throw PspellException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $dictionary
  * @throws PspellException
@@ -49,8 +42,6 @@ function pspell_clear_session(int $dictionary): void
         throw PspellException::createFromPhpError();
     }
 }
-
-
 /**
  * @param string $language
  * @param string $spelling
@@ -65,8 +56,6 @@ function pspell_config_create(string $language, string $spelling = "", string $j
     $safeResult = \pspell_config_create($language, $spelling, $jargon, $encoding);
     return $safeResult;
 }
-
-
 /**
  * @param int $config
  * @param string $directory
@@ -81,8 +70,6 @@ function pspell_config_data_dir(int $config, string $directory): void
         throw PspellException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $config
  * @param string $directory
@@ -97,8 +84,6 @@ function pspell_config_dict_dir(int $config, string $directory): void
         throw PspellException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $config
  * @param int $min_length
@@ -113,8 +98,6 @@ function pspell_config_ignore(int $config, int $min_length): void
         throw PspellException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $config
  * @param int $mode
@@ -129,8 +112,6 @@ function pspell_config_mode(int $config, int $mode): void
         throw PspellException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $config
  * @param string $filename
@@ -145,8 +126,6 @@ function pspell_config_personal(int $config, string $filename): void
         throw PspellException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $config
  * @param string $filename
@@ -161,8 +140,6 @@ function pspell_config_repl(int $config, string $filename): void
         throw PspellException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $config
  * @param bool $allow
@@ -177,8 +154,6 @@ function pspell_config_runtogether(int $config, bool $allow): void
         throw PspellException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $config
  * @param bool $save
@@ -193,8 +168,6 @@ function pspell_config_save_repl(int $config, bool $save): void
         throw PspellException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $config
  * @return int
@@ -210,8 +183,6 @@ function pspell_new_config(int $config): int
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $filename
  * @param string $language
@@ -232,8 +203,6 @@ function pspell_new_personal(string $filename, string $language, string $spellin
     }
     return $safeResult;
 }
-
-
 /**
  * @param string $language
  * @param string $spelling
@@ -253,8 +222,6 @@ function pspell_new(string $language, string $spelling = "", string $jargon = ""
     }
     return $safeResult;
 }
-
-
 /**
  * @param int $dictionary
  * @throws PspellException
@@ -268,8 +235,6 @@ function pspell_save_wordlist(int $dictionary): void
         throw PspellException::createFromPhpError();
     }
 }
-
-
 /**
  * @param int $dictionary
  * @param string $misspelled

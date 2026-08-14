@@ -1,5 +1,4 @@
 <?php
-
 return [
     'apache_getenv',
     'apache_get_version',

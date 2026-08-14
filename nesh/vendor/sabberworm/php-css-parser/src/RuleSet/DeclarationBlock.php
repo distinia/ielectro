@@ -1,9 +1,6 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\RuleSet;
-
 use Sabberworm\CSS\Comment\Comment;
 use Sabberworm\CSS\Comment\CommentContainer;
 use Sabberworm\CSS\CSSElement;
@@ -21,7 +18,6 @@ use Sabberworm\CSS\Property\Declaration;
 use Sabberworm\CSS\Property\KeyframeSelector;
 use Sabberworm\CSS\Property\Selector;
 use Sabberworm\CSS\Settings;
-
 /**
  * This class represents a `RuleSet` constrained by a `Selector`.
  *
@@ -37,17 +33,14 @@ class DeclarationBlock implements CSSElement, CSSListItem, Positionable, Declara
     use CommentContainer;
     use LegacyDeclarationListMethods;
     use Position;
-
     /**
      * @var list<Selector>
      */
     private $selectors = [];
-
     /**
      * @var RuleSet
      */
     private $ruleSet;
-
     /**
      * @param int<1, max>|null $lineNumber
      */
@@ -56,7 +49,6 @@ class DeclarationBlock implements CSSElement, CSSListItem, Positionable, Declara
         $this->ruleSet = new RuleSet($lineNumber);
         $this->setPosition($lineNumber);
     }
-
     /**
      * @throws UnexpectedTokenException
      * @throws UnexpectedEOFException
@@ -84,12 +76,9 @@ class DeclarationBlock implements CSSElement, CSSListItem, Positionable, Declara
             }
         }
         $result->setComments($comments);
-
         RuleSet::parseRuleSet($parserState, $result->getRuleSet());
-
         return $result;
     }
-
     /**
      * @param array<Selector|string>|string $selectors
      *
@@ -118,7 +107,6 @@ class DeclarationBlock implements CSSElement, CSSListItem, Positionable, Declara
                 );
             }
         }
-
         // Convert all items to a `Selector` if not already
         foreach ($selectorsToSet as $key => $selector) {
             if (!($selector instanceof Selector)) {
@@ -143,11 +131,9 @@ class DeclarationBlock implements CSSElement, CSSListItem, Positionable, Declara
                 }
             }
         }
-
         // Discard the keys and reindex the array
         $this->selectors = \array_values($selectorsToSet);
     }
-
     /**
      * Remove one of the selectors of the block.
      *
@@ -166,7 +152,6 @@ class DeclarationBlock implements CSSElement, CSSListItem, Positionable, Declara
         }
         return false;
     }
-
     /**
      * @return list<Selector>
      */
@@ -174,12 +159,10 @@ class DeclarationBlock implements CSSElement, CSSListItem, Positionable, Declara
     {
         return $this->selectors;
     }
-
     public function getRuleSet(): RuleSet
     {
         return $this->ruleSet;
     }
-
     /**
      * @see RuleSet::addDeclaration()
      */
@@ -187,7 +170,6 @@ class DeclarationBlock implements CSSElement, CSSListItem, Positionable, Declara
     {
         $this->ruleSet->addDeclaration($declarationToAdd, $sibling);
     }
-
     /**
      * @return array<int<0, max>, Declaration>
      *
@@ -197,7 +179,6 @@ class DeclarationBlock implements CSSElement, CSSListItem, Positionable, Declara
     {
         return $this->ruleSet->getDeclarations($searchPattern);
     }
-
     /**
      * @param array<Declaration> $declarations
      *
@@ -207,7 +188,6 @@ class DeclarationBlock implements CSSElement, CSSListItem, Positionable, Declara
     {
         $this->ruleSet->setDeclarations($declarations);
     }
-
     /**
      * @return array<string, Declaration>
      *
@@ -217,7 +197,6 @@ class DeclarationBlock implements CSSElement, CSSListItem, Positionable, Declara
     {
         return $this->ruleSet->getDeclarationsAssociative($searchPattern);
     }
-
     /**
      * @see RuleSet::removeDeclaration()
      */
@@ -225,7 +204,6 @@ class DeclarationBlock implements CSSElement, CSSListItem, Positionable, Declara
     {
         $this->ruleSet->removeDeclaration($declarationToRemove);
     }
-
     /**
      * @see RuleSet::removeMatchingDeclarations()
      */
@@ -233,7 +211,6 @@ class DeclarationBlock implements CSSElement, CSSListItem, Positionable, Declara
     {
         $this->ruleSet->removeMatchingDeclarations($searchPattern);
     }
-
     /**
      * @see RuleSet::removeAllDeclarations()
      */
@@ -241,7 +218,6 @@ class DeclarationBlock implements CSSElement, CSSListItem, Positionable, Declara
     {
         $this->ruleSet->removeAllDeclarations();
     }
-
     /**
      * @return non-empty-string
      *
@@ -268,10 +244,8 @@ class DeclarationBlock implements CSSElement, CSSListItem, Positionable, Declara
         $result .= $this->ruleSet->render($outputFormat);
         $result .= '}';
         $result .= $outputFormat->getContentAfterDeclarationBlock();
-
         return $result;
     }
-
     /**
      * @return array<string, bool|int|float|string|array<mixed>|null>
      *
@@ -281,7 +255,6 @@ class DeclarationBlock implements CSSElement, CSSListItem, Positionable, Declara
     {
         throw new \BadMethodCallException('`getArrayRepresentation` is not yet implemented for `' . self::class . '`');
     }
-
     /**
      * @param list<Comment> $comments
      *
@@ -293,14 +266,12 @@ class DeclarationBlock implements CSSElement, CSSListItem, Positionable, Declara
     {
         $selectorClass = $list instanceof KeyFrame ? KeyFrameSelector::class : Selector::class;
         $selectors = [];
-
         while (true) {
             $selectors[] = $selectorClass::parse($parserState, $comments);
             if (!$parserState->consumeIfComes(',')) {
                 break;
             }
         }
-
         return $selectors;
     }
 }

@@ -1,9 +1,6 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Sabberworm\CSS\CSSList;
-
 use Sabberworm\CSS\Comment\CommentContainer;
 use Sabberworm\CSS\CSSElement;
 use Sabberworm\CSS\OutputFormat;
@@ -24,9 +21,7 @@ use Sabberworm\CSS\RuleSet\RuleSet;
 use Sabberworm\CSS\Value\CSSString;
 use Sabberworm\CSS\Value\URL;
 use Sabberworm\CSS\Value\Value;
-
 use function Safe\preg_match;
-
 /**
  * This is the most generic container available. It can contain `DeclarationBlock`s (rule sets with a selector),
  * `RuleSet`s as well as other `CSSList` objects.
@@ -40,14 +35,12 @@ abstract class CSSList implements CSSElement, CSSListItem, Positionable
 {
     use CommentContainer;
     use Position;
-
     /**
      * @var array<int<0, max>, CSSListItem>
      *
      * @internal since 8.8.0
      */
     protected $contents = [];
-
     /**
      * @param int<1, max>|null $lineNumber
      */
@@ -55,7 +48,6 @@ abstract class CSSList implements CSSElement, CSSListItem, Positionable
     {
         $this->setPosition($lineNumber);
     }
-
     /**
      * @throws UnexpectedTokenException
      * @throws SourceException
@@ -101,7 +93,6 @@ abstract class CSSList implements CSSElement, CSSListItem, Positionable
             throw new SourceException('Unexpected end of document', $parserState->currentLine());
         }
     }
-
     /**
      * @return CSSListItem|false|null
      *         If `null` is returned, it means the end of the list has been reached.
@@ -153,7 +144,6 @@ abstract class CSSList implements CSSElement, CSSListItem, Positionable
             return DeclarationBlock::parse($parserState, $list) ?? false;
         }
     }
-
     /**
      * @throws SourceException
      * @throws UnexpectedTokenException
@@ -241,7 +231,6 @@ abstract class CSSList implements CSSElement, CSSListItem, Positionable
             return $atRule;
         }
     }
-
     /**
      * Tests an identifier for a given value. Since identifiers are all keywords, they can be vendor-prefixed.
      * We need to check for these versions too.
@@ -251,10 +240,8 @@ abstract class CSSList implements CSSElement, CSSListItem, Positionable
         if (\strcasecmp($identifier, $match) === 0) {
             return true;
         }
-
         return preg_match("/^(-\\w+-)?$match$/i", $identifier) === 1;
     }
-
     /**
      * Prepends an item to the list of contents.
      */
@@ -262,7 +249,6 @@ abstract class CSSList implements CSSElement, CSSListItem, Positionable
     {
         \array_unshift($this->contents, $item);
     }
-
     /**
      * Appends an item to the list of contents.
      */
@@ -270,7 +256,6 @@ abstract class CSSList implements CSSElement, CSSListItem, Positionable
     {
         $this->contents[] = $item;
     }
-
     /**
      * Splices the list of contents.
      *
@@ -280,7 +265,6 @@ abstract class CSSList implements CSSElement, CSSListItem, Positionable
     {
         \array_splice($this->contents, $offset, $length, $replacement);
     }
-
     /**
      * Inserts an item in the CSS list before its sibling. If the desired sibling cannot be found,
      * the item is appended at the end.
@@ -293,7 +277,6 @@ abstract class CSSList implements CSSElement, CSSListItem, Positionable
             $this->append($item);
         }
     }
-
     /**
      * Removes an item from the CSS list.
      *
@@ -310,10 +293,8 @@ abstract class CSSList implements CSSElement, CSSListItem, Positionable
             unset($this->contents[$key]);
             return true;
         }
-
         return false;
     }
-
     /**
      * Replaces an item from the CSS list.
      *
@@ -333,10 +314,8 @@ abstract class CSSList implements CSSElement, CSSListItem, Positionable
             }
             return true;
         }
-
         return false;
     }
-
     /**
      * @param array<int, CSSListItem> $contents
      */
@@ -347,7 +326,6 @@ abstract class CSSList implements CSSElement, CSSListItem, Positionable
             $this->append($content);
         }
     }
-
     /**
      * Removes a declaration block from the CSS list if it matches all given selectors.
      *
@@ -386,7 +364,6 @@ abstract class CSSList implements CSSElement, CSSListItem, Positionable
             }
         }
     }
-
     protected function renderListContents(OutputFormat $outputFormat): string
     {
         $result = '';
@@ -412,20 +389,16 @@ abstract class CSSList implements CSSElement, CSSListItem, Positionable
             }
             $result .= $renderedCss;
         }
-
         if (!$isFirst) {
             // Had some output
             $result .= $formatter->spaceAfterBlocks();
         }
-
         return $result;
     }
-
     /**
      * Return true if the list can not be further outdented. Only important when rendering.
      */
     abstract public function isRootList(): bool;
-
     /**
      * Returns the stored items.
      *
@@ -435,7 +408,6 @@ abstract class CSSList implements CSSElement, CSSListItem, Positionable
     {
         return $this->contents;
     }
-
     /**
      * @return array<string, bool|int|float|string|array<mixed>|null>
      *
@@ -445,7 +417,6 @@ abstract class CSSList implements CSSElement, CSSListItem, Positionable
     {
         throw new \BadMethodCallException('`getArrayRepresentation` is not yet implemented for `' . self::class . '`');
     }
-
     /**
      * @param list<Selector> $selectors1
      * @param list<Selector> $selectors2
@@ -454,13 +425,10 @@ abstract class CSSList implements CSSElement, CSSListItem, Positionable
     {
         $selectorStrings1 = self::getSelectorStrings($selectors1);
         $selectorStrings2 = self::getSelectorStrings($selectors2);
-
         \sort($selectorStrings1);
         \sort($selectorStrings2);
-
         return $selectorStrings1 === $selectorStrings2;
     }
-
     /**
      * @param list<Selector> $selectors
      *

@@ -1,7 +1,6 @@
 import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
 import { Alert } from "../core/alert.js";
 import { Api } from "../core/api.js";
-
 export class DeleteUser {
     constructor(banner, button) {
         this.banner = banner;
