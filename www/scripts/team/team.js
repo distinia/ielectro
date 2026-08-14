@@ -23,7 +23,6 @@ export class Team {
                         role: member.role_text,
                         avatar: member.avatar || "",
                         social: {
-                            instagram: member.instagram || "",
                             linkedin: member.linkedin || "",
                             github: member.github || "",
                         },

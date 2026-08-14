@@ -1,31 +1,29 @@
 import { Api } from "../core/api.js";
 import { Alert, App, Request, Mention, Overlay } from "../core/index.js";
-import { AvatarCrop } from "./avatar-crop.js";
 import { Informations } from "./informations.js";
 
 export class BiographyEditor {
     static async open(page) {
         const avatarEl = document.querySelector(".avatar");
         const avatarSrc =
-            avatarEl?.src || App.userAvatarUrl(page.userId, page.username);
+            avatarEl?.src ||
+            App.userAvatarUrl(
+                page.userId,
+                page.username,
+                "",
+                page.accountId || 0,
+            );
         const overlay = new Overlay("Edit profile");
         await overlay.open();
         overlay.body((body) => {
             body.innerHTML = `
         <form class="profile-edit-form">
-          <div class="profile-edit-layout">
-            <aside class="profile-edit-avatar">
-              <div class="profile-avatar-crop" hidden>
-                <img class="profile-avatar-crop-image" alt="">
-              </div>
-              <div class="profile-edit-avatar-ring profile-avatar-current">
+          <div class="profile-edit-layout profile-edit-layout-no-avatar">
+            <aside class="profile-edit-avatar profile-edit-avatar-readonly">
+              <div class="profile-edit-avatar-ring">
                 <img class="profile-edit-avatar-preview" src="${App.escapeAttr(avatarSrc)}" alt="">
               </div>
-              <label class="profile-edit-avatar-btn">
-                <span>Change photo</span>
-                <input type="file" class="profile-edit-avatar-input" accept="image/*" hidden>
-              </label>
-              <p class="profile-edit-avatar-hint" hidden>Drag to reposition your photo inside the circle.</p>
+              <a class="profile-edit-account-link" href="https://account.ielectro.com/profile" target="_blank" rel="noopener">Change photo in Account</a>
             </aside>
             <div class="profile-edit-fields">
               <div class="profile-edit-field">
@@ -43,32 +41,6 @@ export class BiographyEditor {
           </div>
         </form>`;
 
-            const preview = body.querySelector(".profile-edit-avatar-preview");
-            const currentRing = body.querySelector(".profile-avatar-current");
-            const cropRoot = body.querySelector(".profile-avatar-crop");
-            const cropImage = body.querySelector(".profile-avatar-crop-image");
-            const hint = body.querySelector(".profile-edit-avatar-hint");
-            const fileInput = body.querySelector(".profile-edit-avatar-input");
-            let cropper = null;
-            let selectedFile = null;
-            let objectUrl = null;
-
-            fileInput?.addEventListener("change", () => {
-                const file = fileInput.files?.[0];
-                if (!file || !cropImage || !cropRoot) return;
-                selectedFile = file;
-                if (objectUrl) URL.revokeObjectURL(objectUrl);
-                objectUrl = URL.createObjectURL(file);
-                cropImage.onload = () => {
-                    currentRing.hidden = true;
-                    cropRoot.hidden = false;
-                    hint.hidden = false;
-                    cropper = new AvatarCrop(cropRoot, cropImage);
-                    cropper.bind();
-                };
-                cropImage.src = objectUrl;
-            });
-
             body.querySelector(".profile-edit-form")?.addEventListener(
                 "submit",
                 async (event) => {
@@ -84,27 +56,6 @@ export class BiographyEditor {
                     );
                     if (submitBtn) submitBtn.disabled = true;
                     try {
-                        if (selectedFile) {
-                            let payload = selectedFile;
-                            if (cropper) {
-                                try {
-                                    payload = await cropper.toBlob();
-                                } catch {
-                                    payload = selectedFile;
-                                }
-                            }
-                            const data = new FormData();
-                            data.append("avatar", payload, "avatar.png");
-                            const avatarRes = await Request.post(
-                                Api.avatar,
-                                data,
-                            );
-                            const saved = Api.record(avatarRes);
-                            App.refreshAvatarImages(
-                                page.userId,
-                                saved?.url || "",
-                            );
-                        }
                         await Request.patch(Api.user(page.userId), {
                             biography: text,
                             website,
@@ -128,7 +79,6 @@ export class BiographyEditor {
                         );
                     } finally {
                         if (submitBtn) submitBtn.disabled = false;
-                        if (objectUrl) URL.revokeObjectURL(objectUrl);
                     }
                 },
             );

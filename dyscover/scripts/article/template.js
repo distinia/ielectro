@@ -327,9 +327,6 @@ export class Template {
         result.row.querySelectorAll("img").forEach((img) => {
             new Media(img);
         });
-        result.row.querySelectorAll(".template-cell-info").forEach((element) => {
-            element.contentEditable = true;
-        });
     }
     async selectImage() {
         const option = await Alert.select("Select source", ["Dyscover", "URL"]);

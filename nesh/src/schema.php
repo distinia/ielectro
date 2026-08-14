@@ -22,6 +22,7 @@ final class Schema
     public const ADMIN_NEWS = self::ADMIN . '.news';
     public const ADMIN_TEAM = self::ADMIN . '.team';
     public const ADMIN_RATE_LIMITS = self::ADMIN . '.rate_limits';
+    public const ADMIN_WWW_PAGE_VIEWS = self::ADMIN . '.www_page_views';
 
     public const DYSCOVER_USERS = self::DYSCOVER . '.dyscover_users';
     public const DYSCOVER_TAGS = self::DYSCOVER . '.dyscover_tags';
@@ -45,4 +46,6 @@ final class Schema
     public const DYSCOVER_INBOX_MESSAGE_READS = self::DYSCOVER . '.dyscover_inbox_message_reads';
     public const DYSCOVER_INBOX_MESSAGE_HIDES = self::DYSCOVER . '.dyscover_inbox_message_hides';
     public const DYSCOVER_ACTIVITY = self::DYSCOVER . '.dyscover_activity';
+    public const DYSCOVER_REPORTS = self::DYSCOVER . '.dyscover_reports';
+    public const DYSCOVER_BANNED_TERMS = self::DYSCOVER . '.dyscover_banned_terms';
 }

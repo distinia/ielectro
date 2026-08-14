@@ -14,5 +14,17 @@ export class App {
         const content = document.body.innerHTML;
         document.body.innerHTML = `${new Navbar().render()}<main>${content}</main>${new Footer().render()}`;
         Nesh.Icons.load(document.body);
+        this.trackPageView();
+    }
+
+    trackPageView() {
+        const path = window.location.pathname || "/";
+        const fd = new FormData();
+        fd.set("path", path);
+        fetch(`${window.location.origin}/api/views/track`, {
+            method: "POST",
+            body: fd,
+            keepalive: true,
+        }).catch(() => {});
     }
 }

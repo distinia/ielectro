@@ -1,322 +1,391 @@
-import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
-import { Sidebar, Alert } from "../core/index.js";
+import {
+    App,
+    Api,
+    Alert,
+    Request,
+    AdminShell,
+    AdminUi,
+    AdminModal,
+    adminAssetUrl,
+    BulkSelect,
+    bindBulkToolbar,
+    bulkDeleteRows,
+} from "../core/index.js";
+
 export default class CareersPanel {
-    params() {
-        return new URLSearchParams(window.location.search);
+    constructor() {
+        this.bulk = new BulkSelect();
     }
-    replaceUrl(query) {
-        const u = new URL(window.location.href);
-        if (!query || !Object.keys(query).length) u.search = '';
-        else u.search = new URLSearchParams(query).toString();
-        history.replaceState({}, '', u.pathname + u.search);
+    jobFormHtml(formId = "job-form-modal") {
+        return `
+            <form id="${formId}" class="admin-form job-form">
+                <div class="admin-form-grid">
+                    <div class="admin-field span-2">
+                        <label for="job-title">Title</label>
+                        <input id="job-title" type="text" name="title" placeholder="Job title" required>
+                    </div>
+                    <div class="admin-field">
+                        <label for="job-status">Status</label>
+                        <select id="job-status" name="status">
+                            <option value="active">Active</option>
+                            <option value="hidden">Hidden</option>
+                        </select>
+                    </div>
+                    <div class="admin-field span-2">
+                        <label for="job-requirements">Requirements</label>
+                        <textarea id="job-requirements" name="requirements" rows="8" placeholder="One requirement per line" required></textarea>
+                    </div>
+                </div>
+            </form>
+            <p class="admin-form-msg form-msg"></p>`;
     }
-    parseMeta(body) {
-        try {
-            return JSON.parse(body || '{}');
-        } catch {
-            return {};
-        }
+
+    cvPublicUrl(row) {
+        if (row.cv_url) return row.cv_url;
+        if (!row.cv_file) return null;
+        return adminAssetUrl(`assets/applications/${encodeURIComponent(row.cv_file)}`);
     }
-    cvPublicUrl(file) {
-        return `../content/job-application/${encodeURIComponent(file)}`;
-    }
-    showOverview() {
-        document.querySelector('.overview-wrap')?.classList.remove('panel-hidden');
-        document.querySelector('.panel-overview')?.classList.remove('panel-hidden');
-        document.querySelector('.panel-form')?.classList.add('panel-hidden');
-        document.querySelector('.panel-view')?.classList.add('panel-hidden');
-        document.querySelector('.toolbar-list')?.classList.remove('panel-hidden');
-        document.querySelector('.toolbar-form')?.classList.add('panel-hidden');
-        document.querySelector('.toolbar-view')?.classList.add('panel-hidden');
-    }
-    showFormToolbar() {
-        document.querySelector('.overview-wrap')?.classList.remove('panel-hidden');
-        document.querySelector('.panel-overview')?.classList.add('panel-hidden');
-        document.querySelector('.panel-form')?.classList.remove('panel-hidden');
-        document.querySelector('.panel-view')?.classList.add('panel-hidden');
-        document.querySelector('.toolbar-list')?.classList.add('panel-hidden');
-        document.querySelector('.toolbar-form')?.classList.remove('panel-hidden');
-        document.querySelector('.toolbar-view')?.classList.add('panel-hidden');
-    }
-    showViewToolbar() {
-        document.querySelector('.overview-wrap')?.classList.remove('panel-hidden');
-        document.querySelector('.panel-overview')?.classList.add('panel-hidden');
-        document.querySelector('.panel-form')?.classList.add('panel-hidden');
-        document.querySelector('.panel-view')?.classList.remove('panel-hidden');
-        document.querySelector('.toolbar-list')?.classList.add('panel-hidden');
-        document.querySelector('.toolbar-form')?.classList.add('panel-hidden');
-        document.querySelector('.toolbar-view')?.classList.remove('panel-hidden');
-    }
-    bindOverviewFiltersOnce() {
-        if (this._careersFiltersBound) {
-            return;
-        }
-        this._careersFiltersBound = true;
-        const rj = () => this.renderJobsList();
-        const ra = () => this.renderApplicationsList();
-        document.querySelector('.jobs-filter-q')?.addEventListener('input', rj);
-        document.querySelector('.jobs-filter-sort')?.addEventListener('change', rj);
-        document.querySelector('.apps-filter-q')?.addEventListener('input', ra);
-        document.querySelector('.apps-filter-sort')?.addEventListener('change', ra);
-    }
-    renderJobsList() {
-        const jobsNode = document.querySelector('.jobs-list');
-        const jobs = this._careersJobs || [];
-        const q = document.querySelector('.jobs-filter-q')?.value || '';
-        const sort = document.querySelector('.jobs-filter-sort')?.value || 'newest';
-        const filtered = Nesh.Table.filterRows(jobs, q, sort, {
-            text: (r) => r.title || '',
-            time: (r) => r.created_at,
-            title: (r) => r.title || '',
-        });
-        if (!filtered.length) {
-            jobsNode.innerHTML = jobs.length ? '<p>No matches.</p>' : '<p>No listings.</p>';
-            return;
-        }
-        jobsNode.innerHTML = filtered
-            .map(
-                (row) => `
-        <article class="admin-row">
-            <header><strong>${Nesh.Html.escape(row.title)}</strong></header>
-            <div class="admin-actions">
-                <button type="button" class="secondary" data-panel="view" data-id="${Nesh.Html.escape(String(row.id))}">View</button>
-                <button type="button" class="primary" data-panel="edit" data-id="${Nesh.Html.escape(String(row.id))}">Edit</button>
-                <button type="button" class="secondary btn-row-delete" data-panel="delete" data-id="${Nesh.Html.escape(String(row.id))}">Delete</button>
-            </div>
-        </article>`
-            )
-            .join('');
-        jobsNode.onclick = (e) => {
-            const btn = e.target.closest('[data-panel]');
-            if (!btn) return;
-            const id = btn.dataset.id;
-            if (btn.dataset.panel === 'view') this.openJobView(id);
-            else if (btn.dataset.panel === 'edit') this.openJobEdit(id);
-            else if (btn.dataset.panel === 'delete') this.deleteJobRow(id);
-        };
-    }
-    async deleteJobRow(id) {
-        if (!(await Alert.confirm('Delete this job listing?'))) return;
+
+    buildJobFormData(form) {
         const fd = new FormData();
-        fd.set('id', id);
-        try {
-            await Nesh.Request.post('../api/careers/delete-content', fd);
-            await this.loadOverview();
-        } catch (err) {
-            Alert.error(err?.text || 'Delete failed');
-        }
+        fd.set("title", form.querySelector('[name="title"]').value.trim());
+        fd.set("requirements_raw", form.querySelector('[name="requirements"]').value.trim());
+        fd.set("status", form.querySelector('[name="status"]').value);
+        return fd;
     }
-    renderApplicationsList() {
-        const appNode = document.querySelector('.applications-list');
-        const applications = this._careersApplications || [];
-        const q = document.querySelector('.apps-filter-q')?.value || '';
-        const sort = document.querySelector('.apps-filter-sort')?.value || 'newest';
-        const filtered = Nesh.Table.filterRows(applications, q, sort, {
-            text: (r) => [r.full_name, r.email, r.position, r.status, r.created_at].filter(Boolean).join(' '),
+
+    bindOverviewFiltersOnce() {
+        if (this._careersFiltersBound) return;
+        this._careersFiltersBound = true;
+        document.querySelector(".jobs-filter-q")?.addEventListener("input", () => this.renderJobsList());
+        document.querySelector(".jobs-filter-sort")?.addEventListener("change", () => this.renderJobsList());
+        document.querySelector(".apps-filter-q")?.addEventListener("input", () => this.renderApplicationsList());
+        document.querySelector(".apps-filter-sort")?.addEventListener("change", () => this.renderApplicationsList());
+    }
+
+    async renderJobsList() {
+        const jobsNode = document.querySelector(".jobs-list");
+        if (!jobsNode) return;
+        const jobs = this._careersJobs || [];
+        const q = document.querySelector(".jobs-filter-q")?.value || "";
+        const sort = document.querySelector(".jobs-filter-sort")?.value || "newest";
+        const filtered = App.filterRows(jobs, q, sort, {
+            text: (r) => [r.title, r.description, r.status].filter(Boolean).join(" "),
             time: (r) => r.created_at,
-            title: (r) => r.full_name || '',
+            title: (r) => r.title || "",
         });
         if (!filtered.length) {
-            appNode.innerHTML = applications.length ? '<p>No matches.</p>' : '<p>No applications.</p>';
+            jobsNode.innerHTML = AdminUi.emptyState(jobs.length ? "No matches." : "No listings.");
             return;
         }
-        appNode.innerHTML = filtered
-            .map((row) => {
-                const cv = row.cv_file
-                    ? `<a class="admin-link" href="${Nesh.Html.escape(this.cvPublicUrl(row.cv_file))}" target="_blank" rel="noopener">CV</a>`
-                    : '<span class="admin-muted">No CV</span>';
-                const delCv =
-                    row.cv_file && row.id
-                        ? `<button type="button" class="secondary btn-row-delete btn-cv-delete" data-cv-delete="${Nesh.Html.escape(String(row.id))}">Delete CV</button>`
-                        : '';
-                return `
-        <article class="admin-row admin-row-application">
-            <header><strong>${Nesh.Html.escape(row.full_name)}</strong> — ${Nesh.Html.escape(row.position)}</header>
-            <p class="admin-muted">${Nesh.Html.escape(row.email)}</p>
-            <div class="admin-actions">
-                ${cv}
-                ${delCv}
-            </div>
-            <small class="admin-muted">${Nesh.Html.escape(row.status)} · ${Nesh.Html.escape(row.created_at || '')}</small>
-        </article>`;
-            })
-            .join('');
-        appNode.onclick = async (e) => {
-            const btn = e.target.closest('[data-cv-delete]');
-            if (!btn) return;
-            const id = btn.getAttribute('data-cv-delete');
-            if (!id) return;
-            if (!(await Alert.confirm('Delete the CV file for this application?'))) return;
-            const fd = new FormData();
-            fd.set('id', id);
-            try {
-                await Nesh.Request.post('../api/careers/delete-cv', fd);
-                Alert.success('CV deleted');
-                await this.loadOverview();
-            } catch (err) {
-                Alert.error(err?.text || 'Delete failed');
-            }
-        };
+        jobsNode.innerHTML = `
+            <div class="admin-data-list admin-data-list-compact">
+                <div class="admin-data-head">
+                    ${AdminUi.checkAllCell()}
+                    <span class="col-main">Position</span>
+                    <span class="col-status">Status</span>
+                </div>
+                <div class="admin-data-body">
+                    ${filtered
+                        .map((row) => {
+                            const selected = this.bulk.has(row.id) ? " is-selected" : "";
+                            return `
+                    <article class="admin-data-row${selected}" data-id="${App.esc(String(row.id))}">
+                        ${AdminUi.checkCell(row.id, this.bulk.has(row.id))}
+                        <div class="col-main admin-data-main">
+                            <div><strong>${App.esc(row.title)}</strong></div>
+                        </div>
+                        <div class="col-status">${AdminUi.statusPill(row.status)}</div>
+                    </article>`;
+                        })
+                        .join("")}
+                </div>
+            </div>`;
+        await AdminUi.refreshIcons(jobsNode);
+        AdminUi.bindTableSelection(jobsNode, this.bulk, filtered, (id) => this.openJobView(id));
     }
-    async loadOverview() {
-        const [content, applications] = await Promise.all([
-            Nesh.Request.get('../api/careers/admin-list'),
-            Nesh.Request.get('../api/careers/admin-applications'),
-        ]);
-        this._careersJobs = content?.data || [];
-        this._careersApplications = applications?.data || [];
-        this.bindOverviewFiltersOnce();
-        this.renderJobsList();
-        this.renderApplicationsList();
+
+    async bulkDeleteJobs() {
+        const deleted = await bulkDeleteRows(
+            this.bulk,
+            (id) => Request.delete(`careers/${id}`),
+            (count) => `Delete ${count} listing(s)?`,
+        );
+        if (deleted) await this.loadOverview();
     }
-    openOverview() {
-        this.replaceUrl({});
-        this.showOverview();
-        return this.loadOverview().catch(() => {
-            const n = document.querySelector('.jobs-list');
-            if (n) n.textContent = 'Unable to load.';
+
+    applicationStatusOptions(current = "reviewing") {
+        const statuses = [
+            ["reviewing", "Reviewing"],
+            ["accepted", "Accepted"],
+            ["rejected", "Rejected"],
+        ];
+        return statuses
+            .map(
+                ([value, label]) =>
+                    `<option value="${value}"${value === current ? " selected" : ""}>${label}</option>`,
+            )
+            .join("");
+    }
+
+    applicationStatusConfirm(name, status) {
+        const who = name || "this applicant";
+        if (status === "accepted") {
+            return `Accept ${who}'s application and send an interview invitation email?`;
+        }
+        if (status === "rejected") {
+            return `Reject ${who}'s application and send a rejection email?`;
+        }
+        return `Move ${who}'s application back to reviewing?`;
+    }
+
+    bindApplicationStatusHandlers(root) {
+        root?.querySelectorAll(".app-status-select").forEach((select) => {
+            select.addEventListener("change", async () => {
+                const row = select.closest(".admin-data-row");
+                const id = row?.dataset.id;
+                const previous = select.dataset.status || "reviewing";
+                const next = select.value;
+                if (!id || next === previous) return;
+
+                const name = row?.querySelector(".admin-app-name")?.textContent?.trim() || "";
+                if (!(await Alert.confirm(this.applicationStatusConfirm(name, next)))) {
+                    select.value = previous;
+                    return;
+                }
+
+                select.disabled = true;
+                try {
+                    const res = await Request.patch(`careers/applications/${id}`, { status: next });
+                    const saved = Api.record(res);
+                    const status = saved?.status || next;
+                    select.value = status;
+                    select.dataset.status = status;
+                    const item = (this._careersApplications || []).find(
+                        (row) => String(row.id) === String(id),
+                    );
+                    if (item) item.status = status;
+                    if (status === "accepted") {
+                        Alert.success("Application accepted · invitation email sent");
+                    } else if (status === "rejected") {
+                        Alert.success("Application rejected · email sent");
+                    } else {
+                        Alert.success("Application status updated");
+                    }
+                } catch (err) {
+                    select.value = previous;
+                    Alert.error(Api.errorMessage(err));
+                } finally {
+                    select.disabled = false;
+                }
+            });
         });
     }
-    openJobCreate() {
-        this.replaceUrl({});
-        const form = document.querySelector('.job-form');
-        const formMsg = document.querySelector('.form-msg');
-        const delBtn = document.querySelector('.job-delete');
-        const formHeading = document.querySelector('.form-heading');
-        this.showFormToolbar();
-        formHeading.textContent = 'New job listing';
-        form.reset();
-        form.querySelector('[name="id"]').value = '';
-        delBtn.classList.add('panel-hidden');
-        form.onsubmit = async (e) => {
-            e.preventDefault();
-            formMsg.textContent = '';
-            const fd = new FormData(form);
-            fd.set('section', 'careers');
-            try {
-                const p = await Nesh.Request.post('../api/careers/save-content', fd);
-                const newId = p?.data?.id;
-                if (newId) {
-                    this.replaceUrl({ action: 'edit', id: String(newId) });
-                    await this.openJobEdit(String(newId));
-                } else {
-                    formMsg.textContent = p?.text || 'OK';
-                    Alert.success(p?.text || 'Saved');
-                }
-            } catch (err) {
-                formMsg.textContent = err?.text || 'Error';
-                Alert.error(err?.text || 'Error');
-            }
-        };
-    }
-    async openJobView(id) {
-        this.replaceUrl({ action: 'view', id: String(id) });
-        this.showViewToolbar();
-        const node = document.querySelector('.job-view');
-        try {
-            const data = await Nesh.Request.get(`../api/careers/admin-item?id=${encodeURIComponent(id)}`);
-            const item = data?.data;
-            if (!item) {
-                node.innerHTML = '<p>Not found.</p>';
-                return;
-            }
-            const m = this.parseMeta(item.body);
-            const reqs = (m.requirements || []).map((r) => `<li>${Nesh.Html.escape(r)}</li>`).join('');
-            node.innerHTML = `
-                <div class="admin-view-card">
-                    <div class="admin-view-header">
-                        <div>
-                            <h1>${Nesh.Html.escape(item.title)}</h1>
-                            <div class="admin-view-meta">
-                                <span class="admin-pill">briefcase</span>
-                                <span class="admin-muted">${Nesh.Html.escape(String(item.status ?? 1) === '1' ? 'Active' : 'Hidden')}</span>
+
+    async renderApplicationsList() {
+        const appNode = document.querySelector(".applications-list");
+        if (!appNode) return;
+        const applications = this._careersApplications || [];
+        const q = document.querySelector(".apps-filter-q")?.value || "";
+        const sort = document.querySelector(".apps-filter-sort")?.value || "newest";
+        const filtered = App.filterRows(applications, q, sort, {
+            text: (r) => [r.full_name, r.email, r.position, r.status, r.created_at].filter(Boolean).join(" "),
+            time: (r) => r.created_at,
+            title: (r) => r.full_name || "",
+        });
+        if (!filtered.length) {
+            appNode.innerHTML = AdminUi.emptyState(applications.length ? "No matches." : "No applications.");
+            return;
+        }
+        appNode.innerHTML = `
+            <div class="admin-data-list admin-data-list-apps">
+                <div class="admin-data-head">
+                    <span class="col-main">Applicant</span>
+                    <span class="col-status">Status</span>
+                    <span class="col-actions">CV</span>
+                </div>
+                <div class="admin-data-body">
+                    ${filtered
+                        .map((row) => {
+                            const cvUrl = this.cvPublicUrl(row);
+                            const cvAction = cvUrl
+                                ? AdminUi.iconLink(cvUrl, "file-text", "Download CV", "admin-icon-btn-accent")
+                                : `<span class="admin-muted">—</span>`;
+                            const status = String(row.status || "reviewing").toLowerCase();
+                            return `
+                    <article class="admin-data-row admin-app-row" data-id="${App.esc(String(row.id))}">
+                        <div class="col-main admin-data-main admin-app-main">
+                            <div class="admin-app-copy">
+                                <strong class="admin-app-name">${App.esc(row.full_name)}</strong>
+                                <p class="admin-data-excerpt">${App.esc(row.position)} · ${App.esc(row.email)}</p>
+                                <p class="admin-data-excerpt admin-muted">${App.esc(row.created_at || "")}</p>
                             </div>
                         </div>
-                    </div>
-                    <div class="admin-view-section">
-                        <h2>Requirements</h2>
-                        <ul class="admin-bullets">${reqs}</ul>
-                    </div>
-                </div>`;
-            document.querySelector('.link-edit-from-view').onclick = () => this.openJobEdit(id);
-        } catch {
-            node.innerHTML = '<p>Unable to load.</p>';
+                        <div class="col-status">
+                            <select class="admin-app-status app-status-select" data-status="${App.esc(status)}" aria-label="Application status for ${App.esc(row.full_name)}">
+                                ${this.applicationStatusOptions(status)}
+                            </select>
+                        </div>
+                        <div class="col-actions">${cvAction}</div>
+                    </article>`;
+                        })
+                        .join("")}
+                </div>
+            </div>`;
+        await AdminUi.refreshIcons(appNode);
+        this.bindApplicationStatusHandlers(appNode);
+    }
+
+    async deleteJobRow(id) {
+        if (!(await Alert.confirm("Delete this job listing?"))) return;
+        try {
+            await Request.delete(`careers/${id}`);
+            await this.loadOverview();
+        } catch (err) {
+            Alert.error(Api.errorMessage(err));
         }
     }
-    async openJobEdit(id) {
-        this.replaceUrl({ action: 'edit', id: String(id) });
-        const form = document.querySelector('.job-form');
-        const formMsg = document.querySelector('.form-msg');
-        const delBtn = document.querySelector('.job-delete');
-        const formHeading = document.querySelector('.form-heading');
-        this.showFormToolbar();
-        formHeading.textContent = 'Edit job';
-        delBtn.classList.remove('panel-hidden');
+
+    async loadOverview() {
+        const [jobsRes, appsRes] = await Promise.all([
+            Request.get("careers"),
+            Request.get("careers/applications"),
+        ]);
+        this._careersJobs = Api.list(jobsRes);
+        this._careersApplications = Api.list(appsRes);
+        this.bindOverviewFiltersOnce();
+        await this.renderJobsList();
+        await this.renderApplicationsList();
+    }
+
+    openJobCreate() {
+        const formId = "job-form-modal";
+        const overlay = AdminModal.open({
+            title: "New job listing",
+            content: this.jobFormHtml(formId),
+            footer: AdminModal.formFooter({ formId, saveLabel: "Save listing" }),
+        });
+        const form = overlay.querySelector(`#${formId}`);
+        const formMsg = overlay.querySelector(".form-msg");
+        form?.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            formMsg.textContent = "";
+            try {
+                await Request.post("careers", this.buildJobFormData(form));
+                Alert.success("Saved");
+                AdminModal.close();
+                await this.loadOverview();
+            } catch (err) {
+                formMsg.textContent = Api.errorMessage(err);
+                Alert.error(Api.errorMessage(err));
+            }
+        });
+        AdminUi.refreshIcons(overlay);
+    }
+
+    async openJobView(id) {
         try {
-            const data = await Nesh.Request.get(`../api/careers/admin-item?id=${encodeURIComponent(id)}`);
-            const item = data?.data;
+            const res = await Request.get(`careers/${id}`);
+            const item = Api.record(res);
             if (!item) {
-                formMsg.textContent = 'Not found.';
+                Alert.error("Not found.");
                 return;
             }
-            const m = this.parseMeta(item.body);
-            form.querySelector('[name="id"]').value = id;
-            form.querySelector('[name="title"]').value = item.title || '';
-            form.querySelector('[name="requirements"]').value = (m.requirements || []).join('\n');
-            form.querySelector('[name="status"]').value = String(item.status ?? 1);
-        } catch {
-            formMsg.textContent = 'Unable to load.';
-            return;
+            const reqs = (item.requirements || [])
+                .map((r) => `<li>${App.esc(r)}</li>`)
+                .join("");
+            const body = `
+                <div class="admin-view-card">
+                    <div class="admin-view-section">
+                        <div class="admin-view-meta" style="margin-bottom:12px">${AdminUi.statusPill(item.status)}</div>
+                        <ul class="admin-bullets">${reqs || "<li>No requirements listed.</li>"}</ul>
+                    </div>
+                </div>`;
+            const overlay = AdminModal.open({
+                title: item.title,
+                content: body,
+                footer: AdminUi.iconBtn("pencil", "Edit", "admin-icon-btn-accent", `data-job-edit="${App.esc(String(id))}"`),
+            });
+            overlay.querySelector("[data-job-edit]")?.addEventListener("click", () => {
+                this.openJobEdit(id);
+            });
+            await AdminUi.refreshIcons(overlay);
+        } catch (err) {
+            Alert.error(Api.errorMessage(err) || "Unable to load.");
         }
-        form.onsubmit = async (e) => {
-            e.preventDefault();
-            formMsg.textContent = '';
-            const fd = new FormData(form);
-            try {
-                await Nesh.Request.post('../api/careers/save-content', fd);
-                formMsg.textContent = 'Saved.';
-                Alert.success('Saved');
-            } catch (err) {
-                formMsg.textContent = err?.text || 'Error';
-                Alert.error(err?.text || 'Error');
-            }
-        };
-        delBtn.onclick = async () => {
-            if (!(await Alert.confirm('Delete this listing?'))) return;
-            const fd = new FormData();
-            fd.set('id', id);
-            try {
-                await Nesh.Request.post('../api/careers/delete-content', fd);
-                this.openOverview();
-            } catch (err) {
-                formMsg.textContent = err?.text || 'Delete failed';
-                Alert.error(err?.text || 'Delete failed');
-            }
-        };
     }
-    bindChrome() {
-        document.querySelector('.admin-action-new')?.addEventListener('click', () => this.openJobCreate());
-        document.querySelectorAll('.admin-action-back-list').forEach((el) => {
-            el.addEventListener('click', () => this.openOverview());
+
+    async openJobEdit(id) {
+        const formId = "job-form-modal";
+        const overlay = AdminModal.open({
+            title: "Edit job",
+            content: this.jobFormHtml(formId),
+            footer: AdminModal.formFooter({
+                formId,
+                saveLabel: "Save listing",
+                deleteLabel: "Delete listing",
+                showDelete: true,
+                deleteClass: "job-delete",
+            }),
         });
+        const form = overlay.querySelector(`#${formId}`);
+        const formMsg = overlay.querySelector(".form-msg");
+        try {
+            const res = await Request.get(`careers/${id}`);
+            const item = Api.record(res);
+            if (!item) {
+                AdminModal.close();
+                Alert.error("Not found.");
+                return;
+            }
+            form.querySelector('[name="title"]').value = item.title || "";
+            form.querySelector('[name="requirements"]').value = (item.requirements || []).join("\n");
+            form.querySelector('[name="status"]').value = item.status || "active";
+        } catch (err) {
+            AdminModal.close();
+            Alert.error(Api.errorMessage(err) || "Unable to load.");
+            return;
+        }
+        form?.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            formMsg.textContent = "";
+            try {
+                await Request.patch(`careers/${id}`, this.buildJobFormData(form));
+                Alert.success("Saved");
+                AdminModal.close();
+                await this.loadOverview();
+            } catch (err) {
+                formMsg.textContent = Api.errorMessage(err);
+                Alert.error(Api.errorMessage(err));
+            }
+        });
+        overlay.querySelector(".job-delete")?.addEventListener("click", async () => {
+            if (!(await Alert.confirm("Delete this listing?"))) return;
+            try {
+                await Request.delete(`careers/${id}`);
+                AdminModal.close();
+                await this.loadOverview();
+            } catch (err) {
+                Alert.error(Api.errorMessage(err));
+            }
+        });
+        AdminUi.refreshIcons(overlay);
     }
+
+    bindChrome() {
+        bindBulkToolbar(this.bulk);
+        document.querySelector(".admin-action-new")?.addEventListener("click", () => this.openJobCreate());
+        document.querySelector(".admin-action-bulk-delete")?.addEventListener("click", () => this.bulkDeleteJobs());
+    }
+
     async run() {
-        Sidebar.setup();
+        AdminShell.mount("careers", "Careers");
         this.bindChrome();
-        const action = this.params().get('action') || 'list';
-        const id = this.params().get('id') || '';
-        if (action === 'create') {
-            this.openJobCreate();
-            return;
+        try {
+            await this.loadOverview();
+        } catch (err) {
+            const node = document.querySelector(".jobs-list");
+            if (node) node.innerHTML = AdminUi.emptyState(Api.errorMessage(err) || "Unable to load.");
         }
-        if (action === 'view' && id) {
-            await this.openJobView(id);
-            return;
-        }
-        if (action === 'edit' && id) {
-            await this.openJobEdit(id);
-            return;
-        }
-        await this.openOverview();
     }
 }

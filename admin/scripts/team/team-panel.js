@@ -1,239 +1,356 @@
-import { Sidebar, App, Alert, Request } from "../core/index.js";
+import {
+    App,
+    Api,
+    Alert,
+    Request,
+    AdminShell,
+    AccountPicker,
+    AdminUi,
+    AdminModal,
+    BulkSelect,
+    bindBulkToolbar,
+    bulkDeleteRows,
+} from "../core/index.js";
+
 export default class TeamPanel {
-    params() {
-        return new URLSearchParams(window.location.search);
+    constructor() {
+        this.bulk = new BulkSelect();
     }
-    replaceUrl(query) {
-        const u = new URL(window.location.href);
-        if (!query || !Object.keys(query).length) u.search = '';
-        else u.search = new URLSearchParams(query).toString();
-        history.replaceState({}, '', u.pathname + u.search);
+
+    formHtml(formId = "team-form-modal") {
+        return `
+            <form id="${formId}" class="admin-form team-form">
+                <div class="admin-form-grid">
+                    <div class="admin-field span-2 account-picker">
+                        <label class="account-picker-label" for="team-account-search">iElectro account</label>
+                        <input type="hidden" name="account_id" value="">
+                        <input id="team-account-search" type="search" class="account-picker-search" placeholder="Search by username or email…" autocomplete="off" required>
+                        <div class="account-picker-selected"></div>
+                        <div class="account-picker-results"></div>
+                    </div>
+                    <div class="admin-field span-2 team-account-avatar panel-hidden">
+                        <label>Account avatar</label>
+                        <div class="admin-avatar-slot">
+                            <img class="team-avatar-preview-img" src="" alt="">
+                        </div>
+                        <p class="hint">Avatar from the linked iElectro account profile.</p>
+                    </div>
+                    <div class="admin-field">
+                        <label for="team-role">Role</label>
+                        <textarea id="team-role" name="body" rows="3" placeholder="Role in the team" required></textarea>
+                    </div>
+                    <div class="admin-field">
+                        <label for="team-status">Status</label>
+                        <select id="team-status" name="status">
+                            <option value="active">Active</option>
+                            <option value="hidden">Hidden</option>
+                        </select>
+                    </div>
+                    <div class="admin-field">
+                        <label for="team-linkedin">LinkedIn username</label>
+                        <input id="team-linkedin" type="text" name="linkedin" placeholder="distinia" autocomplete="off" spellcheck="false">
+                    </div>
+                    <div class="admin-field">
+                        <label for="team-github">GitHub username</label>
+                        <input id="team-github" type="text" name="github" placeholder="distinia" autocomplete="off" spellcheck="false">
+                    </div>
+                </div>
+            </form>
+            <p class="admin-form-msg form-msg"></p>`;
     }
-    show(id) {
-        document.querySelectorAll('.panel-list,.panel-form,.panel-view').forEach((el) => el.classList.add('panel-hidden'));
-        const panelClass = id === 'panel-list' ? 'panel-list' : id === 'panel-form' ? 'panel-form' : 'panel-view';
-        document.querySelector(`.${panelClass}`)?.classList.remove('panel-hidden');
-        document.querySelectorAll('.toolbar-list,.toolbar-form,.toolbar-view').forEach((el) => el.classList.add('panel-hidden'));
-        const toolbarClass = panelClass === 'panel-list' ? 'toolbar-list' : panelClass === 'panel-form' ? 'toolbar-form' : 'toolbar-view';
-        document.querySelector(`.${toolbarClass}`)?.classList.remove('panel-hidden');
+
+    displayName(row) {
+        return row.display_name || row.full_name || row.account_username || "Unknown";
     }
-    bindListFiltersOnce() {
-        if (this._teamFiltersBound) {
+
+    socialProfileUrl(platform, username) {
+        const handle = String(username || "").trim().replace(/^@+/, "");
+        if (!handle) return null;
+        if (platform === "linkedin") {
+            return `https://www.linkedin.com/in/${encodeURIComponent(handle)}`;
+        }
+        if (platform === "github") {
+            return `https://github.com/${encodeURIComponent(handle)}`;
+        }
+        return null;
+    }
+
+    mountAccountPicker(root) {
+        const pickerRoot = root.querySelector(".account-picker");
+        if (!pickerRoot) return null;
+        const picker = new AccountPicker(pickerRoot);
+        picker.onSelect = (account) => this.setAccountAvatarPreview(root, account.id);
+        picker.onClear = () => this.setAccountAvatarPreview(root, null);
+        return picker;
+    }
+
+    setAccountAvatarPreview(root, accountId) {
+        const wrap = root.querySelector(".team-account-avatar");
+        const img = root.querySelector(".team-avatar-preview-img");
+        const url = AdminUi.accountAvatarUrl(accountId);
+        if (!wrap || !img) return;
+        if (!url) {
+            wrap.classList.add("panel-hidden");
+            img.removeAttribute("src");
             return;
         }
-        this._teamFiltersBound = true;
-        const redraw = () => this.renderTeamList();
-        document.querySelector('.team-filter-q')?.addEventListener('input', redraw);
-        document.querySelector('.team-filter-sort')?.addEventListener('change', redraw);
+        wrap.classList.remove("panel-hidden");
+        img.src = url;
+        img.alt = "Account avatar";
     }
-    renderTeamList() {
-        const node = document.querySelector('.team-list');
+
+    buildFormData(form) {
+        const fd = new FormData();
+        fd.set("role_text", form.querySelector('[name="body"]').value.trim());
+        fd.set("status", form.querySelector('[name="status"]').value);
+        fd.set("linkedin", form.querySelector('[name="linkedin"]').value.trim());
+        fd.set("github", form.querySelector('[name="github"]').value.trim());
+        const accountId = form.querySelector('[name="account_id"]').value.trim();
+        if (!accountId) {
+            throw new Error("Account is required");
+        }
+        fd.set("account_id", accountId);
+        return fd;
+    }
+
+    bindListFiltersOnce() {
+        if (this._teamFiltersBound) return;
+        this._teamFiltersBound = true;
+        document.querySelector(".team-filter-q")?.addEventListener("input", () => this.renderTeamList());
+        document.querySelector(".team-filter-sort")?.addEventListener("change", () => this.renderTeamList());
+    }
+
+    async renderTeamList() {
+        const node = document.querySelector(".team-list");
+        if (!node) return;
         const rows = this._teamRows || [];
-        const q = document.querySelector('.team-filter-q')?.value || '';
-        const sort = document.querySelector('.team-filter-sort')?.value || 'newest';
+        const q = document.querySelector(".team-filter-q")?.value || "";
+        const sort = document.querySelector(".team-filter-sort")?.value || "newest";
         const filtered = App.filterRows(rows, q, sort, {
-            text: (r) => [r.title, r.body].filter(Boolean).join(' '),
+            text: (r) =>
+                [this.displayName(r), r.role_text, r.account_username, r.account_email, r.account_id]
+                    .filter(Boolean)
+                    .join(" "),
             time: (r) => r.created_at,
-            title: (r) => r.title || '',
+            title: (r) => this.displayName(r),
         });
         if (!filtered.length) {
-            node.innerHTML = rows.length ? '<p>No matches.</p>' : '<p>No members.</p>';
+            node.innerHTML = AdminUi.emptyState(rows.length ? "No matches." : "No members.");
             return;
         }
-        node.innerHTML = filtered
-            .map(
-                (row) => `
-        <article class="admin-row">
-            <header><strong>${App.esc(row.title)}</strong></header>
-            <p>${App.esc(row.body || '')}</p>
-            <div class="admin-actions">
-                <button type="button" class="secondary" data-panel="view" data-id="${App.esc(String(row.id))}">View</button>
-                <button type="button" class="primary" data-panel="edit" data-id="${App.esc(String(row.id))}">Edit</button>
-                <button type="button" class="secondary btn-row-delete" data-panel="delete" data-id="${App.esc(String(row.id))}">Delete</button>
-            </div>
-        </article>`
-            )
-            .join('');
-        node.onclick = (e) => {
-            const btn = e.target.closest('[data-panel]');
-            if (!btn) return;
-            const id = btn.dataset.id;
-            if (btn.dataset.panel === 'view') this.openView(id);
-            else if (btn.dataset.panel === 'edit') this.openEdit(id);
-            else if (btn.dataset.panel === 'delete') this.deleteRow(id);
-        };
+        node.innerHTML = `
+            <div class="admin-data-list admin-data-list-team">
+                <div class="admin-data-head">
+                    ${AdminUi.checkAllCell()}
+                    <span class="col-main">Member</span>
+                    <span class="col-role">Role</span>
+                    <span class="col-account">Account</span>
+                    <span class="col-status">Status</span>
+                </div>
+                <div class="admin-data-body">
+                    ${filtered
+                        .map((row) => {
+                            const name = this.displayName(row);
+                            const accountLabel = row.account_username
+                                ? `@${App.esc(row.account_username)}`
+                                : row.account_id
+                                  ? `#${App.esc(String(row.account_id))}`
+                                  : "—";
+                            const selected = this.bulk.has(row.id) ? " is-selected" : "";
+                            return `
+                        <article class="admin-data-row${selected}" data-id="${App.esc(String(row.id))}">
+                            ${AdminUi.checkCell(row.id, this.bulk.has(row.id))}
+                            <div class="col-main admin-data-main">
+                                ${AdminUi.avatarHtml(row.avatar, name)}
+                                <div>
+                                    <strong>${App.esc(name)}</strong>
+                                    <p class="admin-data-excerpt">${App.esc(row.account_email || "")}</p>
+                                </div>
+                            </div>
+                            <div class="col-role admin-muted">${App.esc(row.role_text || "")}</div>
+                            <div class="col-account admin-muted">${accountLabel}</div>
+                            <div class="col-status">${AdminUi.statusPill(row.status)}</div>
+                        </article>`;
+                        })
+                        .join("")}
+                </div>
+            </div>`;
+        await AdminUi.refreshIcons(node);
+        AdminUi.bindTableSelection(node, this.bulk, filtered, (id) => this.openView(id));
     }
-    async deleteRow(id) {
-        if (!(await Alert.confirm('Delete this team member?'))) return;
-        const fd = new FormData();
-        fd.set('id', id);
-        try {
-            await Request.post('../api/team/delete', fd);
-            await this.loadList();
-        } catch (err) {
-            Alert.error(err?.text || 'Delete failed');
-        }
+
+    async bulkDelete() {
+        const deleted = await bulkDeleteRows(
+            this.bulk,
+            (id) => Request.delete(`team/${id}`),
+            (count) => `Delete ${count} member(s)?`,
+        );
+        if (deleted) await this.loadList();
     }
+
     async loadList() {
-        const data = await Request.get('../api/team/admin-list');
-        this._teamRows = data?.data?.items || [];
+        const res = await Request.get("team");
+        this._teamRows = Api.list(res);
         this.bindListFiltersOnce();
-        this.renderTeamList();
+        await this.renderTeamList();
     }
-    openList() {
-        this.replaceUrl({});
-        this.show('panel-list');
-        return this.loadList().catch(() => {
-            document.querySelector('.team-list').innerHTML = '<p>Unable to load.</p>';
-        });
-    }
-    openCreate() {
-        this.replaceUrl({});
-        const form = document.querySelector('.team-form');
-        const formMsg = document.querySelector('.form-msg');
-        const delBtn = document.querySelector('.team-delete');
-        const formHeading = document.querySelector('.form-heading');
-        this.show('panel-form');
-        formHeading.textContent = 'Add member';
-        form.reset();
-        form.querySelector('[name="id"]').value = '';
-        delBtn.classList.add('panel-hidden');
-        form.onsubmit = async (e) => {
-            e.preventDefault();
-            formMsg.textContent = '';
-            const fd = new FormData(form);
-            const file = document.querySelector('.avatar-file')?.files?.[0];
-            if (file) {
-                fd.append('image', file);
-            }
-            try {
-                const p = await Request.post('../api/team/save', fd);
-                const newId = p?.data?.id;
-                if (newId) {
-                    this.replaceUrl({ action: 'edit', id: String(newId) });
-                    await this.openEdit(String(newId));
-                } else {
-                    formMsg.textContent = p?.text || 'OK';
-                    Alert.success(p?.text || 'Saved');
-                }
-            } catch (err) {
-                formMsg.textContent = err?.text || 'Error';
-                Alert.error(err?.text || 'Error');
-            }
-        };
-    }
+
     async openView(id) {
-        this.replaceUrl({ action: 'view', id: String(id) });
-        this.show('panel-view');
-        const node = document.querySelector('.team-view');
         try {
-            const data = await Request.get(`../api/team/item?id=${encodeURIComponent(id)}`);
-            const item = data?.data?.item;
+            const res = await Request.get(`team/${id}`);
+            const item = Api.record(res);
             if (!item) {
-                node.innerHTML = '<p>Not found.</p>';
+                Alert.error("Not found.");
                 return;
             }
+            const name = this.displayName(item);
             const links = [
-                item.instagram ? ['Instagram', item.instagram] : null,
-                item.linkedin ? ['LinkedIn', item.linkedin] : null,
-                item.github ? ['GitHub', item.github] : null,
+                item.linkedin
+                    ? ["LinkedIn", this.socialProfileUrl("linkedin", item.linkedin), item.linkedin]
+                    : null,
+                item.github
+                    ? ["GitHub", this.socialProfileUrl("github", item.github), item.github]
+                    : null,
             ].filter(Boolean);
-            node.innerHTML = `
+            const accountLine = item.account_username
+                ? `<p class="admin-muted">@${App.esc(item.account_username)} · ${App.esc(item.account_email || "")}</p>`
+                : "";
+            const avatar = item.avatar
+                ? `<img class="admin-avatar" src="${App.esc(item.avatar)}" alt="" loading="lazy">`
+                : `<div class="admin-avatar admin-avatar-fallback">${App.esc(name.slice(0, 1))}</div>`;
+            const body = `
                 <div class="admin-view-card">
                     <div class="admin-view-header">
-                        ${item.avatar ? `<img class="admin-avatar" src="${App.esc(item.avatar)}" alt="" loading="lazy">` : `<div class="admin-avatar admin-avatar-fallback">${App.esc((item.title || '?').slice(0, 1))}</div>`}
+                        ${avatar}
                         <div>
-                            <h1>${App.esc(item.title)}</h1>
-                            <p class="admin-muted">${App.esc(item.body || '')}</p>
-                            ${links.length ? `<div class="admin-view-meta">${links.map(([label, url]) => `<a class="admin-link" href="${App.esc(url)}" target="_blank" rel="noopener">${App.esc(label)}</a>`).join('')}</div>` : ''}
+                            <h1>${App.esc(name)}</h1>
+                            <p class="admin-muted">${App.esc(item.role_text || "")}</p>
+                            ${accountLine}
+                            <div class="admin-view-meta">${AdminUi.statusPill(item.status)}</div>
+                            ${links.length ? `<div class="admin-view-meta">${links.map(([label, url, handle]) => `<a class="admin-link" href="${App.esc(url)}" target="_blank" rel="noopener">${App.esc(label)} · ${App.esc(handle)}</a>`).join("")}</div>` : ""}
                         </div>
                     </div>
                 </div>`;
-            document.querySelector('.link-edit-from-view').onclick = () => this.openEdit(id);
-        } catch {
-            node.innerHTML = '<p>Unable to load.</p>';
+            const overlay = AdminModal.open({
+                title: name,
+                content: body,
+                footer: AdminUi.iconBtn("pencil", "Edit", "admin-icon-btn-accent", `data-team-edit="${App.esc(String(id))}"`),
+            });
+            overlay.querySelector("[data-team-edit]")?.addEventListener("click", () => {
+                this.openEdit(id);
+            });
+            await AdminUi.refreshIcons(overlay);
+        } catch (err) {
+            Alert.error(Api.errorMessage(err) || "Unable to load.");
         }
     }
+
+    openCreate() {
+        const formId = "team-form-modal";
+        const overlay = AdminModal.open({
+            title: "Add member",
+            content: this.formHtml(formId),
+            footer: AdminModal.formFooter({ formId, saveLabel: "Save member" }),
+        });
+        const form = overlay.querySelector(`#${formId}`);
+        const formMsg = overlay.querySelector(".form-msg");
+        this.mountAccountPicker(overlay);
+        this.setAccountAvatarPreview(overlay, null);
+        form?.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            formMsg.textContent = "";
+            try {
+                await Request.post("team", this.buildFormData(form));
+                Alert.success("Saved");
+                AdminModal.close();
+                await this.loadList();
+            } catch (err) {
+                formMsg.textContent = Api.errorMessage(err) || err.message;
+                Alert.error(Api.errorMessage(err) || err.message);
+            }
+        });
+        AdminUi.refreshIcons(overlay);
+    }
+
     async openEdit(id) {
-        this.replaceUrl({ action: 'edit', id: String(id) });
-        const form = document.querySelector('.team-form');
-        const formMsg = document.querySelector('.form-msg');
-        const delBtn = document.querySelector('.team-delete');
-        const formHeading = document.querySelector('.form-heading');
-        this.show('panel-form');
-        formHeading.textContent = 'Edit member';
-        delBtn.classList.remove('panel-hidden');
+        const formId = "team-form-modal";
+        const overlay = AdminModal.open({
+            title: "Edit member",
+            content: this.formHtml(formId),
+            footer: AdminModal.formFooter({
+                formId,
+                saveLabel: "Save member",
+                deleteLabel: "Delete member",
+                showDelete: true,
+                deleteClass: "team-delete",
+            }),
+        });
+        const form = overlay.querySelector(`#${formId}`);
+        const formMsg = overlay.querySelector(".form-msg");
+        const picker = this.mountAccountPicker(overlay);
         try {
-            const data = await Request.get(`../api/team/item?id=${encodeURIComponent(id)}`);
-            const item = data?.data?.item;
+            const res = await Request.get(`team/${id}`);
+            const item = Api.record(res);
             if (!item) {
-                formMsg.textContent = 'Not found.';
+                AdminModal.close();
+                Alert.error("Not found.");
                 return;
             }
-            form.querySelector('[name="id"]').value = id;
-            form.querySelector('[name="title"]').value = item.title || '';
-            form.querySelector('[name="body"]').value = item.body || '';
-            form.querySelector('[name="avatar"]').value = item.avatar_filename || '';
-            form.querySelector('[name="instagram"]').value = item.instagram || '';
-            form.querySelector('[name="linkedin"]').value = item.linkedin || '';
-            form.querySelector('[name="github"]').value = item.github || '';
-        } catch {
-            formMsg.textContent = 'Unable to load.';
+            form.querySelector('[name="body"]').value = item.role_text || "";
+            form.querySelector('[name="status"]').value = item.status || "active";
+            form.querySelector('[name="linkedin"]').value = item.linkedin || "";
+            form.querySelector('[name="github"]').value = item.github || "";
+            picker?.setAccountId(item.account_id, {
+                username: item.account_username,
+                email: item.account_email,
+                name: this.displayName(item),
+            });
+            this.setAccountAvatarPreview(overlay, item.account_id);
+        } catch (err) {
+            AdminModal.close();
+            Alert.error(Api.errorMessage(err) || "Unable to load.");
             return;
         }
-        form.onsubmit = async (e) => {
+        form?.addEventListener("submit", async (e) => {
             e.preventDefault();
-            formMsg.textContent = '';
-            const fd = new FormData(form);
-            const file = document.querySelector('.avatar-file')?.files?.[0];
-            if (file) {
-                fd.append('image', file);
-            }
+            formMsg.textContent = "";
             try {
-                await Request.post('../api/team/save', fd);
-                formMsg.textContent = 'Saved.';
-                Alert.success('Saved');
+                await Request.post(`team/${id}`, this.buildFormData(form));
+                Alert.success("Saved");
+                AdminModal.close();
+                await this.loadList();
             } catch (err) {
-                formMsg.textContent = err?.text || 'Error';
-                Alert.error(err?.text || 'Error');
+                formMsg.textContent = Api.errorMessage(err) || err.message;
+                Alert.error(Api.errorMessage(err) || err.message);
             }
-        };
-        delBtn.onclick = async () => {
-            if (!(await Alert.confirm('Delete this member?'))) return;
-            const fd = new FormData();
-            fd.set('id', id);
-            try {
-                await Request.post('../api/team/delete', fd);
-                this.openList();
-            } catch (err) {
-                formMsg.textContent = err?.text || 'Delete failed';
-                Alert.error(err?.text || 'Delete failed');
-            }
-        };
-    }
-    bindChrome() {
-        document.querySelector('.admin-action-new')?.addEventListener('click', () => this.openCreate());
-        document.querySelectorAll('.admin-action-back-list').forEach((el) => {
-            el.addEventListener('click', () => this.openList());
         });
+        overlay.querySelector(".team-delete")?.addEventListener("click", async () => {
+            if (!(await Alert.confirm("Delete this member?"))) return;
+            try {
+                await Request.delete(`team/${id}`);
+                AdminModal.close();
+                await this.loadList();
+            } catch (err) {
+                Alert.error(Api.errorMessage(err));
+            }
+        });
+        AdminUi.refreshIcons(overlay);
     }
+
+    bindChrome() {
+        bindBulkToolbar(this.bulk);
+        document.querySelector(".admin-action-new")?.addEventListener("click", () => this.openCreate());
+        document.querySelector(".admin-action-bulk-delete")?.addEventListener("click", () => this.bulkDelete());
+    }
+
     async run() {
-        Sidebar.mount();
+        AdminShell.mount("team", "Team");
         this.bindChrome();
-        const action = this.params().get('action') || 'list';
-        const id = this.params().get('id') || '';
-        if (action === 'create') {
-            this.openCreate();
-            return;
+        try {
+            await this.loadList();
+        } catch (err) {
+            const node = document.querySelector(".team-list");
+            if (node) node.innerHTML = AdminUi.emptyState(Api.errorMessage(err) || "Unable to load.");
         }
-        if (action === 'view' && id) {
-            await this.openView(id);
-            return;
-        }
-        if (action === 'edit' && id) {
-            await this.openEdit(id);
-            return;
-        }
-        await this.openList();
     }
 }

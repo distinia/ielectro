@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Accounts</title>
+    <meta name="keywords" content="admin accounts, ielectro admin, account log">
+    <meta name="description" content="Monitor account activity, failed logins and account management">
+</head>
+<body>
+<div class="admin-frame">
+    <div class="admin-sidebar-mount"></div>
+    <main class="admin-content admin-content-mount">
+        <div class="admin-shell accounts-shell">
+            <header class="mod-page-head">
+                <h1>Accounts &amp; security</h1>
+                <p>Monitor failed logins, profile updates, and sessions. Use permanent deletion only when necessary.</p>
+            </header>
+            <div class="mod-stats-grid accounts-stats"></div>
+            <div class="accounts-layout">
+                <section class="admin-card accounts-log-card">
+                    <div class="mod-card-head">
+                        <div>
+                            <h2>Activity log</h2>
+                            <p>Recent events across iElectro accounts</p>
+                        </div>
+                    </div>
+                    <div class="admin-list-filters">
+                        <input type="search" class="admin-filter-search accounts-filter-q" placeholder="Search username, email, details…" autocomplete="off" aria-label="Search log">
+                        <select class="admin-filter-sort accounts-filter-type" aria-label="Filter log">
+                            <option value="all">All events</option>
+                            <option value="failed">Failed logins</option>
+                            <option value="updates">Profile updates</option>
+                            <option value="security">Security &amp; sessions</option>
+                        </select>
+                    </div>
+                    <div class="mod-list-scroll accounts-log-list"></div>
+                </section>
+                <aside class="admin-card accounts-delete-card mod-danger-card">
+                    <h2>Danger zone</h2>
+                    <div class="mod-danger-note">
+                        <i data-icon="triangle-alert"></i>
+                        <span>Hard delete removes the account and all linked data. This cannot be undone.</span>
+                    </div>
+                    <form class="admin-form accounts-delete-form">
+                        <div class="admin-form-grid">
+                            <div class="admin-field span-2">
+                                <label for="delete-username">Username</label>
+                                <input id="delete-username" type="text" name="username" placeholder="Type the exact username" autocomplete="off" required>
+                            </div>
+                        </div>
+                        <div class="admin-actions">
+                            <button type="submit" class="admin-btn admin-btn-danger">Delete account permanently</button>
+                        </div>
+                        <p class="admin-form-msg accounts-delete-msg"></p>
+                    </form>
+                </aside>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

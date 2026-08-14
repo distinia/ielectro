@@ -13,8 +13,9 @@ export class Save {
         if (Editor.current?.isTextMode) {
             await Editor.current.applySourceToContent();
         }
-        const content =
-            Editor.current?.content?.innerHTML ?? editingContainer.innerHTML;
+        const content = Editor.stripContentEditableHtml(
+            Editor.current?.content?.innerHTML ?? editingContainer.innerHTML,
+        );
         const result = await Alert.confirm("Do you want to save changes");
         if (!result) return;
         const instance = new Save(content);

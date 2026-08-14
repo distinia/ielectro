@@ -1,10 +1,14 @@
 <?php
 require_once __DIR__ . '/../nesh/src/autoload.php';
-$GLOBALS['admin']->api->publicApi = [
+require_once __DIR__ . '/pages-guard.php';
+
+$admin = $GLOBALS['admin'];
+$admin->api->publicApi = [
     'news',
     'careers',
     'careers/apply',
     'team',
     'apps',
 ];
-$GLOBALS['admin']->run();
+$admin->pages = new Admin\AdminPages($admin);
+$admin->run();

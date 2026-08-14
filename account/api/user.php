@@ -200,6 +200,9 @@ class Data
             Response::notFound('Account not found');
         }
         $account['has_password'] = (bool) $account['has_password'];
+        $accountId = (int) $account['id'];
+        $account['avatar'] = \Nesh\Avatar::url($accountId);
+        $account['avatar_custom'] = \Nesh\Avatar::isCustom($accountId);
         Response::success($account);
     }
 }

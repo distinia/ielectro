@@ -1,0 +1,155 @@
+.article-pdf-root {
+    width: 794px;
+    max-width: 794px;
+    box-sizing: border-box;
+    padding: 28px 36px 36px;
+    background: #fff;
+    color: #0f172a;
+    font-family:
+        "Inter",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        "Helvetica Neue",
+        Arial,
+        sans-serif;
+}
+
+.article-pdf-root .title {
+    margin: 0 0 24px;
+    font-size: 1.85rem;
+    line-height: 1.2;
+    letter-spacing: -0.03em;
+    color: #0b1f3a;
+}
+
+.article-pdf-root .content {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.article-pdf-root .paragraph {
+    margin: 0 0 1.15em;
+    line-height: 1.8;
+    font-size: 1.06rem;
+    color: #1e293b;
+}
+
+.article-pdf-root .heading {
+    margin: 1.5rem 0 1rem;
+    font-size: 1.65rem;
+    font-weight: 700;
+    color: #0f172a;
+    border-bottom: 2px solid rgba(21, 101, 192, 0.15);
+    padding-bottom: 0.55rem;
+}
+
+.article-pdf-root .sub-heading {
+    margin: 1.25rem 0 0.85rem;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #1e3a5f;
+    border-left: 4px solid rgba(21, 101, 192, 0.55);
+    padding-left: 0.75rem;
+}
+
+.article-pdf-root .caption {
+    display: block;
+    margin: 0 0 1.35rem;
+    padding: 0.75rem 1rem;
+    border-left: 3px solid rgba(21, 101, 192, 0.35);
+    font-style: italic;
+    color: #475569;
+}
+
+.article-pdf-root .number-list,
+.article-pdf-root .point-list {
+    margin: 1.25em 0;
+    padding-left: 1.65em;
+    color: #1e293b;
+    line-height: 1.7;
+}
+
+.article-pdf-root .bold {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.article-pdf-root .italic {
+    font-style: italic;
+}
+
+.article-pdf-root .link {
+    color: #1565c0;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.article-pdf-root img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.article-pdf-root table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.article-pdf-root .heading,
+.article-pdf-root .sub-heading {
+    break-after: avoid;
+    page-break-after: avoid;
+}
+
+.article-pdf-root figure {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin: 1rem 0;
+}
+
+.article-pdf-root figcaption {
+    margin-top: 0.5rem;
+    font-size: 0.92rem;
+    color: #64748b;
+}
+
+body.article-pdf-exporting {
+    overflow: visible !important;
+}
+
+body.article-pdf-exporting .article-index-sidebar,
+body.article-pdf-exporting .instruments,
+body.article-pdf-exporting .top-nav,
+body.article-pdf-exporting .find-replace-bar,
+body.article-pdf-exporting .menu,
+body.article-pdf-exporting .article-editor-transition,
+body.article-pdf-exporting .post-overlay {
+    display: none !important;
+}
+
+body.article-pdf-exporting .article-stage {
+    display: block;
+}
+
+body.article-pdf-exporting .article-main-content {
+    width: 794px;
+    max-width: 794px;
+    margin: 0 auto;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    box-shadow: none;
+}
+
+body.article-pdf-exporting .article-scroll {
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+}
+
+body.article-pdf-exporting .content {
+    display: block !important;
+}

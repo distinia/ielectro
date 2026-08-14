@@ -9,6 +9,9 @@ use Nesh\Request;
 use Nesh\Response;
 use Nesh\Routing;
 use Nesh\Validate;
+
+require_once __DIR__ . '/access.php';
+require_once __DIR__ . '/paths.php';
 class News
 {
     private Create $create;
@@ -28,7 +31,9 @@ class News
             'GET'    => fn() => Routing::id()
                 ? $this->data->one()
                 : $this->data->list(),
-            'POST'   => fn() => $this->create->index(),
+            'POST'   => fn() => Routing::id()
+                ? $this->update->index()
+                : $this->create->index(),
             'PATCH'  => fn() => $this->update->index(),
             'DELETE' => fn() => $this->delete->index(),
         ]);
@@ -39,6 +44,7 @@ class Create
     public function index(): void
     {
         Request::post();
+        Access::requireMember();
         $input = Request::body();
         $title = trim((string) ($input['title'] ?? ''));
         $body = trim((string) ($input['body'] ?? ''));
@@ -106,7 +112,6 @@ class Data
                 status,
                 image,
                 published_at,
-                created_at,
                 updated_at
             FROM ielectro_admin.news
             ORDER BY published_at DESC, id DESC"
@@ -125,7 +130,6 @@ class Data
                 status,
                 image,
                 published_at,
-                created_at,
                 updated_at
             FROM ielectro_admin.news
             WHERE id = ?
@@ -142,7 +146,12 @@ class Update
 {
     public function index(): void
     {
-        Request::patch();
+        if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+            Request::post();
+        } else {
+            Request::patch();
+        }
+        Access::requireMember();
         $id = NewsFields::id();
         $row = Query::fetch(
             "SELECT uuid
@@ -214,6 +223,7 @@ class Delete
     public function index(): void
     {
         Request::delete();
+        Access::requireMember();
         $id = NewsFields::id();
         $row = Query::fetch(
             "SELECT uuid
@@ -267,19 +277,11 @@ class NewsFields
     }
     public static function contentDir(): string
     {
-        $path = APP_PUBLIC . '/content/' . self::SECTION;
-        File::makeDirectory($path);
-        return $path;
+        return MediaPaths::newsDir();
     }
     public static function imageUrl(?string $filename): ?string
     {
-        if ($filename === null || $filename === '') {
-            return null;
-        }
-        if (preg_match('#^https?://#i', $filename)) {
-            return $filename;
-        }
-        return APP_URL . '/content/' . self::SECTION . '/' . rawurlencode(basename($filename));
+        return MediaPaths::newsUrl($filename);
     }
     public static function storeImage(string $basename, ?array $file): ?string
     {
@@ -316,7 +318,7 @@ class NewsFields
             'status' => $row['status'],
             'image' => self::imageUrl($row['image'] ?? null),
             'published_at' => $row['published_at'],
-            'created_at' => $row['created_at'],
+            'created_at' => $row['published_at'],
             'updated_at' => $row['updated_at'] ?? null,
         ];
         if ($detailed) {

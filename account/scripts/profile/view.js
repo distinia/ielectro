@@ -3,6 +3,7 @@ import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
 export class ProfileView {
     constructor(root) {
         this.root = root;
+        this.inner = null;
         this.sections = [
             {
                 title: "Personal information",
@@ -26,9 +27,16 @@ export class ProfileView {
             },
         ];
     }
+
+    mountLayout() {
+        if (!this.root) return;
+        this.root.innerHTML = `<div class="profile-stack-inner"></div>`;
+        this.inner = this.root.querySelector(".profile-stack-inner");
+    }
+
     render(user) {
-        if (!this.root || !user) return;
-        this.root.innerHTML = this.sections
+        if (!this.inner || !user) return;
+        this.inner.innerHTML = this.sections
             .map(
                 (section) =>
                     `<section class="profile-section"><div class="profile-card"><h3>${Nesh.Html.escape(section.title)}</h3>${section.rows.map((row) => this.rowHtml(row)).join("")}</div></section>`,
@@ -37,11 +45,13 @@ export class ProfileView {
         this.fillValues(user);
         Nesh.Icons.load(this.root);
     }
+
     rowHtml(row) {
         const valueId = row.id ? ` id="${row.id}"` : "";
         const action = `<button type="button" class="profile-action" aria-label="Edit ${Nesh.Html.escape(row.label)}"><i data-icon="pencil"></i></button>`;
         return `<div class="profile-row" data-field="${Nesh.Html.escape(row.field)}"><span class="profile-label">${Nesh.Html.escape(row.label)}</span><span class="profile-value"${valueId}></span>${action}</div>`;
     }
+
     fillValues(user) {
         this.setText("#full-name", `${user.name || ""} ${user.surname || ""}`.trim());
         this.setText("#birthday", this.formatDate(user.birthday));
@@ -53,10 +63,12 @@ export class ProfileView {
             user.has_password ? "••••••••" : "Not set",
         );
     }
+
     setText(selector, value) {
         const element = this.root.querySelector(selector);
         if (element) element.textContent = value;
     }
+
     formatDate(value) {
         if (!value) return "";
         const date = new Date(value);
@@ -67,6 +79,7 @@ export class ProfileView {
             year: "numeric",
         });
     }
+
     formatGender(value) {
         const gender = String(value).toLowerCase();
         if (!gender) return "";

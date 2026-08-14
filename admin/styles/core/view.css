@@ -104,12 +104,17 @@ hr.panel-divider {
 .admin-cover {
     border-bottom: 1px solid rgba(148, 163, 184, 0.22);
     background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .admin-cover img {
     width: 100%;
+    max-width: 100%;
+    height: auto;
     display: block;
-    max-height: 520px;
-    object-fit: cover;
+    max-height: min(70vh, 640px);
+    object-fit: contain;
 }
 .admin-avatar {
     width: 78px;

@@ -64,6 +64,33 @@
     max-height: min(90vh, 620px);
 }
 
+.profile-edit-account-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.55rem 0.85rem;
+    border-radius: 999px;
+    background: rgba(37, 99, 235, 0.08);
+    color: var(--blue-mid);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.profile-edit-account-link:hover {
+    background: rgba(37, 99, 235, 0.14);
+}
+
+.profile-edit-layout-no-avatar {
+    grid-template-columns: minmax(160px, 200px) minmax(0, 1fr);
+}
+
+.profile-edit-avatar-readonly .profile-edit-avatar-btn,
+.profile-edit-avatar-readonly .profile-edit-avatar-hint,
+.profile-edit-avatar-readonly .profile-avatar-crop {
+    display: none !important;
+}
+
 .profile-edit-layout {
     display: grid;
     grid-template-columns: minmax(200px, 240px) minmax(0, 1fr);

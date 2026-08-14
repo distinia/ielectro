@@ -1,38 +1,158 @@
+.admin-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    margin: 0;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: #fff;
+    color: var(--brand-blue);
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition:
+        background var(--transition-fast),
+        border-color var(--transition-fast),
+        transform 0.1s ease,
+        opacity var(--transition-fast);
+}
+
+.admin-icon-btn:disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.admin-icon-btn i,
+.admin-icon-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.admin-icon-btn:hover:not(:disabled) {
+    background: var(--surface-alt);
+    border-color: rgba(11, 31, 58, 0.18);
+}
+
+.admin-icon-btn:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.admin-icon-btn-accent,
+.admin-icon-btn-primary {
+    background: linear-gradient(135deg, var(--brand-blue-mid), var(--brand-blue));
+    border-color: transparent;
+    color: #fff;
+    box-shadow: var(--shadow-accent);
+}
+
+.admin-icon-btn-accent:hover:not(:disabled),
+.admin-icon-btn-primary:hover:not(:disabled) {
+    filter: brightness(1.06);
+    background: linear-gradient(135deg, var(--brand-blue-mid), var(--brand-blue));
+}
+
+.admin-icon-btn-danger {
+    color: #be123c;
+    border-color: #fecdd3;
+    background: #fff1f2;
+}
+
+.admin-icon-btn-danger:hover:not(:disabled) {
+    background: #ffe4e6;
+}
+
+.admin-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 20px;
+    border-radius: var(--radius-md);
+    border: none;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        filter var(--transition-fast),
+        transform 0.1s ease;
+}
+
+.admin-btn-primary {
+    background: linear-gradient(135deg, var(--brand-blue-mid), var(--brand-blue));
+    color: #fff;
+    box-shadow: var(--shadow-accent);
+}
+
+.admin-btn-primary:hover {
+    filter: brightness(1.06);
+}
+
+.admin-btn-danger {
+    background: #fff1f2;
+    color: #be123c;
+    border: 1px solid #fecdd3;
+}
+
+.admin-btn-danger:hover {
+    background: #ffe4e6;
+}
+
+.admin-btn-secondary {
+    background: var(--surface-alt);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.admin-btn-secondary:hover {
+    background: #fff;
+    border-color: rgba(11, 31, 58, 0.16);
+}
+
+.admin-btn-sm {
+    padding: 8px 14px;
+    font-size: 0.82rem;
+    border-radius: 999px;
+}
+
 button[type="submit"],
 button.btn-primary {
     width: 100%;
     box-sizing: border-box;
     padding: 12px 18px;
     margin-bottom: 8px;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     border: none;
     cursor: pointer;
     font-family: inherit;
     font-size: 0.9375rem;
     font-weight: 600;
-    background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+    background: linear-gradient(135deg, var(--brand-blue-mid), var(--brand-blue));
     color: #fff;
-    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.28);
+    box-shadow: var(--shadow-accent);
     transition:
-        filter 0.15s ease,
+        filter var(--transition-fast),
         transform 0.1s ease;
 }
 button[type="submit"]:hover,
 button.btn-primary:hover {
-    filter: brightness(1.05);
+    filter: brightness(1.06);
 }
 button[type="submit"]:active,
 button.btn-primary:active {
     transform: translateY(1px);
 }
 button.btn-danger {
-    background: linear-gradient(180deg, #ef4444, #dc2626);
+    background: linear-gradient(180deg, var(--danger-color), #dc2626);
     box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35);
     color: #fff;
     width: 100%;
     padding: 12px 18px;
     border: none;
-    border-radius: 10px;
+    border-radius: var(--radius-sm);
     font-family: inherit;
     font-weight: 600;
     cursor: pointer;
@@ -42,12 +162,12 @@ button.btn-danger:hover {
     filter: brightness(1.05);
 }
 button.btn-ghost {
-    background: #f1f5f9;
-    color: #334155;
-    border: 1px solid #e2e8f0;
+    background: var(--surface-alt);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
     width: auto;
     padding: 9px 14px;
 }
 button.btn-ghost:hover {
-    background: #e2e8f0;
+    background: var(--background);
 }

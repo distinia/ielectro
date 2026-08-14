@@ -81,6 +81,10 @@ class App
         if (!defined('APP_ASSETS')) {
             define('APP_ASSETS', $this->paths['assets']);
         }
+
+        if (!defined('APP_PUBLIC')) {
+            define('APP_PUBLIC', $this->paths['root']);
+        }
     }
 
     private function boot(): void

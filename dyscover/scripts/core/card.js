@@ -5,6 +5,7 @@ import { Alert } from "./alert.js";
 import { Mention } from "./mention.js";
 import { Comments } from "./comments.js";
 import { Share } from "./share.js";
+import { Report } from "./report.js";
 export class Card {
     constructor(item = {}) {
         this.item = Card.normalize(item);
@@ -200,6 +201,7 @@ export class Card {
               <a class="post-username" href="${profile}">${d.username || "unknown"}</a>
               <span class="post-title-link">${d.title || "unknown"}</span>
             </div>
+            <button type="button" class="post-report-btn" data-action="report" aria-label="Report"><i data-icon="flag"></i></button>
           </header>
             <div class="post-scroll">
             <div class="post-caption">
@@ -343,6 +345,9 @@ export class Card {
         root.querySelector('[data-action="share"]')?.addEventListener("click", () => this._share.open());
         root.querySelector('[data-action="repost"]')?.addEventListener("click", () => this.repost(root));
         root.querySelector('[data-action="save"]')?.addEventListener("click", () => this.saved(root));
+        root.querySelector('[data-action="report"]')?.addEventListener("click", () => {
+            if (this.item?.id) Report.openPost(this.item.id);
+        });
     }
     async likes(root) {
         await this.ensureData();

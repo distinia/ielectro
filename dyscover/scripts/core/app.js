@@ -150,7 +150,12 @@ export class App {
             media,
             preview: previewImage,
             preview_image: previewImage,
-            avatar: App.userAvatarUrl(userId, item.username, item.avatar),
+            avatar: App.userAvatarUrl(
+                userId,
+                item.username,
+                item.avatar,
+                item.account_id,
+            ),
             url,
             liked: !!item.liked,
             bookmarked: !!(item.bookmarked ?? item.saved),
@@ -164,17 +169,19 @@ export class App {
         return `${Api.origin}/assets/brand/default-post.jpg`;
     }
 
-    static userAvatarUrl(userId, username, explicit = "") {
+    static accountOrigin = "https://account.ielectro.com";
+
+    static userAvatarUrl(userId, username, explicit = "", accountId = 0) {
         if (explicit) return String(explicit);
-        const id = Number(userId);
-        if (id > 0) {
-            return `${Api.origin}/assets/users/${id}/avatar.png`;
+        const accId = Number(accountId);
+        if (accId > 0) {
+            return `${App.accountOrigin}/assets/users/${accId}/avatar.png`;
         }
-        return App.peerAvatarUrl(username);
+        return App.peerAvatarUrl(username, explicit);
     }
 
-    static bustAvatarUrl(userId, explicit = "", version = null) {
-        const base = App.userAvatarUrl(userId, "", explicit).split("?")[0];
+    static bustAvatarUrl(userId, explicit = "", version = null, accountId = 0) {
+        const base = App.userAvatarUrl(userId, "", explicit, accountId).split("?")[0];
         const token =
             version != null && String(version) !== ""
                 ? String(version)
@@ -182,8 +189,8 @@ export class App {
         return `${base}?t=${token}`;
     }
 
-    static refreshAvatarImages(userId, explicit = "") {
-        const url = App.bustAvatarUrl(userId, explicit);
+    static refreshAvatarImages(userId, explicit = "", accountId = 0) {
+        const url = App.bustAvatarUrl(userId, explicit, null, accountId);
         document
             .querySelectorAll(
                 ".avatar, .profile-edit-avatar-preview, .profile-header .avatar",
@@ -265,7 +272,7 @@ export class App {
             return ex;
         }
         if (App.peerAvatarCache[key]) return App.peerAvatarCache[key];
-        const built = `${Api.origin}/assets/default-user/avatar.png`;
+        const built = `${App.accountOrigin}/assets/default-user/avatar.png`;
         App.peerAvatarCache[key] = built;
         return built;
     }

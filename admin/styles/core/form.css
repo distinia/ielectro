@@ -1,66 +1,197 @@
+label.field-label,
+.form-label,
+.admin-field > label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--brand-blue);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.admin-form-card {
+    padding: 0;
+    overflow: hidden;
+}
+
+.admin-form-head {
+    padding: 22px 24px 0;
+}
+
+.admin-form-head .form-heading {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--brand-blue);
+    letter-spacing: -0.02em;
+}
+
+.admin-form {
+    padding: 20px 24px 24px;
+}
+
+.admin-form-grid {
+    display: grid;
+    gap: 0 18px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.admin-field {
+    margin-bottom: 16px;
+}
+
+.admin-field.span-2 {
+    grid-column: 1 / -1;
+}
+
+.admin-field input,
+.admin-field textarea,
+.admin-field select {
+    margin-bottom: 0;
+}
+
+.admin-form-foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border-color);
+    margin-top: 8px;
+}
+
+.admin-form-msg {
+    margin: 0;
+    padding: 0 24px 20px;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.admin-form-msg:not(:empty) {
+    color: var(--brand-blue);
+}
+
+.admin-upload {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 140px;
+    padding: 20px;
+    border-radius: var(--radius-lg);
+    border: 2px dashed rgba(11, 31, 58, 0.14);
+    background: var(--surface-alt);
+    cursor: pointer;
+    transition:
+        border-color var(--transition-fast),
+        background var(--transition-fast);
+}
+
+.admin-upload:hover {
+    border-color: rgba(249, 115, 22, 0.45);
+    background: #fff;
+}
+
+.admin-upload input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.admin-upload-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--brand-blue);
+}
+
+.admin-upload-hint {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.admin-upload-preview {
+    margin-top: 12px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    max-width: 320px;
+    background: var(--surface-alt);
+}
+
+.admin-upload-preview img {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+.admin-avatar-slot {
+    width: 88px;
+    height: 88px;
+    border-radius: 999px;
+    overflow: hidden;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 1px var(--border-color), var(--shadow-sm);
+}
+
+.admin-avatar-slot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
 input[type="text"],
 input[type="url"],
 input[type="number"],
+input[type="search"],
 input[type="date"],
 input[type="datetime-local"],
-input[type="file"],
 input[type="email"],
 input:not([type]),
 textarea,
 select {
     width: 100%;
     box-sizing: border-box;
-    padding: 10px 14px;
-    margin-bottom: 14px;
-    border-radius: 8px;
-    border: 1px solid #b4bcc8;
-    background: #fff;
-    color: #1e293b;
+    padding: 12px 14px;
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    background: var(--surface-alt);
+    color: var(--text-primary);
     font-family: inherit;
     font-size: 0.9375rem;
     line-height: 1.45;
     transition:
-        border-color 0.15s ease,
-        box-shadow 0.15s ease;
+        border-color var(--transition-fast),
+        box-shadow var(--transition-fast);
 }
+
 textarea {
-    min-height: 100px;
-    resize: none;
+    min-height: 140px;
+    resize: vertical;
+    line-height: 1.6;
 }
-.admin-card textarea,
-form textarea {
-    min-height: 120px;
-    line-height: 1.55;
-    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-    border: 1px solid #b8c5d8;
-    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06);
-    font-family: "JetBrains Mono", "Fira Code", "Consolas", "Segoe UI", monospace;
-    font-size: 0.875rem;
-    tab-size: 4;
-}
-.admin-card textarea::placeholder,
-form textarea::placeholder {
-    color: #94a3b8;
-    font-family:
-        "Inter",
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        sans-serif;
-}
+
 input:hover,
 textarea:hover,
 select:hover {
-    border-color: #94a3b8;
+    border-color: rgba(11, 31, 58, 0.18);
 }
+
 input:focus,
 textarea:focus,
 select:focus {
     outline: none;
-    border-color: #0ea5e9;
-    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.22);
+    border-color: rgba(249, 115, 22, 0.55);
+    box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.12);
 }
+
 select {
     cursor: pointer;
     appearance: none;
@@ -69,22 +200,9 @@ select {
     background-position: right 12px center;
     padding-right: 40px;
 }
-input[type="file"] {
-    padding: 10px;
-    border-style: dashed;
-    cursor: pointer;
-}
-input[type="file"]::file-selector-button {
-    margin-right: 12px;
-    padding: 8px 14px;
-    border-radius: 8px;
-    border: 1px solid rgba(37, 99, 235, 0.4);
-    background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
-    color: #fff;
-    font-weight: 600;
-    font-family: inherit;
-    cursor: pointer;
-}
-input[type="file"]::file-selector-button:hover {
-    filter: brightness(1.05);
+
+@media (max-width: 720px) {
+    .admin-form-grid {
+        grid-template-columns: 1fr;
+    }
 }

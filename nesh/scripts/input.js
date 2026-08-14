@@ -43,12 +43,11 @@ export default class Input {
             case "description":
             case "field_label":
             case "biography":
+            case "body":
+            case "requirements":
                 break;
             default:
-                if (input.dataset.preserveCase === "true") {
-                    break;
-                }
-                input.value = input.value.toLowerCase();
+                break;
         }
     }
     static bind(selector = "input, textarea") {

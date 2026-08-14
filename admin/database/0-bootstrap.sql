@@ -51,10 +51,8 @@ CREATE TABLE IF NOT EXISTS `ielectro_admin`.`news` (
 CREATE TABLE IF NOT EXISTS `ielectro_admin`.`team` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `uuid` CHAR(36) NOT NULL,
-  `full_name` VARCHAR(160) NOT NULL,
+  `account_id` BIGINT UNSIGNED DEFAULT NULL,
   `role_text` VARCHAR(180) NOT NULL,
-  `avatar` VARCHAR(255) DEFAULT NULL,
-  `instagram` VARCHAR(255) DEFAULT NULL,
   `linkedin` VARCHAR(255) DEFAULT NULL,
   `github` VARCHAR(255) DEFAULT NULL,
   `status` ENUM('active','hidden') NOT NULL DEFAULT 'active',
@@ -62,6 +60,7 @@ CREATE TABLE IF NOT EXISTS `ielectro_admin`.`team` (
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_team_uuid` (`uuid`),
+  KEY `idx_team_account` (`account_id`),
   KEY `idx_team_status` (`status`)
 );
 CREATE TABLE IF NOT EXISTS `ielectro_admin`.`rate_limits` (

@@ -1,0 +1,119 @@
+.account-picker {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.account-picker-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--brand-blue);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.account-picker-results {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 220px;
+    overflow: auto;
+}
+
+.account-picker-option {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background: var(--surface-alt);
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+}
+
+.account-picker-option strong {
+    color: var(--brand-blue);
+}
+
+.account-picker-option span {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.account-picker-option:hover {
+    border-color: rgba(249, 115, 22, 0.35);
+    background: #fff;
+}
+
+.account-picker-empty {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.account-picker-chip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(249, 115, 22, 0.25);
+    background: var(--brand-orange-light);
+}
+
+.account-picker-chip strong {
+    display: block;
+    color: var(--brand-blue);
+}
+
+.account-picker-chip span {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.account-picker-chip button {
+    width: auto;
+    margin: 0;
+    padding: 4px 10px;
+    border: none;
+    border-radius: 999px;
+    background: rgba(11, 31, 58, 0.08);
+    color: var(--brand-blue);
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.file-field {
+    margin-bottom: 14px;
+}
+
+.file-field-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--brand-blue);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.file-field-preview {
+    margin-top: 10px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    max-width: 280px;
+}
+
+.file-field-preview img {
+    display: block;
+    width: 100%;
+    height: auto;
+}

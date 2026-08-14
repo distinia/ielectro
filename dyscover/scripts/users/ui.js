@@ -4,6 +4,7 @@ import { Actions } from "./actions.js";
 import { List } from "./list.js";
 import { BiographyEditor } from "./biography-editor.js";
 import { ProfilePage } from "./profile-page.js";
+import { Report } from "../core/report.js";
 
 export class UI {
     constructor(page) {
@@ -76,11 +77,15 @@ export class UI {
             label = "Follow back";
             btnClass = "profile-btn profile-btn-primary profile-btn-follow-back";
         }
-        container.innerHTML = `<button type="button" class="${btnClass}">${label}</button>`;
+        container.innerHTML = `<button type="button" class="${btnClass}">${label}</button>
+                <button type="button" class="profile-btn profile-btn-muted profile-btn-report">Report user</button>`;
         container.querySelector("button").onclick = () =>
             following
                 ? new Actions(this.page).unfollow(() => this.initActions())
                 : new Actions(this.page).follow(() => this.initActions());
+        container.querySelector(".profile-btn-report")?.addEventListener("click", () => {
+            if (this.page.userId) Report.openUser(this.page.userId);
+        });
     }
 
     bindStats() {

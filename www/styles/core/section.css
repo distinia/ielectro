@@ -1,8 +1,9 @@
 .section {
     animation: fadeIn 0.6s ease-out;
-    max-width: var(--container-width);
+    max-width: min(var(--container-width), 100%);
     margin: 0 auto;
     padding: var(--section-space) 1.25rem;
+    min-width: 0;
 }
 .section--compact {
     padding-top: clamp(2.5rem, 5vw, 3.5rem);

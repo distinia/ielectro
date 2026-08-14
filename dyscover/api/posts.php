@@ -10,6 +10,8 @@ use Nesh\Response;
 use Nesh\Routing;
 use Nesh\Validate;
 use Nesh\Video;
+
+require_once __DIR__ . '/moderation.php';
 class Posts
 {
     public function index(): void
@@ -58,6 +60,7 @@ class Posts
     private function create(): void
     {
         Request::post();
+        User::requireCanPost();
         $input = Request::body();
         $type = trim((string) ($input['type'] ?? ''));
         if (!Validate::in($type, PostData::TYPES)) {
@@ -67,6 +70,7 @@ class Posts
         if (!Validate::required($title)) {
             Response::badRequest('Missing title');
         }
+        Moderation::assertCleanText($title);
         $uuid = PostAssets::requireUuid($input['uuid'] ?? '');
         $userId = User::id();
         $existing = Query::fetch(
@@ -84,6 +88,7 @@ class Posts
             Response::conflict('Uuid already exists');
         }
         $description = trim((string) ($input['description'] ?? ''));
+        Moderation::assertCleanText($description);
         $visibility = trim((string) ($input['visibility'] ?? 'public'));
         $allowComments = PostData::parseBool($input['allow_comments'] ?? null, true);
         $extension = '';
@@ -176,6 +181,7 @@ class Posts
     private function update(): void
     {
         Request::patch();
+        User::requireCanPost();
         $post = PostData::requireOwned(Routing::id());
         $input = Request::body();
         $userId = (int) $post['user_id'];
@@ -191,6 +197,9 @@ class Posts
                 continue;
             }
             $value = trim((string) $input[$field]);
+            if ($field === 'title' || $field === 'description') {
+                Moderation::assertCleanText($value);
+            }
             if ($field === 'description') {
                 $descriptionSync = $value;
             }
@@ -300,6 +309,7 @@ class Posts
     private function delete(): void
     {
         Request::delete();
+        User::requireCanPost();
         $post = PostData::requireOwned(Routing::id());
         $postId = (int) $post['id'];
         PostAssets::deleteForPost($post);
@@ -646,6 +656,7 @@ class PostComments
     private function create(): void
     {
         Request::post();
+        User::requireCanPost();
         $postId = $this->postId();
         $post = Query::fetch(
             'SELECT allow_comments FROM ielectro_dyscover.dyscover_posts WHERE id = ? LIMIT 1',
@@ -658,6 +669,7 @@ class PostComments
         if (!Validate::required($body)) {
             Response::badRequest('Empty comment');
         }
+        Moderation::assertCleanText($body);
         $parentId = Request::value('parent_id');
         $parentId = is_numeric($parentId) ? (int) $parentId : null;
         if ($parentId !== null && $parentId <= 0) {
@@ -688,11 +700,13 @@ class PostComments
     private function update(): void
     {
         Request::patch();
+        User::requireCanPost();
         $commentId = $this->commentId();
         $body = trim((string) Request::value('body'));
         if (!Validate::required($body)) {
             Response::badRequest('Empty comment');
         }
+        Moderation::assertCleanText($body);
         Query::execute(
             "UPDATE ielectro_dyscover.dyscover_post_comments
             SET body = ?
@@ -723,6 +737,7 @@ class PostComments
     private function delete(): void
     {
         Request::delete();
+        User::requireCanPost();
         $commentId = $this->commentId();
         $row = Query::fetch(
             'SELECT post_id FROM ielectro_dyscover.dyscover_post_comments

@@ -1,5 +1,6 @@
 export class Api {
     static origin = "https://dyscover.ielectro.com";
+    static accountOrigin = "https://account.ielectro.com";
     static base = `${Api.origin}/api`;
 
     static feed = (limit = 50) => `${Api.base}/feed/${limit}`;
@@ -72,7 +73,7 @@ export class Api {
     static tagsSuggest = (term) =>
         `${Api.base}/tags?term=${encodeURIComponent(String(term).replace(/^#+/, ""))}`;
     static templateFields = (id) => `${Api.base}/templates/${id}/fields`;
-    static avatar = `${Api.base}/avatar`;
+    static avatar = `${Api.accountOrigin}/api/avatar`;
 
     static data(body) {
         if (body === null || body === undefined) {

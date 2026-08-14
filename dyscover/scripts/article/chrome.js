@@ -4,6 +4,9 @@ const SIDEBAR_HTML = `
             <button type="button" class="index-help-button" aria-label="Editor guide" title="Editor guide">
                 <span aria-hidden="true">?</span>
             </button>
+            <button type="button" class="index-pdf-button" aria-label="Export PDF" title="Export PDF">
+                <i data-icon="download"></i>
+            </button>
             <button type="button" class="index-edit-button" aria-label="Edit article">
                 <i data-icon="pencil"></i>
             </button>
@@ -61,6 +64,21 @@ function upgradeSidebarHeader(sidebar) {
         helpButton.title = "Editor guide";
         helpButton.innerHTML = `<span aria-hidden="true">?</span>`;
         actions.prepend(helpButton);
+    }
+
+    if (!header.querySelector(".index-pdf-button")) {
+        const pdfButton = document.createElement("button");
+        pdfButton.type = "button";
+        pdfButton.className = "index-pdf-button";
+        pdfButton.setAttribute("aria-label", "Export PDF");
+        pdfButton.title = "Export PDF";
+        pdfButton.innerHTML = `<i data-icon="download"></i>`;
+        const help = header.querySelector(".index-help-button");
+        if (help?.nextSibling) {
+            help.after(pdfButton);
+        } else {
+            actions.appendChild(pdfButton);
+        }
     }
 }
 

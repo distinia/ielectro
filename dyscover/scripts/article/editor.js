@@ -453,6 +453,7 @@ export class Editor {
 
     static hydrateLegacyContent(container) {
         if (!container) return;
+        Editor.stripContentEditable(container);
         container.querySelectorAll("h2").forEach((el) => {
             if (!el.classList.contains("heading")) {
                 el.classList.add("heading");
@@ -486,6 +487,32 @@ export class Editor {
             video.removeAttribute("controls");
             video.controls = false;
         });
+    }
+
+    static stripContentEditable(root) {
+        if (!root) {
+            return;
+        }
+        const elements =
+            root.nodeType === Node.ELEMENT_NODE
+                ? [root, ...root.querySelectorAll("*")]
+                : [...root.querySelectorAll("*")];
+        for (const element of elements) {
+            if (element.isContentEditable) {
+                element.contentEditable = false;
+            }
+            element.removeAttribute?.("contenteditable");
+        }
+    }
+
+    static stripContentEditableHtml(html) {
+        if (!html) {
+            return html;
+        }
+        const container = document.createElement("div");
+        container.innerHTML = html;
+        Editor.stripContentEditable(container);
+        return container.innerHTML;
     }
 
     getSelectors(Class) {
@@ -925,6 +952,7 @@ export class Editor {
         }
         ReplaceText.list.forEach((instance) => instance.closeEditing());
         this.unbindLazyBlockEditing();
+        Editor.stripContentEditable(this.content);
         await this.activateManagedElements(false);
         await this.setLinkEditing(false);
         await this.index.closeEditing();
@@ -939,6 +967,7 @@ export class Editor {
             return;
         }
         this.unbindLazyBlockEditing();
+        Editor.stripContentEditable(this.content);
         await this.setLinkEditing(false);
     }
 

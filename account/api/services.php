@@ -40,6 +40,7 @@ class Services
     }
     public static function create(int $accountId): void
     {
+        \Nesh\Avatar::provision($accountId);
         Dyscover::create($accountId);
         Dominions::create($accountId);
     }
@@ -51,18 +52,12 @@ class Services
 }
 class Dyscover
 {
-    private const AVATAR = 'avatar.png';
     public static function create(int $accountId): void
     {
         Query::execute(
             "INSERT INTO ielectro_dyscover.dyscover_users (account_id)
             VALUES (?)",
             [$accountId]
-        );
-        $userId = (int) Query::lastId();
-        File::copyDirectory(
-            ROOT_PATH . '/dyscover/assets/default-user',
-            ROOT_PATH . '/dyscover/assets/users/' . $userId
         );
     }
     public static function delete(int $accountId): void
@@ -114,12 +109,13 @@ class Dyscover
         $baseUrl = $app ? $app->url : 'https://dyscover.ielectro.com';
         return [
             'id' => $userId,
+            'account_id' => $accountId,
             'username' => $username,
             'biography' => (string) ($row['biography'] ?? ''),
             'website' => (string) ($row['website'] ?? ''),
             'role' => $row['role'],
             'status' => $row['status'],
-            'avatar' => $baseUrl . '/assets/users/' . $userId . '/' . self::AVATAR,
+            'avatar' => \Nesh\Avatar::url($accountId),
             'followers' => Query::count(
                 'SELECT COUNT(*) FROM ' . Schema::DYSCOVER_FOLLOWS . ' WHERE followed_id = ?',
                 [$userId]

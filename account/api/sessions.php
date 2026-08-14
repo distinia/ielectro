@@ -111,7 +111,7 @@ class Sessions
         ) {
             Activity::log(
                 null,
-                'login',
+                'login_failed',
                 'Invalid credentials for ' . $identifier
             );
             Response::unauthorized('Invalid username, email or password');

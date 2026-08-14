@@ -1,0 +1,532 @@
+@import "../core/index.css";
+
+/* ── Mod pages (accounts + dyscover) ── */
+
+.accounts-shell,
+.dyscover-shell {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+.accounts-shell > .mod-page-head,
+.accounts-shell > .mod-stats-grid,
+.dyscover-shell > .mod-page-head,
+.dyscover-shell > .mod-stats-grid,
+.dyscover-shell > .mod-tabs-bar {
+    flex-shrink: 0;
+}
+
+.accounts-shell .admin-card,
+.dyscover-shell > .mod-tabs-bar {
+    flex: none;
+}
+
+.mod-page-head {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mod-page-head h1 {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--brand-blue);
+}
+
+.mod-page-head p {
+    margin: 0;
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    max-width: 62ch;
+    line-height: 1.55;
+}
+
+/* ── KPI stats ── */
+.mod-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.mod-stat-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px 20px;
+    border-radius: var(--radius-xl);
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    transition:
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast);
+}
+
+.mod-stat-card:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.mod-stat-icon {
+    flex: 0 0 42px;
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-md);
+    background: rgba(22, 58, 107, 0.08);
+    color: var(--brand-blue-mid);
+}
+
+.mod-stat-icon i,
+.mod-stat-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.mod-stat-card.is-danger .mod-stat-icon {
+    background: #fff1f2;
+    color: #be123c;
+}
+
+.mod-stat-card.is-warn .mod-stat-icon {
+    background: #fffbeb;
+    color: #b45309;
+}
+
+.mod-stat-card.is-accent .mod-stat-icon {
+    background: rgba(29, 78, 216, 0.1);
+    color: #1d4ed8;
+}
+
+.mod-stat-body strong {
+    display: block;
+    font-size: 1.65rem;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--brand-blue);
+}
+
+.mod-stat-body span {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.84rem;
+    color: var(--text-muted);
+    line-height: 1.35;
+}
+
+/* ── Accounts layout ── */
+.accounts-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+    gap: 18px;
+    align-items: start;
+}
+
+.accounts-log-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.accounts-log-card .mod-card-head,
+.accounts-log-card .admin-list-filters {
+    flex-shrink: 0;
+}
+
+.accounts-layout > * {
+    min-height: auto;
+}
+
+.accounts-delete-card {
+    align-self: start;
+}
+
+.accounts-log-card .mod-card-head,
+.dyscover-panel .mod-card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.admin-card .mod-card-head h2 {
+    margin: 0;
+}
+
+.mod-card-head p {
+    margin: 6px 0 0;
+    font-size: 0.84rem;
+    color: var(--text-muted);
+}
+
+.mod-list-scroll {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* ── Row cards ── */
+.mod-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 14px;
+    align-items: start;
+    padding: 16px 18px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    background: var(--surface-alt);
+    transition:
+        border-color var(--transition-fast),
+        box-shadow var(--transition-fast),
+        transform var(--transition-fast);
+}
+
+.mod-row:hover {
+    border-color: rgba(22, 58, 107, 0.14);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+}
+
+.mod-row-accent {
+    width: 4px;
+    align-self: stretch;
+    border-radius: 999px;
+    background: var(--brand-blue-mid);
+    min-height: 48px;
+}
+
+.mod-row.is-danger .mod-row-accent {
+    background: #ef4444;
+}
+
+.mod-row.is-warn .mod-row-accent {
+    background: #f59e0b;
+}
+
+.mod-row.is-success .mod-row-accent {
+    background: #10b981;
+}
+
+.mod-row.is-muted .mod-row-accent {
+    background: #94a3b8;
+}
+
+.mod-row-main {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mod-row-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.mod-row-top strong {
+    color: var(--brand-blue);
+    font-size: 0.95rem;
+}
+
+.mod-row-meta {
+    margin: 0;
+    font-size: 0.86rem;
+    color: var(--text-secondary);
+    line-height: 1.45;
+}
+
+.mod-row-detail {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.45;
+}
+
+.mod-row-side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.mod-row-time {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.mod-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+
+.mod-badge-danger {
+    background: #fff1f2;
+    color: #be123c;
+}
+
+.mod-badge-warn {
+    background: #fffbeb;
+    color: #b45309;
+}
+
+.mod-badge-success {
+    background: #ecfdf5;
+    color: #047857;
+}
+
+.mod-badge-info {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.mod-badge-muted {
+    background: var(--surface);
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+}
+
+.mod-user-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.86rem;
+    color: var(--text-secondary);
+}
+
+.mod-user-chip img,
+.mod-user-chip .mod-avatar-fallback {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.mod-avatar-fallback {
+    display: grid;
+    place-items: center;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: var(--brand-blue);
+    background: rgba(11, 31, 58, 0.06);
+    border: 1px solid var(--border-color);
+}
+
+.mod-row-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+/* ── Danger zone ── */
+.mod-danger-card {
+    border-color: rgba(239, 68, 68, 0.22);
+    background: linear-gradient(180deg, #fff 0%, #fffbfb 100%);
+    position: sticky;
+    top: 0;
+}
+
+.mod-danger-card h2 {
+    color: #be123c;
+}
+
+.mod-danger-note {
+    display: flex;
+    gap: 10px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    border-radius: var(--radius-md);
+    background: #fff1f2;
+    border: 1px solid #fecdd3;
+    font-size: 0.84rem;
+    color: #9f1239;
+    line-height: 1.45;
+}
+
+.mod-danger-note i,
+.mod-danger-note svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.accounts-delete-form .admin-actions {
+    margin-top: 4px;
+}
+
+.accounts-delete-form .admin-btn-danger {
+    width: 100%;
+}
+
+/* ── Tabs (Dyscover) ── */
+.mod-tabs-bar {
+    padding: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.mod-tab {
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-secondary);
+    border-radius: 999px;
+    padding: 10px 16px;
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background var(--transition-fast),
+        color var(--transition-fast),
+        border-color var(--transition-fast),
+        box-shadow var(--transition-fast);
+}
+
+.mod-tab:hover {
+    background: var(--surface-alt);
+    color: var(--brand-blue);
+}
+
+.mod-tab.active {
+    background: linear-gradient(135deg, var(--brand-blue-mid), var(--brand-blue));
+    border-color: transparent;
+    color: #fff;
+    box-shadow: var(--shadow-accent);
+}
+
+.dyscover-overview.mod-stats-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.dyscover-shell > .dyscover-panel:not(.panel-hidden) {
+    display: flex;
+    flex-direction: column;
+}
+
+.dyscover-panel .admin-list-filters,
+.dyscover-panel .dyscover-term-form,
+.dyscover-panel .mod-card-head {
+    flex-shrink: 0;
+}
+
+.dyscover-panel[data-panel="terms"] .mod-list-scroll {
+    margin-top: 0;
+}
+
+/* ── Trends sub-panels ── */
+.mod-subpanel {
+    padding: 18px 20px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    background: var(--surface-alt);
+}
+
+.mod-subpanel h3 {
+    margin: 0 0 14px;
+    font-size: 0.95rem;
+    color: var(--brand-blue);
+}
+
+.mod-trend-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.mod-trend-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.mod-trend-item strong {
+    color: var(--brand-blue);
+    font-size: 0.92rem;
+}
+
+.mod-trend-item span,
+.mod-trend-item small {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+}
+
+.mod-trend-rank {
+    flex: 0 0 28px;
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(22, 58, 107, 0.08);
+    color: var(--brand-blue-mid);
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.dyscover-trends-grid {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 16px;
+}
+
+.dyscover-term-form {
+    padding: 18px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    background: var(--surface-alt);
+}
+
+@media (max-width: 1100px) {
+    .accounts-layout,
+    .dyscover-trends-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mod-danger-card {
+        position: static;
+    }
+
+    .mod-stats-grid,
+    .dyscover-overview.mod-stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .mod-stats-grid,
+    .dyscover-overview.mod-stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mod-row {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .mod-row-accent {
+        display: none;
+    }
+
+    .mod-row-side {
+        align-items: flex-start;
+    }
+}

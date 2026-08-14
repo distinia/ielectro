@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Dyscover</title>
+    <meta name="keywords" content="admin dyscover, moderation, reports">
+    <meta name="description" content="Moderate Dyscover reports, users, trends and banned terms">
+</head>
+<body>
+<div class="admin-frame">
+    <div class="admin-sidebar-mount"></div>
+    <main class="admin-content admin-content-mount">
+        <div class="admin-shell dyscover-shell">
+            <header class="mod-page-head">
+                <h1>Dyscover moderation</h1>
+                <p>Review reports, manage users, track viral trends, banned terms, and inappropriate content.</p>
+            </header>
+            <div class="mod-stats-grid dyscover-overview"></div>
+            <nav class="admin-card mod-tabs-bar dyscover-tabs" aria-label="Moderation sections">
+                <button type="button" class="mod-tab active" data-tab="reports">Reports</button>
+                <button type="button" class="mod-tab" data-tab="users">Users</button>
+                <button type="button" class="mod-tab" data-tab="trends">Viral trends</button>
+                <button type="button" class="mod-tab" data-tab="terms">Banned terms</button>
+                <button type="button" class="mod-tab" data-tab="posts">Posts</button>
+            </nav>
+            <section class="admin-card dyscover-panel" data-panel="reports">
+                <div class="mod-card-head">
+                    <div>
+                        <h2>Reports</h2>
+                        <p>Posts and users flagged by the community</p>
+                    </div>
+                </div>
+                <div class="admin-list-filters">
+                    <select class="admin-filter-sort reports-filter-status" aria-label="Report status">
+                        <option value="pending">Pending</option>
+                        <option value="actioned">Actioned</option>
+                        <option value="dismissed">Dismissed</option>
+                        <option value="all">All</option>
+                    </select>
+                </div>
+                <div class="mod-list-scroll dyscover-reports-list"></div>
+            </section>
+            <section class="admin-card dyscover-panel panel-hidden" data-panel="users">
+                <div class="mod-card-head">
+                    <div>
+                        <h2>Dyscover users</h2>
+                        <p>Ban, suspend, or reactivate Dyscover accounts</p>
+                    </div>
+                </div>
+                <div class="admin-list-filters">
+                    <input type="search" class="admin-filter-search users-filter-q" placeholder="Search user…" autocomplete="off">
+                    <select class="admin-filter-sort users-filter-status" aria-label="User status">
+                        <option value="all">All</option>
+                        <option value="active">Active</option>
+                        <option value="suspended">Suspended</option>
+                        <option value="banned">Banned</option>
+                    </select>
+                </div>
+                <div class="mod-list-scroll dyscover-users-list"></div>
+            </section>
+            <section class="admin-card dyscover-panel panel-hidden" data-panel="trends">
+                <div class="mod-card-head">
+                    <div>
+                        <h2>Viral trends</h2>
+                        <p>Tags and posts with the most engagement in the last 7 days</p>
+                    </div>
+                </div>
+                <div class="dyscover-trends-grid">
+                    <div class="mod-subpanel dyscover-trends-tags"></div>
+                    <div class="mod-subpanel dyscover-trends-posts"></div>
+                </div>
+            </section>
+            <section class="admin-card dyscover-panel panel-hidden" data-panel="terms">
+                <div class="mod-card-head">
+                    <div>
+                        <h2>Banned terms</h2>
+                        <p>Block words or phrases in posts and comments</p>
+                    </div>
+                </div>
+                <form class="admin-form dyscover-term-form">
+                    <div class="admin-form-grid">
+                        <div class="admin-field">
+                            <label for="term-value">Term</label>
+                            <input id="term-value" type="text" name="term" placeholder="e.g. spamword" required>
+                        </div>
+                        <div class="admin-field">
+                            <label for="term-match">Match type</label>
+                            <select id="term-match" name="match_type">
+                                <option value="contains">Contains</option>
+                                <option value="word">Whole word</option>
+                                <option value="exact">Exact</option>
+                            </select>
+                        </div>
+                        <div class="admin-field span-2">
+                            <label for="term-reason">Reason</label>
+                            <input id="term-reason" type="text" name="reason" placeholder="Optional">
+                        </div>
+                    </div>
+                    <div class="admin-actions">
+                        <button type="submit" class="admin-btn admin-btn-primary">Add term</button>
+                    </div>
+                </form>
+                <div class="mod-list-scroll dyscover-terms-list"></div>
+            </section>
+            <section class="admin-card dyscover-panel panel-hidden" data-panel="posts">
+                <div class="mod-card-head">
+                    <div>
+                        <h2>Post moderation</h2>
+                        <p>Search and remove inappropriate content</p>
+                    </div>
+                </div>
+                <div class="admin-list-filters">
+                    <input type="search" class="admin-filter-search posts-filter-q" placeholder="Search title or author…" autocomplete="off">
+                </div>
+                <div class="mod-list-scroll dyscover-posts-list"></div>
+            </section>
+        </div>
+    </main>
+</div>
+</body>
+</html>

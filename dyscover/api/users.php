@@ -92,7 +92,10 @@ class User
             Response::unauthorized();
         }
         $row = Query::fetch(
-            'SELECT id FROM ielectro_dyscover.dyscover_users WHERE account_id = ? LIMIT 1',
+            'SELECT id, status, suspended_until
+            FROM ielectro_dyscover.dyscover_users
+            WHERE account_id = ?
+            LIMIT 1',
             [$accountId]
         );
         if (!$row) {
@@ -104,7 +107,65 @@ class User
             Avatar::provision($userId);
             return $userId;
         }
+        self::refreshSuspension($row);
+        self::assertCanAccess($row);
         return (int) $row['id'];
+    }
+
+    public static function requireCanPost(): void
+    {
+        $row = self::statusRow();
+        if (!$row) {
+            Response::unauthorized();
+        }
+        self::refreshSuspension($row);
+        if ((string) $row['status'] === 'suspended') {
+            Response::forbidden('Your Dyscover account is suspended');
+        }
+    }
+
+    public static function statusRow(): ?array
+    {
+        $accountId = Identity::id();
+        if ($accountId === null) {
+            return null;
+        }
+        return Query::fetch(
+            'SELECT id, status, suspended_until, ban_reason
+            FROM ielectro_dyscover.dyscover_users
+            WHERE account_id = ?
+            LIMIT 1',
+            [$accountId]
+        );
+    }
+
+    private static function refreshSuspension(array &$row): void
+    {
+        if ((string) ($row['status'] ?? '') !== 'suspended') {
+            return;
+        }
+        $until = $row['suspended_until'] ?? null;
+        if (!$until) {
+            return;
+        }
+        if (strtotime((string) $until) >= time()) {
+            return;
+        }
+        Query::execute(
+            "UPDATE ielectro_dyscover.dyscover_users
+            SET status = 'active', suspended_until = NULL, ban_reason = NULL
+            WHERE id = ?",
+            [(int) $row['id']]
+        );
+        $row['status'] = 'active';
+        $row['suspended_until'] = null;
+    }
+
+    private static function assertCanAccess(array $row): void
+    {
+        if ((string) ($row['status'] ?? '') === 'banned') {
+            Response::forbidden('Your Dyscover account is banned');
+        }
     }
 }
 class Accounts
@@ -193,12 +254,13 @@ class UserProfile
         $viewerId = User::id();
         $payload = [
             'id' => (int) $row['id'],
+            'account_id' => (int) $row['account_id'],
             'username' => is_array($account) ? (string) ($account['username'] ?? '') : '',
             'biography' => $row['biography'] ?? '',
             'website' => $row['website'] ?? '',
             'role' => $row['role'],
             'status' => $row['status'],
-            'avatar' => Avatar::url((int) $row['id']),
+            'avatar' => Avatar::urlForAccount((int) $row['account_id']),
             'followers' => Query::count(
                 'SELECT COUNT(*) FROM ielectro_dyscover.dyscover_follows WHERE followed_id = ?',
                 [$id]
@@ -262,9 +324,10 @@ class UserCard
         $account = Accounts::find((int) $row['account_id']);
         return [
             'id' => (int) $row['id'],
+            'account_id' => (int) $row['account_id'],
             'username' => is_array($account) ? (string) ($account['username'] ?? '') : '',
             'biography' => $row['biography'] ?? '',
-            'avatar' => Avatar::url((int) $row['id']),
+            'avatar' => Avatar::urlForAccount((int) $row['account_id']),
         ];
     }
 }

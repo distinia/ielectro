@@ -59,9 +59,15 @@ export class Informations {
             const user = Api.record(res) || {};
             const avatar = document.querySelector(".avatar");
             if (avatar) {
+                this.page.accountId = Number(user.account_id) || 0;
                 avatar.src =
                     user.avatar ||
-                    App.userAvatarUrl(this.page.userId, user.username);
+                    App.userAvatarUrl(
+                        this.page.userId,
+                        user.username,
+                        "",
+                        this.page.accountId,
+                    );
             }
             const usernameEl = document.querySelector(".username");
             if (usernameEl) usernameEl.textContent = user.username || "";

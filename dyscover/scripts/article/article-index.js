@@ -3,6 +3,7 @@ import { getArticleState } from "./state.js";
 import { Heading } from "./heading.js";
 import { Editor } from "./editor.js";
 import { EditorHelp } from "./editor-help.js";
+import { ArticlePdf } from "./article-pdf.js";
 
 export class Index {
     constructor() {
@@ -48,10 +49,12 @@ export class Index {
         if (!this.sidebar) return;
         this.editButton = this.sidebar.querySelector(".index-edit-button");
         const helpButton = this.sidebar.querySelector(".index-help-button");
+        const pdfButton = this.sidebar.querySelector(".index-pdf-button");
         const modeButton = this.sidebar.querySelector(".index-mode-button");
         const isEditor = getArticleState() === "editor";
         const isEditing = !!Editor.current?.isEditing;
         const isTextMode = !!Editor.current?.isTextMode;
+        const canExportPdf = isEditor && !isEditing;
 
         if (helpButton) {
             helpButton.classList.toggle("is-visible", isEditor);
@@ -59,6 +62,24 @@ export class Index {
             helpButton.title = isTextMode
                 ? "Text editor guide"
                 : "Graphic editor guide";
+        }
+
+        if (pdfButton) {
+            pdfButton.classList.toggle("is-visible", canExportPdf);
+            pdfButton.disabled = false;
+            pdfButton.classList.remove("is-busy");
+            pdfButton.onclick = canExportPdf
+                ? async () => {
+                      pdfButton.disabled = true;
+                      pdfButton.classList.add("is-busy");
+                      try {
+                          await ArticlePdf.export();
+                      } finally {
+                          pdfButton.disabled = false;
+                          pdfButton.classList.remove("is-busy");
+                      }
+                  }
+                : null;
         }
 
         if (this.editButton) {

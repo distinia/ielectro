@@ -11,6 +11,7 @@
 @import "../activity/notifications.css";
 @import "empty-state.css";
 @import "overlay.css";
+@import "report.css";
 @import "spinner.css";
 @import "user.css";
 @import "../post/index.css";
