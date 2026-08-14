@@ -17,8 +17,8 @@ RewriteEngine On
 </IfModule>
 
 # Block sensitive directories
+RewriteRule ^ai(?:/.*)?$ - [F,L,NC]
 RewriteRule ^cli(?:/.*)?$ - [F,L,NC]
-RewriteRule ^skeleton(?:/.*)?$ - [F,L,NC]
 RewriteRule ^src(?:/.*)?$ - [F,L,NC]
 RewriteRule ^vendor(?:/.*)?$ - [F,L,NC]
 

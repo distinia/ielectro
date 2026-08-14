@@ -11,7 +11,9 @@ export default class Request {
     static async request(method, url, data = null) {
         method = method.toUpperCase();
         if (!/^https?:\/\//i.test(url)) {
-            url = `${this.baseUrl}/${url.replace(/^\/+/, "")}`;
+            const base = String(this.baseUrl || (typeof location !== "undefined" ? location.origin : ""))
+                .replace(/\/+$/, "");
+            url = `${base}/${String(url).replace(/^\/+/, "")}`;
         }
         const options = {
             method,

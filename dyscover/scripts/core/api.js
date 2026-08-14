@@ -27,6 +27,12 @@ export class Api {
     static articlePreview = (uuid) =>
         `${Api.base}/articles/${encodeURIComponent(uuid)}/preview`;
 
+    static articlePdf = (uuid) =>
+        `${Api.base}/articles/${encodeURIComponent(uuid)}/pdf`;
+
+    static articleGenerate = (uuid) =>
+        `${Api.base}/articles/${encodeURIComponent(uuid)}/generate`;
+
     static user = (idOrUsername) =>
         `${Api.base}/users/${encodeURIComponent(idOrUsername)}`;
     static userId(id) {

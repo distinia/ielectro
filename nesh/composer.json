@@ -1,5 +1,6 @@
 {
     "require": {
-        "geoip2/geoip2": "^3.3"
+        "geoip2/geoip2": "^3.3",
+        "dompdf/dompdf": "^3.1"
     }
 }

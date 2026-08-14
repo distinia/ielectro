@@ -1,6 +1,7 @@
 # Environment
 .env
 .env.*
+nesh/ai/config.local.php
 # Dependencies
 /vendor/
 /node_modules/

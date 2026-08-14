@@ -1,0 +1,53 @@
+{
+    "id": "country",
+    "label": "Country / Nation",
+    "match": {
+        "terms": ["country", "republic", "nation", "kingdom", "state of"],
+        "patterns": ["republic of", "kingdom of", "nation of"]
+    },
+    "outline": [
+        {
+            "heading": "Etymology",
+            "subsections": []
+        },
+        {
+            "heading": "Geography",
+            "subsections": []
+        },
+        {
+            "heading": "Politics",
+            "subsections": ["Government", "Political parties", "Administrative subdivisions", "Foreign relations", "Military", "Law enforcement"]
+        },
+        {
+            "heading": "Economy",
+            "subsections": ["Transport and energy", "Agriculture and resources", "Sciences and technology", "Global economy", "Tourism"]
+        },
+        {
+            "heading": "Demography",
+            "subsections": ["Language", "Religion", "Ethnicities", "Immigration"]
+        },
+        {
+            "heading": "Culture",
+            "subsections": ["Sport", "Media", "Music"]
+        },
+        {
+            "heading": "See also",
+            "subsections": []
+        },
+        {
+            "heading": "References",
+            "subsections": []
+        }
+    ],
+    "template": {
+        "prefer_title_keywords": ["country", "nation", "republic", "state"],
+        "avoid_title_keywords": ["statesman", "office"],
+        "min_field_score": 10
+    },
+    "media_rules": {
+        "require_entity_in_title": true,
+        "prefer_keywords": ["map", "flag", "emblem", "portrait", "official"]
+    },
+    "usage_count": 0,
+    "updated_at": ""
+}

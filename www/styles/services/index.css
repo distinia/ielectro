@@ -1,7 +1,7 @@
 @import "../core/index.css";
 .header {
     background:
-        linear-gradient(rgba(11, 31, 58, 0.62), rgba(11, 31, 58, 0.78)),
+        var(--hero-overlay),
         url("https://www.ielectro.com/assets/headers/services.png");
     background-position: center center;
     background-size: cover;
@@ -12,28 +12,28 @@
 .services-showcase {
     display: flex;
     flex-direction: column;
-    gap: clamp(2rem, 5vw, 3rem);
+    gap: 18px;
     margin-top: 1rem;
 }
 .service-panel {
     display: grid;
     grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
-    gap: clamp(1.5rem, 4vw, 3rem);
+    gap: clamp(1.5rem, 4vw, 2.5rem);
     align-items: center;
-    padding: clamp(1.5rem, 3vw, 2.25rem);
-    border-radius: calc(var(--radius-xl) + 0.25rem);
-    background:
-        radial-gradient(circle at top right, rgba(249, 115, 22, 0.08), transparent 28%),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(238, 244, 251, 0.92));
+    padding: 24px;
+    border-radius: var(--radius-xl);
+    background: var(--surface);
     border: 1px solid var(--border-color);
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-sm);
     transition:
-        transform var(--transition-base),
-        box-shadow var(--transition-base);
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast),
+        border-color var(--transition-fast);
 }
 .service-panel:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 24px 56px rgba(11, 31, 58, 0.14);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: rgba(11, 31, 58, 0.12);
 }
 .service-panel--reverse .service-panel__content {
     order: 2;
@@ -45,60 +45,58 @@
     display: flex;
     align-items: center;
     gap: 0.85rem;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1.1rem;
 }
 .service-panel__logo {
-    width: 54px;
-    height: 54px;
+    width: 48px;
+    height: 48px;
     object-fit: contain;
-    filter: drop-shadow(0 8px 18px rgba(249, 115, 22, 0.18));
 }
 .service-panel__logo--large {
-    width: 120px;
-    height: 120px;
+    width: 96px;
+    height: 96px;
     margin: 0 auto;
     display: block;
 }
 .service-panel__tag {
     display: inline-flex;
     align-items: center;
-    padding: 0.35rem 0.75rem;
+    padding: 0.3rem 0.7rem;
     border-radius: 999px;
-    background: var(--brand-orange-light);
-    color: var(--brand-orange-dark);
-    font-size: 0.72rem;
-    font-weight: 800;
+    background: var(--primary-soft);
+    color: var(--brand-blue);
+    font-size: 0.68rem;
+    font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
 }
 .service-panel__title {
-    font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+    font-size: clamp(1.5rem, 3vw, 2rem);
     color: var(--brand-blue);
-    letter-spacing: -0.04em;
-    line-height: 1.08;
-    margin-bottom: 1rem;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    margin-bottom: 0.85rem;
+    font-weight: 700;
 }
 .service-panel__description {
     color: var(--text-secondary);
-    font-size: 1.05rem;
-    line-height: 1.8;
+    font-size: 1rem;
+    line-height: 1.7;
     max-width: 52ch;
-    margin-bottom: 1.6rem;
+    margin-bottom: 1.35rem;
 }
 .service-panel__cta {
-    min-width: 180px;
+    min-width: 160px;
 }
 .service-panel__frame {
     position: relative;
-    padding: 0.85rem;
-    border-radius: calc(var(--radius-xl) + 0.15rem);
-    background: linear-gradient(180deg, #0b1f3a 0%, #163a6b 100%);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.08),
-        0 18px 40px rgba(11, 31, 58, 0.22);
+    padding: 0.65rem;
+    border-radius: var(--radius-xl);
+    background: var(--surface-alt);
+    border: 1px solid var(--border-color);
 }
 .service-panel__frame--empty {
-    min-height: 280px;
+    min-height: 260px;
     display: grid;
     place-items: center;
 }
@@ -112,34 +110,34 @@
 .media-carousel img {
     width: 100%;
     height: auto;
-    min-height: 280px;
-    max-height: 420px;
+    min-height: 240px;
+    max-height: 400px;
     object-fit: cover;
     border-radius: var(--radius-lg);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border-color);
 }
 .carousel-btn {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(255, 255, 255, 0.92);
+    background: #fff;
     border: 1px solid var(--border-color);
-    width: 42px;
-    height: 42px;
-    border-radius: 999px;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
     display: grid;
     place-items: center;
     cursor: pointer;
     color: var(--brand-blue);
-    font-size: 1.2rem;
+    font-size: 1.1rem;
+    box-shadow: var(--shadow-sm);
     transition:
-        transform var(--transition-fast),
-        box-shadow var(--transition-fast),
-        background-color var(--transition-fast);
+        background var(--transition-fast),
+        border-color var(--transition-fast);
 }
 .carousel-btn:hover {
-    transform: translateY(-50%) scale(1.05);
-    box-shadow: var(--shadow-md);
+    background: var(--surface-alt);
+    border-color: rgba(11, 31, 58, 0.16);
 }
 .carousel-btn.prev {
     left: 12px;
@@ -150,10 +148,11 @@
 .services-empty {
     padding: 2rem;
     text-align: center;
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
     background: var(--surface);
     border: 1px solid var(--border-color);
     color: var(--text-secondary);
+    box-shadow: var(--shadow-sm);
 }
 @media (max-width: 900px) {
     .service-panel,

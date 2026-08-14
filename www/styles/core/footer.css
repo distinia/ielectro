@@ -1,13 +1,99 @@
-footer {
-    background: var(--brand-white);
-    padding: 3rem 0;
-    margin-top: clamp(4rem, 8vw, 6rem);
-    border-top: 1px solid var(--border-color);
-    box-shadow: 0 -8px 24px rgba(11, 31, 58, 0.04);
+.site-footer {
+    background: var(--primary-gradient);
+    color: rgba(255, 255, 255, 0.86);
+    padding: 3.5rem 0 1.5rem;
+    margin-top: clamp(3.5rem, 7vw, 5.5rem);
 }
-footer p {
-    text-align: center;
-    color: var(--text-muted);
+.footer-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr));
+    gap: 2rem 1.5rem;
+    padding-bottom: 2.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.footer-brand {
+    max-width: 280px;
+}
+.footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.85rem;
+    text-decoration: none;
+}
+.footer-logo:hover {
+    color: #fff;
+    text-decoration: none;
+}
+.footer-logo::before {
+    content: "";
+    width: 32px;
+    height: 32px;
+    background-image: url("https://www.ielectro.com/assets/brand/logo.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+.footer-brand p {
+    text-align: left;
+    color: rgba(255, 255, 255, 0.68);
     font-size: 0.92rem;
-    font-weight: 600;
+    font-weight: 400;
+    line-height: 1.65;
+}
+.footer-col h3 {
+    margin: 0 0 0.9rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+}
+.footer-col a {
+    display: block;
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 0.92rem;
+    font-weight: 500;
+    padding: 0.28rem 0;
+}
+.footer-col a:hover {
+    color: #fff;
+    text-decoration: none;
+}
+.footer-col span {
+    display: block;
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 0.92rem;
+    font-weight: 500;
+    padding: 0.28rem 0;
+}
+.footer-social {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.9rem;
+    margin-top: 0.55rem;
+}
+.footer-social a {
+    padding: 0.15rem 0;
+}
+.footer-bottom {
+    padding-top: 1.25rem;
+}
+.footer-bottom p {
+    text-align: left;
+    color: rgba(255, 255, 255, 0.48);
+    font-size: 0.82rem;
+    font-weight: 500;
+}
+@media (max-width: 860px) {
+    .footer-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .footer-brand {
+        grid-column: 1 / -1;
+        max-width: none;
+    }
 }

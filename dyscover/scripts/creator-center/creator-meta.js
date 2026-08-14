@@ -26,6 +26,8 @@ function replaceActiveTag(input, tag) {
 }
 
 export class CreatorMeta {
+    static MAX_TAGS = 5;
+
     static fieldHtml({ title = "", description = "", tags = [] } = {}) {
         const tagValue = (Array.isArray(tags) ? tags : [])
             .map((tag) => `#${String(tag).replace(/^#+/, "")}`)
@@ -39,7 +41,7 @@ export class CreatorMeta {
                 </div>
                 <div class="creator-field tags-field">
                     <div class="tags-input-wrap">
-                        <input id="creator-tags" class="input tags-input" name="tags" placeholder="#news #tutorial" value="${escapeHtml(tagValue)}" autocomplete="off">
+                        <input id="creator-tags" class="input tags-input" name="tags" placeholder="Max 5 tags — #destenia #politics" value="${escapeHtml(tagValue)}" autocomplete="off">
                         <ul class="tags-suggestions" hidden></ul>
                     </div>
                 </div>`;
@@ -93,6 +95,12 @@ export class CreatorMeta {
                     list.hidden = false;
                     list.querySelectorAll("li").forEach((item) => {
                         item.onclick = () => {
+                            const current = CreatorMeta.readTags({ tags: input });
+                            if (current.length >= CreatorMeta.MAX_TAGS && !current.includes(item.dataset.tag)) {
+                                Alert.error(`Maximum ${CreatorMeta.MAX_TAGS} tags allowed`);
+                                list.hidden = true;
+                                return;
+                            }
                             replaceActiveTag(input, item.dataset.tag);
                             list.hidden = true;
                         };
@@ -123,7 +131,15 @@ export class CreatorMeta {
             ...new Set(
                 matches.map((match) => match.slice(1).toLowerCase()),
             ),
-        ];
+        ].slice(0, CreatorMeta.MAX_TAGS);
+    }
+
+    static validateTags(tags) {
+        if (tags.length > CreatorMeta.MAX_TAGS) {
+            Alert.error(`Maximum ${CreatorMeta.MAX_TAGS} tags allowed`);
+            return false;
+        }
+        return true;
     }
 
     static async withSubmitLock(submitBtn, task) {

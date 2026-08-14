@@ -741,7 +741,7 @@ export class Editor {
         overlay.setAttribute("role", "status");
         overlay.setAttribute("aria-live", "polite");
         overlay.setAttribute("aria-label", "Loading");
-        overlay.innerHTML = `<div class="article-editor-transition__bar" aria-hidden="true"><div class="article-editor-transition__bar-fill"></div></div>`;
+        overlay.innerHTML = `<div class="article-editor-transition__label"></div><div class="article-editor-transition__bar" aria-hidden="true"><div class="article-editor-transition__bar-fill"></div></div>`;
         scroll.appendChild(overlay);
         Editor._transitionOverlay = overlay;
         document.body.classList.add("article-mode-switching");
@@ -764,25 +764,35 @@ export class Editor {
             requestAnimationFrame(() => requestAnimationFrame(resolve));
         });
         try {
-            return await task?.();
+            const setProgress = (index, total, label = "") => {
+                Editor.updateModeTransitionProgress(index, total, label);
+            };
+            return await task?.(setProgress);
         } finally {
             Editor.hideModeTransition();
             Editor._modeSwitching = false;
         }
     }
 
-    static updateModeTransitionProgress(index, total) {
+    static updateModeTransitionProgress(index, total, label = "") {
         const overlay = Editor._transitionOverlay;
         if (!overlay || !total) {
             return;
         }
         const fill = overlay.querySelector(".article-editor-transition__bar-fill");
+        const labelEl = overlay.querySelector(".article-editor-transition__label");
         if (!fill) {
             return;
         }
         overlay.classList.add("is-progress");
         const pct = Math.min(100, Math.round(((index + 1) / total) * 100));
         fill.style.width = `${pct}%`;
+        if (labelEl && label) {
+            labelEl.textContent = label;
+        }
+        if (label) {
+            overlay.setAttribute("aria-label", label);
+        }
     }
 
     static async toggleEditorMode() {
@@ -887,6 +897,40 @@ export class Editor {
             ReplaceText.suspendForTextMode();
             await this.activateElements();
         });
+    }
+
+    async applyGeneratedSource(source) {
+        const text = String(source || "").trim();
+        if (!text) {
+            return;
+        }
+
+        if (!this.isEditing) {
+            const editButton = document.querySelector(".index-edit-button");
+            editButton?.classList.add("is-active");
+            if (editButton) {
+                editButton.innerHTML = `<i data-icon="x"></i>`;
+            }
+            await this.startEditing();
+            if (editButton) {
+                await Icons.load(editButton);
+            }
+        }
+
+        this.ensureSourceEditor();
+
+        if (!this.isTextMode) {
+            await Editor.runModeTransition(async () => {
+                this.isTextMode = true;
+                document.body.classList.add("is-text-editing");
+                this.box?.classList.remove("is-visible");
+                ReplaceText.suspendForTextMode();
+                await this.activateElements();
+            });
+        }
+
+        this.sourceEditor.value = text;
+        await this.index?.buildSidebar();
     }
 
     async enterGraphicMode() {

@@ -42,7 +42,7 @@
 
 .admin-icon-btn-accent,
 .admin-icon-btn-primary {
-    background: linear-gradient(135deg, var(--brand-blue-mid), var(--brand-blue));
+    background: var(--primary-gradient);
     border-color: transparent;
     color: #fff;
     box-shadow: var(--shadow-accent);
@@ -51,7 +51,7 @@
 .admin-icon-btn-accent:hover:not(:disabled),
 .admin-icon-btn-primary:hover:not(:disabled) {
     filter: brightness(1.06);
-    background: linear-gradient(135deg, var(--brand-blue-mid), var(--brand-blue));
+    background: var(--primary-gradient);
 }
 
 .admin-icon-btn-danger {
@@ -82,7 +82,7 @@
 }
 
 .admin-btn-primary {
-    background: linear-gradient(135deg, var(--brand-blue-mid), var(--brand-blue));
+    background: var(--primary-gradient);
     color: #fff;
     box-shadow: var(--shadow-accent);
 }
@@ -130,7 +130,7 @@ button.btn-primary {
     font-family: inherit;
     font-size: 0.9375rem;
     font-weight: 600;
-    background: linear-gradient(135deg, var(--brand-blue-mid), var(--brand-blue));
+    background: var(--primary-gradient);
     color: #fff;
     box-shadow: var(--shadow-accent);
     transition:

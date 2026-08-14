@@ -326,7 +326,6 @@ final class Deployment
         $skipFiles = [
             $autoloadReal,
             str_replace('\\', '/', realpath($this->root . '/nesh/cli/deployment.php') ?: $this->root . '/nesh/cli/deployment.php'),
-            str_replace('\\', '/', realpath($this->root . '/nesh/cli/routing-test.php') ?: $this->root . '/nesh/cli/routing-test.php'),
         ];
 
         foreach ($this->scanFiles($this->root) as $file) {

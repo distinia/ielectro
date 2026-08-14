@@ -2,50 +2,49 @@
 .form-group textarea,
 .form-group select {
     width: 100%;
-    padding: 0.9rem 1em;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.6rem;
+    padding: 12px 14px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
     font-size: 1rem;
-    color: var(--text-color);
-    background-color: #f9fafb;
-    transition:
-        border 0.3s,
-        box-shadow 0.3s;
-    font-family: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-primary);
+    background-color: var(--surface);
+    font-family: inherit;
     box-sizing: border-box;
+    transition:
+        border-color var(--transition-fast),
+        box-shadow var(--transition-fast);
 }
 .form-group input:focus,
 .form-group textarea:focus,
 .form-group select:focus {
     outline: none;
-    border-color: var(--secondary-solid);
-    background: #fff;
-    box-shadow: 0 0 0 4px rgba(0, 106, 255, 0.07);
+    border-color: var(--brand-blue-light);
+    background: var(--surface);
+    box-shadow: 0 0 0 3px var(--primary-soft);
 }
 .form-group select {
-    background: #f9fafb;
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
     min-height: 46px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
 }
 .form-group input[type="file"] {
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.6rem;
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
     font-size: 1rem;
-    color: var(--text-color);
-    padding: 0.5rem 1em;
-    transition:
-        border 0.3s,
-        box-shadow 0.3s;
+    color: var(--text-primary);
+    padding: 10px 14px;
     display: block;
     width: 100%;
-    font-family: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-family: inherit;
 }
 .form-group input[type="file"]:focus {
     outline: none;
-    border-color: var(--secondary-solid);
-    background: #fff;
-    box-shadow: 0 0 0 4px rgba(0, 106, 255, 0.07);
+    border-color: var(--brand-blue-light);
+    box-shadow: 0 0 0 3px var(--primary-soft);
 }

@@ -1,0 +1,101 @@
+{
+    "id": "president",
+    "label": "Head of state / President",
+    "match": {
+        "terms": [
+            "president",
+            "presidente",
+            "head of state",
+            "ruler",
+            "commander in chief"
+        ],
+        "patterns": [
+            "president of",
+            "presidente di",
+            "presidente della",
+            "president of the"
+        ]
+    },
+    "outline": [
+        {
+            "heading": "Role and responsibilities",
+            "subsections": [
+                "Executive powers",
+                "Ceremonial duties",
+                "Military role"
+            ]
+        },
+        {
+            "heading": "History",
+            "subsections": [
+                "Establishment",
+                "Constitutional evolution",
+                "Notable periods"
+            ]
+        },
+        {
+            "heading": "Selection and term",
+            "subsections": [
+                "Electoral process",
+                "Term length",
+                "Succession"
+            ]
+        },
+        {
+            "heading": "Officeholders",
+            "subsections": [
+                "List of presidents",
+                "Living former presidents"
+            ]
+        },
+        {
+            "heading": "Residence and symbols",
+            "subsections": [
+                "Official residence",
+                "Insignia and protocol"
+            ]
+        },
+        {
+            "heading": "See also",
+            "subsections": []
+        },
+        {
+            "heading": "References",
+            "subsections": []
+        }
+    ],
+    "template": {
+        "prefer_title_keywords": [
+            "statesman",
+            "office",
+            "official",
+            "leader",
+            "person"
+        ],
+        "avoid_title_keywords": [
+            "country",
+            "nation",
+            "republic",
+            "kingdom"
+        ],
+        "min_field_score": 10
+    },
+    "media_rules": {
+        "require_entity_in_title": true,
+        "prefer_keywords": [
+            "portrait",
+            "official",
+            "photo",
+            "president"
+        ]
+    },
+    "usage_count": 4,
+    "updated_at": "2026-08-14T18:55:42+00:00",
+    "last_terms": [
+        "president",
+        "destenia",
+        "geography",
+        "politics",
+        "world_leaders"
+    ]
+}

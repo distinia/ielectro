@@ -43,6 +43,10 @@ class Views
             $path = '/' . $path;
         }
         $path = preg_replace('#/+#', '/', $path) ?: '/';
+        $path = preg_replace('#^/(?:[^/]+/)*www(?=/|$)#i', '', $path) ?: '/';
+        if ($path[0] !== '/') {
+            $path = '/' . $path;
+        }
         if (strlen($path) > 255) {
             $path = substr($path, 0, 255);
         }

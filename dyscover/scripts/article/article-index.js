@@ -4,6 +4,7 @@ import { Heading } from "./heading.js";
 import { Editor } from "./editor.js";
 import { EditorHelp } from "./editor-help.js";
 import { ArticlePdf } from "./article-pdf.js";
+import { ArticleGenerate } from "./article-generate.js";
 
 export class Index {
     constructor() {
@@ -50,11 +51,13 @@ export class Index {
         this.editButton = this.sidebar.querySelector(".index-edit-button");
         const helpButton = this.sidebar.querySelector(".index-help-button");
         const pdfButton = this.sidebar.querySelector(".index-pdf-button");
+        const generateButton = this.sidebar.querySelector(".index-generate-button");
         const modeButton = this.sidebar.querySelector(".index-mode-button");
         const isEditor = getArticleState() === "editor";
         const isEditing = !!Editor.current?.isEditing;
         const isTextMode = !!Editor.current?.isTextMode;
         const canExportPdf = isEditor && !isEditing;
+        const canGenerate = isEditor && isEditing;
 
         if (helpButton) {
             helpButton.classList.toggle("is-visible", isEditor);
@@ -66,19 +69,14 @@ export class Index {
 
         if (pdfButton) {
             pdfButton.classList.toggle("is-visible", canExportPdf);
-            pdfButton.disabled = false;
-            pdfButton.classList.remove("is-busy");
-            pdfButton.onclick = canExportPdf
-                ? async () => {
-                      pdfButton.disabled = true;
-                      pdfButton.classList.add("is-busy");
-                      try {
-                          await ArticlePdf.export();
-                      } finally {
-                          pdfButton.disabled = false;
-                          pdfButton.classList.remove("is-busy");
-                      }
-                  }
+            pdfButton.onclick = canExportPdf ? () => ArticlePdf.export() : null;
+        }
+
+        if (generateButton) {
+            generateButton.classList.toggle("is-visible", canGenerate);
+            generateButton.title = "Generate article";
+            generateButton.onclick = canGenerate
+                ? () => ArticleGenerate.open()
                 : null;
         }
 

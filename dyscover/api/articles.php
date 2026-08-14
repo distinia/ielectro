@@ -10,6 +10,8 @@ use Nesh\Validate;
 
 require_once __DIR__ . '/posts.php';
 require_once __DIR__ . '/article-content.php';
+require_once __DIR__ . '/article-pdf.php';
+require_once __DIR__ . '/article-generate.php';
 
 class Articles
 {
@@ -18,6 +20,18 @@ class Articles
         if (Routing::segment(3) === 'preview') {
             Routing::method([
                 'GET' => fn() => $this->preview(),
+            ]);
+            return;
+        }
+        if (Routing::segment(3) === 'pdf') {
+            Routing::method([
+                'GET' => fn() => ArticlePdfExport::stream((string) Routing::segment(2)),
+            ]);
+            return;
+        }
+        if (Routing::segment(3) === 'generate') {
+            Routing::method([
+                'POST' => fn() => ArticleGenerate::create((string) Routing::segment(2)),
             ]);
             return;
         }

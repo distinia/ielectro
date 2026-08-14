@@ -1,5 +1,6 @@
 import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
 import { Api } from "../core/api.js";
+import { Site } from "../core/site.js";
 
 export class News {
     constructor() {
@@ -13,7 +14,7 @@ export class News {
         if (code && /^\d+$/.test(code)) {
             return Number(code);
         }
-        const parts = window.location.pathname.split("/").filter(Boolean);
+        const parts = Site.pagePath().split("/").filter(Boolean);
         if (parts[0] === "news" && parts[1] && /^\d+$/.test(parts[1])) {
             return Number(parts[1]);
         }
@@ -41,7 +42,7 @@ export class News {
             return;
         }
         const when = Nesh.Html.escape(item.published_at || item.created_at || "");
-        this.list.innerHTML = `<article class="news-article"><header class="news-article-header"><a class="news-back" href="/news">← Back to all news</a><h1 class="news-article-title">${Nesh.Html.escape(item.title)}</h1><div class="news-article-meta"><span>${when}</span></div></header>${item.image ? `<div class="news-article-cover"><img src="${Nesh.Html.escape(item.image)}" alt="${Nesh.Html.escape(item.title)}" loading="lazy"></div>` : ""}<div class="news-article-body">${this.asParagraphs(item.body)}</div></article>`;
+        this.list.innerHTML = `<article class="news-article"><header class="news-article-header"><a class="news-back" href="${Site.href("/news")}">← Back to all news</a><h1 class="news-article-title">${Nesh.Html.escape(item.title)}</h1><div class="news-article-meta"><span>${when}</span></div></header>${item.image ? `<div class="news-article-cover"><img src="${Nesh.Html.escape(item.image)}" alt="${Nesh.Html.escape(item.title)}" loading="lazy"></div>` : ""}<div class="news-article-body">${this.asParagraphs(item.body)}</div></article>`;
         this.hideNext();
     }
     async renderList() {
@@ -61,7 +62,7 @@ export class News {
         const image = item.image
             ? `<img class="news-summary-image" src="${Nesh.Html.escape(item.image)}" alt="${Nesh.Html.escape(item.title)}" loading="lazy">`
             : "";
-        return `<article class="card news-summary-card">${image}<div><h3 class="card-title">${Nesh.Html.escape(item.title)}</h3><p class="card-description">${preview}</p><div class="news-meta">${when}</div><a class="button button-primary" href="/news/${item.id}">Open</a></div></article>`;
+        return `<article class="card news-summary-card">${image}<div><h3 class="card-title">${Nesh.Html.escape(item.title)}</h3><p class="card-description">${preview}</p><div class="news-meta">${when}</div><a class="button button-primary" href="${Site.href(`/news/${item.id}`)}">Open</a></div></article>`;
     }
     previewText(text) {
         const escaped = Nesh.Html.escape(String(text)).replace(/\r\n|\r|\n/g, "\n");

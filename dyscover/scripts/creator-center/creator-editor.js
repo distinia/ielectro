@@ -385,6 +385,7 @@ export class CreatorEditor {
             if (!title) return Alert.error("Title is required");
 
             const tags = CreatorMeta.readTags(this.form);
+            if (!CreatorMeta.validateTags(tags)) return;
             const done = await CreatorMeta.withSubmitLock(submitBtn, async () => {
                 if (this.method === "POST") {
                     await this.submitCreate(title, tags);

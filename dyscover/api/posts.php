@@ -165,7 +165,11 @@ class Posts
             TemplateFields::sync($id, $input['fields']);
         }
         if (array_key_exists('tags', $input)) {
-            PostTags::sync($id, $input['tags']);
+            PostTags::sync($id, PostTags::validateLimit($input['tags']), [
+                'type' => $type,
+                'title' => $title,
+                'description' => $description,
+            ]);
         }
         PostMentions::sync($id, $description, $userId);
         Response::created(['id' => $id, 'uuid' => $uuid]);
@@ -295,7 +299,13 @@ class Posts
             $updated = true;
         }
         if (array_key_exists('tags', $input)) {
-            PostTags::sync($postId, $input['tags']);
+            PostTags::sync($postId, PostTags::validateLimit($input['tags']), [
+                'type' => $type,
+                'title' => (string) ($post['title'] ?? ''),
+                'description' => array_key_exists('description', $input)
+                    ? trim((string) $input['description'])
+                    : (string) ($post['description'] ?? ''),
+            ]);
             $updated = true;
         }
         if ($descriptionSync !== null) {
@@ -1357,6 +1367,109 @@ class PostAssets
 }
 class PostTags
 {
+    public const MAX = 5;
+
+    private const LOW_PRIORITY = [
+        'creative',
+        'lore',
+        'worldbuilding',
+        'article',
+    ];
+
+    private const HIGH_PRIORITY = [
+        'politicalparty',
+        'massorganization',
+        'revolutionaries',
+        'politics',
+        'government',
+        'organizations',
+        'party',
+        'cabinet',
+        'president',
+        'statesman',
+        'office',
+        'primeminister',
+        'minister',
+        'military',
+        'armedforces',
+        'lawenforcement',
+        'police',
+        'portrait',
+        'flag',
+        'emblem',
+        'map',
+        'anthem',
+        'symbol',
+        'community',
+        'document',
+        'template',
+        'destenia',
+        'fesia',
+        'edrobean',
+        'agaritia',
+        'kashiria',
+        'lamberia',
+        'jarnovia',
+        'comussania',
+        'cusea',
+        'ricene',
+        'valmirica',
+        'verdania',
+        'boravia',
+        'alveria',
+    ];
+
+    public static function validateLimit(mixed $input): array
+    {
+        $names = self::parse($input);
+        if (count($names) > self::MAX) {
+            Response::badRequest('Maximum ' . self::MAX . ' tags allowed');
+        }
+
+        return $names;
+    }
+
+    public static function rank(array $tags, array $post = []): array
+    {
+        $tags = array_values(array_unique(array_filter(array_map(
+            static fn($tag): string => self::normalize((string) $tag),
+            $tags
+        ))));
+        if ($tags === []) {
+            return [];
+        }
+
+        $scored = [];
+        foreach ($tags as $tag) {
+            $scored[] = [
+                'tag' => $tag,
+                'score' => self::scoreTag($tag, $post),
+            ];
+        }
+
+        usort(
+            $scored,
+            static function (array $a, array $b): int {
+                $score = ($b['score'] ?? 0) <=> ($a['score'] ?? 0);
+                if ($score !== 0) {
+                    return $score;
+                }
+
+                return strcmp((string) $a['tag'], (string) $b['tag']);
+            }
+        );
+
+        $positive = array_values(array_filter(
+            $scored,
+            static fn(array $item): bool => (int) ($item['score'] ?? 0) > 0
+        ));
+        if ($positive !== []) {
+            return array_slice(array_column($positive, 'tag'), 0, self::MAX);
+        }
+
+        return array_slice(array_column($scored, 'tag'), 0, self::MAX);
+    }
+
     public static function names(int $postId): array
     {
         $rows = Query::fetchAll(
@@ -1390,9 +1503,15 @@ class PostTags
         }
         return $map;
     }
-    public static function sync(int $postId, mixed $input): void
+    public static function sync(int $postId, mixed $input, ?array $post = null): void
     {
         $names = self::parse($input);
+        if (count($names) > self::MAX) {
+            if ($post === null) {
+                $post = self::postContext($postId);
+            }
+            $names = self::rank($names, $post);
+        }
         Query::execute('DELETE FROM ielectro_dyscover.dyscover_post_tags WHERE post_id = ?', [$postId]);
         foreach ($names as $name) {
             $tagId = self::ensure($name);
@@ -1401,6 +1520,27 @@ class PostTags
                 [$postId, $tagId]
             );
         }
+    }
+
+    public static function merge(int $postId, mixed $input, ?array $post = null): void
+    {
+        if ($post === null) {
+            $post = self::postContext($postId);
+        }
+        $names = array_values(array_unique(array_merge(self::names($postId), self::parse($input))));
+        self::sync($postId, self::rank($names, $post), $post);
+    }
+
+    public static function pruneUnused(): int
+    {
+        return Query::execute(
+            'DELETE FROM ielectro_dyscover.dyscover_tags
+            WHERE id NOT IN (
+                SELECT tag_id FROM (
+                    SELECT DISTINCT tag_id FROM ielectro_dyscover.dyscover_post_tags
+                ) used
+            )'
+        );
     }
     public static function parse(mixed $input): array
     {
@@ -1465,6 +1605,65 @@ class PostTags
         $name = trim($name);
         $name = ltrim($name, '#');
         return mb_strtolower($name);
+    }
+
+    private static function postContext(int $postId): array
+    {
+        $row = Query::fetch(
+            'SELECT type, title, description
+            FROM ielectro_dyscover.dyscover_posts
+            WHERE id = ?
+            LIMIT 1',
+            [$postId]
+        );
+
+        return is_array($row) ? $row : [];
+    }
+
+    private static function scoreTag(string $tag, array $post): int
+    {
+        $title = mb_strtolower(trim((string) ($post['title'] ?? '')));
+        $description = mb_strtolower(trim((string) ($post['description'] ?? '')));
+        $type = (string) ($post['type'] ?? '');
+        $text = $title . ' ' . $description;
+        $score = 0;
+
+        if (in_array($tag, self::LOW_PRIORITY, true)) {
+            $score -= 50;
+        }
+
+        if (in_array($tag, self::HIGH_PRIORITY, true)) {
+            $score += 35;
+        }
+
+        if ($tag === $type) {
+            $score += 25;
+        }
+
+        if (str_contains($text, $tag)) {
+            $score += 40;
+        }
+
+        foreach (preg_split('/\s+/u', $title) ?: [] as $word) {
+            $word = preg_replace('/[^a-z0-9]+/i', '', $word) ?? '';
+            if ($word === '' || strlen($word) < 4) {
+                continue;
+            }
+            if ($tag === $word || str_contains($tag, $word) || str_contains($word, $tag)) {
+                $score += 20;
+            }
+        }
+
+        $titleSlug = preg_replace('/[^a-z0-9]+/i', '', $title) ?? '';
+        if ($tag === $titleSlug && strlen($tag) > 12) {
+            $score -= 30;
+        }
+
+        if (strlen($tag) > 18) {
+            $score -= 15;
+        }
+
+        return $score;
     }
     private static function ensure(string $name): int
     {

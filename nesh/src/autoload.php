@@ -57,15 +57,17 @@ define('NESH_VERSION', '1.0.0');
 define('NESH_PATH', ROOT_PATH.'/nesh');
 define('NESH_CLI', NESH_PATH.'/cli');
 define('NESH_FRAMEWORK', NESH_PATH.'/src');
+define('NESH_AI', NESH_PATH.'/ai');
 spl_autoload_register(function (string $class): void {
     $parts = explode('\\', $class);
     $namespace = array_shift($parts);
     if ($namespace === 'Nesh') {
-        $file = NESH_FRAMEWORK . '/'
-            . strtolower(
-                preg_replace('/(?<!^)[A-Z]/', '-$0', end($parts))
-            )
-            . '.php';
+        $fileName = strtolower(
+            preg_replace('/(?<!^)[A-Z]/', '-$0', array_pop($parts))
+        ) . '.php';
+        $file = $parts === []
+            ? NESH_FRAMEWORK . '/' . $fileName
+            : NESH_PATH . '/' . strtolower(implode('/', $parts)) . '/' . $fileName;
         if (is_file($file)) {
             require_once $file;
         }
@@ -87,4 +89,4 @@ $GLOBALS['account'] = new App('iElectro Account', 'https://account.ielectro.com'
 $GLOBALS['admin'] = new App('iElectro Admin', 'https://admin.ielectro.com', 'admin', 'ielectro_admin', '1.0.0');
 $GLOBALS['dyscover'] = new App('Dyscover', 'https://dyscover.ielectro.com', 'dyscover', 'ielectro_dyscover', '1.0.0');
 $GLOBALS['dominions'] = new App('Dominions', 'https://dominions.ielectro.com', 'dominions', 'ielectro_dominions', '1.0.0');
-$GLOBALS['ielectro'] = new App('iElectro', 'https://www.ielectro.com', 'www', null, '1.0.0');
+$GLOBALS['ielectro'] = new App('iElectro', 'https://www.ielectro.com', 'www', null, '1.0.3');

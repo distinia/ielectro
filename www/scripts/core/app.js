@@ -1,6 +1,7 @@
 import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
 import { Navbar } from "./navbar.js";
 import { Footer } from "./footer.js";
+import { Site } from "./site.js";
 
 export class App {
     constructor() {
@@ -18,10 +19,9 @@ export class App {
     }
 
     trackPageView() {
-        const path = window.location.pathname || "/";
         const fd = new FormData();
-        fd.set("path", path);
-        fetch(`${window.location.origin}/api/views/track`, {
+        fd.set("path", Site.pagePath());
+        fetch(Site.absolute("/api/views/track"), {
             method: "POST",
             body: fd,
             keepalive: true,

@@ -1,10 +1,20 @@
-.article-pdf-root {
+body.article-pdf-exporting {
+    overflow: visible !important;
+    padding-left: 0 !important;
+}
+
+body.article-pdf-exporting .article-pdf-root {
+    position: fixed;
+    left: 0;
+    top: 0;
     width: 794px;
     max-width: 794px;
     box-sizing: border-box;
     padding: 28px 36px 36px;
+    margin: 0;
     background: #fff;
     color: #0f172a;
+    z-index: 2147483646;
     font-family:
         "Inter",
         -apple-system,
@@ -26,8 +36,10 @@
 
 .article-pdf-root .content {
     width: 100%;
+    max-width: 100%;
     padding: 0;
     margin: 0;
+    box-sizing: border-box;
 }
 
 .article-pdf-root .paragraph {
@@ -93,9 +105,18 @@
     display: block;
 }
 
-.article-pdf-root table {
-    width: 100%;
+.article-pdf-root table,
+.article-pdf-root table.template {
+    width: 100% !important;
+    max-width: 100% !important;
     border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.article-pdf-root table.template td,
+.article-pdf-root table.template th {
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
 }
 
 .article-pdf-root .heading,
@@ -108,6 +129,7 @@
     break-inside: avoid;
     page-break-inside: avoid;
     margin: 1rem 0;
+    max-width: 100%;
 }
 
 .article-pdf-root figcaption {
@@ -116,40 +138,25 @@
     color: #64748b;
 }
 
-body.article-pdf-exporting {
-    overflow: visible !important;
-}
-
-body.article-pdf-exporting .article-index-sidebar,
-body.article-pdf-exporting .instruments,
-body.article-pdf-exporting .top-nav,
-body.article-pdf-exporting .find-replace-bar,
-body.article-pdf-exporting .menu,
-body.article-pdf-exporting .article-editor-transition,
-body.article-pdf-exporting .post-overlay {
+.article-pdf-root .menu,
+.article-pdf-root .instruments {
     display: none !important;
 }
 
-body.article-pdf-exporting .article-stage {
-    display: block;
+.article-pdf-root .template {
+    float: none;
+    max-width: 100%;
+    width: 100%;
+    margin: 0 0 1.5rem;
 }
 
-body.article-pdf-exporting .article-main-content {
-    width: 794px;
-    max-width: 794px;
-    margin: 0 auto;
-    height: auto !important;
-    min-height: 0 !important;
-    overflow: visible !important;
-    box-shadow: none;
+.article-pdf-root .template td,
+.article-pdf-root .template th {
+    padding: 0.85rem 1rem;
+    vertical-align: top;
 }
 
-body.article-pdf-exporting .article-scroll {
-    overflow: visible !important;
-    height: auto !important;
-    max-height: none !important;
-}
-
-body.article-pdf-exporting .content {
-    display: block !important;
+.article-pdf-root .template-cell-label {
+    font-weight: 700;
+    white-space: nowrap;
 }

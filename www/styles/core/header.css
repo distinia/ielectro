@@ -1,21 +1,21 @@
 .header {
     color: var(--brand-white);
     text-align: center;
-    padding: clamp(7rem, 14vw, 11rem) 1.25rem clamp(4.5rem, 8vw, 6.5rem);
+    padding: clamp(5.5rem, 11vw, 8.5rem) 1.25rem clamp(3.5rem, 7vw, 5rem);
     position: relative;
     background-position: center center;
     background-size: cover;
     margin-bottom: 0;
     overflow: hidden;
     max-width: 100%;
+    box-shadow: 0 8px 28px rgba(15, 23, 42, 0.14);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
 .header::before {
     content: "";
     position: absolute;
     inset: 0;
-    background:
-        linear-gradient(135deg, rgba(11, 31, 58, 0.82), rgba(22, 58, 107, 0.72)),
-        linear-gradient(180deg, transparent 55%, rgba(11, 31, 58, 0.35));
+    background: var(--hero-overlay);
 }
 .header::after {
     content: "";
@@ -23,31 +23,50 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: 120px;
-    background: linear-gradient(to top, var(--bg-color), transparent);
+    height: 88px;
+    background: linear-gradient(to top, var(--background), transparent);
+    pointer-events: none;
 }
-.header h1 {
-    font-size: clamp(2.4rem, 6vw, 4.2rem);
-    margin-bottom: 1.1rem;
+.header .container,
+.header h1,
+.header p,
+.header .button-group,
+.header .header-kicker {
     position: relative;
     z-index: 1;
-    font-weight: 800;
-    letter-spacing: -0.04em;
-    line-height: 1.08;
-    text-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+}
+.header-kicker {
+    display: flex;
+    width: fit-content;
+    align-items: center;
+    margin: 0 auto 1rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.88);
+}
+.header h1 {
+    font-size: clamp(2.1rem, 5vw, 3.4rem);
+    margin-bottom: 0.9rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.12;
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.28);
 }
 .header span.highlight {
     color: var(--brand-orange);
-    font-weight: 800;
+    font-weight: 700;
 }
 .header p {
-    font-size: clamp(1.05rem, 2.4vw, 1.35rem);
-    max-width: 680px;
+    font-size: clamp(1rem, 2.2vw, 1.2rem);
+    max-width: 640px;
     margin: 0 auto;
-    opacity: 0.96;
-    position: relative;
-    z-index: 1;
     font-weight: 400;
-    line-height: 1.75;
-    color: rgba(255, 255, 255, 0.92);
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.88);
 }

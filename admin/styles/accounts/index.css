@@ -405,7 +405,7 @@
 }
 
 .mod-tab.active {
-    background: linear-gradient(135deg, var(--brand-blue-mid), var(--brand-blue));
+    background: var(--primary-gradient);
     border-color: transparent;
     color: #fff;
     box-shadow: var(--shadow-accent);

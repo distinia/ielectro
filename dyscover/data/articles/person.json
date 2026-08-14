@@ -1,0 +1,75 @@
+{
+    "id": "person",
+    "label": "Person",
+    "match": {
+        "terms": [
+            "prime minister",
+            "destenia",
+            "government",
+            "politics",
+            "europe"
+        ],
+        "patterns": []
+    },
+    "outline": [
+        {
+            "heading": "Executive Branch",
+            "subsections": []
+        },
+        {
+            "heading": "Legislative Branch",
+            "subsections": []
+        },
+        {
+            "heading": "Judicial Branch",
+            "subsections": []
+        },
+        {
+            "heading": "Elections",
+            "subsections": []
+        },
+        {
+            "heading": "Administration",
+            "subsections": []
+        },
+        {
+            "heading": "Political parties",
+            "subsections": []
+        },
+        {
+            "heading": "See also",
+            "subsections": [
+                "President",
+                "Prime Minister",
+                "Council of Ministers and Agencies",
+                "Senate",
+                "Chamber of Deputies",
+                "Supreme Court",
+                "Regional Courts",
+                "Local Courts",
+                "Region",
+                "Province",
+                "Municipality"
+            ]
+        }
+    ],
+    "template": {
+        "prefer_title_keywords": [],
+        "avoid_title_keywords": [
+            "country"
+        ],
+        "min_field_score": 10
+    },
+    "media_rules": {
+        "require_entity_in_title": true
+    },
+    "usage_count": 2,
+    "updated_at": "2026-08-14T18:59:55+00:00",
+    "last_terms": [
+        "prime minister",
+        "agaritia",
+        "government",
+        "leader",
+        "politics"
+    ]
+}

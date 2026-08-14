@@ -1,0 +1,95 @@
+{
+    "id": "prime-minister",
+    "label": "Head of government / Prime Minister",
+    "match": {
+        "terms": [
+            "prime minister",
+            "premier",
+            "head of government",
+            "primo ministro",
+            "ministro"
+        ],
+        "patterns": [
+            "prime minister of",
+            "premier of",
+            "primo ministro di",
+            "primo ministro del"
+        ]
+    },
+    "outline": [
+        {
+            "heading": "Role and responsibilities",
+            "subsections": [
+                "Executive powers",
+                "Relationship with the president",
+                "Cabinet leadership"
+            ]
+        },
+        {
+            "heading": "History",
+            "subsections": [
+                "Establishment",
+                "Constitutional evolution",
+                "Notable periods"
+            ]
+        },
+        {
+            "heading": "Selection and term",
+            "subsections": [
+                "Appointment process",
+                "Term length",
+                "Succession"
+            ]
+        },
+        {
+            "heading": "Officeholders",
+            "subsections": [
+                "List of prime ministers",
+                "Living former prime ministers"
+            ]
+        },
+        {
+            "heading": "Residence and symbols",
+            "subsections": [
+                "Official residence",
+                "Insignia and protocol"
+            ]
+        },
+        {
+            "heading": "See also",
+            "subsections": []
+        },
+        {
+            "heading": "References",
+            "subsections": []
+        }
+    ],
+    "template": {
+        "prefer_title_keywords": [
+            "statesman",
+            "office",
+            "official",
+            "leader",
+            "person"
+        ],
+        "avoid_title_keywords": [
+            "country",
+            "nation",
+            "republic",
+            "kingdom"
+        ],
+        "min_field_score": 10
+    },
+    "media_rules": {
+        "require_entity_in_title": true,
+        "prefer_keywords": [
+            "prime minister",
+            "premier",
+            "official",
+            "photo",
+            "portrait"
+        ]
+    },
+    "usage_count": 1,
+    "updated_at": "2026-08-14T19:10:00+00:00"
+}

@@ -4,6 +4,9 @@ const SIDEBAR_HTML = `
             <button type="button" class="index-help-button" aria-label="Editor guide" title="Editor guide">
                 <span aria-hidden="true">?</span>
             </button>
+            <button type="button" class="index-generate-button" aria-label="Generate article" title="Generate article">
+                <i data-icon="sparkles"></i>
+            </button>
             <button type="button" class="index-pdf-button" aria-label="Export PDF" title="Export PDF">
                 <i data-icon="download"></i>
             </button>
@@ -78,6 +81,30 @@ function upgradeSidebarHeader(sidebar) {
             help.after(pdfButton);
         } else {
             actions.appendChild(pdfButton);
+        }
+    }
+
+    if (!header.querySelector(".index-generate-button")) {
+        const generateButton = document.createElement("button");
+        generateButton.type = "button";
+        generateButton.className = "index-generate-button";
+        generateButton.setAttribute("aria-label", "Generate article");
+        generateButton.title = "Generate article";
+        generateButton.innerHTML = `<i data-icon="sparkles"></i>`;
+        const help = header.querySelector(".index-help-button");
+        const edit = header.querySelector(".index-edit-button");
+        if (help && edit) {
+            help.after(generateButton);
+        } else if (edit) {
+            edit.before(generateButton);
+        } else {
+            actions.appendChild(generateButton);
+        }
+    } else {
+        const generateButton = header.querySelector(".index-generate-button");
+        const help = header.querySelector(".index-help-button");
+        if (generateButton && help) {
+            help.after(generateButton);
         }
     }
 }
