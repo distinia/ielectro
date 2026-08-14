@@ -29,7 +29,7 @@ class Stats
     {
         try {
             return (int) Query::count(
-                'SELECT COUNT(*) FROM ' . Schema::ACCOUNTS . ' WHERE deletion_scheduled_at IS NULL'
+                'SELECT COUNT(*) FROM ' . Schema::ACCOUNTS
             );
         } catch (\Throwable) {
             return 0;

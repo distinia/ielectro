@@ -9,7 +9,6 @@ CREATE TABLE IF NOT EXISTS `ielectro_account`.`accounts` (
   `phone_number` VARCHAR(32) DEFAULT NULL,
   `password_hash` VARCHAR(255) DEFAULT NULL,
   `email_verified_at` DATETIME DEFAULT NULL,
-  `deletion_scheduled_at` DATETIME DEFAULT NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),

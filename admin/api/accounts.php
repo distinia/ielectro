@@ -25,8 +25,7 @@ class Accounts
                 name,
                 surname,
                 created_at,
-                email_verified_at,
-                deletion_scheduled_at
+                email_verified_at
             FROM ' . Schema::ACCOUNTS . '
             WHERE (
                 username LIKE ?
@@ -116,9 +115,12 @@ class Accounts
         if (!$row) {
             Response::notFound('Account not found');
         }
+        $accountId = (int) $row['id'];
+        \Account\Services::delete($accountId);
+        \Nesh\File::deleteDirectory(Avatar::assetsDir($accountId));
         Query::execute(
             'DELETE FROM ' . Schema::ACCOUNTS . ' WHERE id = ?',
-            [(int) $row['id']]
+            [$accountId]
         );
         Response::success(['message' => 'Account permanently deleted']);
     }
@@ -142,9 +144,10 @@ class Accounts
                     'username_changed', 'phone_number_changed'
                 )"
             ),
-            'scheduled_deletions' => (int) Query::count(
-                'SELECT COUNT(*) FROM ' . Schema::ACCOUNTS . '
-                WHERE deletion_scheduled_at IS NOT NULL'
+            'deleted_7d' => (int) Query::count(
+                "SELECT COUNT(*) FROM {$activity}
+                WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+                AND action = 'deleted'"
             ),
         ];
     }
@@ -159,7 +162,6 @@ class Accounts
             'display_name' => $name !== '' ? $name : (string) ($row['username'] ?? ''),
             'created_at' => $row['created_at'] ?? null,
             'verified' => ($row['email_verified_at'] ?? null) !== null,
-            'deletion_scheduled_at' => $row['deletion_scheduled_at'] ?? null,
             'avatar' => Avatar::url($id),
         ];
     }

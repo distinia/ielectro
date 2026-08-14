@@ -31,10 +31,6 @@ class User
             'DELETE' => fn() => $this->delete->index(),
         ]);
     }
-    public function cancelDeletion(): void
-    {
-        $this->delete->cancel();
-    }
 }
 class Create
 {
@@ -189,7 +185,6 @@ class Data
                 email,
                 phone_number,
                 created_at,
-                deletion_scheduled_at,
                 (password_hash IS NOT NULL) AS has_password
             FROM ielectro_account.accounts
             WHERE id = ?
@@ -446,38 +441,37 @@ class Delete
     public function index(): void
     {
         Request::delete();
+        $accountId = Identity::id();
+        if (!$accountId) {
+            Response::unauthorized('Authentication required');
+        }
+        $account = Query::fetch(
+            'SELECT id, username, email
+            FROM ielectro_account.accounts
+            WHERE id = ?
+            LIMIT 1',
+            [$accountId]
+        );
+        if (!$account) {
+            Response::notFound('Account not found');
+        }
+
+        Services::delete($accountId);
+        \Nesh\File::deleteDirectory(\Nesh\Avatar::assetsDir($accountId));
         Query::execute(
-            "UPDATE ielectro_account.accounts
-            SET deletion_scheduled_at = DATE_ADD(NOW(), INTERVAL 30 DAY)
-            WHERE id = ?",
-            [Identity::id()]
+            'DELETE FROM ielectro_account.accounts WHERE id = ?',
+            [$accountId]
         );
         Activity::log(
-            Identity::id(),
-            'profile_updated',
-            'Account scheduled for deletion.'
+            null,
+            'deleted',
+            'Account permanently deleted: '
+                . (string) ($account['username'] ?? '')
+                . ' <'
+                . (string) ($account['email'] ?? '')
+                . '>'
         );
         Session::destroy();
-        Response::success(
-            'Your account will be permanently deleted in 30 days.'
-        );
-    }
-    public function cancel(): void
-    {
-        Request::patch();
-        Query::execute(
-            "UPDATE ielectro_account.accounts
-            SET deletion_scheduled_at = NULL
-            WHERE id = ?",
-            [Identity::id()]
-        );
-        Activity::log(
-            Identity::id(),
-            'profile_updated',
-            'Scheduled account deletion cancelled.'
-        );
-        Response::success(
-            'Scheduled account deletion cancelled.'
-        );
+        Response::success('Your account has been permanently deleted.');
     }
 }

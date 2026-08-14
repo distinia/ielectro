@@ -45,8 +45,6 @@ export class ActivityFeed {
             "email_verified",
             "phone_number_changed",
             "deleted",
-            "deletion_scheduled",
-            "deletion_cancelled",
         ]);
     }
     filterCategory(action) {

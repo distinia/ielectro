@@ -98,7 +98,6 @@ class Sessions
             "SELECT id, password_hash
             FROM ielectro_account.accounts
             WHERE (username = ? OR email = ?)
-            AND deletion_scheduled_at IS NULL
             LIMIT 1",
             [$identifier, $identifier]
         );

@@ -46,7 +46,7 @@ export default class AccountsPanel {
         const items = [
             { label: "Failed logins (24h)", value: stats.failed_24h, icon: "shield-alert", tone: "is-danger" },
             { label: "Profile updates (7d)", value: stats.updates_7d, icon: "user-pen", tone: "is-warn" },
-            { label: "Scheduled deletions", value: stats.scheduled_deletions, icon: "calendar-clock", tone: "is-accent" },
+            { label: "Deleted (7d)", value: stats.deleted_7d, icon: "user-x", tone: "is-danger" },
         ];
         node.innerHTML = items
             .map(

@@ -20,7 +20,5 @@
     "email_verified": "Your email address was verified on {datetime}.",
     "phone_number_changed": "Your phone number was changed on {datetime}.",
     "deleted": "Your account was deleted on {datetime}.",
-    "deletion_scheduled": "Account deletion was scheduled on {datetime}.",
-    "deletion_cancelled": "Scheduled account deletion was cancelled on {datetime}.",
     "default": "{details} ({datetime})"
 }

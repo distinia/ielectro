@@ -31,22 +31,19 @@ class Analytics
         $sessions = Schema::ACCOUNT_SESSIONS;
         return [
             'total_accounts' => (int) Query::count(
-                "SELECT COUNT(*) FROM {$accounts} WHERE deletion_scheduled_at IS NULL"
+                "SELECT COUNT(*) FROM {$accounts}"
             ),
             'new_accounts_7d' => (int) Query::count(
                 "SELECT COUNT(*) FROM {$accounts}
-                WHERE deletion_scheduled_at IS NULL
-                AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)"
+                WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)"
             ),
             'new_accounts_30d' => (int) Query::count(
                 "SELECT COUNT(*) FROM {$accounts}
-                WHERE deletion_scheduled_at IS NULL
-                AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)"
+                WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)"
             ),
             'verified_accounts' => (int) Query::count(
                 "SELECT COUNT(*) FROM {$accounts}
-                WHERE deletion_scheduled_at IS NULL
-                AND email_verified_at IS NOT NULL"
+                WHERE email_verified_at IS NOT NULL"
             ),
             'active_sessions' => (int) Query::count(
                 "SELECT COUNT(*) FROM {$sessions}
@@ -272,8 +269,7 @@ class Analytics
         $rows = Query::fetchAll(
             "SELECT DATE(created_at) AS day, COUNT(*) AS count
             FROM {$accounts}
-            WHERE deletion_scheduled_at IS NULL
-            AND created_at >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
+            WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
             GROUP BY DATE(created_at)
             ORDER BY day ASC",
             [$days - 1]
@@ -361,7 +357,6 @@ class Analytics
                 FROM ' . Schema::DYSCOVER_USERS . ' du
                 INNER JOIN ' . $accounts . ' a ON a.id = du.account_id
                 WHERE du.status = ?
-                AND a.deletion_scheduled_at IS NULL
                 HAVING (posts_30d + comments_30d + likes_30d) > 0
                 ORDER BY (posts_30d * 5 + comments_30d * 3 + likes_30d) DESC
                 LIMIT ?',
@@ -388,7 +383,6 @@ class Analytics
         $rows = Query::fetchAll(
             "SELECT id, username, email, name, surname, created_at, email_verified_at
             FROM {$accounts}
-            WHERE deletion_scheduled_at IS NULL
             ORDER BY created_at DESC
             LIMIT ?",
             [$limit]
