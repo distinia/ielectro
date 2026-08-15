@@ -187,7 +187,7 @@ export class ArticlePreview {
         }
         const rect = this.link.element.getBoundingClientRect();
         const width = this.isVerticalImage
-            ? Math.min(400, window.innerWidth - 24)
+            ? Math.min(440, window.innerWidth - 24)
             : Math.min(330, window.innerWidth - 24);
         const height = this.element.offsetHeight || 320;
         const margin = 14;
@@ -274,11 +274,92 @@ export class ArticlePreview {
         this.isOpen = true;
         this.bindViewportListeners();
         requestAnimationFrame(() => {
-            if (this.element) {
-                this.position();
-                this.element.classList.add("is-visible");
-            }
+            if (!this.element) return;
+            this.clampPreviewText(paragraph, body);
+            this.position();
+            this.element.classList.add("is-visible");
         });
+    }
+    clampPreviewText(paragraph, body) {
+        if (!paragraph || !body) return;
+        const maxHeight = body.clientHeight;
+        if (maxHeight <= 0) return;
+
+        paragraph.style.display = "-webkit-box";
+        paragraph.style.webkitBoxOrient = "vertical";
+        paragraph.style.overflow = "hidden";
+        paragraph.style.textOverflow = "ellipsis";
+
+        // Prefer CSS clamp so nested <b>/<a> stay intact.
+        let best = 1;
+        for (let lines = 24; lines >= 1; lines -= 1) {
+            paragraph.style.webkitLineClamp = String(lines);
+            if (paragraph.scrollHeight <= maxHeight + 1) {
+                best = lines;
+                break;
+            }
+        }
+        paragraph.style.webkitLineClamp = String(best);
+        if (paragraph.scrollHeight <= maxHeight + 1) return;
+
+        // Fallback: trim trailing text nodes, keep markup.
+        paragraph.style.webkitLineClamp = "unset";
+        paragraph.style.display = "block";
+        paragraph.innerHTML = this.text;
+        this.trimHtmlToHeight(paragraph, maxHeight);
+    }
+    trimHtmlToHeight(root, maxHeight) {
+        const textNodes = () => {
+            const nodes = [];
+            const walk = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+            let node;
+            while ((node = walk.nextNode())) {
+                if ((node.textContent || "").length) {
+                    nodes.push(node);
+                }
+            }
+            return nodes;
+        };
+        let guard = 8000;
+        while (root.scrollHeight > maxHeight + 1 && guard-- > 0) {
+            const nodes = textNodes();
+            const last = nodes[nodes.length - 1];
+            if (!last) break;
+            const value = last.textContent || "";
+            if (value.length <= 1) {
+                const parent = last.parentNode;
+                last.remove();
+                if (
+                    parent &&
+                    parent !== root &&
+                    parent.childNodes.length === 0 &&
+                    parent.parentNode
+                ) {
+                    parent.remove();
+                }
+                continue;
+            }
+            last.textContent = value.slice(0, -1);
+        }
+        const nodes = textNodes();
+        const last = nodes[nodes.length - 1];
+        if (last) {
+            last.textContent = `${(last.textContent || "").replace(/\s+$/u, "")}…`;
+        } else {
+            root.append("…");
+        }
+        guard = 200;
+        while (root.scrollHeight > maxHeight + 1 && guard-- > 0) {
+            const current = textNodes();
+            const tip = current[current.length - 1];
+            if (!tip) break;
+            const value = tip.textContent || "";
+            if (value.length <= 1) {
+                tip.remove();
+                continue;
+            }
+            tip.textContent = `${value.slice(0, -2).replace(/\s+\S*$/u, "")}…`;
+        }
     }
     delete() {
         this.startEditing();

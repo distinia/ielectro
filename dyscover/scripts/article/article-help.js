@@ -23,7 +23,7 @@ export const ArticleHelp = {
     replace: `
         <p><strong>Find and replace</strong> text inside the article body.</p>
         <ul>
-            <li>Search ignores upper/lowercase differences.</li>
+            <li>Search is case-sensitive (e.g. <code>RuTo</code> does not match <code>ruto</code>).</li>
             <li>The article title is never modified.</li>
             <li>Leave replace empty to delete matched text.</li>
         </ul>`,

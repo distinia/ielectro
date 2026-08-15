@@ -176,7 +176,7 @@ export class ReplaceText {
         if (!content || !findText) {
             return 0;
         }
-        const regex = new RegExp(this.escape(findText), "gi");
+        const regex = new RegExp(this.escape(findText), "g");
         const nodes = this.textNodes(content).filter((node) =>
             this.validNode(node),
         );
@@ -191,7 +191,7 @@ export class ReplaceText {
             const fragment = document.createDocumentFragment();
             let lastIndex = 0;
             for (const match of text.matchAll(
-                new RegExp(this.escape(findText), "gi"),
+                new RegExp(this.escape(findText), "g"),
             )) {
                 const start = match.index ?? 0;
                 const end = start + match[0].length;
@@ -245,7 +245,7 @@ export class ReplaceText {
         const nodes = this.textNodes(content).filter((node) =>
             this.validNode(node),
         );
-        const regex = new RegExp(this.escape(find), "gi");
+        const regex = new RegExp(this.escape(find), "g");
         let count = 0;
         nodes.forEach((node) => {
             const matches = node.textContent.match(regex);
