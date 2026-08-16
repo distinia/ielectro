@@ -290,53 +290,177 @@ export class Editor {
         }
     }
     bindLazyBlockEditing() {
-        if (!this.isEditing || this.isTextMode || this._lazyEditBound) {
-            return;
-        }
-        this._lazyEditBound = true;
-        this._activeEditBlock = null;
-        this._lazyFocusIn = (event) => {
-            if (!this.isEditing || this.isTextMode) {
-                return;
-            }
-            const block = event.target.closest(
-                ".paragraph, .heading, .sub-heading, .caption, .point-list, .number-list",
-            );
-            if (!block || !this.content?.contains(block)) {
-                return;
-            }
-            this.focusEditBlock(block);
-        };
-        this._lazyPointerDown = (event) => {
-            if (!this.isEditing || this.isTextMode) {
-                return;
-            }
-            if (event.target.closest(".template, .table, figure, .percentage, .legend")) {
-                return;
-            }
-            const block = event.target.closest(
-                ".paragraph, .heading, .sub-heading, .caption, .point-list, .number-list",
-            );
-            if (!block || !this.content?.contains(block)) {
-                return;
-            }
-            this.focusEditBlock(block);
-        };
-        this.content?.addEventListener("focusin", this._lazyFocusIn);
-        this.content?.addEventListener("mousedown", this._lazyPointerDown);
+        this.enableGraphicContentEditing();
     }
     unbindLazyBlockEditing() {
-        this.blurEditBlock(this._activeEditBlock);
+        this.disableGraphicContentEditing();
+    }
+    enableGraphicContentEditing() {
+        if (!this.isEditing || this.isTextMode || !this.content) {
+            return;
+        }
+        if (!this._graphicEditBound) {
+            this._graphicEditBound = true;
+            this._contentKeydown = (event) => this.handleGraphicKeydown(event);
+            this.content.addEventListener("keydown", this._contentKeydown);
+        }
+        this.content.contentEditable = true;
         this._activeEditBlock = null;
-        if (this._lazyFocusIn) {
-            this.content?.removeEventListener("focusin", this._lazyFocusIn);
-            this._lazyFocusIn = null;
+    }
+    disableGraphicContentEditing() {
+        if (this._contentKeydown) {
+            this.content?.removeEventListener("keydown", this._contentKeydown);
+            this._contentKeydown = null;
         }
-        if (this._lazyPointerDown) {
-            this.content?.removeEventListener("mousedown", this._lazyPointerDown);
-            this._lazyPointerDown = null;
+        this._graphicEditBound = false;
+        this._activeEditBlock = null;
+        if (this.content?.isContentEditable) {
+            this.content.removeAttribute("contenteditable");
         }
-        this._lazyEditBound = false;
+    }
+    handleGraphicKeydown(event) {
+        if (!this.isEditing || this.isTextMode) {
+            return;
+        }
+        if (
+            event.target.closest(
+                ".template, table.table, .percentage, .legend, figure",
+            )
+        ) {
+            return;
+        }
+        if (event.key === "Enter" && !event.shiftKey) {
+            const list = event.target.closest(
+                "ul.point-list, ol.number-list, .point-list, .number-list",
+            );
+            if (list) {
+                this.handleListEnter(event, list);
+                return;
+            }
+            const block = event.target.closest(
+                "p.paragraph, h2.heading, h3.sub-heading, .caption",
+            );
+            if (!block || !this.content?.contains(block)) {
+                return;
+            }
+            event.preventDefault();
+            this.insertParagraphAfter(block);
+            return;
+        }
+        if (event.key !== "Backspace") {
+            return;
+        }
+        const list = event.target.closest(
+            "ul.point-list, ol.number-list, .point-list, .number-list",
+        );
+        if (list) {
+            this.handleListBackspace(event, list);
+            return;
+        }
+        const caption = event.target.closest(".caption");
+        if (caption) {
+            this.handleEmptyBlockBackspace(event, caption, ".caption");
+            return;
+        }
+        const heading = event.target.closest("h2.heading, h3.sub-heading");
+        if (heading && this.isEmptyTextBlock(heading)) {
+            event.preventDefault();
+            const paragraph = Paragraph.create(heading.innerText || "<br>");
+            heading.replaceWith(paragraph);
+            Heading.list.delete(heading);
+            new Paragraph(paragraph);
+            Select.cursorToEnd(paragraph);
+            return;
+        }
+        const paragraph = event.target.closest("p.paragraph");
+        if (!paragraph || !this.isEmptyTextBlock(paragraph)) {
+            return;
+        }
+        const paragraphs = this.content?.querySelectorAll("p.paragraph");
+        if (!paragraphs || paragraphs.length <= 1) {
+            return;
+        }
+        event.preventDefault();
+        const previous = paragraph.previousElementSibling;
+        const instance = Paragraph.list.get(paragraph);
+        if (instance) {
+            instance.delete();
+        } else {
+            paragraph.remove();
+        }
+        if (previous) {
+            Select.cursorToEnd(previous);
+        }
+    }
+    handleListEnter(event, list) {
+        const li = event.target.closest("li");
+        if (!li || li.closest("ul, ol") !== list) {
+            return;
+        }
+        const text = li.innerText.replace(/\u200B/g, "").trim();
+        if (text) {
+            return;
+        }
+        event.preventDefault();
+        li.remove();
+        const items = [...list.querySelectorAll(":scope > li")];
+        const html = items.map((item) => item.innerHTML).join("<br>");
+        const paragraph = Paragraph.create(html || "<br>");
+        list.replaceWith(paragraph);
+        List.list.delete(list);
+        new Paragraph(paragraph);
+        Select.cursorToEnd(paragraph);
+    }
+    handleListBackspace(event, list) {
+        const items = list.querySelectorAll(":scope > li");
+        if (items.length > 1) {
+            return;
+        }
+        const first = items[0];
+        if (!first || first.innerText.trim()) {
+            return;
+        }
+        event.preventDefault();
+        const paragraph = Paragraph.create("<br>");
+        list.replaceWith(paragraph);
+        List.list.delete(list);
+        new Paragraph(paragraph);
+        Select.cursorToEnd(paragraph);
+    }
+    handleEmptyBlockBackspace(event, block, selector) {
+        if (!this.isEmptyTextBlock(block)) {
+            return;
+        }
+        const blocks = this.content?.querySelectorAll(selector);
+        if (blocks && blocks.length <= 1 && selector === ".caption") {
+            return;
+        }
+        event.preventDefault();
+        const paragraph = Paragraph.create(block.innerText || "<br>");
+        block.replaceWith(paragraph);
+        Caption.list.delete(block);
+        new Paragraph(paragraph);
+        Select.cursorToEnd(paragraph);
+    }
+    insertParagraphAfter(block) {
+        const paragraph = Paragraph.create();
+        new Paragraph(paragraph);
+        Paragraph.newLine(block, paragraph);
+        Select.cursorToEnd(paragraph);
+    }
+    isEmptyTextBlock(element) {
+        if (!element) {
+            return true;
+        }
+        const text = element.innerText.replace(/\u200B/g, "").trim();
+        if (text) {
+            return false;
+        }
+        const html = element.innerHTML
+            .replace(/<br\s*\/?>/gi, "")
+            .replace(/&nbsp;/gi, "")
+            .trim();
+        return !html;
     }
     blurEditBlock(block) {
         if (!block) {
@@ -365,7 +489,10 @@ export class Editor {
         }
     }
     focusEditBlock(block) {
-        if (!block || this._activeEditBlock === block) {
+        if (!block || this.content?.isContentEditable) {
+            return;
+        }
+        if (this._activeEditBlock === block) {
             return;
         }
         this.blurEditBlock(this._activeEditBlock);
@@ -609,14 +736,21 @@ export class Editor {
         Icons.load(container);
     }
     events() {
+        this.box?.addEventListener("mousedown", (e) => {
+            if (e.target.closest(".instrument")) {
+                e.preventDefault();
+            }
+        });
         this.box?.addEventListener("click", (e) => {
             const btn = e.target.closest(".instrument");
             if (!btn) return;
             switch (btn.dataset.action) {
                 case "save":
                     return Save.init();
-                case "replace":
-                    return ReplaceText.init();
+                case "undo":
+                    return this.runHistory("undo");
+                case "redo":
+                    return this.runHistory("redo");
                 case "heading":
                     return Heading.init("h2");
                 case "subheading":
@@ -647,6 +781,13 @@ export class Editor {
                     return Template.init();
             }
         });
+    }
+    runHistory(command) {
+        if (!this.isEditing || this.isTextMode) {
+            return;
+        }
+        this.content?.focus({ preventScroll: true });
+        document.execCommand(command);
     }
     bindEscapeEdit() {
         if (Editor._escapeBound) {
@@ -951,6 +1092,7 @@ export class Editor {
         const editing = this.isEditing && !this.isTextMode;
         await this.activateManagedElements(editing);
         if (editing) {
+            this.enableGraphicContentEditing();
             if (options.editLinks) {
                 await this.setLinkEditing(true);
             }
@@ -1008,35 +1150,89 @@ export class Editor {
             if (!clean.length) {
                 return;
             }
-            const isList = block.closest("ul, ol");
-            if (isList) {
-                const list = block.closest("ul, ol");
-                if (!list) {
-                    return;
-                }
-                const currentLi = range.startContainer?.parentElement?.closest("li");
+            const list = block.closest("ul, ol");
+            if (list) {
+                const currentLi = block.closest("li");
                 if (!currentLi) {
                     return;
                 }
-                currentLi.innerHTML = clean[0];
-                clean.slice(1).forEach((text) => {
+                range.deleteContents();
+                this.restoreSelection(range);
+                this.insertPlainText(clean[0]);
+                let last = currentLi;
+                clean.slice(1).forEach((line) => {
                     const li = document.createElement("li");
-                    li.innerHTML = text || "<br>";
-                    currentLi.after(li);
+                    li.textContent = line;
+                    last.after(li);
+                    last = li;
                 });
-                Select.cursorToEnd(list.lastElementChild);
+                if (clean.length > 1) {
+                    Select.cursorToEnd(last);
+                }
                 return;
             }
-            const currentText = clean[0];
-            block.innerHTML = currentText || "<br>";
+            const canSplit = block.matches("p.paragraph, p");
+            if (!canSplit || clean.length === 1) {
+                range.deleteContents();
+                this.restoreSelection(range);
+                this.insertPlainText(
+                    canSplit ? clean[0] : clean.join(" "),
+                );
+                return;
+            }
+            const after = range.cloneRange();
+            after.selectNodeContents(block);
+            after.setStart(range.endContainer, range.endOffset);
+            const trailing = after.extractContents();
+            range.deleteContents();
+            this.restoreSelection(range);
+            this.insertPlainText(clean[0]);
             let last = block;
-            clean.slice(1).forEach((text) => {
-                const element = Paragraph.create(text || "<br>");
+            clean.slice(1).forEach((line) => {
+                const element = Paragraph.create();
+                element.textContent = line;
                 Paragraph.newLine(last, element);
                 new Paragraph(element);
                 last = element;
             });
+            if (this.hasPasteContent(trailing)) {
+                last.appendChild(trailing);
+            }
             Select.cursorToEnd(last);
         });
+    }
+    restoreSelection(range) {
+        const selection = Select.text();
+        if (!selection || !range) {
+            return;
+        }
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }
+    insertPlainText(text) {
+        if (text == null || text === "") {
+            return;
+        }
+        if (document.execCommand("insertText", false, text)) {
+            return;
+        }
+        const range = Select.cursor();
+        if (!range) {
+            return;
+        }
+        const node = document.createTextNode(text);
+        range.insertNode(node);
+        range.setStartAfter(node);
+        range.collapse(true);
+        this.restoreSelection(range);
+    }
+    hasPasteContent(fragment) {
+        if (!fragment) {
+            return false;
+        }
+        if (fragment.textContent?.replace(/\u00a0/g, " ").trim()) {
+            return true;
+        }
+        return Boolean(fragment.querySelector?.("img, br, a, b, i, strong, em"));
     }
 }

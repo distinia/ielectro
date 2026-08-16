@@ -3,8 +3,8 @@ import { getArticleState } from "./state.js";
 import { Heading } from "./heading.js";
 import { Editor } from "./editor.js";
 import { EditorHelp } from "./editor-help.js";
-import { ArticlePdf } from "./article-pdf.js";
 import { ArticleGenerate } from "./article-generate.js";
+import { ReplaceText } from "./replace-text.js";
 export class Index {
     constructor() {
         this.sidebar = document.querySelector(".article-index-sidebar");
@@ -44,29 +44,29 @@ export class Index {
         if (!this.sidebar) return;
         this.editButton = this.sidebar.querySelector(".index-edit-button");
         const helpButton = this.sidebar.querySelector(".index-help-button");
-        const pdfButton = this.sidebar.querySelector(".index-pdf-button");
+        const replaceButton = this.sidebar.querySelector(".index-replace-button");
         const generateButton = this.sidebar.querySelector(".index-generate-button");
         const modeButton = this.sidebar.querySelector(".index-mode-button");
         const isEditor = getArticleState() === "editor";
         const isEditing = !!Editor.current?.isEditing;
         const isTextMode = !!Editor.current?.isTextMode;
-        const canExportPdf = isEditor && !isEditing;
-        const canGenerate = isEditor && isEditing;
+        const canTools = isEditor && isEditing;
         if (helpButton) {
-            helpButton.classList.toggle("is-visible", isEditor);
-            helpButton.onclick = isEditor ? () => EditorHelp.open() : null;
+            helpButton.classList.toggle("is-visible", canTools);
+            helpButton.onclick = canTools ? () => EditorHelp.open() : null;
             helpButton.title = isTextMode
                 ? "Text editor guide"
                 : "Graphic editor guide";
         }
-        if (pdfButton) {
-            pdfButton.classList.toggle("is-visible", canExportPdf);
-            pdfButton.onclick = canExportPdf ? () => ArticlePdf.export() : null;
+        if (replaceButton) {
+            replaceButton.classList.toggle("is-visible", canTools);
+            replaceButton.title = "Find and replace";
+            replaceButton.onclick = canTools ? () => ReplaceText.init() : null;
         }
         if (generateButton) {
-            generateButton.classList.toggle("is-visible", canGenerate);
+            generateButton.classList.toggle("is-visible", canTools);
             generateButton.title = "Generate article";
-            generateButton.onclick = canGenerate
+            generateButton.onclick = canTools
                 ? () => ArticleGenerate.open()
                 : null;
         }

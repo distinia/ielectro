@@ -495,7 +495,7 @@ export class SourceParser {
             const def = defs[fieldIndex];
             const slug = instance.fieldSlug(def.name);
             const raw = this.resolveFieldRaw(fields, slug);
-            if (raw == null || raw === "") {
+            if (raw == null) {
                 continue;
             }
             appliedSlugs.add(this.normalizeFieldSlug(slug));
@@ -503,7 +503,7 @@ export class SourceParser {
             await yieldToMain();
         }
         for (const [key, raw] of Object.entries(fields)) {
-            if (key === "_title" || raw == null || raw === "") {
+            if (key === "_title" || raw == null) {
                 continue;
             }
             const normalized = this.normalizeFieldSlug(key);
@@ -520,8 +520,9 @@ export class SourceParser {
                 continue;
             }
             if (
-                /^image-row-\d+$/.test(normalized) ||
-                this.extractImageUrl(raw)
+                String(raw || "").trim() &&
+                (/^image-row-\d+$/.test(normalized) ||
+                    this.extractImageUrl(raw))
             ) {
                 await this.applyOrphanImageField(
                     instance,
@@ -556,6 +557,7 @@ export class SourceParser {
             }
             fields[this.normalizeFieldSlug(currentKey)] =
                 currentValue.join("\n").trim();
+            currentKey = null;
             currentValue = [];
         };
         for (const line of lines) {
@@ -721,6 +723,7 @@ export class SourceParser {
         def = { ...def, type: fieldType };
         const value = String(raw || "").trim();
         if (!value) {
+            this.applyEmptyTemplateField(instance, def);
             return;
         }
         switch (def.type) {
@@ -764,6 +767,35 @@ export class SourceParser {
             default: {
                 await this.applyTextField(instance, def, value);
                 break;
+            }
+        }
+    }
+    static applyEmptyTemplateField(instance, def) {
+        switch (def.type) {
+            case "single-image":
+            case "image":
+            case "large-image":
+            case "double-image":
+                return;
+            case "definition": {
+                const row = instance.textRow(def.name, true);
+                instance.insertRow(row.row, def.name);
+                return;
+            }
+            case "double-column":
+            case "double-column-extended": {
+                const row = instance.doubleColumnRow(
+                    def.name,
+                    def.type === "double-column-extended"
+                        ? [["<br>", "<br>"]]
+                        : undefined,
+                );
+                instance.insertRow(row.row, def.name);
+                return;
+            }
+            default: {
+                const row = instance.textRow(def.name, false);
+                instance.insertRow(row.row, def.name);
             }
         }
     }

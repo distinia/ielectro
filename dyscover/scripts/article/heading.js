@@ -72,6 +72,9 @@ export class Heading {
         return !this.element.innerText.trim();
     }
     startEditing() {
+        if (this.element.closest(".content")?.isContentEditable) {
+            return;
+        }
         this.element.contentEditable = true;
         this.inputEvent = () => {
             clearTimeout(this.timeout);

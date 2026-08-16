@@ -14,7 +14,7 @@
     width: 100%;
     min-height: 210px;
     margin: 0;
-    resize: vertical;
+    resize: none;
     text-transform: none;
 }
 .article-generate-footer {

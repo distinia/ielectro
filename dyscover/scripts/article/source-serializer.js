@@ -157,9 +157,11 @@ export class SourceSerializer {
                 list.tagName.toLowerCase() === "ol",
             ).replace(/\n/g, "\\n");
         }
-        return SourceInline.normalizeInline(
-            SourceInline.serializeChildren(cell),
-        ).replace(/\n/g, " ");
+        return SourceInline.serializeChildren(cell)
+            .replace(/\n/g, "<br>")
+            .replace(/[^\S\n]+/g, " ")
+            .replace(/\s*<br>\s*/gi, "<br>")
+            .trim();
     }
     static serializeTemplate(table) {
         this.hydrateTemplateRowSlugs(table);
@@ -175,13 +177,10 @@ export class SourceSerializer {
         const order = [];
         table.querySelectorAll("tbody tr").forEach((row, rowIndex) => {
             let slug = row.dataset.field;
-            const part = this.serializeTemplateRow(row);
-            if (!part) {
-                return;
-            }
+            const part = this.serializeTemplateRow(row) || "";
             if (!slug) {
                 const imgs = this.templateImages(row);
-                if (!imgs.length) {
+                if (!imgs.length || !part) {
                     return;
                 }
                 slug = `image-row-${rowIndex}`;
@@ -193,7 +192,11 @@ export class SourceSerializer {
             fields.get(slug).push(part);
         });
         order.forEach((slug) => {
-            lines.push(`| ${slug} = ${fields.get(slug).join("\n")}`);
+            const value = fields
+                .get(slug)
+                .filter((entry, index, list) => entry || list.length === 1)
+                .join("\n");
+            lines.push(`| ${slug} = ${value}`);
         });
         lines.push("}}");
         return lines.join("\n");

@@ -23,6 +23,12 @@ export class ReplaceText {
             ReplaceText.list.set(instance.box, instance);
         }
     }
+    static isTextMode() {
+        return document.body.classList.contains("is-text-editing");
+    }
+    static sourceEditor() {
+        return document.querySelector(".article-source-editor");
+    }
     async create() {
         const main = document.querySelector(".article-main-content");
         this.box = document.createElement("div");
@@ -94,27 +100,31 @@ export class ReplaceText {
     }
     scheduleHighlight() {
         clearTimeout(this._highlightTimer);
-        this._highlightTimer = setTimeout(() => {
-            const find = this.findInput?.value ?? "";
-            this.clearHighlights();
-            if (!find.trim()) {
-                this.updateCount(0);
-                return;
-            }
-            this.updateCount(this.highlight(find));
-        }, 100);
+        this._highlightTimer = setTimeout(() => this.refreshMatches(), 100);
+    }
+    refreshMatches() {
+        const find = this.findInput?.value ?? "";
+        this.clearHighlights();
+        if (!find.trim()) {
+            this.updateCount(0);
+            return;
+        }
+        if (ReplaceText.isTextMode()) {
+            this.updateCount(this.countInSource(find));
+            return;
+        }
+        this.updateCount(this.highlight(find));
     }
     static suspendForTextMode() {
         ReplaceText.list.forEach((instance) => {
             clearTimeout(instance._highlightTimer);
             instance.clearHighlights();
+            instance.refreshMatches();
         });
     }
     static resumeFromTextMode() {
         ReplaceText.list.forEach((instance) => {
-            if (instance.findInput?.value.trim()) {
-                instance.scheduleHighlight();
-            }
+            instance.refreshMatches();
         });
     }
     closeEditing() {
@@ -156,6 +166,14 @@ export class ReplaceText {
     }
     escape(text) {
         return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+    countInSource(findText) {
+        const editor = ReplaceText.sourceEditor();
+        if (!editor || !findText) {
+            return 0;
+        }
+        const matches = editor.value.match(new RegExp(this.escape(findText), "g"));
+        return matches ? matches.length : 0;
     }
     clearHighlights() {
         const content = this.content();
@@ -237,6 +255,10 @@ export class ReplaceText {
             Alert.error("Please enter text to find");
             return;
         }
+        if (ReplaceText.isTextMode()) {
+            this.replaceAllInSource(find, replace);
+            return;
+        }
         this.clearHighlights();
         const content = this.content();
         if (!content) {
@@ -261,5 +283,26 @@ export class ReplaceText {
             Alert.error("No occurrences found");
             this.updateCount(0);
         }
+    }
+    replaceAllInSource(find, replace) {
+        const editor = ReplaceText.sourceEditor();
+        if (!editor) {
+            Alert.error("Text editor not ready");
+            return;
+        }
+        const regex = new RegExp(this.escape(find), "g");
+        const matches = editor.value.match(regex);
+        if (!matches?.length) {
+            Alert.error("No occurrences found");
+            this.updateCount(0);
+            return;
+        }
+        const start = editor.selectionStart;
+        editor.value = editor.value.replace(regex, replace);
+        editor.dispatchEvent(new Event("input", { bubbles: true }));
+        const next = Math.min(start, editor.value.length);
+        editor.setSelectionRange(next, next);
+        editor.focus();
+        this.updateCount(this.countInSource(find));
     }
 }

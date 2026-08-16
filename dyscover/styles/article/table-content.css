@@ -31,10 +31,10 @@
     background: linear-gradient(90deg, rgba(21, 101, 192, 0.45), rgba(66, 165, 245, 0.35));
     pointer-events: none;
 }
-.table th {
+.table thead th {
     background: var(--table-header-bg);
     color: var(--table-header-color);
-    text-align: left;
+    text-align: center;
     padding: 0.85rem 1rem;
     font-weight: 700;
     font-size: 0.78rem;
@@ -44,7 +44,7 @@
     border-bottom: 1px solid var(--table-border);
     vertical-align: middle;
 }
-.table th:last-child {
+.table thead th:last-child {
     border-right: none;
 }
 .table td {

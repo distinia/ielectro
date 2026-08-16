@@ -10,9 +10,14 @@
         "icon": "save"
     },
     {
-        "title": "Replace",
-        "class": "ReplaceText",
-        "icon": "search"
+        "title": "Undo",
+        "class": "Undo",
+        "icon": "undo-2"
+    },
+    {
+        "title": "Redo",
+        "class": "Redo",
+        "icon": "redo-2"
     },
     {
         "title": "Heading",

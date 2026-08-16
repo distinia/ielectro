@@ -385,7 +385,7 @@
 .creator-meta-col .textarea {
     min-height: 88px;
     max-height: 140px;
-    resize: vertical;
+    resize: none;
 }
 .creator-type-field .creator-type-select {
     width: 100%;

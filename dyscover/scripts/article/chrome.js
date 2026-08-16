@@ -4,11 +4,11 @@ const SIDEBAR_HTML = `
             <button type="button" class="index-help-button" aria-label="Editor guide" title="Editor guide">
                 <span aria-hidden="true">?</span>
             </button>
+            <button type="button" class="index-replace-button" aria-label="Find and replace" title="Find and replace">
+                <i data-icon="search"></i>
+            </button>
             <button type="button" class="index-generate-button" aria-label="Generate article" title="Generate article">
                 <i data-icon="sparkles"></i>
-            </button>
-            <button type="button" class="index-pdf-button" aria-label="Export PDF" title="Export PDF">
-                <i data-icon="download"></i>
             </button>
             <button type="button" class="index-edit-button" aria-label="Edit article">
                 <i data-icon="pencil"></i>
@@ -44,6 +44,7 @@ function upgradeSidebarHeader(sidebar) {
     } else if (editButton && editButton.parentElement !== actions) {
         actions.prepend(editButton);
     }
+    header.querySelectorAll(".index-pdf-button").forEach((button) => button.remove());
     if (!header.querySelector(".index-mode-button")) {
         const modeButton = document.createElement("button");
         modeButton.type = "button";
@@ -62,18 +63,29 @@ function upgradeSidebarHeader(sidebar) {
         helpButton.innerHTML = `<span aria-hidden="true">?</span>`;
         actions.prepend(helpButton);
     }
-    if (!header.querySelector(".index-pdf-button")) {
-        const pdfButton = document.createElement("button");
-        pdfButton.type = "button";
-        pdfButton.className = "index-pdf-button";
-        pdfButton.setAttribute("aria-label", "Export PDF");
-        pdfButton.title = "Export PDF";
-        pdfButton.innerHTML = `<i data-icon="download"></i>`;
-        const help = header.querySelector(".index-help-button");
-        if (help?.nextSibling) {
-            help.after(pdfButton);
+    if (!header.querySelector(".index-replace-button")) {
+        const replaceButton = document.createElement("button");
+        replaceButton.type = "button";
+        replaceButton.className = "index-replace-button";
+        replaceButton.setAttribute("aria-label", "Find and replace");
+        replaceButton.title = "Find and replace";
+        replaceButton.innerHTML = `<i data-icon="search"></i>`;
+        const generate = header.querySelector(".index-generate-button");
+        if (generate) {
+            generate.before(replaceButton);
         } else {
-            actions.appendChild(pdfButton);
+            const help = header.querySelector(".index-help-button");
+            if (help) {
+                help.after(replaceButton);
+            } else {
+                actions.appendChild(replaceButton);
+            }
+        }
+    } else {
+        const replaceButton = header.querySelector(".index-replace-button");
+        const generate = header.querySelector(".index-generate-button");
+        if (replaceButton && generate) {
+            generate.before(replaceButton);
         }
     }
     if (!header.querySelector(".index-generate-button")) {
@@ -83,9 +95,12 @@ function upgradeSidebarHeader(sidebar) {
         generateButton.setAttribute("aria-label", "Generate article");
         generateButton.title = "Generate article";
         generateButton.innerHTML = `<i data-icon="sparkles"></i>`;
+        const replace = header.querySelector(".index-replace-button");
         const help = header.querySelector(".index-help-button");
         const edit = header.querySelector(".index-edit-button");
-        if (help && edit) {
+        if (replace) {
+            replace.after(generateButton);
+        } else if (help && edit) {
             help.after(generateButton);
         } else if (edit) {
             edit.before(generateButton);
@@ -94,8 +109,11 @@ function upgradeSidebarHeader(sidebar) {
         }
     } else {
         const generateButton = header.querySelector(".index-generate-button");
+        const replace = header.querySelector(".index-replace-button");
         const help = header.querySelector(".index-help-button");
-        if (generateButton && help) {
+        if (generateButton && replace) {
+            replace.after(generateButton);
+        } else if (generateButton && help) {
             help.after(generateButton);
         }
     }

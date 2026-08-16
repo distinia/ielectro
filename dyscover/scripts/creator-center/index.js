@@ -2,6 +2,8 @@ import { App } from "../core/app.js";
 import { Alert, Icons } from "../core/index.js";
 import { CreatorRegistry } from "./registry.js";
 import { refreshCreatorStats } from "./creator-stats.js";
+import { CreatorDownload } from "./creator-download.js";
+import { CreatorCopyLink } from "./creator-copy-link.js";
 import { Search } from "./search.js";
 import { Table } from "./table.js";
 document.addEventListener("DOMContentLoaded", () => {
@@ -25,6 +27,31 @@ document.addEventListener("DOMContentLoaded", () => {
                 return Alert.error("Select exactly one item");
             }
             await selected[0].edit();
+        });
+        document.querySelector(".action-buttons .copy-link")?.addEventListener("click", async () => {
+            const Class = CreatorRegistry.activeClass();
+            if (!Class) return;
+            const selected = Class.getSelected();
+            if (!selected.length) {
+                return Alert.error("Select at least one item");
+            }
+            await CreatorCopyLink.run(selected);
+        });
+        document.querySelector(".action-buttons .download")?.addEventListener("click", async () => {
+            const Class = CreatorRegistry.activeClass();
+            if (!Class) return;
+            const selected = Class.getSelected();
+            if (!selected.length) {
+                return Alert.error("Select at least one item");
+            }
+            const button = document.querySelector(".action-buttons .download");
+            if (button?.disabled) return;
+            if (button) button.disabled = true;
+            try {
+                await CreatorDownload.run(selected);
+            } finally {
+                if (button) button.disabled = false;
+            }
         });
         document.querySelector(".action-buttons .archive")?.addEventListener("click", async () => {
             const Class = CreatorRegistry.activeClass();

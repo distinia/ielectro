@@ -22,6 +22,8 @@ export class Api {
         `${Api.base}/articles/${encodeURIComponent(uuid)}`;
     static articlePreview = (uuid) =>
         `${Api.base}/articles/${encodeURIComponent(uuid)}/preview`;
+    static articleCover = (uuid) =>
+        `${Api.base}/articles/${encodeURIComponent(uuid)}/cover`;
     static articlePdf = (uuid) =>
         `${Api.base}/articles/${encodeURIComponent(uuid)}/pdf`;
     static articleGenerate = (uuid) =>

@@ -52,6 +52,9 @@ select {
     font: inherit;
     color: inherit;
 }
+textarea {
+    resize: none;
+}
 header {
     display: flex;
     align-items: center;

@@ -24,7 +24,9 @@ export class Save {
             const res = await API.saveArticle(instance.content);
             Alert.success(res);
         } catch (e) {
-            Alert.error(e.text);
+            Alert.error(
+                e?.text || e?.message || "Unable to save article",
+            );
         }
     }
 }

@@ -4,6 +4,7 @@ export const CreatorHelp = {
         <ul>
             <li>Set a clear title and a short description for feeds and search.</li>
             <li>Type <code>#</code> to add tags (maximum 5). Existing tags autocomplete from the server.</li>
+            <li>Articles use the default preview image — you cannot upload a cover here.</li>
             <li>After creating, open the article editor to write the full text.</li>
         </ul>
         <p>You can edit title, description and tags here anytime.</p>`,

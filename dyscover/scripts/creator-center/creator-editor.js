@@ -193,6 +193,9 @@ export class CreatorEditor {
             if (mediaInput) mediaInput.value = "";
             if (previewInput) previewInput.value = "";
         }
+        if (type === "article") {
+            this.showArticleDefaultPreview();
+        }
         this.modal.box?.classList.toggle(
             "select-item-box--template",
             type === "template",
@@ -205,7 +208,7 @@ export class CreatorEditor {
         return { allow_comments: this.readAllowComments() };
     }
     mediaAccept() {
-        if (this.type === "article" || this.type === "template") {
+        if (this.type === "template") {
             return "image/*";
         }
         return this.config.accept;
@@ -213,11 +216,41 @@ export class CreatorEditor {
     needsUploadAction() {
         return this.method === "POST" && this.config.mediaOnCreate;
     }
+    showArticleDefaultPreview() {
+        const preview = this.form?.querySelector(".media-file-preview");
+        if (!preview) return;
+        CreatorMedia.renderPreview(preview, App.defaultPostPreview(), {
+            type: "article",
+            name: "Default preview",
+        });
+    }
     showExistingPreview() {
+        if (this.type === "article") {
+            const item = App.enrichPost(this.item);
+            const media = String(item.preview_image || item.preview || "");
+            if (
+                media &&
+                !media.includes("default-post.jpg") &&
+                !/\.html(\?|#|$)/i.test(media) &&
+                !/\/article\//i.test(media)
+            ) {
+                const stamp = item.updated_at
+                    ? `?t=${new Date(item.updated_at).getTime()}`
+                    : "";
+                CreatorMedia.renderPreview(
+                    this.form.querySelector(".media-file-preview"),
+                    `${media}${stamp}`,
+                    { type: "article", name: item.title || "Cover" },
+                );
+                return;
+            }
+            this.showArticleDefaultPreview();
+            return;
+        }
         const preview = this.form.querySelector(".media-file-preview");
         const item = App.enrichPost(this.item);
         let media = "";
-        if (this.type === "article" || this.type === "template") {
+        if (this.type === "template") {
             media = item.preview_image || item.preview || "";
         } else {
             media = item.media || item.preview_image || item.preview || "";
@@ -370,16 +403,6 @@ export class CreatorEditor {
         const uuid = crypto.randomUUID();
         const extras = this.payloadExtras();
         if (this.type === "article") {
-            const media = this.form.querySelector("#creator-file-media")?.files?.[0];
-            if (media) {
-                const data = new FormData(this.form);
-                data.set("type", "article");
-                data.set("uuid", uuid);
-                data.set("tags", JSON.stringify(tags));
-                data.set("allow_comments", extras.allow_comments ? "1" : "0");
-                await Request.post(Api.posts, data);
-                return;
-            }
             await Request.post(Api.posts, {
                 type: "article",
                 title,
@@ -452,6 +475,15 @@ export class CreatorEditor {
                     ...extras,
                 });
             }
+            return;
+        }
+        if (this.type === "article") {
+            await Request.patch(Api.post(id), {
+                title,
+                description: String(this.form.description.value || "").trim(),
+                tags,
+                ...extras,
+            });
             return;
         }
         const file = this.activeFileInput()?.files?.[0];

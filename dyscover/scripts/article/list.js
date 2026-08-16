@@ -92,6 +92,9 @@ export class List {
         };
     }
     startEditing() {
+        if (this.element.closest(".content")?.isContentEditable) {
+            return;
+        }
         this.element.contentEditable = true;
         this.inputEvent = () => {
             const items = this.element.querySelectorAll("li");

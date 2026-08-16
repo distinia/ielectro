@@ -6,6 +6,7 @@ import { Editor } from "./editor.js";
 import { PostResolver } from "./post-resolver.js";
 import { ElementTree } from "./element-tree.js";
 import { Paragraph } from "./paragraph.js";
+import { API } from "./api.js";
 export class Media {
     static list = new Map();
     static classMap = {
@@ -473,14 +474,35 @@ export class Media {
         Media.list.delete(this.element);
         this.element.remove();
     }
-    setAsCover() {
-        document.querySelector(".article-image")?.classList.remove("article-image");
-        if (this.variant === Media.classMap.image) {
-            this.element.querySelector("img")?.classList.add("article-image");
+    async setAsCover() {
+        document
+            .querySelectorAll(".article-image")
+            .forEach((node) => node.classList.remove("article-image"));
+        const img =
+            this.variant === Media.classMap.image
+                ? this.element.querySelector("img")
+                : this.element.tagName === "IMG"
+                  ? this.element
+                  : this.element.querySelector("img");
+        if (!img?.src) {
+            Alert.error("No image found to use as cover");
             return;
         }
-        this.element.classList.add("article-image");
-        Alert.success("Image set as article cover");
+        const previewImage = String(img.src || "").split(/[?#]/)[0];
+        if (!previewImage) {
+            Alert.error("No image found to use as cover");
+            return;
+        }
+        img.classList.add("article-image");
+        try {
+            await API.setArticleCover(previewImage);
+            Alert.success("Image set as article cover");
+        } catch (error) {
+            img.classList.remove("article-image");
+            Alert.error(
+                error?.text || error?.message || "Unable to set cover image",
+            );
+        }
     }
     changePosition() {
         const pairs = [

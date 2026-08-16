@@ -26,7 +26,7 @@ class ArticlePdfExport
             LIMIT 1",
             [$uuid]
         );
-        if (!$post || $post['status'] !== 'active') {
+        if (!$post || !in_array((string) $post['status'], ['active', 'hidden'], true)) {
             Response::notFound('Article not found');
         }
         if (!self::isOwner((int) $post['user_id'])) {

@@ -30,6 +30,8 @@ export const ArticleHelp = {
     graphicEditor: `
         <p>Use the toolbar above the article to format content visually.</p>
         <ul>
+            <li><strong>Undo / Redo</strong> — reverse or restore the last edits.</li>
+            <li><strong>Find and replace</strong> — use the search button in the Index sidebar (works in graphic and text mode).</li>
             <li><strong>Paragraph</strong> — click in the text and type. Press <kbd>Enter</kbd> for a new paragraph.</li>
             <li><strong>Heading / Sub heading</strong> — place the cursor in a paragraph, then use the toolbar.</li>
             <li><strong>Bold / Italic / Link</strong> — select text first, then click the tool.</li>
@@ -43,35 +45,79 @@ export const ArticleHelp = {
             <li><strong>Percentage</strong> — progress bar (<code>50%</code> or <code>1/2</code>).</li>
         </ul>
         <p>Press <strong>Esc</strong> or the red <strong>×</strong> button to exit editing. Use the page icon to switch to the text editor.</p>`,
-    sourceEditor: `
+    sourcePatterns: [
+        ["Paragraph", "Plain text on one line"],
+        ["Heading", "# Title"],
+        ["Sub heading", "## Title"],
+        ["Bold", "**text**"],
+        ["Italic", "*text*"],
+        ["Link", "[[Label|https://url]]"],
+        ["Caption", "> Text"],
+        ["Center", ":: Text"],
+        ["Point list", "- item"],
+        ["Number list", "1. item"],
+        ["Image", "{{image|url|caption}}"],
+        ["Table image", "{{image-table|url}}"],
+        ["Icon", "{{icon-image|url}}"],
+        ["Video", "{{video|url|caption}}"],
+        ["Audio", "{{audio|url}}"],
+        ["Percentage", "{{percent|50%}}"],
+        ["Legend", "{{legend|#008000|Label}}"],
+        ["Table header", "| H1 | H2 |"],
+        ["Table row", "| a | b |"],
+        ["Table line break", "Line 1<br>Line 2"],
+        ["Template", "{{template|123"],
+        ["Template title", "| _title = Infobox title"],
+        ["Template text field", "| capital-city = Capital name"],
+        ["Template single image", "| flag = {{template-single-image|https://.../flag.png}}"],
+        ["Template large image", "| map = {{template-large-image|https://.../map.png}}"],
+        ["Template double image", "| flags = {{template-double-image|https://.../a.png ;; https://.../b.png}}"],
+        ["Template section", "| formation = **Formation**"],
+        ["Template double column", "- Left value ;; Right value"],
+        ["Template close", "}}"],
+    ],
+    sourcePatternPlainText() {
+        const header = "Element\tPattern";
+        const rows = this.sourcePatterns.map(
+            ([element, pattern]) => `${element}\t${pattern}`,
+        );
+        return [header, ...rows].join("\n");
+    },
+    sourcePatternTableHtml() {
+        const rows = this.sourcePatterns
+            .map(
+                ([element, pattern]) =>
+                    `<tr><td>${element}</td><td><code>${this.escapeHtml(pattern)}</code></td></tr>`,
+            )
+            .join("");
+        return `<div class="article-help-table-wrap">
+            <div class="article-help-table-toolbar">
+                <button type="button" class="button button-secondary article-help-copy-patterns" aria-label="Copy pattern table">
+                    <i data-icon="copy"></i>
+                    <span>Copy patterns</span>
+                </button>
+            </div>
+            <table class="article-help-table">
+                <thead><tr><th>Element</th><th>Pattern</th></tr></thead>
+                <tbody>${rows}</tbody>
+            </table>
+        </div>`;
+    },
+    escapeHtml(value) {
+        return String(value || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+    },
+    get sourceEditor() {
+        return `
         <p>The text editor uses <strong>Dyscover Source</strong>. One blank line separates blocks. Paragraphs are a single continuous line.</p>
-        <table class="article-help-table">
-            <thead><tr><th>Element</th><th>Pattern</th></tr></thead>
-            <tbody>
-                <tr><td>Paragraph</td><td><code>Plain text on one line</code></td></tr>
-                <tr><td>Heading</td><td><code># Title</code></td></tr>
-                <tr><td>Sub heading</td><td><code>## Title</code></td></tr>
-                <tr><td>Bold</td><td><code>**text**</code></td></tr>
-                <tr><td>Italic</td><td><code>*text*</code></td></tr>
-                <tr><td>Link</td><td><code>[[Label|https://url]]</code></td></tr>
-                <tr><td>Caption</td><td><code>&gt; Text</code></td></tr>
-                <tr><td>Center</td><td><code>:: Text</code></td></tr>
-                <tr><td>Point list</td><td><code>- item</code> (one per line)</td></tr>
-                <tr><td>Number list</td><td><code>1. item</code></td></tr>
-                <tr><td>Image</td><td><code>{{image|url|caption}}</code></td></tr>
-                <tr><td>Table image</td><td><code>{{image-table|url}}</code></td></tr>
-                <tr><td>Icon</td><td><code>{{icon-image|url}}</code></td></tr>
-                <tr><td>Video</td><td><code>{{video|url|caption}}</code></td></tr>
-                <tr><td>Audio</td><td><code>{{audio|url}}</code></td></tr>
-                <tr><td>Percentage</td><td><code>{{percent|50%}}</code></td></tr>
-                <tr><td>Legend</td><td><code>{{legend|#008000|Label}}</code></td></tr>
-                <tr><td>Table</td><td><code>| H1 | H2 |</code> then <code>| a | b |</code></td></tr>
-            </tbody>
-        </table>
-        <p><strong>Template</strong> — use the numeric template ID:</p>
+        ${this.sourcePatternTableHtml()}
+        <p><strong>Template example</strong> — use the numeric template ID:</p>
         <pre class="article-help-pre">{{template|123
 | _title = Infobox title
-| image-flag = {{template-single-image|https://.../flag.png}}
+| image-flag = {{template-single-image|https://.../flag.png|42}}
 | image-map = {{template-large-image|https://.../map.png}}
 | flags = {{template-double-image|https://.../a.png ;; https://.../b.png}}
 | anthem = - Anthem name
@@ -83,10 +129,13 @@ export const ArticleHelp = {
 | constituencies = - {{icon-image|https://.../icon.png}} [[Country|https://...]]
 }}</pre>
         <ul>
+            <li>Optional post id after an image URL: <code>{{template-single-image|url|123}}</code>.</li>
             <li><code>**Section**</code> on the first line creates a section header row (e.g. Formation).</li>
             <li><code>;;</code> separates left and right columns in double-column fields.</li>
+            <li>Empty fields are kept with <code>| field-name =</code>.</li>
             <li>Do not break paragraphs manually — HTML indentation is ignored on export.</li>
-        </ul>`,
+        </ul>`;
+    },
     forEditorMode(isTextMode) {
         return isTextMode ? this.sourceEditor : this.graphicEditor;
     },

@@ -45,6 +45,9 @@ export class Paragraph {
         return !html;
     }
     startEditing() {
+        if (this.element.closest(".content")?.isContentEditable) {
+            return;
+        }
         this.element.contentEditable = true;
         this.inputEvent = () => {
             this.text = this.element.innerHTML;

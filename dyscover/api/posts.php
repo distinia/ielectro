@@ -114,16 +114,6 @@ class Posts
         }
         if ($type === 'article') {
             $html = '<p class="paragraph">Start here...</p>';
-            $coverFile = Request::file('media');
-            if ($coverFile) {
-                PostAssets::assertMediaSize('image', $coverFile);
-                $previewImage = PostAssets::storeArticleCover(
-                    $coverFile,
-                    $userId,
-                    $uuid,
-                    false
-                );
-            }
         } elseif ($type === 'template') {
             $input['fields'] = self::parseTemplateFields($input['fields'] ?? null);
             if (!is_array($input['fields'])) {
@@ -256,18 +246,7 @@ class Posts
         $mediaFile = Request::file('media');
         if ($mediaFile) {
             if ($type === 'article') {
-                PostAssets::assertMediaSize('image', $mediaFile);
-                $previewImage = PostAssets::storeArticleCover(
-                    $mediaFile,
-                    $userId,
-                    $uuid,
-                    true
-                );
-                Query::execute(
-                    'UPDATE ielectro_dyscover.dyscover_posts SET preview_image = ? WHERE id = ?',
-                    [$previewImage, $postId]
-                );
-                $updated = true;
+                Response::badRequest('Articles use the default preview image');
             } elseif (PostAssets::isMediaType($type)) {
                 PostAssets::assertMediaSize($type, $mediaFile);
                 $processed = PostAssets::storeMedia($type, $mediaFile, $userId, $uuid, true);
@@ -277,7 +256,7 @@ class Posts
                 );
                 $updated = true;
             } else {
-                Response::badRequest('Media is only valid for media posts and articles');
+                Response::badRequest('Media is only valid for media posts');
             }
         }
         if (array_key_exists('fields', $input)) {
@@ -976,6 +955,65 @@ class PostAssets
     public static function defaultPreview(): string
     {
         return \APP_URL . '/assets/brand/default-post.jpg';
+    }
+    public static function isUsableCoverUrl(string $url): bool
+    {
+        $url = trim($url);
+        if ($url === '') {
+            return false;
+        }
+        if (preg_match('/\.html(\?|#|$)/i', $url)) {
+            return false;
+        }
+        if (preg_match('~/articles/[^/?#]+\.html~i', $url)) {
+            return false;
+        }
+        if (preg_match('~/article/[^/?#]+~i', $url)) {
+            return false;
+        }
+        if (preg_match('/\.(jpe?g|png|gif|webp|avif)(\?|#|$)/i', $url)) {
+            return true;
+        }
+        return (bool) preg_match('~/assets/users/\d+/images/~i', $url);
+    }
+    public static function normalizePreviewUrl(string $url): string
+    {
+        $url = html_entity_decode(trim($url), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        if ($url === '') {
+            return '';
+        }
+        $parts = parse_url($url);
+        if (!is_array($parts) || empty($parts['path'])) {
+            return $url;
+        }
+        $clean = '';
+        if (!empty($parts['scheme']) && !empty($parts['host'])) {
+            $clean = $parts['scheme'] . '://' . $parts['host'];
+            if (!empty($parts['port'])) {
+                $clean .= ':' . $parts['port'];
+            }
+        }
+        $clean .= $parts['path'];
+        return $clean;
+    }
+    public static function syncArticlePreviewFromHtml(
+        string $html,
+        int $userId = 0,
+        string $uuid = '',
+        string $existingPreview = ''
+    ): string {
+        $cover = self::normalizePreviewUrl(ArticleContent::extractCoverImage($html));
+        if ($cover !== '' && self::isUsableCoverUrl($cover)) {
+            return $cover;
+        }
+        $existing = self::normalizePreviewUrl($existingPreview);
+        if (
+            self::isUsableCoverUrl($existing)
+            && $existing !== self::defaultPreview()
+        ) {
+            return $existing;
+        }
+        return self::defaultPreview();
     }
     public static function isMediaType(string $type): bool
     {

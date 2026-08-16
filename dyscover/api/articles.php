@@ -33,6 +33,12 @@ class Articles
             ]);
             return;
         }
+        if (Routing::segment(3) === 'cover') {
+            Routing::method([
+                'PATCH' => fn() => $this->setCover(),
+            ]);
+            return;
+        }
         Routing::method([
             'GET' => fn() => $this->show(),
             'PUT' => fn() => $this->update(),
@@ -103,15 +109,10 @@ class Articles
     }
     public static function resolvePreviewImage(string $previewImage, string $cover): string
     {
-        if (
-            $previewImage !== ''
-            && $previewImage !== PostAssets::defaultPreview()
-            && !preg_match('/\.html(\?|#|$)/i', $previewImage)
-            && !preg_match('~/articles/[^/?#]+\.html~i', $previewImage)
-        ) {
+        if (PostAssets::isUsableCoverUrl($previewImage) && $previewImage !== PostAssets::defaultPreview()) {
             return $previewImage;
         }
-        if ($cover !== '') {
+        if (PostAssets::isUsableCoverUrl($cover)) {
             return $cover;
         }
         return PostAssets::defaultPreview();
@@ -190,7 +191,46 @@ class Articles
         }
         $path = PostAssets::articlePath((int) $post['user_id'], (string) $post['uuid']);
         File::makeDirectory(dirname($path));
-        file_put_contents($path, $content);
+        if (file_put_contents($path, $content) === false) {
+            Response::error('Unable to save article');
+        }
         Response::success('Article updated');
+    }
+    private function setCover(): void
+    {
+        Request::patch();
+        $uuid = trim((string) Routing::segment(2));
+        if (!Validate::required($uuid)) {
+            Response::badRequest('Missing article uuid');
+        }
+        $post = Query::fetch(
+            "SELECT id, user_id, uuid
+            FROM ielectro_dyscover.dyscover_posts
+            WHERE uuid = ?
+            AND type = 'article'
+            AND status = 'active'
+            LIMIT 1",
+            [$uuid]
+        );
+        if (!$post) {
+            Response::notFound('Article not found');
+        }
+        if ((int) $post['user_id'] !== User::id()) {
+            Response::forbidden();
+        }
+        $url = PostAssets::normalizePreviewUrl((string) Request::value('preview_image', ''));
+        if (!PostAssets::isUsableCoverUrl($url)) {
+            Response::badRequest('Invalid cover image URL');
+        }
+        Query::execute(
+            'UPDATE ielectro_dyscover.dyscover_posts
+            SET preview_image = ?
+            WHERE id = ?',
+            [$url, (int) $post['id']]
+        );
+        Response::success([
+            'preview_image' => $url,
+            'message' => 'Cover image updated',
+        ]);
     }
 }

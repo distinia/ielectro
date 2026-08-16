@@ -63,10 +63,13 @@ body.article-page main {
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 1) 0%, rgba(248, 250, 252, 0.98) 100%);
     position: relative;
+    user-select: text;
 }
 .article-header .title {
     font-size: clamp(1.45rem, 2.4vw, 2rem);
     line-height: 1.15;
+    user-select: text;
+    cursor: text;
 }
 .article-header::after {
     content: "";
@@ -192,9 +195,6 @@ body.article-page.is-text-editing.article-mode-switching .article-source-editor 
 body.article-page.is-text-editing .instruments {
     display: none !important;
 }
-body.article-page.is-text-editing .find-replace-bar {
-    display: none !important;
-}
 body.article-page.is-text-editing .content {
     display: none;
 }
@@ -207,7 +207,7 @@ body.article-page.is-text-editing .content {
         clamp(2rem, 4vw, 3rem);
     border: none;
     border-radius: 0;
-    resize: vertical;
+    resize: none;
     font-family: "Cascadia Code", "Consolas", "Courier New", monospace;
     font-size: 0.92rem;
     line-height: 1.55;

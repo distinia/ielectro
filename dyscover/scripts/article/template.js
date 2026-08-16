@@ -44,7 +44,6 @@ export class Template {
         const table = document.createElement("table");
         table.classList.add(Template.className);
         table.dataset.template = String(templateId);
-        table.contentEditable = false;
         const thead = document.createElement("thead");
         const tr = document.createElement("tr");
         const th = document.createElement("th");
@@ -134,9 +133,9 @@ export class Template {
         this.menu?.startEditing();
     }
     closeEditing() {
-        this.element.contentEditable = false;
+        this.element.removeAttribute("contenteditable");
         this.element.querySelectorAll(".template-cell-info").forEach((element) => {
-            element.contentEditable = false;
+            element.removeAttribute("contenteditable");
         });
         this.menu?.closeEditing();
     }

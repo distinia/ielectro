@@ -83,7 +83,7 @@ export class SourceInline {
             return `{{audio|${el.getAttribute("src") || ""}}}`;
         }
         if (tag === "br") {
-            return " ";
+            return "<br>";
         }
         return this.serializeChildren(el);
     }
@@ -110,6 +110,12 @@ export class SourceInline {
             if (source.startsWith("\\", i)) {
                 appendText(source[i + 1] || "");
                 i += 2;
+                continue;
+            }
+            const breakLength = this.readBreak(source, i);
+            if (breakLength) {
+                parent.appendChild(document.createElement("br"));
+                i += breakLength;
                 continue;
             }
             const macro = this.readMacro(source, i);
@@ -174,6 +180,12 @@ export class SourceInline {
             if (source.startsWith("\\", i)) {
                 appendText(source[i + 1] || "");
                 i += 2;
+                continue;
+            }
+            const breakLength = this.readBreak(source, i);
+            if (breakLength) {
+                parent.appendChild(document.createElement("br"));
+                i += breakLength;
                 continue;
             }
             const macro = this.readMacro(source, i);
@@ -251,10 +263,21 @@ export class SourceInline {
         }
     }
     static findNextSpecial(source, start) {
-        const indices = ["\\", "[[", "{{", "**", "*"]
+        const indices = ["\\", "[[", "{{", "**", "*", "\n"]
             .map((token) => source.indexOf(token, start))
             .filter((index) => index !== -1);
+        const brMatch = source.slice(start).match(/<br\s*\/?>/i);
+        if (brMatch && brMatch.index != null) {
+            indices.push(start + brMatch.index);
+        }
         return indices.length ? Math.min(...indices) : source.length;
+    }
+    static readBreak(source, start) {
+        if (source[start] === "\n") {
+            return 1;
+        }
+        const match = source.slice(start).match(/^<br\s*\/?>/i);
+        return match ? match[0].length : 0;
     }
     static readWrapped(source, start, marker) {
         if (!source.startsWith(marker, start)) {

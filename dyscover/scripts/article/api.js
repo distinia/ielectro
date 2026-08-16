@@ -3,7 +3,8 @@ import { App, Request } from "../core/index.js";
 import { PostResolver } from "./post-resolver.js";
 const TOOLBAR_ACTIONS = {
     Save: "save",
-    ReplaceText: "replace",
+    Undo: "undo",
+    Redo: "redo",
     Heading: "heading",
     Subheading: "subheading",
     Center: "center",
@@ -56,6 +57,13 @@ export class API {
         const uuid = App.urlLastPart().replace(/\.html$/i, "");
         const res = await Request.put(Api.article(uuid), { content });
         return Api.message(res) || "Article saved";
+    }
+    static async setArticleCover(previewImage) {
+        const uuid = App.urlLastPart().replace(/\.html$/i, "");
+        const res = await Request.patch(Api.articleCover(uuid), {
+            preview_image: previewImage,
+        });
+        return Api.record(res) || Api.data(res) || res;
     }
     static async getArticleInfo() {
         const uuid = App.urlLastPart().replace(/\.html$/i, "");
