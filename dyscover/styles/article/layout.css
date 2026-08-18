@@ -108,42 +108,11 @@ body.article-page.is-editing .article-header {
     overflow: hidden;
     background: #e2e8f0;
 }
-.article-editor-transition__label {
-    position: absolute;
-    top: 1.1rem;
-    left: 50%;
-    transform: translateX(-50%);
-    max-width: min(92%, 40rem);
-    padding: 0.45rem 0.85rem;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.92);
-    border: 1px solid rgba(15, 23, 42, 0.08);
-    color: #334155;
-    font-size: 0.88rem;
-    text-align: center;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
-}
 .article-editor-transition__bar-fill {
     height: 100%;
     width: 0;
     background: linear-gradient(90deg, #3b82f6, #2563eb);
     transition: width 0.18s ease;
-}
-.article-editor-transition:not(.is-progress) .article-editor-transition__bar-fill {
-    width: 35%;
-    animation: article-editor-bar-indeterminate 1.25s ease-in-out infinite;
-}
-@keyframes article-editor-bar-indeterminate {
-    0% {
-        transform: translateX(-100%);
-    }
-    100% {
-        transform: translateX(400%);
-    }
-}
-.article-editor-transition.is-progress .article-editor-transition__bar-fill {
-    animation: none;
-    transform: none;
 }
 body.article-page.article-mode-switching .index-mode-button {
     pointer-events: none;

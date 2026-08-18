@@ -22,7 +22,7 @@ export class Caption {
             }
             return;
         }
-        const element = Caption.create(current.innerText || "<br>");
+        const element = Caption.create(current.innerHTML || "<br>");
         if (current.classList.contains(Paragraph.className)) {
             Paragraph.list.delete(current);
         }
@@ -40,7 +40,7 @@ export class Caption {
     static create(text = "<br>") {
         const element = document.createElement(Caption.tag);
         element.classList.add(Caption.className);
-        element.innerText = text;
+        element.innerHTML = text;
         return element;
     }
     generate(obj) {

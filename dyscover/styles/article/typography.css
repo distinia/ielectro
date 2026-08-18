@@ -78,6 +78,9 @@
 }
 .center {
     text-align: center;
+}
+p.center,
+.paragraph.center {
     margin: 1.25em 0;
     padding: 0.35rem 0;
 }

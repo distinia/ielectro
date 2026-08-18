@@ -21,7 +21,7 @@ export class SourceSerializer {
         });
         return blocks.join("\n\n");
     }
-    static async fromContainerAsync(container) {
+    static async fromContainerAsync(container, onProgress) {
         if (!container) {
             return "";
         }
@@ -32,6 +32,7 @@ export class SourceSerializer {
             return node.nodeType === Node.ELEMENT_NODE;
         });
         const blocks = [];
+        const total = nodes.length || 1;
         for (let index = 0; index < nodes.length; index++) {
             const node = nodes[index];
             if (node.nodeType === Node.ELEMENT_NODE) {
@@ -40,6 +41,7 @@ export class SourceSerializer {
                     blocks.push(block);
                 }
             }
+            onProgress?.(index, total);
             if (
                 (index + 1) % SourceSerializer.BLOCKS_PER_YIELD === 0 &&
                 index + 1 < nodes.length
@@ -150,18 +152,27 @@ export class SourceSerializer {
     }
     static serializeCell(cell) {
         const list = cell.querySelector(":scope > ul, :scope > ol");
+        let text = "";
         if (list) {
-            return this.serializeList(
+            text = this.serializeList(
                 list,
                 "- ",
                 list.tagName.toLowerCase() === "ol",
             ).replace(/\n/g, "\\n");
+        } else {
+            text = SourceInline.serializeChildren(cell)
+                .replace(/\n/g, "<br>")
+                .replace(/[^\S\n]+/g, " ")
+                .replace(/\s*<br>\s*/gi, "<br>")
+                .trim();
         }
-        return SourceInline.serializeChildren(cell)
-            .replace(/\n/g, "<br>")
-            .replace(/[^\S\n]+/g, " ")
-            .replace(/\s*<br>\s*/gi, "<br>")
-            .trim();
+        if (
+            cell.classList.contains("center") ||
+            cell.querySelector(":scope > .center")
+        ) {
+            text = `:: ${text}`;
+        }
+        return text;
     }
     static serializeTemplate(table) {
         this.hydrateTemplateRowSlugs(table);

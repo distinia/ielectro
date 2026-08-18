@@ -101,166 +101,103 @@ export class SourceInline {
     static parseInto(text, parent) {
         let i = 0;
         const source = String(text || "");
-        const appendText = (value) => {
-            if (value) {
-                parent.appendChild(document.createTextNode(value));
-            }
-        };
         while (i < source.length) {
-            if (source.startsWith("\\", i)) {
-                appendText(source[i + 1] || "");
-                i += 2;
-                continue;
-            }
-            const breakLength = this.readBreak(source, i);
-            if (breakLength) {
-                parent.appendChild(document.createElement("br"));
-                i += breakLength;
-                continue;
-            }
-            const macro = this.readMacro(source, i);
-            if (macro) {
-                const node = this.createMacroNode(macro);
-                if (node) {
-                    parent.appendChild(node);
-                } else {
-                    appendText(macro.raw);
-                }
-                i = macro.end;
-                continue;
-            }
-            const link = this.readLink(source, i);
-            if (link) {
-                parent.appendChild(Link.create(link.url, link.text));
-                i = link.end;
-                continue;
-            }
-            const bold = this.readWrapped(source, i, "**");
-            if (bold) {
-                const node = Bold.create(bold.inner);
-                if (node) {
-                    parent.appendChild(node);
-                } else {
-                    appendText(`**${bold.inner}**`);
-                }
-                i = bold.end;
-                continue;
-            }
-            const italic = this.readWrapped(source, i, "*");
-            if (italic) {
-                const node = Italic.create(italic.inner);
-                if (node) {
-                    parent.appendChild(node);
-                } else {
-                    appendText(`*${italic.inner}*`);
-                }
-                i = italic.end;
-                continue;
-            }
-            const nextSpecial = this.findNextSpecial(source, i);
-            if (nextSpecial <= i) {
-                appendText(source[i]);
-                i += 1;
-                continue;
-            }
-            appendText(source.slice(i, nextSpecial));
-            i = nextSpecial;
+            i = this.consumeInline(source, i, parent);
         }
     }
     static async parseIntoAsync(text, parent) {
         let i = 0;
         const source = String(text || "");
         let steps = 0;
+        while (i < source.length) {
+            const previous = i;
+            i = this.consumeInline(source, i, parent);
+            steps++;
+            if (steps % 100 === 0 || i - previous > 4096) {
+                await yieldToMain(0);
+            }
+        }
+    }
+    static consumeInline(source, i, parent) {
         const appendText = (value) => {
             if (value) {
                 parent.appendChild(document.createTextNode(value));
             }
         };
-        while (i < source.length) {
-            if (source.startsWith("\\", i)) {
-                appendText(source[i + 1] || "");
-                i += 2;
-                continue;
-            }
-            const breakLength = this.readBreak(source, i);
-            if (breakLength) {
-                parent.appendChild(document.createElement("br"));
-                i += breakLength;
-                continue;
-            }
-            const macro = this.readMacro(source, i);
-            if (macro) {
-                const node = this.createMacroNode(macro);
+        if (source.startsWith("\\[[", i)) {
+            const escapedLink = this.readLink(source, i + 1);
+            if (escapedLink) {
+                const node = Link.create(escapedLink.url, escapedLink.text);
                 if (node) {
                     parent.appendChild(node);
-                } else {
-                    appendText(macro.raw);
+                    return escapedLink.end;
                 }
-                i = macro.end;
-                steps++;
-                if (steps % 100 === 0) {
-                    await yieldToMain(0);
-                }
-                continue;
-            }
-            const link = this.readLink(source, i);
-            if (link) {
-                parent.appendChild(Link.create(link.url, link.text));
-                i = link.end;
-                steps++;
-                if (steps % 100 === 0) {
-                    await yieldToMain(0);
-                }
-                continue;
-            }
-            const bold = this.readWrapped(source, i, "**");
-            if (bold) {
-                const node = Bold.create(bold.inner);
-                if (node) {
-                    parent.appendChild(node);
-                } else {
-                    appendText(`**${bold.inner}**`);
-                }
-                i = bold.end;
-                steps++;
-                if (steps % 100 === 0) {
-                    await yieldToMain(0);
-                }
-                continue;
-            }
-            const italic = this.readWrapped(source, i, "*");
-            if (italic) {
-                const node = Italic.create(italic.inner);
-                if (node) {
-                    parent.appendChild(node);
-                } else {
-                    appendText(`*${italic.inner}*`);
-                }
-                i = italic.end;
-                steps++;
-                if (steps % 100 === 0) {
-                    await yieldToMain(0);
-                }
-                continue;
-            }
-            const nextSpecial = this.findNextSpecial(source, i);
-            if (nextSpecial <= i) {
-                appendText(source[i]);
-                i += 1;
-                steps++;
-                if (steps % 100 === 0) {
-                    await yieldToMain(0);
-                }
-                continue;
-            }
-            const chunk = source.slice(i, nextSpecial);
-            appendText(chunk);
-            i = nextSpecial;
-            steps++;
-            if (steps % 100 === 0 || chunk.length > 4096) {
-                await yieldToMain(0);
             }
         }
+        if (source.startsWith("\\", i)) {
+            appendText(source[i + 1] || "");
+            return i + 2;
+        }
+        const breakLength = this.readBreak(source, i);
+        if (breakLength) {
+            parent.appendChild(document.createElement("br"));
+            return i + breakLength;
+        }
+        const macro = this.readMacro(source, i);
+        if (macro) {
+            const node = this.createMacroNode(macro);
+            if (node) {
+                parent.appendChild(node);
+            } else {
+                appendText(macro.raw);
+            }
+            return macro.end;
+        }
+        const link = this.readLink(source, i);
+        if (link) {
+            const node = Link.create(link.url, link.text);
+            if (node) {
+                parent.appendChild(node);
+            } else {
+                appendText(source.slice(i, link.end));
+            }
+            return link.end;
+        }
+        const bold = this.readWrapped(source, i, "**");
+        if (bold) {
+            this.appendWrapped(parent, Bold.create(), bold.inner, `**${bold.inner}**`);
+            return bold.end;
+        }
+        const italic = this.readWrapped(source, i, "*");
+        if (italic) {
+            this.appendWrapped(parent, Italic.create(), italic.inner, `*${italic.inner}*`);
+            return italic.end;
+        }
+        const nextSpecial = this.findNextSpecial(source, i);
+        if (nextSpecial <= i) {
+            appendText(source[i]);
+            return i + 1;
+        }
+        appendText(source.slice(i, nextSpecial));
+        return nextSpecial;
+    }
+    static appendWrapped(parent, node, inner, fallback) {
+        const appendText = (value) => {
+            if (value) {
+                parent.appendChild(document.createTextNode(value));
+            }
+        };
+        if (!node) {
+            appendText(fallback);
+            return;
+        }
+        node.replaceChildren();
+        this.parseInto(inner, node);
+        if (node.childNodes.length) {
+            parent.appendChild(node);
+            return;
+        }
+        appendText(fallback);
     }
     static findNextSpecial(source, start) {
         const indices = ["\\", "[[", "{{", "**", "*", "\n"]

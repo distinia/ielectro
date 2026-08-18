@@ -66,6 +66,7 @@ export const ArticleHelp = {
         ["Table header", "| H1 | H2 |"],
         ["Table row", "| a | b |"],
         ["Table line break", "Line 1<br>Line 2"],
+        ["Table center", "| :: text |"],
         ["Template", "{{template|123"],
         ["Template title", "| _title = Infobox title"],
         ["Template text field", "| capital-city = Capital name"],

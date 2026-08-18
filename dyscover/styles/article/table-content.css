@@ -87,3 +87,7 @@
 .table th .link {
     word-break: break-word;
 }
+.table td.center,
+.table th.center {
+    text-align: center;
+}

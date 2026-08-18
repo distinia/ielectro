@@ -2,7 +2,7 @@ import { Alert, Api, Box, Icons, Request } from "../core/index.js";
 import { Api as ApiRoutes } from "../core/api.js";
 import { App } from "../core/app.js";
 import { Editor } from "./editor.js";
-import { GENERATION_PHASES, withArticleLoading } from "./article-loading.js";
+import { withArticleLoading } from "./article-loading.js";
 export class ArticleGenerate {
     static async open() {
         await this.ensureTextMode();
@@ -18,8 +18,7 @@ export class ArticleGenerate {
             return;
         }
         try {
-            await withArticleLoading(async (reportProgress) => {
-                reportProgress?.(0, GENERATION_PHASES[0]);
+            await withArticleLoading(async () => {
                 const researchResponse = await Request.post(
                     ApiRoutes.articleGenerate(uuid),
                     {
@@ -32,10 +31,6 @@ export class ArticleGenerate {
                 if (!context) {
                     throw new Error("Research stage failed");
                 }
-                reportProgress?.(1, GENERATION_PHASES[1]);
-                reportProgress?.(2, GENERATION_PHASES[2]);
-                await new Promise((resolve) => setTimeout(resolve, 2500));
-                reportProgress?.(3, GENERATION_PHASES[3]);
                 const writeResponse = await Request.post(
                     ApiRoutes.articleGenerate(uuid),
                     {
@@ -49,9 +44,8 @@ export class ArticleGenerate {
                 if (!source) {
                     throw new Error("Empty article");
                 }
-                reportProgress?.(3, GENERATION_PHASES[3]);
                 await Editor.current?.applyGeneratedSource(source);
-            }, { phases: GENERATION_PHASES });
+            });
         } catch (error) {
             Alert.error(
                 error?.message || error?.text || "Could not generate article",

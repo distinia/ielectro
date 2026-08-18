@@ -6,21 +6,29 @@
  * config.local.php is gitignored — never commit API keys.
  *
  * Uses any OpenAI-compatible Chat Completions API:
- * OpenAI, Groq, OpenRouter, Together, Mistral, local Ollama, or a custom endpoint.
+ * OpenAI, Groq, OpenRouter, Together, Mistral, Ollama, llama.cpp, or a custom endpoint.
  */
-// Provider preset: openai | groq | openrouter | together | mistral | ollama | custom
+// Provider preset: openai | groq | openrouter | together | mistral | ollama | llamacpp | custom
 // Presets fill LLM_BASE_URL and default models when those constants are omitted.
-define('LLM_PROVIDER', 'groq');
+define('LLM_PROVIDER', 'llamacpp');
 // Optional overrides (required for LLM_PROVIDER = custom)
-define('LLM_BASE_URL', 'https://api.groq.com/openai/v1');
-define('LLM_MODEL', 'llama-3.3-70b-versatile');
-define('LLM_MODEL_FAST', 'llama-3.1-8b-instant');
-define('LLM_API_KEY', 'your_api_key_here');
+define('LLM_BASE_URL', 'http://127.0.0.1:8080/v1');
+// Must match the model id/alias from llama-server GET /v1/models.
+define('LLM_MODEL', 'Qwen/Qwen3-8B-GGUF:Q4_K_M');
+define('LLM_MODEL_FAST', 'Qwen/Qwen3-8B-GGUF:Q4_K_M');
+// Local llama.cpp does not need a key (leave empty).
+define('LLM_API_KEY', '');
 // Optional: default /chat/completions — change only for non-standard APIs
 // define('LLM_CHAT_PATH', '/chat/completions');
-// Optional: pause between chained LLM calls (milliseconds)
-// define('LLM_REQUEST_PAUSE_MS', 900);
+// Optional: pause between chained LLM calls (milliseconds). Local servers can use a low value.
+define('LLM_REQUEST_PAUSE_MS', 100);
 // --- Other provider examples (uncomment one block) ---
+// Groq
+// define('LLM_PROVIDER', 'groq');
+// define('LLM_BASE_URL', 'https://api.groq.com/openai/v1');
+// define('LLM_MODEL', 'llama-3.3-70b-versatile');
+// define('LLM_MODEL_FAST', 'llama-3.1-8b-instant');
+// define('LLM_API_KEY', 'gsk_...');
 // OpenAI
 // define('LLM_PROVIDER', 'openai');
 // define('LLM_API_KEY', 'sk-...');

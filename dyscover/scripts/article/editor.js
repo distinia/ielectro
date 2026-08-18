@@ -26,6 +26,8 @@ export class Editor {
     static _escapeBound = false;
     static _modeSwitching = false;
     static _transitionOverlay = null;
+    static _progressPulse = null;
+    static _progressPct = 0;
     static MANAGED = new Set([Template, Media, Table, Legend, Percentage]);
     static VIEW_BLOCKS = new Set([Heading]);
     static EDIT_BLOCKS = new Set([Paragraph, Caption, List]);
@@ -846,14 +848,18 @@ export class Editor {
         overlay.setAttribute("role", "status");
         overlay.setAttribute("aria-live", "polite");
         overlay.setAttribute("aria-label", "Loading");
-        overlay.innerHTML = `<div class="article-editor-transition__label"></div><div class="article-editor-transition__bar" aria-hidden="true"><div class="article-editor-transition__bar-fill"></div></div>`;
+        overlay.innerHTML = `<div class="article-editor-transition__bar" aria-hidden="true"><div class="article-editor-transition__bar-fill"></div></div>`;
+        overlay.classList.add("is-progress");
         scroll.appendChild(overlay);
         Editor._transitionOverlay = overlay;
         document.body.classList.add("article-mode-switching");
+        Editor.startModeTransitionPulse();
     }
     static hideModeTransition() {
+        Editor.stopModeTransitionPulse();
         Editor._transitionOverlay?.remove();
         Editor._transitionOverlay = null;
+        Editor._progressPct = 0;
         document.body.classList.remove("article-mode-switching");
     }
     static async runModeTransition(task) {
@@ -867,34 +873,60 @@ export class Editor {
             requestAnimationFrame(() => requestAnimationFrame(resolve));
         });
         try {
-            const setProgress = (index, total, label = "") => {
-                Editor.updateModeTransitionProgress(index, total, label);
+            const setProgress = (index, total) => {
+                Editor.updateModeTransitionProgress(index, total);
             };
             return await task?.(setProgress);
         } finally {
+            Editor.finishModeTransitionProgress();
+            await new Promise((resolve) => setTimeout(resolve, 160));
             Editor.hideModeTransition();
             Editor._modeSwitching = false;
         }
     }
-    static updateModeTransitionProgress(index, total, label = "") {
+    static startModeTransitionPulse() {
+        Editor.stopModeTransitionPulse();
+        Editor._progressPct = 6;
+        Editor.setModeTransitionWidth(Editor._progressPct);
+        Editor._progressPulse = setInterval(() => {
+            const remaining = 90 - Editor._progressPct;
+            Editor._progressPct += Math.max(0.12, remaining * 0.03);
+            if (Editor._progressPct > 90) {
+                Editor._progressPct = 90;
+            }
+            Editor.setModeTransitionWidth(Editor._progressPct);
+        }, 180);
+    }
+    static stopModeTransitionPulse() {
+        if (Editor._progressPulse) {
+            clearInterval(Editor._progressPulse);
+            Editor._progressPulse = null;
+        }
+    }
+    static setModeTransitionWidth(pct) {
+        const fill = Editor._transitionOverlay?.querySelector(
+            ".article-editor-transition__bar-fill",
+        );
+        if (!fill) {
+            return;
+        }
+        fill.style.width = `${Math.max(0, Math.min(100, pct))}%`;
+    }
+    static finishModeTransitionProgress() {
+        Editor.stopModeTransitionPulse();
+        Editor._progressPct = 100;
+        Editor.setModeTransitionWidth(100);
+    }
+    static updateModeTransitionProgress(index, total) {
         const overlay = Editor._transitionOverlay;
         if (!overlay || !total) {
             return;
         }
-        const fill = overlay.querySelector(".article-editor-transition__bar-fill");
-        const labelEl = overlay.querySelector(".article-editor-transition__label");
-        if (!fill) {
-            return;
-        }
+        Editor.stopModeTransitionPulse();
         overlay.classList.add("is-progress");
         const pct = Math.min(100, Math.round(((index + 1) / total) * 100));
-        fill.style.width = `${pct}%`;
-        if (labelEl && label) {
-            labelEl.textContent = label;
-        }
-        if (label) {
-            overlay.setAttribute("aria-label", label);
-        }
+        Editor._progressPct = pct;
+        Editor.setModeTransitionWidth(pct);
     }
     static async toggleEditorMode() {
         if (!Editor.current?.isEditing || Editor._modeSwitching) {
@@ -984,6 +1016,7 @@ export class Editor {
             this.ensureSourceEditor();
             this.sourceEditor.value = await SourceSerializer.fromContainerAsync(
                 this.content,
+                (index, total) => Editor.updateModeTransitionProgress(index, total),
             );
             this.isTextMode = true;
             document.body.classList.add("is-text-editing");

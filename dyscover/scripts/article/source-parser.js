@@ -247,9 +247,12 @@ export class SourceParser {
             return Heading.create("h3", text.slice(3).trim());
         }
         if (text.startsWith("> ")) {
-            return Caption.create(
+            const element = Caption.create();
+            await SourceInline.fillElementAsync(
+                element,
                 this.normalizeParagraph(text.slice(2).split("\n")),
             );
+            return element;
         }
         if (text.startsWith(":: ")) {
             const element = Paragraph.create();
@@ -441,7 +444,11 @@ export class SourceParser {
             return;
         }
         cell.replaceChildren();
-        const value = String(content || "").trim();
+        let value = String(content || "").trim();
+        if (value.startsWith(":: ")) {
+            cell.classList.add("center");
+            value = value.slice(3).trim();
+        }
         if (!value) {
             cell.innerHTML = "<br>";
             return;

@@ -44,10 +44,11 @@ export class Bold {
         Select.cursorToEnd(instance.element);
     }
     static create(text = "") {
-        if (!text) return null;
         const element = document.createElement(Bold.tag);
         element.classList.add(Bold.className);
-        element.textContent = text;
+        if (text) {
+            element.textContent = text;
+        }
         return element;
     }
     generate(obj) {

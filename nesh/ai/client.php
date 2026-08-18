@@ -12,7 +12,7 @@ class Client
         $baseUrl = self::resolveBaseUrl();
         $model = $model ?? self::defaultModel();
         $apiKey = Config::apiKey();
-        $ollama = self::isOllama($baseUrl);
+        $local = self::isLocalServer($baseUrl);
         if ($baseUrl === '') {
             throw new \RuntimeException(
                 'LLM is not configured. Set LLM_PROVIDER and LLM_BASE_URL (or use a known provider preset) in nesh/ai/config.local.php'
@@ -23,17 +23,22 @@ class Client
                 'LLM model is not configured. Set LLM_MODEL in nesh/ai/config.local.php'
             );
         }
-        if ($apiKey === '' && !$ollama) {
+        if ($apiKey === '' && !$local) {
             throw new \RuntimeException(
                 'LLM API key is not configured. Set LLM_API_KEY in nesh/ai/config.local.php'
             );
         }
-        $payload = json_encode([
+        $body = [
             'model' => $model,
             'messages' => $messages,
             'temperature' => $temperature,
             'max_tokens' => $maxTokens,
-        ], JSON_UNESCAPED_UNICODE);
+        ];
+        // Qwen 3 defaults to chain-of-thought; disable so JSON/text callers get the answer.
+        if (self::provider() === 'llamacpp' || str_contains(strtolower($model), 'qwen3')) {
+            $body['chat_template_kwargs'] = ['enable_thinking' => false];
+        }
+        $payload = json_encode($body, JSON_UNESCAPED_UNICODE);
         if ($payload === false) {
             throw new \RuntimeException('Unable to encode LLM request');
         }
@@ -54,24 +59,22 @@ class Client
                 CURLOPT_POSTFIELDS => $payload,
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_CONNECTTIMEOUT => 10,
-                CURLOPT_TIMEOUT => $ollama ? 300 : 120,
+                CURLOPT_TIMEOUT => $local ? 600 : 120,
             ]);
             $raw = curl_exec($ch);
             $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
             $error = curl_error($ch);
             unset($ch);
             if ($raw === false) {
-                if ($ollama && str_contains(strtolower($error), 'connection refused')) {
-                    throw new \RuntimeException(
-                        'Ollama is not running. Start it, then run: ollama pull ' . $model
-                    );
+                if ($local && str_contains(strtolower($error), 'connection refused')) {
+                    throw new \RuntimeException(self::localOfflineMessage($model));
                 }
                 throw new \RuntimeException($error !== '' ? $error : 'LLM request failed');
             }
             $json = json_decode($raw, true);
             if ($status >= 400 || !is_array($json)) {
                 $message = is_array($json)
-                    ? (string) ($json['error']['message'] ?? 'LLM request failed')
+                    ? (string) ($json['error']['message'] ?? (is_string($json['error'] ?? null) ? $json['error'] : 'LLM request failed'))
                     : 'LLM request failed';
                 $lastError = self::friendlyError($message);
                 if ($attempt < self::MAX_ATTEMPTS && self::shouldRetry($status, $message)) {
@@ -85,7 +88,7 @@ class Client
             if (!is_string($content) || trim($content) === '') {
                 throw new \RuntimeException('Empty LLM response');
             }
-            return trim($content);
+            return self::normalizeContent($content);
         }
         throw new \RuntimeException($lastError);
     }
@@ -124,7 +127,7 @@ class Client
         try {
             return self::resolveBaseUrl() !== ''
                 && self::defaultModel() !== ''
-                && (Config::apiKey() !== '' || self::isOllama(self::resolveBaseUrl()));
+                && (Config::apiKey() !== '' || self::isLocalServer(self::resolveBaseUrl()));
         } catch (\Throwable) {
             return false;
         }
@@ -179,6 +182,11 @@ class Client
                 'default_model' => 'llama3.1:8b',
                 'fast_model' => 'llama3.1:8b',
             ],
+            'llamacpp' => [
+                'base_url' => 'http://127.0.0.1:8080/v1',
+                'default_model' => 'Qwen/Qwen3-8B-GGUF:Q4_K_M',
+                'fast_model' => 'Qwen/Qwen3-8B-GGUF:Q4_K_M',
+            ],
             'custom' => [],
         ];
     }
@@ -206,10 +214,32 @@ class Client
         }
         return $message !== '' ? $message : 'LLM request failed';
     }
-    private static function isOllama(string $baseUrl): bool
+    private static function isLocalServer(string $baseUrl): bool
     {
-        return self::provider() === 'ollama'
-            || str_contains($baseUrl, '11434')
-            || str_contains($baseUrl, 'ollama');
+        $provider = self::provider();
+        if (in_array($provider, ['ollama', 'llamacpp'], true)) {
+            return true;
+        }
+        $host = strtolower($baseUrl);
+        return str_contains($host, '127.0.0.1')
+            || str_contains($host, 'localhost')
+            || str_contains($host, '::1')
+            || str_contains($host, '11434')
+            || str_contains($host, 'ollama')
+            || str_contains($host, 'llamacpp')
+            || str_contains($host, 'llama.cpp');
+    }
+    private static function localOfflineMessage(string $model): string
+    {
+        if (self::provider() === 'ollama' || str_contains(self::resolveBaseUrl(), '11434')) {
+            return 'Ollama is not running. Start it, then run: ollama pull ' . $model;
+        }
+        return 'llama.cpp server is not running. Start llama-server with your Qwen 3 8B model on '
+            . self::resolveBaseUrl();
+    }
+    private static function normalizeContent(string $content): string
+    {
+        $content = preg_replace('/<think\b[^>]*>[\s\S]*?(<\/think>|$)/iu', '', $content) ?? $content;
+        return trim($content);
     }
 }

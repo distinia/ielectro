@@ -44,10 +44,11 @@ export class Italic {
         Select.cursorToEnd(instance.element);
     }
     static create(text = "") {
-        if (!text) return null;
         const element = document.createElement(Italic.tag);
         element.classList.add(Italic.className);
-        element.textContent = text;
+        if (text) {
+            element.textContent = text;
+        }
         return element;
     }
     generate(obj) {
