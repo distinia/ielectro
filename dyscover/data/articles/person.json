@@ -63,10 +63,12 @@
     "media_rules": {
         "require_entity_in_title": true
     },
-    "usage_count": 3,
-    "updated_at": "2026-08-16T22:07:18+00:00",
+    "usage_count": 4,
+    "updated_at": "2026-08-18T20:00:34+00:00",
     "last_terms": [
         "prime minister",
-        "destenia"
+        "destenia",
+        "government",
+        "head of state"
     ]
 }

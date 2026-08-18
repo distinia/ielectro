@@ -38,6 +38,14 @@ button,
 .fileInput {
     user-select: none;
 }
+img,
+video,
+audio,
+canvas,
+svg {
+    -webkit-touch-callout: none;
+    -webkit-user-drag: none;
+}
 button {
     font: inherit;
     color: inherit;

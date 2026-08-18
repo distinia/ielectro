@@ -86,6 +86,161 @@ class ArticleKnowledge
         );
         return array_slice($ranked, 0, $limit);
     }
+    public static function postsByIds(array $ids, ?string $excludeUuid = null, int $limit = 12): array
+    {
+        $ids = array_values(array_unique(array_filter(
+            array_map(static fn($id): int => (int) $id, $ids),
+            static fn(int $id): bool => $id > 0
+        )));
+        if ($ids === []) {
+            return [];
+        }
+        $ids = array_slice($ids, 0, $limit);
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $params = $ids;
+        $sql = "SELECT p.id, p.uuid, p.type, p.title, p.description, p.user_id, p.extension
+            FROM ielectro_dyscover.dyscover_posts p
+            WHERE p.id IN ({$placeholders})
+            AND p.type IN ('article', 'image', 'video', 'audio', 'document')
+            AND p.status = 'active'";
+        if ($excludeUuid !== null && $excludeUuid !== '') {
+            $sql .= ' AND p.uuid <> ?';
+            $params[] = $excludeUuid;
+        }
+        $rows = Query::fetchAll($sql, $params);
+        $byId = [];
+        foreach ($rows as $row) {
+            $uuid = (string) ($row['uuid'] ?? '');
+            $userId = (int) ($row['user_id'] ?? 0);
+            $type = (string) ($row['type'] ?? '');
+            $url = $type === 'article' || $type === 'document'
+                ? ($type === 'document'
+                    ? rtrim((string) APP_URL, '/') . '/document/' . rawurlencode($uuid)
+                    : self::articleUrl($uuid))
+                : '';
+            $byId[(int) $row['id']] = [
+                'id' => (int) $row['id'],
+                'uuid' => $uuid,
+                'type' => $type,
+                'title' => (string) ($row['title'] ?? ''),
+                'description' => (string) ($row['description'] ?? ''),
+                'url' => $url,
+                'media_url' => self::postMediaUrl($row),
+                'user_id' => $userId,
+                'extension' => (string) ($row['extension'] ?? ''),
+            ];
+        }
+        $ordered = [];
+        foreach ($ids as $id) {
+            if (isset($byId[$id])) {
+                $ordered[] = $byId[$id];
+            }
+        }
+        return $ordered;
+    }
+    public static function loadAttachedKnowledge(array $posts, string $query, int $maxChars = 12000): array
+    {
+        $chunks = [];
+        $links = [];
+        $media = [];
+        $used = 0;
+        $seenLinks = [];
+        $seenMedia = [];
+        foreach ($posts as $post) {
+            $type = (string) ($post['type'] ?? '');
+            $title = (string) ($post['title'] ?? 'Untitled');
+            if ($type === 'article') {
+                $userId = (int) ($post['user_id'] ?? 0);
+                $uuid = (string) ($post['uuid'] ?? '');
+                $path = $uuid !== '' && $userId > 0 ? PostAssets::articlePath($userId, $uuid) : '';
+                $html = $path !== '' && is_file($path) ? (string) file_get_contents($path) : '';
+                $extracted = $html !== ''
+                    ? ArticleContent::extractKnowledge($html, $query, 3800)
+                    : ['text' => '', 'links' => [], 'images' => [], 'tables' => []];
+                $block = '[' . $title . " — article HTML]\n";
+                if ($extracted['text'] !== '') {
+                    $block .= $extracted['text'] . "\n";
+                }
+                foreach ($extracted['tables'] as $table) {
+                    $block .= "Table:\n" . $table . "\n";
+                }
+                $len = mb_strlen($block);
+                if ($used + $len <= $maxChars) {
+                    $chunks[] = trim($block);
+                    $used += $len;
+                }
+                if (!empty($post['url'])) {
+                    $links[] = [
+                        'title' => $title,
+                        'url' => (string) $post['url'],
+                    ];
+                    $seenLinks[mb_strtolower((string) $post['url'])] = true;
+                }
+                foreach ($extracted['links'] as $link) {
+                    $url = (string) ($link['url'] ?? '');
+                    $key = mb_strtolower($url);
+                    if ($url === '' || isset($seenLinks[$key])) {
+                        continue;
+                    }
+                    $seenLinks[$key] = true;
+                    $links[] = $link;
+                }
+                foreach ($extracted['images'] as $image) {
+                    $src = (string) ($image['src'] ?? '');
+                    $key = mb_strtolower($src);
+                    if ($src === '' || isset($seenMedia[$key])) {
+                        continue;
+                    }
+                    $seenMedia[$key] = true;
+                    $media[] = [
+                        'title' => (string) ($image['alt'] ?? $title),
+                        'type' => 'image',
+                        'media_url' => $src,
+                    ];
+                }
+                continue;
+            }
+            $desc = trim((string) ($post['description'] ?? ''));
+            $mediaUrl = (string) ($post['media_url'] ?? '');
+            $line = '[' . $type . '] ' . $title;
+            if ($desc !== '') {
+                $line .= ' — ' . mb_substr($desc, 0, 280);
+            }
+            if ($mediaUrl !== '') {
+                $line .= "\nURL: " . $mediaUrl;
+                $key = mb_strtolower($mediaUrl);
+                if (!isset($seenMedia[$key])) {
+                    $seenMedia[$key] = true;
+                    $media[] = [
+                        'title' => $title,
+                        'type' => $type,
+                        'media_url' => $mediaUrl,
+                    ];
+                }
+            }
+            if (!empty($post['url'])) {
+                $url = (string) $post['url'];
+                $key = mb_strtolower($url);
+                if (!isset($seenLinks[$key])) {
+                    $seenLinks[$key] = true;
+                    $links[] = [
+                        'title' => $title,
+                        'url' => $url,
+                    ];
+                }
+            }
+            $len = mb_strlen($line);
+            if ($used + $len <= $maxChars) {
+                $chunks[] = $line;
+                $used += $len;
+            }
+        }
+        return [
+            'corpus' => implode("\n\n", $chunks),
+            'links' => $links,
+            'media' => $media,
+        ];
+    }
     public static function searchPostsByTags(
         array $tagNames,
         ?string $excludeUuid,
@@ -253,6 +408,44 @@ class ArticleKnowledge
             static fn(array $template): bool => (int) ($template['score'] ?? 0) >= 8
         ));
         return array_slice($filtered, 0, $limit);
+    }
+    public static function templateById(int $id): ?array
+    {
+        if ($id <= 0) {
+            return null;
+        }
+        $row = Query::fetch(
+            "SELECT p.id, p.title, p.description
+            FROM ielectro_dyscover.dyscover_posts p
+            WHERE p.id = ?
+            AND p.type = 'template'
+            AND p.status = 'active'
+            LIMIT 1",
+            [$id]
+        );
+        if (!$row) {
+            return null;
+        }
+        $fields = Query::fetchAll(
+            'SELECT name, type, position
+            FROM ielectro_dyscover.dyscover_template_fields
+            WHERE template_id = ?
+            ORDER BY position ASC',
+            [$id]
+        );
+        return [
+            'id' => (int) $row['id'],
+            'title' => (string) ($row['title'] ?? ''),
+            'description' => (string) ($row['description'] ?? ''),
+            'fields' => array_map(
+                static fn(array $field): array => [
+                    'name' => (string) ($field['name'] ?? ''),
+                    'type' => (string) ($field['type'] ?? 'text'),
+                    'slug' => self::fieldSlug((string) ($field['name'] ?? '')),
+                ],
+                $fields
+            ),
+        ];
     }
     public static function templateCatalog(int $limit = 20): array
     {
@@ -670,7 +863,7 @@ class ArticleKnowledge
         if ($uuid === '' || $userId <= 0) {
             return '';
         }
-        if (!in_array($type, ['image', 'video', 'audio'], true)) {
+        if (!in_array($type, ['image', 'video', 'audio', 'document'], true)) {
             return '';
         }
         if ($extension === '') {

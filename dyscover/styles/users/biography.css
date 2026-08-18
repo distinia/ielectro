@@ -184,6 +184,16 @@
     line-height: 1.5;
     background: #fff;
 }
+.char-count {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-align: right;
+}
+.char-count.is-limit {
+    color: #b45309;
+}
 .bio-actions {
     display: flex;
     justify-content: flex-end;

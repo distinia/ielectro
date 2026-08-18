@@ -82,8 +82,11 @@ export class SourceInline {
         if (el.classList.contains("audio")) {
             return `{{audio|${el.getAttribute("src") || ""}}}`;
         }
+        if (el.classList.contains("template-newline")) {
+            return "{{newline}}";
+        }
         if (tag === "br") {
-            return "<br>";
+            return "{{newline}}";
         }
         return this.serializeChildren(el);
     }
@@ -290,10 +293,19 @@ export class SourceInline {
         parts.push(current.trim());
         return parts.map((part) => part.replace(/\\\|/g, "|"));
     }
+    static createNewline() {
+        const element = document.createElement("span");
+        element.className = "template-newline";
+        element.setAttribute("aria-hidden", "true");
+        return element;
+    }
     static isSingleCompleteMacro(text) {
         const trimmed = String(text || "").trim();
         const macro = this.readMacro(trimmed, 0);
-        return !!(macro && macro.end === trimmed.length);
+        if (!macro || macro.end !== trimmed.length) {
+            return false;
+        }
+        return String(macro.type || "").toLowerCase() !== "newline";
     }
     static splitTableCells(line) {
         const inner = String(line || "")
@@ -342,6 +354,9 @@ export class SourceInline {
         return cells.map((cell) => cell.replace(/\\n/g, "\n"));
     }
     static createMacroNode(macro) {
+        if (String(macro?.type || "").toLowerCase() === "newline") {
+            return this.createNewline();
+        }
         switch (macro.type) {
             case "legend": {
                 const color = macro.parts[1] || "";

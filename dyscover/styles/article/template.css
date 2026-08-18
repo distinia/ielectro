@@ -64,6 +64,17 @@
 .template-cell-info li:last-child {
     margin-bottom: 0;
 }
+.template-newline {
+    display: block;
+    width: 100%;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    line-height: 0;
+    font-size: 0;
+}
 .template td[colspan="2"] audio,
 .template td[colspan="2"] .audio {
     margin-left: auto;

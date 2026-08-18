@@ -201,15 +201,29 @@ body.article-page.is-editing .article-index-sidebar .index-sidebar-header h4 {
     font-weight: 700;
 }
 .article-help-pre {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
     margin: 0 0 1rem;
-    padding: 0.85rem 1rem;
+    padding: 1.2rem 1.35rem;
+    min-height: 18rem;
     background: #0f172a;
     color: #e2e8f0;
-    border-radius: 10px;
+    border-radius: 12px;
     overflow-x: auto;
-    font-size: 0.78rem;
-    line-height: 1.45;
-    white-space: pre-wrap;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    white-space: pre;
+    tab-size: 2;
+}
+.select-item-box.select-item-box--editor-help {
+    width: min(96vw, 1120px);
+    max-width: 1120px;
+    max-height: min(94vh, 920px);
+}
+.select-item-box--editor-help .select-item-body {
+    height: auto;
+    max-height: calc(94vh - 72px);
 }
 .article-index-sidebar .index-edit-button {
     border: none;

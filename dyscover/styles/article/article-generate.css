@@ -12,15 +12,105 @@
 }
 .article-generate-input {
     width: 100%;
-    min-height: 210px;
+    min-height: 280px;
     margin: 0;
     resize: none;
     text-transform: none;
 }
+.article-generate-label .char-count {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+    text-align: right;
+}
+.article-generate-label .char-count.is-limit {
+    color: #b45309;
+}
+.article-generate-attachments {
+    padding: 0.15rem 0 0.35rem;
+}
+.article-generate-picks {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    min-width: 0;
+}
+.article-generate-chips {
+    display: contents;
+}
+.article-generate-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    max-width: 14rem;
+    padding: 0.28rem 0.35rem 0.28rem 0.55rem;
+    border-radius: 999px;
+    border: 1px solid rgba(37, 99, 235, 0.18);
+    background: rgba(239, 246, 255, 0.95);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+.article-generate-chip-type {
+    flex-shrink: 0;
+    font-size: 0.64rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #2563eb;
+}
+.article-generate-chip-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #1e3a8a;
+}
+.article-generate-chip-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.35rem;
+    height: 1.35rem;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: #64748b;
+    cursor: pointer;
+}
+.article-generate-chip-remove:hover {
+    background: rgba(15, 23, 42, 0.08);
+    color: #0f172a;
+}
+.article-generate-chip-remove i,
+.article-generate-chip-remove svg {
+    width: 0.85rem;
+    height: 0.85rem;
+}
+.article-generate-attachments .button-secondary {
+    min-width: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 0.9rem;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.84rem;
+    border: 1px solid rgba(15, 23, 42, 0.12);
+    background: #fff;
+    color: #0f172a;
+    box-shadow: none;
+}
+.article-generate-attachments .button-secondary:hover {
+    background: rgba(15, 23, 42, 0.04);
+    border-color: rgba(15, 23, 42, 0.18);
+}
 .article-generate-footer {
     display: flex;
     justify-content: flex-end;
+    align-items: center;
 }
-.article-generate-footer .button {
+.article-generate-footer .article-generate-submit {
     min-width: 8.5rem;
 }

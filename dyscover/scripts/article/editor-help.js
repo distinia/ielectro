@@ -6,6 +6,7 @@ export class EditorHelp {
         const isTextMode = !!Editor.current?.isTextMode;
         const box = new Box(ArticleHelp.editorTitle(isTextMode), {
             hideFooter: true,
+            variant: isTextMode ? "editor-help" : "",
         });
         await box.create();
         box.body((body) => {

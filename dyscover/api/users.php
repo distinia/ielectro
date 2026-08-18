@@ -5,6 +5,7 @@ use Nesh\Query;
 use Nesh\Request;
 use Nesh\Response;
 use Nesh\Routing;
+use Nesh\Validate;
 class Users
 {
     public function index(): void
@@ -69,8 +70,12 @@ class Users
             if (!array_key_exists($field, $input)) {
                 continue;
             }
+            $value = trim((string) $input[$field]);
+            if ($field === 'biography' && !Validate::max($value, 2000)) {
+                Response::badRequest('Biography must be 2000 characters or fewer');
+            }
             $fields[] = "{$field} = ?";
-            $params[] = trim((string) $input[$field]);
+            $params[] = $value;
         }
         if (!$fields) {
             Response::badRequest('Nothing to update');

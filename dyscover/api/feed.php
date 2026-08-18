@@ -26,10 +26,13 @@ class Feed
         }
         $limit = max(1, min(100, $limit));
         $types = $interests['types'] ?? ['article'];
+        if (!is_array($types) || $types === []) {
+            $types = ['article'];
+        }
         $tags = $interests['tags'] ?? [];
         $placeholders = implode(',', array_fill(0, count($types), '?'));
-        $params = $types;
         $tagSql = '';
+        $tagParams = [];
         if ($tags) {
             $tagPlaceholders = implode(',', array_fill(0, count($tags), '?'));
             $tagSql = " AND p.id IN (
@@ -38,10 +41,9 @@ class Feed
                 INNER JOIN ielectro_dyscover.dyscover_tags t ON t.id = pt.tag_id
                 WHERE t.name IN ({$tagPlaceholders})
             )";
-            $params = array_merge($params, $tags);
+            $tagParams = $tags;
         }
-        $params[] = $userId;
-        $params[] = $userId;
+        $params = array_merge([$userId, $userId], $types, $tagParams);
         $rows = Query::fetchAll(
             "SELECT
                 p.*,
@@ -54,13 +56,15 @@ class Feed
             FROM ielectro_dyscover.dyscover_posts p
             INNER JOIN ielectro_dyscover.dyscover_users du ON du.id = p.user_id
             LEFT JOIN ielectro_dyscover.dyscover_post_statistics s ON s.post_id = p.id
-            WHERE p.type IN ({$placeholders})
-            AND p.status = 'active'
+            WHERE p.status = 'active'
             AND p.visibility = 'public'
-            {$tagSql}
             AND p.user_id IN (
                 SELECT followed_id FROM ielectro_dyscover.dyscover_follows WHERE follower_id = ?
                 UNION SELECT ?
+            )
+            AND (
+                (p.type IN ({$placeholders}){$tagSql})
+                OR p.type = 'article'
             )
             ORDER BY p.published_at DESC, p.id DESC
             LIMIT {$limit}",

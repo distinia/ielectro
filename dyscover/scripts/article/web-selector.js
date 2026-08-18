@@ -6,6 +6,7 @@ import { PostResolver } from "./post-resolver.js";
 const TYPE_LABELS = {
     link: "link",
     article: "article",
+    post: "post",
     template: "template",
     image: "image",
     video: "video",
@@ -15,6 +16,7 @@ const TYPE_LABELS = {
 const TYPE_VARIANTS = {
     link: "article",
     article: "article",
+    post: "article",
     template: "template",
     image: "media",
     video: "media",
@@ -23,19 +25,21 @@ const TYPE_VARIANTS = {
 };
 export class WebSelector {
     static options = ["dyscover", "url"];
-    constructor(type) {
+    constructor(type, settings = {}) {
         this.type = type;
         this.selectedClass = "selected-link";
         this.box = null;
         this.results = [];
+        this.multiple = Boolean(settings.multiple);
+        this.picked = new Map();
     }
     static normalizeSource(option) {
         return String(option || "").trim().toLowerCase() === "url"
             ? "url"
             : "dyscover";
     }
-    static async init(option, type) {
-        const instance = new WebSelector(type);
+    static async init(option, type, settings = {}) {
+        const instance = new WebSelector(type, settings);
         const source = WebSelector.normalizeSource(option);
         if (source === WebSelector.options[0]) {
             return await instance.fromServer();
@@ -62,7 +66,12 @@ export class WebSelector {
     async fromServer() {
         return new Promise(async (resolve) => {
             const opts = this.boxOptions();
-            this.box = new Box(`Select a ${this.titleLabel()}`, opts);
+            this.box = new Box(
+                this.multiple
+                    ? `Select ${this.titleLabel()}s`
+                    : `Select a ${this.titleLabel()}`,
+                opts,
+            );
             await this.box.create();
             this.box.footer((footer) => {
                 footer.classList.add("select-item-footer--search");
@@ -76,6 +85,15 @@ export class WebSelector {
                     </button>
                 `;
                 footer.querySelector(".selector-add-btn").onclick = () => {
+                    if (this.multiple) {
+                        if (!this.picked.size) {
+                            Alert.error("Select at least one item");
+                            return;
+                        }
+                        this.box.close();
+                        resolve([...this.picked.values()]);
+                        return;
+                    }
                     const selected = this.box.container.querySelector(
                         `.${this.selectedClass}`,
                     );
@@ -84,11 +102,7 @@ export class WebSelector {
                         return;
                     }
                     this.box.close();
-                    resolve({
-                        url: selected.dataset.value,
-                        postId: selected.dataset.postId || "",
-                        postType: selected.dataset.postType || "",
-                    });
+                    resolve(this.itemValue(selected));
                 };
             });
             this.box.body((body) => {
@@ -134,11 +148,18 @@ export class WebSelector {
                 : this.createRow(result);
             body.appendChild(item);
             this.bindItem(item);
+            const id = String(item.dataset.postId || "");
+            if (this.multiple && id && this.picked.has(id)) {
+                item.classList.add(this.selectedClass);
+            }
         });
     }
     async fetchResults(term) {
         if (this.type === "link") {
             return await API.searchLinkPosts(term);
+        }
+        if (this.type === "post") {
+            return await API.searchAllPosts(term);
         }
         return await API.search(this.type, term);
     }
@@ -161,6 +182,7 @@ export class WebSelector {
             </div>`;
         el.dataset.postId = String(result.id || "");
         el.dataset.postType = String(result.type || "");
+        el.dataset.uuid = String(result.uuid || "");
         el.dataset.value = this.resolveValue(result, assetUrl);
         return el;
     }
@@ -289,6 +311,7 @@ export class WebSelector {
         el.append(visual, label);
         el.dataset.postId = String(result.id || "");
         el.dataset.postType = String(result.type || "");
+        el.dataset.uuid = String(result.uuid || "");
         el.dataset.value = this.resolveValue(result, assetUrl);
         return el;
     }
@@ -385,8 +408,33 @@ export class WebSelector {
             Alert.error("Invalid URL");
         }
     }
+    itemValue(selected) {
+        return {
+            url: selected.dataset.value,
+            postId: selected.dataset.postId || "",
+            postType: selected.dataset.postType || "",
+            uuid: selected.dataset.uuid || "",
+            title:
+                selected.querySelector("b")?.textContent?.trim() ||
+                selected.querySelector(".selector-media-title")?.textContent?.trim() ||
+                "",
+        };
+    }
     bindItem(item) {
         const select = () => {
+            if (this.multiple) {
+                const id = String(item.dataset.postId || item.dataset.value || "");
+                if (!id) {
+                    return;
+                }
+                const on = item.classList.toggle(this.selectedClass);
+                if (on) {
+                    this.picked.set(id, this.itemValue(item));
+                } else {
+                    this.picked.delete(id);
+                }
+                return;
+            }
             const all = this.box.container.querySelectorAll(".selector-result-item");
             all.forEach((el) => el.classList.remove(this.selectedClass));
             item.classList.add(this.selectedClass);

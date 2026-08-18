@@ -94,6 +94,9 @@ class Posts
             Response::conflict('Uuid already exists');
         }
         $description = trim((string) ($input['description'] ?? ''));
+        if (!Validate::max($description, 500)) {
+            Response::badRequest('Description must be 500 characters or fewer');
+        }
         Moderation::assertCleanText($description);
         $visibility = trim((string) ($input['visibility'] ?? 'public'));
         $allowComments = PostData::parseBool($input['allow_comments'] ?? null, true);
@@ -203,6 +206,9 @@ class Posts
             $value = trim((string) $input[$field]);
             if ($field === 'title' || $field === 'description') {
                 Moderation::assertCleanText($value);
+            }
+            if ($field === 'description' && !Validate::max($value, 500)) {
+                Response::badRequest('Description must be 500 characters or fewer');
             }
             if ($field === 'description') {
                 $descriptionSync = $value;

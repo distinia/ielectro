@@ -23,16 +23,20 @@ function replaceActiveTag(input, tag) {
 }
 export class CreatorMeta {
     static MAX_TAGS = 5;
+    static MAX_DESCRIPTION = 500;
     static fieldHtml({ title = "", description = "", tags = [] } = {}) {
         const tagValue = (Array.isArray(tags) ? tags : [])
             .map((tag) => `#${String(tag).replace(/^#+/, "")}`)
             .join(" ");
+        const max = CreatorMeta.MAX_DESCRIPTION;
+        const used = String(description || "").length;
         return `
                 <div class="creator-field">
                     <input id="creator-title" class="input" name="title" data-preserve-case="true" placeholder="Give your content a title" value="${escapeHtml(title)}" required>
                 </div>
                 <div class="creator-field">
-                    <textarea id="creator-description" class="textarea" name="description" data-preserve-case="true" placeholder="Short summary for feeds and search">${escapeHtml(description)}</textarea>
+                    <textarea id="creator-description" class="textarea" name="description" data-preserve-case="true" maxlength="${max}" placeholder="Short summary for feeds and search">${escapeHtml(description)}</textarea>
+                    <span class="char-count" data-char-count>${used} / ${max}</span>
                 </div>
                 <div class="creator-field tags-field">
                     <div class="tags-input-wrap">
@@ -125,6 +129,28 @@ export class CreatorMeta {
     static validateTags(tags) {
         if (tags.length > CreatorMeta.MAX_TAGS) {
             Alert.error(`Maximum ${CreatorMeta.MAX_TAGS} tags allowed`);
+            return false;
+        }
+        return true;
+    }
+    static bindCharCount(root) {
+        const textarea = root.querySelector("#creator-description");
+        const counter = root.querySelector("[data-char-count]");
+        if (!textarea || !counter) return;
+        const max = CreatorMeta.MAX_DESCRIPTION;
+        const update = () => {
+            const used = textarea.value.length;
+            counter.textContent = `${used} / ${max}`;
+            counter.classList.toggle("is-limit", used >= max);
+        };
+        textarea.addEventListener("input", update);
+        update();
+    }
+    static validateDescription(value) {
+        if (String(value || "").length > CreatorMeta.MAX_DESCRIPTION) {
+            Alert.error(
+                `Description must be ${CreatorMeta.MAX_DESCRIPTION} characters or fewer`,
+            );
             return false;
         }
         return true;

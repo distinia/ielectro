@@ -161,9 +161,9 @@ export class SourceSerializer {
             ).replace(/\n/g, "\\n");
         } else {
             text = SourceInline.serializeChildren(cell)
-                .replace(/\n/g, "<br>")
+                .replace(/\n/g, "{{newline}}")
                 .replace(/[^\S\n]+/g, " ")
-                .replace(/\s*<br>\s*/gi, "<br>")
+                .replace(/\s*\{\{newline\}\}\s*/gi, "{{newline}}")
                 .trim();
         }
         if (

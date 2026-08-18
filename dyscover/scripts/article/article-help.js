@@ -51,8 +51,11 @@ export const ArticleHelp = {
         ["Sub heading", "## Title"],
         ["Bold", "**text**"],
         ["Italic", "*text*"],
+        ["Line break", "{{newline}}"],
+        ["Line break in bold/italic", "**Line 1{{newline}}Line 2**"],
         ["Link", "[[Label|https://url]]"],
         ["Caption", "> Text"],
+        ["Caption with link", "> See also: [[Label|https://url]]"],
         ["Center", ":: Text"],
         ["Point list", "- item"],
         ["Number list", "1. item"],
@@ -65,11 +68,12 @@ export const ArticleHelp = {
         ["Legend", "{{legend|#008000|Label}}"],
         ["Table header", "| H1 | H2 |"],
         ["Table row", "| a | b |"],
-        ["Table line break", "Line 1<br>Line 2"],
+        ["Table line break", "Line 1{{newline}}Line 2"],
         ["Table center", "| :: text |"],
         ["Template", "{{template|123"],
         ["Template title", "| _title = Infobox title"],
         ["Template text field", "| capital-city = Capital name"],
+        ["Template newline", "Prime Minister{{newline}}President"],
         ["Template single image", "| flag = {{template-single-image|https://.../flag.png}}"],
         ["Template large image", "| map = {{template-large-image|https://.../map.png}}"],
         ["Template double image", "| flags = {{template-double-image|https://.../a.png ;; https://.../b.png}}"],
@@ -123,6 +127,7 @@ export const ArticleHelp = {
 | flags = {{template-double-image|https://.../a.png ;; https://.../b.png}}
 | anthem = - Anthem name
 - {{audio|https://.../anthem.mp3}}
+| style = Prime Minister{{newline}}President of the Council
 | formation = **Formation**
 - Treaty ;; 1 November 2020
 - Expansion ;; 15 November 2021
@@ -130,6 +135,9 @@ export const ArticleHelp = {
 | constituencies = - {{icon-image|https://.../icon.png}} [[Country|https://...]]
 }}</pre>
         <ul>
+            <li>Links work in paragraphs, captions, lists, tables, and template fields: <code>[[Label|https://url]]</code>.</li>
+            <li>Use <code>{{newline}}</code> for a line break in paragraphs, bold, italic, tables, and template fields: <code>**Line 1{{newline}}Line 2**</code>.</li>
+            <li>Prefix a table cell with <code>::</code> to center it: <code>| :: text |</code>.</li>
             <li>Optional post id after an image URL: <code>{{template-single-image|url|123}}</code>.</li>
             <li><code>**Section**</code> on the first line creates a section header row (e.g. Formation).</li>
             <li><code>;;</code> separates left and right columns in double-column fields.</li>

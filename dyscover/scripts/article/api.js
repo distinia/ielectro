@@ -104,6 +104,28 @@ export class API {
             }),
         );
     }
+    static async searchAllPosts(term) {
+        const types = ["article", "image", "video", "audio", "document"];
+        const lists = await Promise.all(
+            types.map((type) => API.search(type, term).catch(() => [])),
+        );
+        const seen = new Set();
+        return lists
+            .flat()
+            .filter((row) => {
+                const id = String(row?.id || row?.uuid || "");
+                if (!id || seen.has(id)) {
+                    return false;
+                }
+                seen.add(id);
+                return true;
+            })
+            .sort((a, b) =>
+                String(a.title || "").localeCompare(String(b.title || ""), undefined, {
+                    sensitivity: "base",
+                }),
+            );
+    }
     static async getTemplate(idOrTitle) {
         const raw = String(idOrTitle || "").trim();
         if (/^\d+$/.test(raw)) {

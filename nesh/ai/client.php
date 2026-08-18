@@ -3,6 +3,20 @@ namespace Nesh\Ai;
 class Client
 {
     private const MAX_ATTEMPTS = 4;
+    /** @var callable|null */
+    private static $onWait = null;
+    public static function onWait(?callable $callback): void
+    {
+        self::$onWait = $callback;
+    }
+    public static function isLocal(): bool
+    {
+        try {
+            return self::isLocalServer(self::resolveBaseUrl());
+        } catch (\Throwable) {
+            return false;
+        }
+    }
     public static function chat(
         array $messages,
         float $temperature = 0.4,
@@ -58,9 +72,30 @@ class Client
                 CURLOPT_HTTPHEADER => $headers,
                 CURLOPT_POSTFIELDS => $payload,
                 CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_CONNECTTIMEOUT => 10,
-                CURLOPT_TIMEOUT => $local ? 600 : 120,
+                CURLOPT_CONNECTTIMEOUT => 20,
+                CURLOPT_TIMEOUT => $local ? 1800 : 120,
             ]);
+            if ($local || self::$onWait !== null) {
+                $onWait = self::$onWait;
+                curl_setopt($ch, CURLOPT_NOPROGRESS, false);
+                curl_setopt(
+                    $ch,
+                    CURLOPT_PROGRESSFUNCTION,
+                    static function (
+                        $handle,
+                        int $downloadTotal,
+                        int $downloaded,
+                        int $uploadTotal,
+                        int $uploaded
+                    ) use ($onWait): int {
+                        @set_time_limit(0);
+                        if ($onWait !== null) {
+                            $onWait();
+                        }
+                        return 0;
+                    }
+                );
+            }
             $raw = curl_exec($ch);
             $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
             $error = curl_error($ch);

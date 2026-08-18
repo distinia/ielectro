@@ -60,7 +60,12 @@ export default class Request {
             options.body = JSON.stringify(data);
             options.headers["Content-Type"] = "application/json";
         }
-        const response = await fetch(url, options);
+        let response;
+        try {
+            response = await fetch(url, options);
+        } catch {
+            throw { message: "Unable to complete request." };
+        }
         const type = response.headers.get("content-type") ?? "";
         let body;
         if (type.includes("application/json")) {
@@ -71,7 +76,7 @@ export default class Request {
                 body = JSON.parse(body);
             } catch {}
         }
-        if (!response.ok) {
+        if (!response.ok || (body && typeof body === "object" && body.success === false)) {
             throw body;
         }
         return body;

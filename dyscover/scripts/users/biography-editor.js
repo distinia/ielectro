@@ -28,6 +28,7 @@ export class BiographyEditor {
               <div class="profile-edit-field">
                 <label for="profile-bio">Biography</label>
                 <textarea id="profile-bio" name="biography" class="bio-input profile-edit-bio" data-preserve-case="true" maxlength="2000" rows="5" placeholder="Write something about you…">${App.escapeHtml(page.bio || "")}</textarea>
+                <span class="char-count" data-char-count>${String(page.bio || "").length} / 2000</span>
               </div>
               <div class="profile-edit-field">
                 <label for="profile-website">Website</label>
@@ -39,6 +40,16 @@ export class BiographyEditor {
             </div>
           </div>
         </form>`;
+            const bioField = body.querySelector(".profile-edit-bio");
+            const bioCount = body.querySelector("[data-char-count]");
+            const syncBioCount = () => {
+                if (!bioField || !bioCount) return;
+                const used = bioField.value.length;
+                bioCount.textContent = `${used} / 2000`;
+                bioCount.classList.toggle("is-limit", used >= 2000);
+            };
+            bioField?.addEventListener("input", syncBioCount);
+            syncBioCount();
             body.querySelector(".profile-edit-form")?.addEventListener(
                 "submit",
                 async (event) => {
@@ -46,6 +57,10 @@ export class BiographyEditor {
                     const text =
                         body.querySelector(".profile-edit-bio")?.value.trim() ||
                         "";
+                    if (text.length > 2000) {
+                        Alert.error("Biography must be 2000 characters or fewer");
+                        return;
+                    }
                     const website =
                         body.querySelector(".profile-edit-website")?.value.trim() ||
                         "";

@@ -197,7 +197,8 @@ export class Media {
         const img = document.createElement("img");
         img.src = url;
         img.loading = "lazy";
-        const caption = document.createElement("figcaption");
+        img.draggable = false;
+        img.setAttribute("draggable", "false");
         caption.textContent = "Text";
         figure.appendChild(img);
         figure.appendChild(caption);
@@ -208,6 +209,7 @@ export class Media {
         img.classList.add(this.classMap.imageTable);
         img.src = url;
         img.loading = "lazy";
+        img.draggable = false;
         img.contentEditable = false;
         return img;
     }
@@ -216,6 +218,7 @@ export class Media {
         img.classList.add("template-single-image");
         img.src = url;
         img.loading = "lazy";
+        img.draggable = false;
         img.contentEditable = false;
         return img;
     }
@@ -224,6 +227,7 @@ export class Media {
         img.classList.add("template-large-image");
         img.src = url;
         img.loading = "lazy";
+        img.draggable = false;
         img.contentEditable = false;
         return img;
     }
@@ -316,6 +320,8 @@ export class Media {
         video.loading = "lazy";
         video.preload = "metadata";
         video.playsInline = true;
+        video.controlsList = "nodownload noremoteplayback";
+        video.disablePictureInPicture = true;
         const caption = document.createElement("figcaption");
         caption.textContent = "Video";
         figure.appendChild(video);
@@ -327,6 +333,7 @@ export class Media {
         audio.classList.add(this.classMap.audio);
         audio.src = url;
         audio.controls = true;
+        audio.controlsList = "nodownload";
         audio.preload = "none";
         audio.contentEditable = false;
         return audio;

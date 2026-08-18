@@ -28,6 +28,7 @@ export class Editor {
     static _transitionOverlay = null;
     static _progressPulse = null;
     static _progressPct = 0;
+    static _mediaContextBound = false;
     static MANAGED = new Set([Template, Media, Table, Legend, Percentage]);
     static VIEW_BLOCKS = new Set([Heading]);
     static EDIT_BLOCKS = new Set([Paragraph, Caption, List]);
@@ -55,6 +56,7 @@ export class Editor {
         this.isEditing = false;
         this.isTextMode = false;
         this.sourceEditor = null;
+        Editor.bindMediaContextGuard();
         Editor.hydrateLegacyContent(Select.container());
         this.loadManagedElements();
         this.loadViewBlocks();
@@ -62,6 +64,35 @@ export class Editor {
         void this.index.refresh();
         void this.activateElements();
         Editor.current = this;
+    }
+    static bindMediaContextGuard() {
+        if (window.__dyscoverMediaContextBound) {
+            Editor._mediaContextBound = true;
+            return;
+        }
+        window.__dyscoverMediaContextBound = true;
+        Editor._mediaContextBound = true;
+        document.addEventListener(
+            "contextmenu",
+            (event) => {
+                const target = event.target;
+                if (!(target instanceof Element)) {
+                    return;
+                }
+                if (target.closest("input, textarea, figcaption")) {
+                    return;
+                }
+                if (
+                    !target.closest(
+                        "img, video, audio, picture, canvas, svg, figure.image, figure.video, .image-table, .template-single-image, .template-large-image, .template-first-image, .template-second-image, .icon-image, .media-openable",
+                    )
+                ) {
+                    return;
+                }
+                event.preventDefault();
+            },
+            true,
+        );
     }
     static hydrateBlock(node) {
         if (!node || node.nodeType !== Node.ELEMENT_NODE) {

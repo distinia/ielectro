@@ -12,11 +12,11 @@ require_once __DIR__ . '/article-playbook.php';
 class ArticleGenerate
 {
     private const MIN_TEMPLATE_SCORE = 10;
+    private const MAX_PROMPT = 12000;
     public static function create(string $uuid): void
     {
         Request::post();
         Identity::required();
-        @set_time_limit(240);
         $uuid = trim($uuid);
         if (!Validate::required($uuid)) {
             Response::badRequest('Missing article uuid');
@@ -25,7 +25,7 @@ class ArticleGenerate
         if (!Validate::required($prompt)) {
             Response::badRequest('Missing prompt');
         }
-        if (mb_strlen($prompt) > 4000) {
+        if (mb_strlen($prompt) > self::MAX_PROMPT) {
             Response::badRequest('Prompt is too long');
         }
         $post = self::loadArticle($uuid);
@@ -33,28 +33,76 @@ class ArticleGenerate
             return;
         }
         $title = trim((string) ($post['title'] ?? 'Article'));
-        $stage = trim((string) Request::value('stage'));
+        $templateId = self::parseTemplateId(Request::value('template_id'));
+        $postIds = self::parsePostIds(Request::value('post_ids') ?? Request::value('article_ids'));
+        self::beginLongRequest();
         try {
-            if ($stage === 'write') {
-                $context = Request::value('context');
-                if (!is_array($context)) {
-                    Response::badRequest('Missing generation context');
-                }
-                self::respondWrite($uuid, $prompt, $title, $context);
-                return;
-            }
-            $context = self::buildResearchContext($uuid, $prompt, $title);
-            if ($stage === 'research') {
-                Response::success([
-                    'stage' => 'research',
-                    'context' => $context,
-                ]);
-                return;
-            }
-            self::respondWrite($uuid, $prompt, $title, $context);
+            $source = self::generateFromSources(
+                $uuid,
+                $prompt,
+                $title,
+                $templateId,
+                $postIds
+            );
+            self::finishLongRequest([
+                'source' => $source,
+                'template_id' => $templateId,
+            ]);
         } catch (\Throwable $exception) {
-            Response::error($exception->getMessage() ?: 'Article generation failed');
+            self::finishLongRequest(
+                $exception->getMessage() ?: 'Article generation failed',
+                500
+            );
         }
+    }
+    private static function beginLongRequest(): void
+    {
+        @set_time_limit(0);
+        ignore_user_abort(true);
+        @ini_set('max_execution_time', '0');
+        if (function_exists('apache_setenv')) {
+            @apache_setenv('no-gzip', '1');
+        }
+        @ini_set('zlib.output_compression', '0');
+        while (ob_get_level() > 0) {
+            @ob_end_flush();
+        }
+        header('Content-Type: application/json; charset=utf-8');
+        header('Cache-Control: no-cache, no-store, must-revalidate');
+        header('X-Accel-Buffering: no');
+        header('Content-Encoding: identity');
+        echo str_repeat("\n", 4);
+        @flush();
+        Client::onWait(static function (): void {
+            echo "\n";
+            @flush();
+        });
+    }
+    private static function finishLongRequest(array|string $content, int $code = 200): never
+    {
+        Client::onWait(null);
+        if (!headers_sent()) {
+            if ($code >= 400) {
+                Response::error($content);
+            }
+            Response::success(is_array($content) ? $content : ['message' => (string) $content]);
+        }
+        http_response_code($code);
+        if ($code >= 400) {
+            $message = is_array($content)
+                ? (string) ($content['message'] ?? $content['error'] ?? 'Request failed')
+                : (string) $content;
+            echo json_encode(
+                [
+                    'success' => false,
+                    'message' => $message,
+                ],
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+            );
+            exit;
+        }
+        echo json_encode($content, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        exit;
     }
     private static function loadArticle(string $uuid): ?array
     {
@@ -76,6 +124,102 @@ class ArticleGenerate
         }
         return $post;
     }
+    private static function parseTemplateId(mixed $value): ?int
+    {
+        if ($value === null || $value === false || $value === '') {
+            return null;
+        }
+        $id = (int) $value;
+        return $id > 0 ? $id : null;
+    }
+    private static function parsePostIds(mixed $value): array
+    {
+        if (!is_array($value)) {
+            return [];
+        }
+        $ids = [];
+        foreach ($value as $item) {
+            $id = (int) $item;
+            if ($id > 0) {
+                $ids[$id] = $id;
+            }
+        }
+        return array_slice(array_values($ids), 0, 12);
+    }
+    private static function generateFromSources(
+        string $uuid,
+        string $prompt,
+        string $title,
+        ?int $templateId,
+        array $postIds
+    ): string {
+        $posts = ArticleKnowledge::postsByIds($postIds, $uuid);
+        $knowledge = ArticleKnowledge::loadAttachedKnowledge(
+            $posts,
+            $prompt . "\n" . $title,
+            12000
+        );
+        $corpus = (string) ($knowledge['corpus'] ?? '');
+        $links = is_array($knowledge['links'] ?? null) ? $knowledge['links'] : [];
+        $media = is_array($knowledge['media'] ?? null) ? $knowledge['media'] : [];
+        $template = null;
+        $templateBlock = '';
+        if ($templateId !== null) {
+            $template = ArticleKnowledge::templateById($templateId);
+            if ($template === null) {
+                throw new \RuntimeException('Template not found');
+            }
+            Client::pause();
+            $templateBlock = self::buildTemplateBlock(
+                $template,
+                ['summary' => $prompt],
+                $links,
+                $media,
+                [],
+                $title,
+                $title
+            );
+        }
+        Client::pause();
+        $body = self::writeBody($prompt, $title, $corpus, $links, $media);
+        $source = self::assembleSource($templateBlock, $body);
+        $source = self::stripMainTitle($source, $title);
+        if ($template === null) {
+            $source = self::stripTemplateBlocks($source);
+        } else {
+            $source = self::ensureTemplateFirst($source);
+        }
+        $source = ArticleKnowledge::sanitizeSource($source, $links, $media);
+        return trim($source);
+    }
+    private static function writeBody(
+        string $prompt,
+        string $title,
+        string $corpus,
+        array $links,
+        array $media = []
+    ): string {
+        $linkBlock = ArticleKnowledge::formatLinkCatalog($links, 18);
+        $mediaBlock = ArticleKnowledge::formatMediaCatalogGrouped($media, 16);
+        $dictionary = ArticleKnowledge::formatElementsDictionary();
+        $corpusBlock = $corpus !== ''
+            ? "Attached posts (search these HTML/text extracts for facts, names, dates, images, and links; prefer this material over invention):\n{$corpus}\n\n"
+            : "No attached posts. Write only from the author's source text.\n\n";
+        $messages = [
+            ['role' => 'system', 'content' => self::bodySystemPrompt()],
+            [
+                'role' => 'user',
+                'content' => "Page title (already shown — NEVER output as # heading): {$title}\n\n"
+                    . "Author source text (this is the material to turn into the article):\n{$prompt}\n\n"
+                    . $corpusBlock
+                    . "Verified article links from attached posts:\n{$linkBlock}\n\n"
+                    . "Verified media from attached posts and imported article HTML:\n{$mediaBlock}\n\n"
+                    . $dictionary
+                    . "\n\nWrite the article body ONLY (no {{template}}). Use attached HTML extracts when they contain what the source text needs.",
+            ],
+        ];
+        return trim(self::cleanSource(Client::chat($messages, 0.55, 4096)));
+    }
     private static function relatedSearchTags(string $primaryEntity, array $relatedTags): array
     {
         $entity = mb_strtolower(trim($primaryEntity));
@@ -90,8 +234,12 @@ class ArticleGenerate
         }
         return array_values(array_unique(array_merge($relatedTags, $extra)));
     }
-    private static function buildResearchContext(string $uuid, string $prompt, string $title): array
-    {
+    private static function buildResearchContext(
+        string $uuid,
+        string $prompt,
+        string $title,
+        ?int $templateId = null
+    ): array {
         $topic = ArticleKnowledge::extractTopicTerms($prompt, $title);
         $terms = $topic['terms'];
         $relatedTags = is_array($topic['related_tags'] ?? null) ? $topic['related_tags'] : [];
@@ -134,13 +282,24 @@ class ArticleGenerate
         $referenceOutline = ArticleKnowledge::extractReferenceOutline($articles);
         Client::pause();
         $outline = self::planOutline($prompt, $title, $facts, $playbook, $referenceOutline);
-        $templates = ArticleKnowledge::rankedTemplates($prompt, $title, 6);
-        Client::pause();
-        $template = self::pickAndValidateTemplate($prompt, $title, $templates, $playbook, $topic);
-        Client::pause();
-        $templateBlock = $template !== null
-            ? self::buildTemplateBlock($template, $facts, $links, $media, $terms, $primaryEntity, $title)
-            : '';
+        $template = null;
+        $templateBlock = '';
+        if ($templateId !== null) {
+            $template = ArticleKnowledge::templateById($templateId);
+            if ($template === null) {
+                throw new \RuntimeException('Template not found');
+            }
+            Client::pause();
+            $templateBlock = self::buildTemplateBlock(
+                $template,
+                $facts,
+                $links,
+                $media,
+                $terms,
+                $primaryEntity,
+                $title
+            );
+        }
         return [
             'topic' => $topic,
             'terms' => $terms,
@@ -200,7 +359,7 @@ class ArticleGenerate
         } elseif (!empty($topic['archetype']) && ($topic['archetype'] ?? '') !== 'other') {
             ArticlePlaybook::createFromGeneration((string) $topic['archetype'], $terms, $outline);
         }
-        Response::success([
+        self::finishLongRequest([
             'stage' => 'write',
             'source' => $source,
             'template_id' => $template !== null ? (int) ($template['id'] ?? 0) : null,
@@ -291,12 +450,12 @@ class ArticleGenerate
                 'role' => 'system',
                 'content' => 'Extract encyclopedic facts as JSON only: '
                     . '{"official_name":"","summary":"","mandate":"","term_length":"","incumbent":"","party":"","powers":[],"history":[],"related_topics":[],"previous_officeholders":[]}. '
-                    . 'Use Dyscover corpus when present. If details are missing, infer plausible encyclopedic facts consistent with the brief. '
+                    . 'Use Dyscover corpus when present. If details are missing, infer plausible encyclopedic facts consistent with the source text. '
                     . 'Invent names, dates, and lists when needed. NEVER mention missing data or uncertainty.',
             ],
             [
                 'role' => 'user',
-                'content' => "Title: {$title}\nBrief: {$prompt}\nPrimary entity: {$topic['primary_entity']}\n\nCorpus:\n{$corpus}",
+                'content' => "Title: {$title}\nSource text: {$prompt}\nPrimary entity: {$topic['primary_entity']}\n\nCorpus:\n{$corpus}",
             ],
         ], 0.2, 600, Client::fastModel());
         if (preg_match('/\{[\s\S]*\}/', $raw, $match)) {
@@ -340,7 +499,7 @@ class ArticleGenerate
             ],
             [
                 'role' => 'user',
-                'content' => "Title: {$title}\nBrief: {$prompt}\nFacts: {$factsJson}",
+                'content' => "Title: {$title}\nSource text: {$prompt}\nFacts: {$factsJson}",
             ],
         ], 0.2, 600, Client::fastModel());
         if (preg_match('/\[[\s\S]*\]/', $raw, $match)) {
@@ -661,7 +820,7 @@ class ArticleGenerate
             [
                 'role' => 'user',
                 'content' => "Page title (already shown — NEVER output as # heading): {$title}\n\n"
-                    . "Brief:\n{$prompt}\n\nFacts JSON:\n{$factsJson}\n\n"
+                    . "Author source text (expand this into the article; keep its facts, names, dates, and details; you may reuse wording):\n{$prompt}\n\nFacts JSON:\n{$factsJson}\n\n"
                     . "Required outline (use these # and ## headings in order):\n{$outlineText}\n\n"
                     . "Verified article links:\n{$linkBlock}\n\n"
                     . "Verified media:\n{$mediaBlock}\n\n"
@@ -672,7 +831,7 @@ class ArticleGenerate
             ],
         ];
         $source = self::cleanSource(Client::chat($messages, 0.55, 4096));
-        if (!self::looksValid($source)) {
+        if (!self::looksValid($source) && !Client::isLocal()) {
             Client::pause();
             $source = self::cleanSource(Client::chat([
                 ['role' => 'system', 'content' => self::bodySystemPrompt()],
@@ -694,50 +853,30 @@ class ArticleGenerate
         return <<<'PROMPT'
 You write encyclopedic Dyscover Source article bodies. Output ONLY Dyscover Source. No fences. No commentary.
 NEVER output {{template|...}} blocks.
+The author's source text is the primary material. Expand it into a full article for the text editor.
+Search the attached post HTML/text extracts for facts, names, dates, tables, and media that the source text needs. Prefer those files over invention.
+Do not invent sources, media URLs, or extra research.
 Tone:
 - Formal academic encyclopedia voice
-- NEVER say data is missing, not provided, not specified, unknown, or unavailable
-- If lists/tables/history are missing, invent plausible names, dates, and rows in consistent style
+- Do not say data is missing or unavailable
 Structure:
-1) Exactly 5 long lead paragraphs first (NO headings, NO media, NO lists yet)
-2) Then follow the required outline with # and ## headings
-3) A # heading NEVER has paragraphs directly beneath it — only ## subsections follow
-4) EVERY ## subsection must contain exactly 5 long paragraphs
-5) End with # See also as bullet links and # References when useful
-Bold rules:
-- Use **bold** very heavily: 5-10 bold terms per paragraph
-- Bold country names, institutions, offices, key concepts, numbers, and proper nouns
-Link rules (critical):
-- Use ONLY verified [[Label|url]] links from the catalog when the linked article is clearly about the SAME country, office, or institution as this page
-- Link naturally inside sentences when the topic is already mentioned — never force unrelated links
-- NEVER append parenthetical link lists like "( [[Topic|url]], [[Other|url]] )." at the end of sentences or fields
-- If no relevant verified link exists for a mention, keep plain **bold** text — do NOT link to a different country or unrelated topic
-- For office articles (president, prime minister, minister), link the country, constitution, parliament, and related offices of the SAME country only
-Topic focus:
-- Write strictly about the page title subject: powers, institutions, selection, history, and officeholder tables for that exact office and country
-- Do not discuss unrelated countries unless comparing briefly with a relevant verified link
-Media rules (outside template):
-- NEVER place media before the first # or ## heading
-- After a ## heading, add {{image|verified-url|caption}} when a verified image fits
-- Use {{image-table|url}} inside table cells for people, ministers, flags, officials
-- Use {{icon-image|url}} beside country or entity names in tables
-- Prefer using many verified media across sections when titles match the topic
-Links:
-- Use ONLY verified [[Label|url]] links from the catalog
-- Never write "click here", "to learn more", or "for more information"
-See also:
-- Before some major ## sections you MAY use a standalone caption line: > See also: [[Topic|url]]
-- The final # See also section MUST be a bullet list only:
-  - [[Topic|url]]
-  - [[Topic|url]]
-- Do NOT use caption blocks inside # See also
-Formatting (use abundantly):
+1) A few lead paragraphs first (NO headings)
+2) Then # and ## headings that fit the source text
+3) A # heading should be followed by ## subsections, not bare paragraphs
+4) End with # See also and # References when the attached sources make that useful
+Bold and links:
+- Use **bold** for key names and terms
+- Use [[Label|url]] ONLY from the verified attached-post catalog
+- If no matching attached link exists, keep **bold** text
+Media:
+- Use {{image|url|caption}}, {{video|url}}, or {{audio|url}} ONLY with verified URLs from attached posts or imported article HTML
+- Place media after a relevant heading when it fits
+Formatting:
 - **Bold** and *italic*
-- - bullet lists and 1. numbered lists in every major section
-- | tables | in at least 3 sections, including historical officeholder tables when relevant
-- {{percent|50%}} and {{legend|#008000|Label}} when useful
-- Long paragraphs: one continuous line, 100-180 words, blank line between blocks
-Do not copy corpus text verbatim. Write original detailed prose at Wikipedia country/office article scale.
+- - bullets and 1. numbered lists where useful
+- | tables | when the attached HTML contains comparable data
+- Long paragraphs: one continuous line, blank line between blocks
+Do not copy attached corpus verbatim.
 PROMPT;
     }
     private static function formatOutlineForPrompt(array $outline): string

@@ -9,6 +9,7 @@ export class App {
     static peerAvatarCache = Object.create(null);
     static ready = null;
     static blocked = false;
+    static _mediaContextBound = false;
     constructor() {
         if (!App.ready) {
             App.ready = this.init();
@@ -25,6 +26,7 @@ export class App {
         return true;
     }
     async init() {
+        App.blockNativeMediaMenu();
         Nesh.Input.enablePlainTextPaste();
         Nesh.Input.disableAutocomplete();
         Nesh.Input.disableTextCorrection();
@@ -39,6 +41,34 @@ export class App {
         new Navbar();
         document.body.classList.add("has-navbar");
         await Nesh.Icons.load(document.body);
+    }
+    static blockNativeMediaMenu() {
+        if (window.__dyscoverMediaContextBound) {
+            return;
+        }
+        window.__dyscoverMediaContextBound = true;
+        App._mediaContextBound = true;
+        document.addEventListener(
+            "contextmenu",
+            (event) => {
+                const target = event.target;
+                if (!(target instanceof Element)) {
+                    return;
+                }
+                if (target.closest("input, textarea, figcaption")) {
+                    return;
+                }
+                if (
+                    !target.closest(
+                        "img, video, audio, picture, canvas, svg, figure.image, figure.video, .image-table, .template-single-image, .template-large-image, .template-first-image, .template-second-image, .icon-image, .media-openable, .post-preview-image, .post-media",
+                    )
+                ) {
+                    return;
+                }
+                event.preventDefault();
+            },
+            true,
+        );
     }
     static page() {
         const parts = window.location.pathname
