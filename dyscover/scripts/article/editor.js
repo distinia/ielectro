@@ -1153,6 +1153,7 @@ export class Editor {
         await this.index.closeEditing();
     }
     async activateElements(options = {}) {
+        Link.normalizeElements(this.content);
         const editing = this.isEditing && !this.isTextMode;
         await this.activateManagedElements(editing);
         if (editing) {

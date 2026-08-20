@@ -105,7 +105,7 @@ export class API {
         );
     }
     static async searchAllPosts(term) {
-        const types = ["article", "image", "video", "audio", "document"];
+        const types = ["article", "image", "video", "audio", "document", "template"];
         const lists = await Promise.all(
             types.map((type) => API.search(type, term).catch(() => [])),
         );

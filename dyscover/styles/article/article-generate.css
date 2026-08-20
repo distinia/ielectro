@@ -12,7 +12,7 @@
 }
 .article-generate-input {
     width: 100%;
-    min-height: 280px;
+    min-height: 200px;
     margin: 0;
     resize: none;
     text-transform: none;
@@ -27,7 +27,7 @@
     color: #b45309;
 }
 .article-generate-attachments {
-    padding: 0.15rem 0 0.35rem;
+    padding: 0 0.15rem;
 }
 .article-generate-picks {
     display: flex;
@@ -88,28 +88,11 @@
     width: 0.85rem;
     height: 0.85rem;
 }
-.article-generate-attachments .button-secondary {
-    min-width: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.5rem 0.9rem;
-    border-radius: 12px;
-    font-weight: 700;
-    font-size: 0.84rem;
-    border: 1px solid rgba(15, 23, 42, 0.12);
-    background: #fff;
-    color: #0f172a;
-    box-shadow: none;
-}
-.article-generate-attachments .button-secondary:hover {
-    background: rgba(15, 23, 42, 0.04);
-    border-color: rgba(15, 23, 42, 0.18);
-}
 .article-generate-footer {
     display: flex;
     justify-content: flex-end;
     align-items: center;
+    gap: 0.75rem;
 }
 .article-generate-footer .article-generate-submit {
     min-width: 8.5rem;

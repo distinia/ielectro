@@ -21,18 +21,21 @@ class ArticleGenerate
         if (!Validate::required($uuid)) {
             Response::badRequest('Missing article uuid');
         }
+        $post = self::loadArticle($uuid);
+        if ($post === null) {
+            return;
+        }
+        $title = trim((string) ($post['title'] ?? 'Article'));
         $prompt = trim((string) Request::value('prompt'));
+        if ($prompt === '') {
+            $prompt = $title;
+        }
         if (!Validate::required($prompt)) {
             Response::badRequest('Missing prompt');
         }
         if (mb_strlen($prompt) > self::MAX_PROMPT) {
             Response::badRequest('Prompt is too long');
         }
-        $post = self::loadArticle($uuid);
-        if ($post === null) {
-            return;
-        }
-        $title = trim((string) ($post['title'] ?? 'Article'));
         $templateId = self::parseTemplateId(Request::value('template_id'));
         $postIds = self::parsePostIds(Request::value('post_ids') ?? Request::value('article_ids'));
         self::beginLongRequest();
@@ -202,6 +205,7 @@ class ArticleGenerate
         $linkBlock = ArticleKnowledge::formatLinkCatalog($links, 18);
         $mediaBlock = ArticleKnowledge::formatMediaCatalogGrouped($media, 16);
         $dictionary = ArticleKnowledge::formatElementsDictionary();
+        $outlineText = self::planStrictOutline($prompt, $title, $corpus);
         $corpusBlock = $corpus !== ''
             ? "Attached posts (search these HTML/text extracts for facts, names, dates, images, and links; prefer this material over invention):\n{$corpus}\n\n"
             : "No attached posts. Write only from the author's source text.\n\n";
@@ -214,11 +218,60 @@ class ArticleGenerate
                     . $corpusBlock
                     . "Verified article links from attached posts:\n{$linkBlock}\n\n"
                     . "Verified media from attached posts and imported article HTML:\n{$mediaBlock}\n\n"
+                    . "Required outline (follow exactly this # / ## order):\n{$outlineText}\n\n"
                     . $dictionary
-                    . "\n\nWrite the article body ONLY (no {{template}}). Use attached HTML extracts when they contain what the source text needs.",
+                    . "\n\nWrite the article body ONLY (no {{template}}). Use attached HTML extracts when they contain what the source text needs. Follow the required outline strictly.",
             ],
         ];
-        return trim(self::cleanSource(Client::chat($messages, 0.55, 4096)));
+        $source = trim(self::cleanSource(Client::chat($messages, 0.5, 8192)));
+        for ($attempt = 0; $attempt < 1 && self::needsStyleRepair($source); $attempt++) {
+            Client::pause();
+            $source = self::repairStyle($source, $title, $links, $media, $outlineText);
+        }
+        $source = self::stripPlaceholderLinks($source);
+        $source = self::dedupeParagraphs($source);
+        return trim($source);
+    }
+    private static function planStrictOutline(string $prompt, string $title, string $corpus): string
+    {
+        $sample = trim($prompt . "\n\n" . mb_substr($corpus, 0, 3000));
+        $messages = [
+            [
+                'role' => 'system',
+                'content' => 'Plan a Dyscover article outline. Reply with lines only, using # for sections and ## for subsections. '
+                    . 'At least 2 top-level # headings. Each # heading must have at least 2 ## subsections. '
+                    . 'No prose, no numbering, no JSON.',
+            ],
+            [
+                'role' => 'user',
+                'content' => "Title: {$title}\n\nTopic/source text:\n{$sample}\n\n"
+                    . "Return outline lines only.",
+            ],
+        ];
+        $raw = self::cleanSource(Client::chat($messages, 0.2, 450));
+        $normalized = self::normalizeOutlineLines($raw);
+        if ($normalized !== '') {
+            return $normalized;
+        }
+        return "# Office\n## Constitutional Role\n## Cabinet Leadership\n# Powers and Functions\n## Domestic Governance\n## Foreign Policy\n# Appointment and Tenure\n## Selection Process\n## Accountability and Removal";
+    }
+    private static function normalizeOutlineLines(string $text): string
+    {
+        $lines = preg_split("/\r\n|\n|\r/", $text) ?: [];
+        $out = [];
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if ($line === '') {
+                continue;
+            }
+            if (preg_match('/^#{1,2}\s+.+$/', $line)) {
+                $out[] = preg_replace('/\s+/', ' ', $line) ?? $line;
+            }
+        }
+        if (!$out) {
+            return '';
+        }
+        return implode("\n", $out);
     }
     private static function relatedSearchTags(string $primaryEntity, array $relatedTags): array
     {
@@ -851,32 +904,63 @@ class ArticleGenerate
     private static function bodySystemPrompt(): string
     {
         return <<<'PROMPT'
-You write encyclopedic Dyscover Source article bodies. Output ONLY Dyscover Source. No fences. No commentary.
-NEVER output {{template|...}} blocks.
-The author's source text is the primary material. Expand it into a full article for the text editor.
-Search the attached post HTML/text extracts for facts, names, dates, tables, and media that the source text needs. Prefer those files over invention.
-Do not invent sources, media URLs, or extra research.
-Tone:
-- Formal academic encyclopedia voice
-- Do not say data is missing or unavailable
-Structure:
-1) A few lead paragraphs first (NO headings)
-2) Then # and ## headings that fit the source text
-3) A # heading should be followed by ## subsections, not bare paragraphs
-4) End with # See also and # References when the attached sources make that useful
-Bold and links:
-- Use **bold** for key names and terms
-- Use [[Label|url]] ONLY from the verified attached-post catalog
-- If no matching attached link exists, keep **bold** text
-Media:
-- Use {{image|url|caption}}, {{video|url}}, or {{audio|url}} ONLY with verified URLs from attached posts or imported article HTML
-- Place media after a relevant heading when it fits
-Formatting:
+You write Dyscover Source article bodies. Output ONLY Dyscover Source markup. No fences. No commentary. No meta-text.
+NEVER output {{template|...}} blocks (the template is handled externally).
+
+TONE — Write in a formal, assertive, authoritative Dyscover encyclopedia voice. State facts directly and confidently. Do NOT use neutral Wikipedia hedging ("is considered", "is believed to be", "it is thought that"). The tone is proud, detailed, and declarative. Never say data is missing or unavailable.
+
+ATTACHED SOURCES — Carefully analyze the attached post HTML/text extracts for factual data: names, dates, statistics, links, images, tables. Use this data throughout the article. Prefer attached material over invention. Do not invent sources, media URLs, or facts.
+
+STRUCTURE:
+1) Write exactly 5 substantial lead paragraphs BEFORE the first # heading. These introduce the subject broadly. No headings, no images, no media in this section.
+2) Then use # and ## headings that fit the source text.
+2a) Include at least 2 top-level # headings after the lead.
+2b) For each top-level # heading, include at least 2 ## subheadings.
+3) If a # heading has ## subheadings, do NOT write paragraphs directly after the # heading. Go straight to the first ## subheading. You may place a > See also: [[link]] blockquote after the # heading before the first ##.
+4) If a # heading has NO ## subheadings, write exactly 5 substantial paragraphs under it.
+5) Each ## subheading must have approximately 5 substantial paragraphs.
+6) End with # See also (bullet list of [[links]]) and # References when attached sources provide them.
+
+PARAGRAPHS — Each paragraph must be 5-8 sentences long, dense with facts. Write each paragraph as one continuous line with a blank line between paragraphs. Never repeat a phrase, name, or concept already stated in an earlier paragraph. Do not re-explain what was already covered.
+
+BOLD — Use exactly 7 **bold** keywords per paragraph. Bold individual key WORDS or short terms (1-3 words), not long phrases. Never bold across a comma — if a list has commas, bold each item separately: "**national agenda**, **setting priorities**, **government oversight**", NOT "**national agenda, setting priorities, government oversight**". If a bold span contains a comma, split it into separate bold keywords.
+
+LINKS — Use [[Label|url]] ONLY from the verified attached-post link catalog. Whenever a bold term matches an attached link, use the link form instead. If no matching attached link exists, keep the term as **bold** text only. Never invent URLs and NEVER output placeholder URLs like [[...|URL]].
+
+MEDIA:
+- Use {{image|url|caption}}, {{video|url}}, or {{audio|url}} ONLY with verified URLs from the attached media catalog.
+- Place one image after each # or ## heading line (not before it, not inside paragraphs).
+- Do NOT place any image, video, or audio before or within the 5 lead paragraphs. The first media appears after the first # heading.
+- Never invent media URLs.
+
+TABLES — Use | table | rows when the attached HTML contains comparable tabular data. Use {{icon-image|url}} inside table cells when icon images are available. Use {{percent|...}} and {{legend|...}} elements ONLY inside {{template|...}} blocks or | table | rows, never in free-text paragraphs.
+
+ANTI-REPETITION — Never repeat the same sentence, claim, or wording across paragraphs or sections. Each paragraph must add new information. If two paragraphs are semantically similar, rewrite the second one with new facts.
+
+STRICT ENDING RULES:
+- Output # See also ONLY if at least 2 verified links are available from the provided catalog.
+- Output # References ONLY if real verified sources/doc links are available.
+- If verified links/sources are missing, omit those sections entirely.
+
+FORMATTING:
 - **Bold** and *italic*
-- - bullets and 1. numbered lists where useful
-- | tables | when the attached HTML contains comparable data
+- - bullet lists and 1. numbered lists where useful
 - Long paragraphs: one continuous line, blank line between blocks
-Do not copy attached corpus verbatim.
+- Do not copy attached corpus verbatim; synthesize and expand
+
+STYLE REFERENCE — Here is how a well-written Dyscover article looks (lead paragraphs, then first heading):
+
+**Destenia**, officially the **Destenian Republic**, is a country located in **southern Edrobe** and is **Edrobe's largest country**. It operates as a [[unitary semi-presidential republic|URL]] with **Distinia** as capital city. **Destenia** is bordered by [[Agaritia|URL]] to the north-east and [[Laocitia|URL]] to the north-west along its land frontiers. By sea, it is bordered by [[Alveria|URL]] to the north-west, [[Cavallesia|URL]] to the east, [[Kashiria|URL]] to the west, [[Lamberia|URL]] to the south, and [[Stasia|URL]] to the south-west.
+
+Destenia is a **member** of the [[United Nations|URL]], the [[Edrobean Community|URL]], and other **international organizations** such as the **Global Reserve Fund**, **World Trade Network**, and **International Energy Agency**. As a **global power**, it is maintaining a non-aligned foreign policy based on multilateralism, sovereignty, and strategic economic integration.
+
+# Etymology
+
+The etymology of **Destenia** derives from ancient Destenian linguistic roots, where the word *"Destino"* signified **future, fate, or course of life**, and the suffix -nia denoted **land, realm, or community**. Combined, the term was understood as the **"Land of Destinies"**, a poetic reflection of a people who believed themselves bound to a bright collective future.
+
+FINAL SELF-CHECK (silent, do not print): before returning, verify every paragraph has exactly 7 bold keywords, no placeholder URL tokens, no duplicate paragraphs, and heading/subheading rules are satisfied.
+
+Notice: heavy bold usage, [[links]] from catalog, assertive tone, 5+ paragraphs per section, image after heading not before.
 PROMPT;
     }
     private static function formatOutlineForPrompt(array $outline): string
@@ -972,6 +1056,116 @@ PROMPT;
         $source = preg_replace('/^```[\w]*\s*\n?/m', '', $source) ?? $source;
         $source = preg_replace('/\n?```\s*$/m', '', $source) ?? $source;
         return trim($source);
+    }
+    private static function needsStyleRepair(string $source): bool
+    {
+        if ($source === '') {
+            return true;
+        }
+        if (str_contains($source, '|URL]]')) {
+            return true;
+        }
+        $bold = preg_match_all('/\*\*[^*]+\*\*/', $source);
+        if ($bold < 18) {
+            return true;
+        }
+        $sections = preg_match_all('/^#\s+/m', $source);
+        if ($sections < 2) {
+            return true;
+        }
+        $paragraphs = preg_split('/\n\s*\n/', $source) ?: [];
+        $seen = [];
+        foreach ($paragraphs as $paragraph) {
+            $line = trim((string) $paragraph);
+            if ($line === '' || str_starts_with($line, '#') || str_starts_with($line, '{{')) {
+                continue;
+            }
+            $key = mb_strtolower(preg_replace('/\s+/', ' ', $line) ?? $line);
+            if (isset($seen[$key])) {
+                return true;
+            }
+            $seen[$key] = true;
+        }
+        return false;
+    }
+    private static function repairStyle(
+        string $draft,
+        string $title,
+        array $links,
+        array $media,
+        string $outlineText
+    ): string
+    {
+        $linkBlock = ArticleKnowledge::formatLinkCatalog($links, 18);
+        $mediaBlock = ArticleKnowledge::formatMediaCatalogGrouped($media, 16);
+        $messages = [
+            ['role' => 'system', 'content' => self::bodySystemPrompt()],
+            [
+                'role' => 'user',
+                'content' => "Rewrite this draft into stricter Dyscover style.\n"
+                    . "MANDATORY fixes:\n"
+                    . "- Keep all factual content but remove repetition.\n"
+                    . "- Use exactly 7 bold keywords per paragraph (short terms only).\n"
+                    . "- Never output placeholder links like [[...|URL]].\n"
+                    . "- Keep 5 lead paragraphs before first heading.\n"
+                    . "- Follow this exact heading order:\n{$outlineText}\n"
+                    . "- Prefer heading names like # Office, # Powers and Functions, # Appointment and Tenure when relevant.\n"
+                    . "- Do not place paragraphs directly below a # heading that has ## subheadings.\n"
+                    . "- Use media only from verified catalog.\n\n"
+                    . "Page title: {$title}\n\n"
+                    . "Verified links:\n{$linkBlock}\n\n"
+                    . "Verified media:\n{$mediaBlock}\n\n"
+                    . "Draft to rewrite:\n{$draft}",
+            ],
+        ];
+        return trim(self::cleanSource(Client::chat($messages, 0.3, 4096)));
+    }
+    private static function stripPlaceholderLinks(string $source): string
+    {
+        $source = preg_replace('/\[\[[^\]]+\|URL\]\]/i', '', $source) ?? $source;
+        $source = preg_replace('/^\s*-\s*\[\[[^\]]*\|URL\]\]\s*$/im', '', $source) ?? $source;
+        $lines = preg_split("/\r\n|\n|\r/", $source) ?: [];
+        $clean = [];
+        $skipHeading = false;
+        foreach ($lines as $line) {
+            $trimmed = trim($line);
+            if (preg_match('/^#\s+(See also|References)\s*$/i', $trimmed)) {
+                $skipHeading = true;
+                continue;
+            }
+            if ($skipHeading) {
+                if (preg_match('/^#\s+/', $trimmed)) {
+                    $skipHeading = false;
+                } elseif ($trimmed === '' || str_starts_with($trimmed, '-')) {
+                    continue;
+                }
+            }
+            $clean[] = $line;
+        }
+        return trim(implode("\n", $clean));
+    }
+    private static function dedupeParagraphs(string $source): string
+    {
+        $chunks = preg_split('/(\r?\n){2,}/', $source) ?: [];
+        $seen = [];
+        $kept = [];
+        foreach ($chunks as $chunk) {
+            $trimmed = trim($chunk);
+            if ($trimmed === '') {
+                continue;
+            }
+            if (str_starts_with($trimmed, '#') || str_starts_with($trimmed, '##') || str_starts_with($trimmed, '{{')) {
+                $kept[] = $trimmed;
+                continue;
+            }
+            $key = mb_strtolower(preg_replace('/\s+/', ' ', $trimmed) ?? $trimmed);
+            if (isset($seen[$key])) {
+                continue;
+            }
+            $seen[$key] = true;
+            $kept[] = $trimmed;
+        }
+        return trim(implode("\n\n", $kept));
     }
     private static function looksValid(string $source): bool
     {

@@ -222,6 +222,11 @@ class Client
                 'default_model' => 'Qwen/Qwen3-8B-GGUF:Q4_K_M',
                 'fast_model' => 'Qwen/Qwen3-8B-GGUF:Q4_K_M',
             ],
+            'gemini' => [
+                'base_url' => 'https://generativelanguage.googleapis.com/v1beta/openai',
+                'default_model' => 'gemini-2.5-flash',
+                'fast_model' => 'gemini-2.0-flash',
+            ],
             'custom' => [],
         ];
     }

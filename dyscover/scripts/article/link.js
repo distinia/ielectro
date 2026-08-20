@@ -6,9 +6,23 @@ export class Link {
     static list = new Map();
     static tag = "a";
     static className = "link";
+    static normalizeElements(root) {
+        if (!root) {
+            return;
+        }
+        root.querySelectorAll("a.link, a").forEach((element) => {
+            if (!element.classList.contains(Link.className)) {
+                return;
+            }
+            element.removeAttribute("target");
+            element.removeAttribute("rel");
+        });
+    }
     constructor(element) {
         if (!element) return;
         this.element = element;
+        this.element.removeAttribute("target");
+        this.element.removeAttribute("rel");
         this.url = element.href;
         this.text = element.textContent;
         this.preview = new ArticlePreview(this);
@@ -79,8 +93,6 @@ export class Link {
         element.href = url;
         element.classList.add(Link.className);
         element.textContent = text;
-        element.target = "_blank";
-        element.rel = "noopener noreferrer";
         if (postId) {
             element.dataset.postId = String(postId);
         }

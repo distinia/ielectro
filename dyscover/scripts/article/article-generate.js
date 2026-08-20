@@ -1,12 +1,14 @@
 import { Alert, Api, Box, Icons, Request } from "../core/index.js";
 import { Api as ApiRoutes } from "../core/api.js";
 import { App } from "../core/app.js";
+
 import { Editor } from "./editor.js";
 import { withArticleLoading } from "./article-loading.js";
 import { WebSelector } from "./web-selector.js";
 export class ArticleGenerate {
     static MAX_PROMPT = 12000;
     static MAX_POSTS = 12;
+
     static async open() {
         await this.ensureTextMode();
         const draft = await this.promptModal();
@@ -60,6 +62,11 @@ export class ArticleGenerate {
         await Editor.toggleEditorMode();
         await editor.index?.buildSidebar();
     }
+    static pageTitle() {
+        return document.querySelector(".title")?.textContent?.trim() || "";
+    }
+
+
     static chipEl(label, onRemove, type = "") {
         const chip = document.createElement("span");
         chip.className = "article-generate-chip";
@@ -71,7 +78,7 @@ export class ArticleGenerate {
         text.textContent = label;
         text.title = type ? `${label} (${type})` : label;
         chip.append(text);
-        if (type && type !== "template") {
+        if (type) {
             const kind = document.createElement("span");
             kind.className = "article-generate-chip-type";
             kind.textContent = type;
@@ -90,16 +97,16 @@ export class ArticleGenerate {
         chip.append(remove);
         return chip;
     }
+
     static promptModal() {
         return new Promise(async (resolve) => {
+            const pageTitle = ArticleGenerate.pageTitle();
             const box = new Box("Generate Article", {
                 variant: "article",
                 headerLayout: "creator",
-                help: `<p>Paste or write the source text. The AI writes the article body only.</p>
+                help: `<p>Write a topic or paste notes, then press Generate.</p>
                     <ul>
-                        <li>Optional: attach a template for the infobox.</li>
-                        <li>Optional: attach posts (articles, images, videos, and more) as sources.</li>
-                        <li>Imported article HTML is searched for facts, links, and media.</li>
+                        <li>Use <strong>Attach</strong> to add templates or posts as optional sources.</li>
                         <li>Press <strong>Ctrl+Enter</strong> to generate.</li>
                     </ul>`,
             });
@@ -121,37 +128,32 @@ export class ArticleGenerate {
                 body.classList.add("article-generate-body");
                 body.innerHTML = `
                     <label class="article-generate-label">
-                        <span>Source text</span>
+                        <span>Topic or notes</span>
                         <textarea
                             class="textarea article-generate-input"
-                            rows="14"
+                            rows="10"
                             maxlength="${max}"
-                            placeholder="Paste or write the text to expand into the article…"
+                            placeholder="A short topic, or paste notes. Empty uses the page title."
                         ></textarea>
                         <span class="char-count" data-char-count>0 / ${max}</span>
                     </label>
-                    <div class="article-generate-attachments">
+                    <div class="article-generate-attachments" data-attachments hidden>
                         <div class="article-generate-picks">
                             <span class="article-generate-chips" data-template-chip></span>
-                            <button type="button" class="button button-secondary article-generate-template-pick">Add template</button>
                             <span class="article-generate-chips" data-post-chips></span>
-                            <button type="button" class="button button-secondary article-generate-posts-pick">Attach posts</button>
                         </div>
                     </div>`;
             });
             box.footer((footer) => {
                 footer.classList.add("article-generate-footer");
                 footer.innerHTML = `
+                    <button type="button" class="button button-secondary article-generate-attach">Attach</button>
                     <button type="button" class="button article-generate-submit">Generate</button>`;
                 const textarea = box.container.querySelector(".article-generate-input");
                 const counter = box.container.querySelector("[data-char-count]");
                 const submit = footer.querySelector(".article-generate-submit");
-                const pickTemplate = box.container.querySelector(
-                    ".article-generate-template-pick",
-                );
-                const pickPosts = box.container.querySelector(
-                    ".article-generate-posts-pick",
-                );
+                const attach = footer.querySelector(".article-generate-attach");
+                const attachments = box.container.querySelector("[data-attachments]");
                 const templateSlot = box.container.querySelector("[data-template-chip]");
                 const postSlot = box.container.querySelector("[data-post-chips]");
                 const syncCount = () => {
@@ -178,11 +180,6 @@ export class ArticleGenerate {
                             );
                         }
                     }
-                    if (pickTemplate) {
-                        pickTemplate.textContent = templateId
-                            ? "Change template"
-                            : "Add template";
-                    }
                     if (postSlot) {
                         postSlot.replaceChildren();
                         posts.forEach((item) => {
@@ -190,8 +187,9 @@ export class ArticleGenerate {
                                 ArticleGenerate.chipEl(
                                     item.title || "Post",
                                     () => {
-                                        const id = item.postId;
-                                        const at = posts.findIndex((row) => row.postId === id);
+                                        const at = posts.findIndex(
+                                            (row) => row.postId === item.postId,
+                                        );
                                         if (at >= 0) {
                                             posts.splice(at, 1);
                                         }
@@ -202,16 +200,39 @@ export class ArticleGenerate {
                             );
                         });
                     }
+                    const hasAny = !!(templateId || posts.length);
+                    if (attachments) {
+                        attachments.hidden = !hasAny;
+                    }
                     await Icons.load(box.container);
                 };
+                const addPost = (row) => {
+                    const id = String(row?.postId || row?.id || "").trim();
+                    if (!id || posts.some((item) => item.postId === id)) {
+                        return false;
+                    }
+                    if (posts.length >= ArticleGenerate.MAX_POSTS) {
+                        Alert.error(
+                            `You can attach up to ${ArticleGenerate.MAX_POSTS} posts`,
+                        );
+                        return false;
+                    }
+                    posts.push({
+                        postId: id,
+                        title: String(row?.title || `Post ${id}`).trim(),
+                        type: String(row?.postType || row?.type || "post").trim() || "post",
+                    });
+                    return true;
+                };
                 const submitPrompt = () => {
-                    const value = textarea?.value.trim() || "";
+                    const notes = textarea?.value.trim() || "";
+                    const value = notes || pageTitle;
                     if (!value) {
-                        Alert.error("Write source text for the article");
+                        Alert.error("Write a topic or notes for the article");
                         return;
                     }
-                    if (value.length > max) {
-                        Alert.error(`Source text must be ${max} characters or fewer`);
+                    if (notes.length > max) {
+                        Alert.error(`Notes must be ${max} characters or fewer`);
                         return;
                     }
                     finish({
@@ -221,42 +242,20 @@ export class ArticleGenerate {
                     });
                 };
                 textarea?.addEventListener("input", syncCount);
-                pickTemplate?.addEventListener("click", async () => {
-                    const picked = await WebSelector.init("Dyscover", "template");
-                    const id = String(picked?.url || picked?.postId || "").trim();
-                    if (!id) {
-                        return;
-                    }
-                    templateId = id;
-                    templateTitle = String(picked?.title || `Template ${id}`).trim();
-                    await syncPicks();
-                });
-                pickPosts?.addEventListener("click", async () => {
+                attach?.addEventListener("click", async () => {
                     const picked = await WebSelector.init("Dyscover", "post", {
                         multiple: true,
                     });
                     const rows = Array.isArray(picked) ? picked : picked ? [picked] : [];
-                    const before = posts.length;
                     rows.forEach((row) => {
-                        const id = String(row?.postId || "").trim();
-                        if (!id || posts.some((item) => item.postId === id)) {
+                        const type = String(row?.postType || row?.type || "").trim().toLowerCase();
+                        if (type === "template") {
+                            templateId = String(row?.postId || row?.url || "").trim();
+                            templateTitle = String(row?.title || "Template").trim();
                             return;
                         }
-                        if (posts.length >= ArticleGenerate.MAX_POSTS) {
-                            return;
-                        }
-                        posts.push({
-                            postId: id,
-                            title: String(row?.title || `Post ${id}`).trim(),
-                            type: String(row?.postType || "post").trim() || "post",
-                        });
+                        addPost(row);
                     });
-                    const added = posts.length - before;
-                    if (rows.length > added && posts.length >= ArticleGenerate.MAX_POSTS) {
-                        Alert.error(
-                            `You can attach up to ${ArticleGenerate.MAX_POSTS} posts`,
-                        );
-                    }
                     await syncPicks();
                 });
                 submit?.addEventListener("click", submitPrompt);
