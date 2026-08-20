@@ -104,11 +104,6 @@ export class GoogleLogin {
                 formData,
             );
             Alert.success(Api.message(response) || "Signed in successfully");
-            const record = Api.record(response);
-            if (record?.signup_required) {
-                window.location.href = "https://account.ielectro.com/oauth-create";
-                return;
-            }
             if (await this.authenticated()) {
                 this.redirect();
             }

@@ -804,7 +804,12 @@ class ArticleGenerate
                 'role' => 'system',
                 'content' => 'Fill ALL infobox fields with encyclopedic values. Reply ONLY JSON slug=>value for every field listed. '
                     . 'NEVER add [[Label|url]] links in formation, dates, term-length, salary, incumbent, or image fields. '
-                    . 'Formation/history fields use plain milestone text only, e.g. Presidential Decree 1957 ;; 9 May 1957. '
+                    . 'Formation fields must show 4 to 6 major political stages of the country or organization '
+                    . '(historical states, kingdoms/empires, unification, independence, revolutions, major treaties, '
+                    . 'or the current political order). Prefer political transformations over wars or every constitution. '
+                    . 'Do NOT use placeholder 2020/2021 constitution-only rows. Invent older plausible stages when needed. '
+                    . 'Dates MUST use American format: September 7, 1186; June 21, 1264; or ancient forms like 253 BC / 132. '
+                    . 'Event names must be concise with no descriptions. Format: Event ;; Date on each bullet line. '
                     . 'Use [[Label|url]] links ONLY in institution or office fields when the link title clearly matches '
                     . $primaryEntity . ' or the article topic. If no exact match exists, use plain text. '
                     . 'For image/audio fields leave empty; PHP attaches verified media later. '

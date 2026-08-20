@@ -3,7 +3,6 @@ namespace Account;
 use Nesh\Response;
 use Nesh\Request;
 use Nesh\Routing;
-use Nesh\Cookie;
 use Nesh\Query;
 use Nesh\Client;
 use Nesh\Identity;
@@ -11,18 +10,8 @@ class Oauth {
     public function google(): void
     {
         Routing::method([
-            'GET' => fn() => $this->readPending(),
             'POST' => fn() => $this->authenticate(),
         ]);
-    }
-    private function readPending(): void
-    {
-        Request::get();
-        $pending = Pending::get();
-        if (!$pending) {
-            Response::notFound('No pending Google sign-up');
-        }
-        Response::success($pending);
     }
     private function authenticate(): void
     {
@@ -39,29 +28,29 @@ class Oauth {
             Response::unauthorized('Invalid Google credential');
         }
         $profile = Google::profile($payload);
+        if ($profile['email'] === '' || $profile['sub'] === '') {
+            Response::badRequest('Invalid Google account');
+        }
         $account = Query::fetch(
             "SELECT id FROM ielectro_account.accounts WHERE email = ? LIMIT 1",
             [$profile['email']]
         );
-        if (!$account) {
-            if ($profile['sub'] === '') {
-                Response::badRequest('Invalid Google account');
-            }
-            Pending::create(
-                $profile['email'],
-                $profile['name'],
-                $profile['surname'],
-                $profile['sub']
+        if ($account) {
+            Session::create((int) $account['id']);
+            Activity::log(
+                (int) $account['id'],
+                'login',
+                'Login from Google'
             );
-            Response::success([
-                'email' => $profile['email'],
-                'name' => $profile['name'],
-                'surname' => $profile['surname'],
-                'signup_required' => true,
-            ]);
+            Response::success('Signed in successfully');
         }
-        Pending::delete();
-        Session::create((int) $account['id']);
+        $accountId = Create::fromGoogle($profile);
+        Session::create($accountId);
+        Activity::log(
+            $accountId,
+            'register',
+            'Account created with Google.'
+        );
         Response::success('Signed in successfully');
     }
 }
@@ -124,56 +113,5 @@ class Google
             'surname' => $surname,
             'sub' => trim((string) ($payload['sub'] ?? '')),
         ];
-    }
-}
-class Pending
-{
-    private const COOKIE = 'google_signup_token';
-    private const PROVIDER = 'google';
-    private const TTL = 1200;
-    public static function create(
-        string $email,
-        string $name,
-        string $surname,
-        string $providerAccountId
-    ): void {
-        $token = bin2hex(random_bytes(32));
-        $tokenHash = hash('sha256', $token);
-        Query::execute(
-            "DELETE FROM ielectro_account.account_oauth_pending WHERE provider = ? AND email = ?",
-            [self::PROVIDER, $email]
-        );
-        Query::execute(
-            "INSERT INTO ielectro_account.account_oauth_pending(provider, provider_account_id, token_hash, email, name, surname, expires_at) VALUES (?, ?, ?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 20 MINUTE))",
-            [self::PROVIDER, $providerAccountId, $tokenHash, $email, $name, $surname]
-        );
-        Cookie::set(self::COOKIE, $token, time() + self::TTL);
-    }
-    public static function get(): ?array
-    {
-        $token = Cookie::get(self::COOKIE);
-        if (!$token) {
-            return null;
-        }
-        return Query::fetch(
-            "SELECT email, name, surname FROM ielectro_account.account_oauth_pending WHERE provider = ? AND token_hash = ? AND expires_at > NOW() LIMIT 1",
-            [self::PROVIDER, hash('sha256', $token)]
-        );
-    }
-    public static function clear(): void
-    {
-        Cookie::delete(self::COOKIE);
-    }
-    public static function delete(): void
-    {
-        $token = Cookie::get(self::COOKIE);
-        if (!$token) {
-            return;
-        }
-        Query::execute(
-            "DELETE FROM ielectro_account.account_oauth_pending WHERE provider = ? AND token_hash = ?",
-            [self::PROVIDER, hash('sha256', $token)]
-        );
-        Cookie::delete(self::COOKIE);
     }
 }

@@ -85,7 +85,7 @@
     text-align: center;
 }
 .template tbody > tr > th[colspan="2"]:only-child {
-    text-align: left;
+    text-align: center;
 }
 .template thead tr {
     font-size: 1.05rem;

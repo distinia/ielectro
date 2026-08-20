@@ -40,7 +40,6 @@ class Create
         $account = $this->validate();
         $accountId = $this->insert($account);
         Services::create($accountId);
-        Pending::delete();
         Session::create($accountId);
         Activity::log(
             $accountId,
@@ -49,9 +48,39 @@ class Create
         );
         Response::created('Account created successfully');
     }
+    public static function fromGoogle(array $profile): int
+    {
+        $email = Strings::normalize((string) ($profile['email'] ?? ''));
+        if (!Validate::email($email)) {
+            Response::badRequest('Invalid email');
+        }
+        if (
+            Query::exists(
+                "SELECT 1
+                FROM ielectro_account.accounts
+                WHERE email = ?",
+                [$email]
+            )
+        ) {
+            Response::conflict('Email already exists');
+        }
+        $name = trim((string) ($profile['name'] ?? ''));
+        $surname = trim((string) ($profile['surname'] ?? ''));
+        $accountId = (new self())->insert([
+            'username' => self::generateUsername(),
+            'name' => $name !== '' ? $name : null,
+            'surname' => $surname !== '' ? $surname : null,
+            'birthday' => null,
+            'gender' => null,
+            'email' => $email,
+            'password' => null,
+            'email_verified' => true,
+        ]);
+        Services::create($accountId);
+        return $accountId;
+    }
     private function validate(): array
     {
-        $oauthSignup = Pending::get() !== null;
         $account = [
             'username' => Strings::normalize(Request::value('username')),
             'name' => trim((string) Request::value('name')),
@@ -59,20 +88,17 @@ class Create
             'birthday' => trim((string) Request::value('birthday')),
             'gender' => trim((string) Request::value('gender')),
             'email' => Strings::normalize(Request::value('email')),
-            'password' => (string) Request::value('password')
+            'password' => (string) Request::value('password'),
+            'email_verified' => false,
         ];
         if (!Validate::required($account['username'])) {
-            $account['username'] = $this->generateUsername();
+            $account['username'] = self::generateUsername();
         }
         if (!Validate::required($account['password'])) {
-            if ($oauthSignup) {
-                $account['password'] = null;
-            } else {
-                Response::badRequest('Password is required');
-            }
+            Response::badRequest('Password is required');
         }
         foreach ($account as $key => $value) {
-            if ($key === 'password' && $value === null) {
+            if ($key === 'email_verified') {
                 continue;
             }
             if (!Validate::required($value)) {
@@ -91,10 +117,7 @@ class Create
         if (!Validate::in($account['gender'], ['Male', 'Female', 'Other'])) {
             Response::badRequest('Invalid gender');
         }
-        if (
-            $account['password'] !== null
-            && !Validate::min($account['password'], 8)
-        ) {
+        if (!Validate::min($account['password'], 8)) {
             Response::badRequest('Password must be at least 8 characters');
         }
         if (
@@ -131,9 +154,10 @@ class Create
                     birthday,
                     gender,
                     email,
-                    password_hash
+                    password_hash,
+                    email_verified_at
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?)",
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 [
                     $account['username'],
                     $account['name'],
@@ -143,7 +167,8 @@ class Create
                     $account['email'],
                     $account['password'] === null
                         ? null
-                        : Password::hash($account['password'])
+                        : Password::hash($account['password']),
+                    !empty($account['email_verified']) ? date('Y-m-d H:i:s') : null,
                 ]
             );
             $accountId = Query::lastId();
@@ -154,7 +179,7 @@ class Create
             Response::error('Unable to create account');
         }
     }
-    private function generateUsername(): string
+    private static function generateUsername(): string
     {
         do {
             $username = 'user' . random_int(10000000, 99999999);

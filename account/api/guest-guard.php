@@ -6,7 +6,6 @@ class GuestGuard
     private const GUEST_PAGES = [
         'login',
         'create',
-        'oauth-create',
         'password-recovery',
     ];
     public static function maybeRedirect(): void

@@ -2,7 +2,7 @@ import Nesh from "https://nesh.ielectro.com/scripts/nesh.js";
 import { Sidebar } from "./sidebar.js";
 import { Session } from "./session.js";
 export class App {
-    static guestPages = ["login", "create", "oauth-create", "password-recovery"];
+    static guestPages = ["login", "create", "password-recovery"];
     constructor() {
         this.init();
     }
