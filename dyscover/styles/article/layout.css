@@ -192,6 +192,55 @@ body.article-page.is-text-editing .article-scroll {
 body.article-page.is-text-editing .article-source-editor {
     display: block;
 }
+.article-source-find-wrap {
+    position: relative;
+    display: none;
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+}
+body.article-page.is-text-editing .article-source-find-wrap {
+    display: flex;
+    flex-direction: column;
+}
+body.article-page.is-text-editing .article-source-find-wrap .article-source-editor {
+    position: relative;
+    z-index: 1;
+    flex: 1 1 auto;
+    min-height: 0;
+    color: transparent;
+    caret-color: #0f172a;
+    background: transparent;
+    scrollbar-gutter: stable;
+}
+.article-source-find-highlights {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    margin: 0;
+    overflow: auto;
+    pointer-events: none;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+    tab-size: 4;
+    padding: clamp(1.25rem, 2.5vw, 2.25rem) clamp(1.5rem, 3vw, 2.5rem)
+        clamp(2rem, 4vw, 3rem);
+    border: none;
+    border-radius: 0;
+    font-family: "Cascadia Code", "Consolas", "Courier New", monospace;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: #0f172a;
+    background: #f8fafc;
+    box-shadow: inset 0 1px 0 rgba(15, 23, 42, 0.05);
+    scrollbar-gutter: stable;
+    scrollbar-width: none;
+}
+.article-source-find-highlights::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
 .instruments .btn.instrument {
     width: 42px;
     height: 42px;

@@ -13,6 +13,9 @@ const SIDEBAR_HTML = `
             <button type="button" class="index-edit-button" aria-label="Edit article">
                 <i data-icon="pencil"></i>
             </button>
+            <button type="button" class="index-save-button" aria-label="Save article" title="Save">
+                <i data-icon="save"></i>
+            </button>
             <button type="button" class="index-mode-button" aria-label="Switch editor mode" title="Text editor">
                 <i data-icon="file-text"></i>
             </button>
@@ -45,6 +48,26 @@ function upgradeSidebarHeader(sidebar) {
         actions.prepend(editButton);
     }
     header.querySelectorAll(".index-pdf-button").forEach((button) => button.remove());
+    if (!header.querySelector(".index-save-button")) {
+        const saveButton = document.createElement("button");
+        saveButton.type = "button";
+        saveButton.className = "index-save-button";
+        saveButton.setAttribute("aria-label", "Save article");
+        saveButton.title = "Save";
+        saveButton.innerHTML = `<i data-icon="save"></i>`;
+        const edit = header.querySelector(".index-edit-button");
+        if (edit) {
+            edit.after(saveButton);
+        } else {
+            actions.appendChild(saveButton);
+        }
+    } else {
+        const saveButton = header.querySelector(".index-save-button");
+        const edit = header.querySelector(".index-edit-button");
+        if (saveButton && edit) {
+            edit.after(saveButton);
+        }
+    }
     if (!header.querySelector(".index-mode-button")) {
         const modeButton = document.createElement("button");
         modeButton.type = "button";
@@ -52,7 +75,12 @@ function upgradeSidebarHeader(sidebar) {
         modeButton.setAttribute("aria-label", "Switch editor mode");
         modeButton.title = "Text editor";
         modeButton.innerHTML = `<i data-icon="file-text"></i>`;
-        actions.appendChild(modeButton);
+        const save = header.querySelector(".index-save-button");
+        if (save) {
+            save.after(modeButton);
+        } else {
+            actions.appendChild(modeButton);
+        }
     }
     if (!header.querySelector(".index-help-button")) {
         const helpButton = document.createElement("button");

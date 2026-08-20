@@ -2,7 +2,6 @@ import { Alert, Icons } from "../core/index.js";
 import { API } from "./api.js";
 import { Select } from "./select.js";
 import { Index } from "./article-index.js";
-import { Save } from "./save.js";
 import { ReplaceText } from "./replace-text.js";
 import { Paragraph } from "./paragraph.js";
 import { Heading } from "./heading.js";
@@ -752,7 +751,12 @@ export class Editor {
         const container = document.createElement("div");
         container.className = "instruments";
         this.instruments
-            .filter((item) => item?.action && item?.title)
+            .filter(
+                (item) =>
+                    item?.action &&
+                    item?.title &&
+                    item.action !== "save",
+            )
             .forEach((item) => {
             const btn = document.createElement("div");
             btn.className = "btn instrument";
@@ -778,8 +782,6 @@ export class Editor {
             const btn = e.target.closest(".instrument");
             if (!btn) return;
             switch (btn.dataset.action) {
-                case "save":
-                    return Save.init();
                 case "undo":
                     return this.runHistory("undo");
                 case "redo":

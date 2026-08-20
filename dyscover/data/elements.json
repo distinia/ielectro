@@ -5,11 +5,6 @@
         "text": ""
     },
     {
-        "title": "Save",
-        "class": "Save",
-        "icon": "save"
-    },
-    {
         "title": "Undo",
         "class": "Undo",
         "icon": "undo-2"

@@ -60,9 +60,10 @@
         font-size: 0.88rem;
     }
     .percentage {
-        width: min(140px, 100%);
+        width: min(11rem, 100%);
+    }
+    .percentage-value {
         height: 9px;
-        margin-right: 2.85rem;
     }
     .percentage::after {
         font-size: 0.75rem;

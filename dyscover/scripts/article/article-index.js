@@ -5,6 +5,7 @@ import { Editor } from "./editor.js";
 import { EditorHelp } from "./editor-help.js";
 import { ArticleGenerate } from "./article-generate.js";
 import { ReplaceText } from "./replace-text.js";
+import { Save } from "./save.js";
 export class Index {
     constructor() {
         this.sidebar = document.querySelector(".article-index-sidebar");
@@ -46,6 +47,7 @@ export class Index {
         const helpButton = this.sidebar.querySelector(".index-help-button");
         const replaceButton = this.sidebar.querySelector(".index-replace-button");
         const generateButton = this.sidebar.querySelector(".index-generate-button");
+        const saveButton = this.sidebar.querySelector(".index-save-button");
         const modeButton = this.sidebar.querySelector(".index-mode-button");
         const isEditor = getArticleState() === "editor";
         const isEditing = !!Editor.current?.isEditing;
@@ -80,8 +82,19 @@ export class Index {
                 ? () => Editor.toggleEditing()
                 : null;
             this.editButton.title = isEditor
-                ? "Edit article"
+                ? isEditing
+                    ? "Close editor"
+                    : "Edit article"
                 : "";
+            this.editButton.setAttribute(
+                "aria-label",
+                isEditing ? "Close editor" : "Edit article",
+            );
+        }
+        if (saveButton) {
+            saveButton.classList.toggle("is-visible", canTools);
+            saveButton.title = "Save";
+            saveButton.onclick = canTools ? () => Save.init() : null;
         }
         if (modeButton) {
             modeButton.classList.toggle("is-visible", isEditor && isEditing);

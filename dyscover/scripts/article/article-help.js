@@ -24,6 +24,8 @@ export const ArticleHelp = {
         <p><strong>Find and replace</strong> text inside the article body.</p>
         <ul>
             <li>Search is case-sensitive (e.g. <code>RuTo</code> does not match <code>ruto</code>).</li>
+            <li>Matches are highlighted in both graphic and text mode.</li>
+            <li>Use the next button (or <kbd>F3</kbd>) to cycle matches from the first occurrence.</li>
             <li>The article title is never modified.</li>
             <li>Leave replace empty to delete matched text.</li>
         </ul>`,
@@ -31,6 +33,7 @@ export const ArticleHelp = {
         <p>Use the toolbar above the article to format content visually.</p>
         <ul>
             <li><strong>Undo / Redo</strong> — reverse or restore the last edits.</li>
+            <li><strong>Save</strong> — use the green save button next to Close in the Index sidebar.</li>
             <li><strong>Find and replace</strong> — use the search button in the Index sidebar (works in graphic and text mode).</li>
             <li><strong>Paragraph</strong> — click in the text and type. Press <kbd>Enter</kbd> for a new paragraph.</li>
             <li><strong>Heading / Sub heading</strong> — place the cursor in a paragraph, then use the toolbar.</li>

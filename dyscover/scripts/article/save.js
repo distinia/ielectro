@@ -9,17 +9,34 @@ export class Save {
     }
     static async init() {
         const editingContainer = Select.container();
-        if (!editingContainer) return;
-        if (Editor.current?.isTextMode) {
-            await Editor.current.applySourceToContent();
+        if (!editingContainer && !Editor.current?.content) {
+            return;
         }
-        const content = Editor.stripContentEditableHtml(
-            Editor.current?.content?.innerHTML ?? editingContainer.innerHTML,
-        );
         const result = await Alert.confirm("Do you want to save changes");
-        if (!result) return;
+        if (!result) {
+            return;
+        }
+        let content;
+        try {
+            content = Editor.stripContentEditableHtml(
+                (await Editor.current?.getHtmlContent()) ||
+                    editingContainer?.innerHTML ||
+                    "",
+            );
+        } catch (e) {
+            Alert.error(
+                e?.message || e?.text || "Unable to prepare article for save",
+            );
+            return;
+        }
+        if (!content.trim()) {
+            Alert.error("Nothing to save");
+            return;
+        }
         const instance = new Save(content);
-        Save.list.set(editingContainer, instance);
+        if (editingContainer) {
+            Save.list.set(editingContainer, instance);
+        }
         try {
             const res = await API.saveArticle(instance.content);
             Alert.success(res);

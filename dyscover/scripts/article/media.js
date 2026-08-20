@@ -199,6 +199,7 @@ export class Media {
         img.loading = "lazy";
         img.draggable = false;
         img.setAttribute("draggable", "false");
+        const caption = document.createElement("figcaption");
         caption.textContent = "Text";
         figure.appendChild(img);
         figure.appendChild(caption);

@@ -15,12 +15,7 @@ export class Percentage {
         ];
         this.menu = new Menu(this);
         Percentage.list.set(this.element, this);
-        if (!element.dataset.percentage && element.dataset.value) {
-            element.dataset.percentage = Percentage.formatDisplay(
-                element.dataset.value,
-                this.width,
-            );
-        }
+        this.syncDisplay();
     }
     static async init() {
         const range = Select.cursor();
@@ -44,24 +39,40 @@ export class Percentage {
         Select.cursorToEnd(instance.element);
     }
     static formatDisplay(value, width) {
-        const raw = String(value || "").trim();
-        if (raw.includes("/")) {
-            return raw;
-        }
-        const rounded = Math.round(Number(width) || 0);
-        return `${rounded}%`;
+        const resolved = Number.isFinite(Number(width))
+            ? Number(width)
+            : Percentage.calculate(value) || 0;
+        return `${Math.round(resolved)}%`;
     }
     static create(width, value) {
         const element = document.createElement("div");
         element.className = Percentage.className;
         element.contentEditable = false;
-        element.dataset.value = value;
-        element.dataset.percentage = Percentage.formatDisplay(value, width);
+        element.dataset.value = String(value ?? "");
         const bar = document.createElement("div");
         bar.classList.add("percentage-value");
-        bar.style.width = width + "%";
         element.appendChild(bar);
+        Percentage.applyWidth(element, width, value);
         return element;
+    }
+    static applyWidth(element, width, value = element?.dataset?.value) {
+        if (!element) {
+            return;
+        }
+        const resolved = Number.isFinite(Number(width))
+            ? Math.max(0, Math.min(100, Number(width)))
+            : 0;
+        element.dataset.value = String(value ?? element.dataset.value ?? "0");
+        element.dataset.percentage = Percentage.formatDisplay(
+            element.dataset.value,
+            resolved,
+        );
+        element.style.setProperty("--percentage-width", `${resolved}%`);
+        const bar = element.querySelector(".percentage-value");
+        if (bar) {
+            bar.style.width = "";
+            bar.style.removeProperty("width");
+        }
     }
     static generate(obj) {
         const width = Percentage.calculate(obj.value) || 0;
@@ -76,19 +87,31 @@ export class Percentage {
     }
     static calculate(value) {
         if (!value) return null;
-        if (value.includes("/")) {
-            const [num, den] = value.split("/").map((v) => parseFloat(v));
+        const raw = String(value).trim();
+        if (raw.includes("/")) {
+            const [num, den] = raw.split("/").map((v) => parseFloat(v));
             if (!den || den === 0 || num > den) {
                 return null;
             }
             return (num / den) * 100;
         }
-        const n = parseFloat(value);
+        const n = parseFloat(raw);
         return isNaN(n) ? null : n;
+    }
+    syncDisplay() {
+        const fromValue = Percentage.calculate(this.value);
+        let width = fromValue;
+        if (width === null) {
+            const bar = this.element.querySelector(".percentage-value");
+            const inline = parseFloat(bar?.style?.width || "");
+            width = Number.isFinite(inline) ? inline : 0;
+        }
+        this.width = width || 0;
+        Percentage.applyWidth(this.element, this.width, this.value);
     }
     startEditing() {
         this.element.contentEditable = false;
-        this.menu.startEditing();
+        this.menu.startEditing({ openOnClick: true });
     }
     closeEditing() {
         this.element.contentEditable = false;
@@ -107,12 +130,7 @@ export class Percentage {
         }
         this.value = value;
         this.width = width;
-        this.element.dataset.value = value;
-        this.element.dataset.percentage = Percentage.formatDisplay(value, width);
-        const bar = this.element.querySelector(".percentage-value");
-        if (bar) {
-            bar.style.width = width + "%";
-        }
+        Percentage.applyWidth(this.element, width, value);
     }
     delete() {
         this.closeEditing();

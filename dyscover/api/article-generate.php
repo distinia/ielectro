@@ -805,9 +805,14 @@ class ArticleGenerate
                 'content' => 'Fill ALL infobox fields with encyclopedic values. Reply ONLY JSON slug=>value for every field listed. '
                     . 'NEVER add [[Label|url]] links in formation, dates, term-length, salary, incumbent, or image fields. '
                     . 'Formation fields must show 4 to 6 major political stages of the country or organization '
-                    . '(historical states, kingdoms/empires, unification, independence, revolutions, major treaties, '
-                    . 'or the current political order). Prefer political transformations over wars or every constitution. '
-                    . 'Do NOT use placeholder 2020/2021 constitution-only rows. Invent older plausible stages when needed. '
+                    . '(Kingdom, Empire, Unification, Independence, Revolution, Treaty, Proclamation, Current constitution). '
+                    . 'NEVER use the full official country/organization name as an event (e.g. not "Kingdom of Jarnovia", '
+                    . 'not "Republic of X", not "Edrobean Community" as a row). Prefer short labels: Kingdom, Empire, '
+                    . 'Proclamation, Coronation of X, Treaty of X. NEVER use form-of-state labels such as Constitutional '
+                    . 'Monarchy, Parliamentary Monarchy, Modern Kingdom, Modern Party State, Liberal Republic, Federal '
+                    . 'Constitution, Presidential Republic. Final row should usually be "Current constitution" (or '
+                    . '"Current treaty"/"Current charter" for organizations), not the entity\'s full name. '
+                    . 'Prefer political transformations over wars. Do NOT use placeholder 2020/2021 constitution-only rows. '
                     . 'Dates MUST use American format: September 7, 1186; June 21, 1264; or ancient forms like 253 BC / 132. '
                     . 'Event names must be concise with no descriptions. Format: Event ;; Date on each bullet line. '
                     . 'Use [[Label|url]] links ONLY in institution or office fields when the link title clearly matches '
@@ -941,6 +946,8 @@ MEDIA:
 TABLES — Use | table | rows when the attached HTML contains comparable tabular data. Use {{icon-image|url}} inside table cells when icon images are available. Use {{percent|...}} and {{legend|...}} elements ONLY inside {{template|...}} blocks or | table | rows, never in free-text paragraphs.
 
 ANTI-REPETITION — Never repeat the same sentence, claim, or wording across paragraphs or sections. Each paragraph must add new information. If two paragraphs are semantically similar, rewrite the second one with new facts.
+
+ACRONYMS — Do NOT write parenthetical acronyms after names. Write "Global Reserve Fund", never "Global Reserve Fund (GRF)". Do not introduce organizations as "Name (ABC)". Prefer the full name on later mentions instead of a bare acronym.
 
 STRICT ENDING RULES:
 - Output # See also ONLY if at least 2 verified links are available from the provided catalog.
