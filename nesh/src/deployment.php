@@ -99,6 +99,7 @@ final class Deployment
         if ($updatedAutoload !== $autoload) {
             file_put_contents($this->autoloadPath, $updatedAutoload);
         }
+        $userAssets = $this->clearUserAssetDirectories();
         return [
             'mode' => $mode,
             'base_url' => $baseUrl,
@@ -106,7 +107,21 @@ final class Deployment
             'applications' => $applicationUrls,
             'files_updated' => $fileStats['files'],
             'replacements' => $fileStats['replacements'],
+            'user_assets_cleared' => $userAssets,
         ];
+    }
+    private function clearUserAssetDirectories(): array
+    {
+        $cleared = [];
+        foreach (self::FOLDERS as $folder) {
+            $path = $this->root . '/' . $folder . '/assets/users';
+            if (!is_dir($path)) {
+                continue;
+            }
+            File::emptyDirectory($path);
+            $cleared[] = $folder . '/assets/users';
+        }
+        return $cleared;
     }
     public function parseUrl(string $url): array
     {

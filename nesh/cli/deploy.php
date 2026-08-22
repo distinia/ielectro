@@ -2,12 +2,12 @@
 use Nesh\Deployment;
 $url = $argv[2] ?? '';
 if ($url === '') {
-    echo 'Usage: php nesh domain <URL>' . PHP_EOL;
+    echo 'Usage: php nesh deploy <URL>' . PHP_EOL;
     echo PHP_EOL;
     echo 'Examples:' . PHP_EOL;
-    echo '  php nesh domain https://ielectro.com' . PHP_EOL;
-    echo '  php nesh domain https://ielectro.altervista.org' . PHP_EOL;
-    echo '  php nesh domain http://localhost/ielectro' . PHP_EOL;
+    echo '  php nesh deploy https://ielectro.com' . PHP_EOL;
+    echo '  php nesh deploy https://ielectro.altervista.org' . PHP_EOL;
+    echo '  php nesh deploy http://localhost/ielectro' . PHP_EOL;
     exit(1);
 }
 try {
@@ -34,5 +34,12 @@ foreach (Deployment::folders() as $folder) {
 echo PHP_EOL;
 echo 'Project files updated: ' . $result['files_updated'] . PHP_EOL;
 echo 'URL replacements: ' . $result['replacements'] . PHP_EOL;
+if (!empty($result['user_assets_cleared'])) {
+    echo PHP_EOL;
+    echo 'User assets cleared:' . PHP_EOL;
+    foreach ($result['user_assets_cleared'] as $path) {
+        echo '- ' . $path . PHP_EOL;
+    }
+}
 echo PHP_EOL;
 echo 'Deployment completed successfully.' . PHP_EOL;
