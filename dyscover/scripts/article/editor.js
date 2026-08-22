@@ -334,15 +334,32 @@ export class Editor {
         if (!this._graphicEditBound) {
             this._graphicEditBound = true;
             this._contentKeydown = (event) => this.handleGraphicKeydown(event);
+            this._contentInput = () => this.scheduleChromeCleanup();
             this.content.addEventListener("keydown", this._contentKeydown);
+            this.content.addEventListener("input", this._contentInput);
         }
         this.content.contentEditable = true;
         this._activeEditBlock = null;
+        Editor.cleanChromeMarkup(this.content);
+    }
+    scheduleChromeCleanup() {
+        clearTimeout(this._chromeCleanTimer);
+        this._chromeCleanTimer = setTimeout(() => {
+            if (!this.isEditing || this.isTextMode || !this.content) {
+                return;
+            }
+            Editor.cleanChromeMarkup(this.content, { preserveCaret: true });
+        }, 120);
     }
     disableGraphicContentEditing() {
+        clearTimeout(this._chromeCleanTimer);
         if (this._contentKeydown) {
             this.content?.removeEventListener("keydown", this._contentKeydown);
             this._contentKeydown = null;
+        }
+        if (this._contentInput) {
+            this.content?.removeEventListener("input", this._contentInput);
+            this._contentInput = null;
         }
         this._graphicEditBound = false;
         this._activeEditBlock = null;
@@ -590,6 +607,7 @@ export class Editor {
     static hydrateLegacyContent(container) {
         if (!container) return;
         Editor.stripContentEditable(container);
+        Editor.cleanChromeMarkup(container);
         container.querySelectorAll("h2").forEach((el) => {
             if (!el.classList.contains("heading")) {
                 el.classList.add("heading");
@@ -639,6 +657,123 @@ export class Editor {
             element.removeAttribute?.("contenteditable");
         }
     }
+    static stripEditorStyleNoise(styleText) {
+        return String(styleText || "")
+            .replace(/font-size\s*:\s*[^;]+;?/gi, "")
+            .replace(/font-family\s*:\s*[^;]+;?/gi, "")
+            .replace(/letter-spacing\s*:\s*[^;]+;?/gi, "")
+            .replace(/caret-color\s*:\s*[^;]+;?/gi, "")
+            .replace(/text-size-adjust\s*:\s*[^;]+;?/gi, "")
+            .replace(/-webkit-text-size-adjust\s*:\s*[^;]+;?/gi, "")
+            .replace(/;\s*;+/g, ";")
+            .replace(/^\s*;\s*|\s*;\s*$/g, "")
+            .trim();
+    }
+    static isChromeSpan(span) {
+        if (!(span instanceof HTMLElement) || span.tagName !== "SPAN") {
+            return false;
+        }
+        if (span.classList.contains("template-newline")) {
+            return false;
+        }
+        if (span.classList.length > 0 || span.id) {
+            return false;
+        }
+        for (const attr of span.attributes) {
+            if (attr.name !== "style") {
+                return false;
+            }
+        }
+        return true;
+    }
+    static unwrapElement(element) {
+        const parent = element.parentNode;
+        if (!parent) {
+            return;
+        }
+        while (element.firstChild) {
+            parent.insertBefore(element.firstChild, element);
+        }
+        parent.removeChild(element);
+    }
+    static saveCaretOffset(root) {
+        const selection = window.getSelection();
+        if (!selection?.rangeCount || !root.contains(selection.anchorNode)) {
+            return null;
+        }
+        const pre = document.createRange();
+        pre.selectNodeContents(root);
+        pre.setEnd(selection.anchorNode, selection.anchorOffset);
+        return pre.toString().length;
+    }
+    static restoreCaretOffset(root, offset) {
+        if (offset == null || !root) {
+            return;
+        }
+        const selection = window.getSelection();
+        if (!selection) {
+            return;
+        }
+        const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+        let remaining = offset;
+        let node = walker.nextNode();
+        while (node) {
+            const length = node.textContent?.length || 0;
+            if (remaining <= length) {
+                const range = document.createRange();
+                range.setStart(node, Math.max(0, remaining));
+                range.collapse(true);
+                selection.removeAllRanges();
+                selection.addRange(range);
+                return;
+            }
+            remaining -= length;
+            node = walker.nextNode();
+        }
+        const range = document.createRange();
+        range.selectNodeContents(root);
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }
+    static cleanChromeMarkup(root, options = {}) {
+        if (!root?.querySelectorAll) {
+            return;
+        }
+        const preserveCaret = !!options.preserveCaret;
+        const caret = preserveCaret ? Editor.saveCaretOffset(root) : null;
+        root.querySelectorAll("[style]").forEach((element) => {
+            const cleaned = Editor.stripEditorStyleNoise(
+                element.getAttribute("style"),
+            );
+            if (cleaned) {
+                element.setAttribute("style", cleaned);
+            } else {
+                element.removeAttribute("style");
+            }
+        });
+        let guard = 0;
+        while (guard < 40) {
+            const spans = [...root.querySelectorAll("span")].filter((span) =>
+                Editor.isChromeSpan(span),
+            );
+            if (!spans.length) {
+                break;
+            }
+            spans
+                .sort(
+                    (a, b) =>
+                        b.querySelectorAll("*").length -
+                        a.querySelectorAll("*").length,
+                )
+                .forEach((span) => Editor.unwrapElement(span));
+            guard += 1;
+        }
+        root.normalize?.();
+        if (preserveCaret) {
+            Editor.restoreCaretOffset(root, caret);
+        }
+    }
     static stripContentEditableHtml(html) {
         if (!html) {
             return html;
@@ -646,6 +781,7 @@ export class Editor {
         const container = document.createElement("div");
         container.innerHTML = html;
         Editor.stripContentEditable(container);
+        Editor.cleanChromeMarkup(container);
         return container.innerHTML;
     }
     getSelectors(Class) {
@@ -1149,7 +1285,9 @@ export class Editor {
         }
         ReplaceText.list.forEach((instance) => instance.closeEditing());
         this.unbindLazyBlockEditing();
+        this.disableGraphicContentEditing();
         Editor.stripContentEditable(this.content);
+        Editor.cleanChromeMarkup(this.content);
         await this.activateManagedElements(false);
         await this.setLinkEditing(false);
         await this.index.closeEditing();

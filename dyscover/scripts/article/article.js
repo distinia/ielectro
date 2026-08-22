@@ -19,6 +19,7 @@ export class Article {
                 content.innerHTML = Nesh.LazyMedia.enrichHtml(res.content || "");
                 Nesh.LazyMedia.apply(content);
                 Editor.stripContentEditable(content);
+                Editor.cleanChromeMarkup(content);
             }
             document.body.dataset.uuid = res.uuid;
             new Editor();
