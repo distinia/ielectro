@@ -2,7 +2,7 @@
 require __DIR__ . '/../src/autoload.php';
 global $argv;
 $command = strtolower($argv[1] ?? '');
-$allowed = ['install', 'db', 'deploy', 'help'];
+$allowed = ['install', 'database', 'deploy', 'help'];
 if ($command === '' || !in_array($command, $allowed, true)) {
     echo 'Usage: php nesh <command> [arguments]' . PHP_EOL;
     echo PHP_EOL;

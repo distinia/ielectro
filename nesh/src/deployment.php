@@ -63,6 +63,9 @@ final class Deployment
         'vendor',
         'node_modules',
     ];
+    private const COPY_SKIP_DIRS = [
+        '.git',
+    ];
     private string $root;
     private string $autoloadPath;
     public function __construct(string $root)
@@ -73,6 +76,160 @@ final class Deployment
     public static function folders(): array
     {
         return self::FOLDERS;
+    }
+    public static function folderNameFromUrl(string $url): string
+    {
+        $deployment = new self(ROOT_PATH);
+        $parsed = $deployment->parseUrl($url);
+        $host = strtolower($parsed['host'] ?? '');
+        if ($host === '') {
+            throw new \InvalidArgumentException('Unable to derive deployment folder name.');
+        }
+        $safe = preg_replace('/[^A-Za-z0-9._-]+/', '-', $host) ?? $host;
+        $safe = trim($safe, '.-');
+        if ($safe === '') {
+            throw new \InvalidArgumentException('Unable to derive deployment folder name.');
+        }
+        return $safe;
+    }
+    public static function pathFromUrl(string $url): string
+    {
+        return dirname(ROOT_PATH) . '/' . self::folderNameFromUrl($url);
+    }
+    public static function copyProject(string $sourceRoot, string $targetRoot): void
+    {
+        $sourceRoot = rtrim(str_replace('\\', '/', $sourceRoot), '/');
+        $targetRoot = rtrim(str_replace('\\', '/', $targetRoot), '/');
+        if (!is_dir($sourceRoot)) {
+            throw new \RuntimeException('Source project not found: ' . $sourceRoot);
+        }
+        if ($sourceRoot === $targetRoot) {
+            throw new \InvalidArgumentException(
+                'Source and target paths must be different.'
+            );
+        }
+        if (is_dir($targetRoot) || is_file($targetRoot)) {
+            if (!File::deleteDirectory($targetRoot)) {
+                throw new \RuntimeException(
+                    'Unable to remove existing target: ' . $targetRoot
+                );
+            }
+        }
+        if (!self::copyDirectorySkipping($sourceRoot, $targetRoot, self::COPY_SKIP_DIRS)) {
+            throw new \RuntimeException('Unable to copy project to: ' . $targetRoot);
+        }
+    }
+    public static function zipDirectory(string $directory): string
+    {
+        if (!class_exists(\ZipArchive::class)) {
+            throw new \RuntimeException('ZipArchive is not available in this PHP build.');
+        }
+        $directory = rtrim(str_replace('\\', '/', $directory), '/');
+        if (!is_dir($directory)) {
+            throw new \RuntimeException('Deployment folder not found: ' . $directory);
+        }
+        $zipPath = $directory . '.zip';
+        if (is_file($zipPath) && !unlink($zipPath)) {
+            throw new \RuntimeException('Unable to replace existing archive: ' . $zipPath);
+        }
+        $zip = new \ZipArchive();
+        if ($zip->open($zipPath, \ZipArchive::CREATE) !== true) {
+            throw new \RuntimeException('Unable to create archive: ' . $zipPath);
+        }
+        $rootLength = strlen($directory) + 1;
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator(
+                $directory,
+                \FilesystemIterator::SKIP_DOTS
+            ),
+            \RecursiveIteratorIterator::SELF_FIRST
+        );
+        foreach ($iterator as $file) {
+            $pathname = str_replace('\\', '/', $file->getPathname());
+            $relative = substr($pathname, $rootLength);
+            if ($relative === false || $relative === '') {
+                continue;
+            }
+            if ($file->isDir()) {
+                $zip->addEmptyDir($relative);
+                continue;
+            }
+            $zip->addFile($pathname, $relative);
+        }
+        if (!$zip->close()) {
+            throw new \RuntimeException('Unable to finalize archive: ' . $zipPath);
+        }
+        return $zipPath;
+    }
+    public function buildUnifiedSql(?string $outputPath = null): array
+    {
+        $outputPath = $this->resolveSqlOutputPath($outputPath);
+        $registry = $this->readAutoloadRegistry();
+        $sections = [];
+        $fileCount = 0;
+        $applications = [];
+        foreach (self::AUTOLOAD_APPS as $folder => $app) {
+            if ($app['database'] === null) {
+                continue;
+            }
+            $databasePath = $this->root . '/' . $folder . '/database';
+            if (!is_dir($databasePath)) {
+                continue;
+            }
+            $files = glob($databasePath . '/*.sql') ?: [];
+            if ($files === []) {
+                continue;
+            }
+            sort($files, SORT_NATURAL);
+            $databaseName = $registry[$folder]['database'] ?? $app['database'];
+            $applications[] = $folder;
+            $sections[] = '-- ============================================================';
+            $sections[] = '-- Application: ' . $app['name'];
+            $sections[] = '-- Folder: ' . $folder;
+            $sections[] = '-- Database: ' . $databaseName;
+            $sections[] = '-- ============================================================';
+            $sections[] = '';
+            foreach ($files as $file) {
+                $sql = trim((string) file_get_contents($file));
+                if ($sql === '') {
+                    continue;
+                }
+                $sections[] = '-- Source: ' . $folder . '/database/' . basename($file);
+                $sections[] = $sql;
+                $sections[] = '';
+                $fileCount++;
+            }
+        }
+        if ($fileCount === 0) {
+            throw new \RuntimeException('No SQL files found in application database folders.');
+        }
+        $header = [
+            '-- iElectro unified database schema',
+            '-- Generated: ' . date('Y-m-d H:i:s'),
+            '-- Order: ' . implode(' -> ', $applications),
+            '',
+        ];
+        $content = implode(PHP_EOL, array_merge($header, $sections));
+        File::makeDirectory(dirname($outputPath));
+        if (file_put_contents($outputPath, $content) === false) {
+            throw new \RuntimeException('Unable to write SQL file: ' . $outputPath);
+        }
+        return [
+            'path' => $outputPath,
+            'files' => $fileCount,
+            'applications' => $applications,
+        ];
+    }
+    public function clearBootMarkers(): array
+    {
+        $removed = [];
+        foreach (self::FOLDERS as $folder) {
+            $boot = $this->root . '/' . $folder . '/.booted';
+            if (is_file($boot) && unlink($boot)) {
+                $removed[] = $folder . '/.booted';
+            }
+        }
+        return $removed;
     }
     public function apply(string $inputUrl): array
     {
@@ -383,6 +540,40 @@ final class Deployment
         }
         return '.' . ltrim($domain, '.');
     }
+    private function readAutoloadRegistry(): array
+    {
+        $content = file_get_contents($this->autoloadPath);
+        if ($content === false) {
+            return [];
+        }
+        $registry = [];
+        $pattern = '/\$GLOBALS\[\'([^\']+)\'\]\s*=\s*new App\(\s*\'([^\']*)\',\s*\'([^\']*)\',\s*\'([^\']+)\',\s*(\'[^\']*\'|null),\s*\'[^\']*\'\s*\);/';
+        if (!preg_match_all($pattern, $content, $matches, PREG_SET_ORDER)) {
+            return $registry;
+        }
+        foreach ($matches as $match) {
+            $registry[$match[4]] = [
+                'global' => $match[1],
+                'name' => $match[2],
+                'url' => $match[3],
+                'database' => $match[5] === 'null'
+                    ? null
+                    : trim($match[5], "'"),
+            ];
+        }
+        return $registry;
+    }
+    private function resolveSqlOutputPath(?string $outputPath): string
+    {
+        if ($outputPath === null || trim($outputPath) === '') {
+            return $this->root . '/nesh/database/ielectro.sql';
+        }
+        $outputPath = str_replace('\\', '/', trim($outputPath));
+        if (!preg_match('#^[A-Za-z]:/#', $outputPath) && !str_starts_with($outputPath, '/')) {
+            return $this->root . '/' . ltrim($outputPath, '/');
+        }
+        return $outputPath;
+    }
     private function normalizePath(string $path): string
     {
         $path = str_replace('\\', '/', $path);
@@ -391,5 +582,32 @@ final class Deployment
             $path = rtrim($path, '/');
         }
         return $path === '' ? '/' : $path;
+    }
+    private static function copyDirectorySkipping(
+        string $source,
+        string $destination,
+        array $skipDirs
+    ): bool {
+        if (!is_dir($source)) {
+            return false;
+        }
+        File::makeDirectory($destination);
+        foreach (File::scan($source) as $item) {
+            if (in_array($item, $skipDirs, true)) {
+                continue;
+            }
+            $from = rtrim($source, '/\\') . DIRECTORY_SEPARATOR . $item;
+            $to = rtrim($destination, '/\\') . DIRECTORY_SEPARATOR . $item;
+            if (is_dir($from)) {
+                if (!self::copyDirectorySkipping($from, $to, $skipDirs)) {
+                    return false;
+                }
+                continue;
+            }
+            if (!File::copyPath($from, $to, true)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

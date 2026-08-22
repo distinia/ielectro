@@ -35,85 +35,54 @@ final class DatabaseCli
         $this->autoloadPath = $this->root . '/nesh/src/autoload.php';
         $this->schemaPath = $this->root . '/nesh/src/schema.php';
     }
-    public function buildAllSql(?string $outputPath = null): array
+    public function applyUnified(string $database): array
     {
-        $outputPath = $this->resolveOutputPath($outputPath);
-        $sections = [];
-        $fileCount = 0;
-        $applications = [];
+        $database = $this->validateDatabaseName($database);
+        $registry = $this->readAutoloadRegistry();
+        $migrations = [];
         foreach (self::APP_ORDER as $folder) {
-            $app = App::get($folder);
-            if (!$app instanceof App || $app->database === null) {
+            $entry = $registry[$folder] ?? null;
+            if ($entry === null || $entry['database'] === null) {
                 continue;
             }
-            $databasePath = $app->paths['database'];
-            if (!is_dir($databasePath)) {
+            if ($entry['database'] === $database) {
                 continue;
             }
-            $files = glob($databasePath . '/*.sql') ?: [];
-            if ($files === []) {
-                continue;
-            }
-            sort($files, SORT_NATURAL);
-            $applications[] = $folder;
-            $sections[] = '-- ============================================================';
-            $sections[] = '-- Application: ' . $app->name;
-            $sections[] = '-- Folder: ' . $folder;
-            $sections[] = '-- Database: ' . $app->database;
-            $sections[] = '-- ============================================================';
-            $sections[] = '';
-            foreach ($files as $file) {
-                $sql = trim((string) file_get_contents($file));
-                if ($sql === '') {
-                    continue;
-                }
-                $sections[] = '-- Source: ' . $folder . '/database/' . basename($file);
-                $sections[] = $sql;
-                $sections[] = '';
-                $fileCount++;
-            }
+            $migrations[] = [
+                'folder' => $folder,
+                'name' => $entry['name'],
+                'from' => $entry['database'],
+                'to' => $database,
+            ];
         }
-        if ($fileCount === 0) {
-            throw new \RuntimeException('No SQL files found in application database folders.');
+        if ($migrations === []) {
+            return $this->unchangedResult($registry, $database, true);
         }
-        $header = [
-            '-- iElectro unified database schema',
-            '-- Generated: ' . date('Y-m-d H:i:s'),
-            '-- Order: ' . implode(' -> ', $applications),
-            '',
-        ];
-        $content = implode(PHP_EOL, array_merge($header, $sections));
-        File::makeDirectory(dirname($outputPath));
-        if (file_put_contents($outputPath, $content) === false) {
-            throw new \RuntimeException('Unable to write SQL file: ' . $outputPath);
-        }
-        return [
-            'path' => $outputPath,
-            'files' => $fileCount,
-            'applications' => $applications,
-        ];
+        return $this->execute($migrations, true, $database);
     }
     public function applyOne(string $identifier, string $newDatabase): array
     {
         $newDatabase = $this->validateDatabaseName($newDatabase);
-        $app = App::get($identifier);
-        if (!$app instanceof App) {
+        $registry = $this->readAutoloadRegistry();
+        $entry = $registry[$identifier] ?? null;
+        if ($entry === null) {
             throw new \InvalidArgumentException(
                 'Unknown application: ' . $identifier . '.'
             );
         }
-        if ($app->database === null) {
+        if ($entry['database'] === null) {
             throw new \InvalidArgumentException(
-                'Application "' . $app->name . '" has no database.'
+                'Application "' . $entry['name'] . '" has no database.'
             );
         }
-        if ($app->database === $newDatabase) {
-            return $this->unchangedResult([$app], $newDatabase, false);
+        if ($entry['database'] === $newDatabase) {
+            return $this->unchangedResult($registry, $newDatabase, false, [$identifier]);
         }
         return $this->execute(
             [[
-                'app' => $app,
-                'from' => $app->database,
+                'folder' => $identifier,
+                'name' => $entry['name'],
+                'from' => $entry['database'],
                 'to' => $newDatabase,
             ]],
             false,
@@ -139,16 +108,28 @@ final class DatabaseCli
         }
         return $name;
     }
-    private function resolveOutputPath(?string $outputPath): string
+    private function readAutoloadRegistry(): array
     {
-        if ($outputPath === null || trim($outputPath) === '') {
-            return $this->root . '/nesh/database/ielectro.sql';
+        $content = file_get_contents($this->autoloadPath);
+        if ($content === false) {
+            return [];
         }
-        $outputPath = str_replace('\\', '/', trim($outputPath));
-        if (!preg_match('#^[A-Za-z]:/#', $outputPath) && !str_starts_with($outputPath, '/')) {
-            return $this->root . '/' . ltrim($outputPath, '/');
+        $registry = [];
+        $pattern = '/\$GLOBALS\[\'([^\']+)\'\]\s*=\s*new App\(\s*\'([^\']*)\',\s*\'([^\']*)\',\s*\'([^\']+)\',\s*(\'[^\']*\'|null),\s*\'[^\']*\'\s*\);/';
+        if (!preg_match_all($pattern, $content, $matches, PREG_SET_ORDER)) {
+            return $registry;
         }
-        return $outputPath;
+        foreach ($matches as $match) {
+            $registry[$match[4]] = [
+                'global' => $match[1],
+                'name' => $match[2],
+                'url' => $match[3],
+                'database' => $match[5] === 'null'
+                    ? null
+                    : trim($match[5], "'"),
+            ];
+        }
+        return $registry;
     }
     private function execute(array $migrations, bool $all, string $newDatabase): array
     {
@@ -168,7 +149,7 @@ final class DatabaseCli
         $updatedAutoload = $autoload;
         $autoloadChanged = false;
         foreach ($migrations as $migration) {
-            $folder = $migration['app']->folder;
+            $folder = $migration['folder'];
             $global = $registry[$folder]['global'] ?? null;
             if ($global === null) {
                 throw new \RuntimeException(
@@ -192,7 +173,7 @@ final class DatabaseCli
         $updatedSchema = $schema;
         $schemaChanged = false;
         foreach ($migrations as $migration) {
-            $constant = self::SCHEMA_CONSTANTS[$migration['app']->folder] ?? null;
+            $constant = self::SCHEMA_CONSTANTS[$migration['folder']] ?? null;
             if ($constant === null) {
                 continue;
             }
@@ -219,8 +200,8 @@ final class DatabaseCli
             'new_database' => $newDatabase,
             'migrations' => array_map(
                 static fn(array $migration): array => [
-                    'name' => $migration['app']->name,
-                    'folder' => $migration['app']->folder,
+                    'name' => $migration['name'],
+                    'folder' => $migration['folder'],
                     'from' => $migration['from'],
                     'to' => $migration['to'],
                 ],
@@ -236,23 +217,30 @@ final class DatabaseCli
         ];
     }
     private function unchangedResult(
-        array $apps,
+        array $registry,
         string $database,
-        bool $all
+        bool $all,
+        ?array $folders = null
     ): array {
+        $folders ??= self::APP_ORDER;
+        $migrations = [];
+        foreach ($folders as $folder) {
+            $entry = $registry[$folder] ?? null;
+            if ($entry === null || $entry['database'] === null) {
+                continue;
+            }
+            $migrations[] = [
+                'name' => $entry['name'],
+                'folder' => $folder,
+                'from' => $entry['database'],
+                'to' => $database,
+            ];
+        }
         return [
             'all' => $all,
             'unchanged' => true,
             'new_database' => $database,
-            'migrations' => array_map(
-                static fn(App $app): array => [
-                    'name' => $app->name,
-                    'folder' => $app->folder,
-                    'from' => $app->database,
-                    'to' => $database,
-                ],
-                $apps
-            ),
+            'migrations' => $migrations,
             'updated' => [
                 'autoload' => false,
                 'schema' => false,
@@ -261,27 +249,6 @@ final class DatabaseCli
                 'other' => 0,
             ],
         ];
-    }
-    private function readAutoloadRegistry(): array
-    {
-        $content = file_get_contents($this->autoloadPath);
-        if ($content === false) {
-            return [];
-        }
-        $registry = [];
-        $pattern = '/\$GLOBALS\[\'([^\']+)\'\]\s*=\s*new App\(\s*\'[^\']*\',\s*\'[^\']*\',\s*\'([^\']+)\',\s*(\'[^\']*\'|null),\s*\'[^\']*\'\s*\);/';
-        if (!preg_match_all($pattern, $content, $matches, PREG_SET_ORDER)) {
-            return $registry;
-        }
-        foreach ($matches as $match) {
-            $registry[$match[2]] = [
-                'global' => $match[1],
-                'database' => $match[3] === 'null'
-                    ? null
-                    : trim($match[3], "'"),
-            ];
-        }
-        return $registry;
     }
     private function replaceAutoloadDatabase(
         string $content,
@@ -322,7 +289,7 @@ final class DatabaseCli
             str_replace('\\', '/', realpath($this->schemaPath) ?: $this->schemaPath),
             str_replace('\\', '/', realpath($this->root . '/nesh/src/database-cli.php') ?: $this->root . '/nesh/src/database-cli.php'),
             str_replace('\\', '/', realpath($this->root . '/nesh/src/deployment.php') ?: $this->root . '/nesh/src/deployment.php'),
-            str_replace('\\', '/', realpath($this->root . '/nesh/cli/db.php') ?: $this->root . '/nesh/cli/db.php'),
+            str_replace('\\', '/', realpath($this->root . '/nesh/cli/database.php') ?: $this->root . '/nesh/cli/database.php'),
         ];
         foreach ($this->scanFiles($this->root) as $file) {
             $real = str_replace('\\', '/', realpath($file) ?: $file);
