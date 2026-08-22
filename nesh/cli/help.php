@@ -1,41 +1,26 @@
 <?php
-echo <<<TEXT
-IELECTRO NESH HELP
-============================
-USAGE
-  php nesh <application> <command> [arguments]
-  php nesh <command>
-GLOBAL COMMANDS
-  install                   Install NESH.
-  domain <URL>              Configure deployment URLs for all applications.
-  db --all <database>       Set the same database for every application that uses one.
-  db <application> <db>     Change the database for one application.
-  version                   Display the framework version.
-  dyscover-user <id>        Migrate legacy Dyscover user assets into posts.
-  help                      Display this help page.
-APPLICATION COMMANDS
-  <application> build       Apply CREATE schema SQL if the database is empty.
-  <application> backup      Create a backup.
-  <application> backups     List available backups.
-  <application> restore     Restore a backup.
-APPLICATION MANAGEMENT
-  <application> create      Create a new application.
-  <application> rename      Rename an application.
-  <application> delete      Delete an application.
-RESOURCES
-  create page               php nesh <application> create page <name>
-  create component          php nesh <application> create component <name>
-  create api                php nesh <application> create api <name>
-  create service            php nesh <application> create service <name>
-  create database           php nesh <application> create database <name>
-  rename page               php nesh <application> rename page <old> <new>
-  rename component          php nesh <application> rename component <old> <new>
-  rename api                php nesh <application> rename api <old> <new>
-  rename service            php nesh <application> rename service <old> <new>
-  rename database           php nesh <application> rename database <old> <new>
-  delete page               php nesh <application> delete page <name>
-  delete component          php nesh <application> delete component <name>
-  delete api                php nesh <application> delete api <name>
-  delete service            php nesh <application> delete service <name>
-  delete database           php nesh <application> delete database <name>
-TEXT;
+echo 'IELECTRO NESH' . PHP_EOL;
+echo '============================' . PHP_EOL;
+echo 'Version: ' . NESH_VERSION . PHP_EOL;
+echo 'PHP: ' . PHP_VERSION . PHP_EOL;
+echo 'Operating System: ' . PHP_OS . PHP_EOL;
+echo PHP_EOL;
+echo 'USAGE' . PHP_EOL;
+echo '  php nesh <command> [arguments]' . PHP_EOL;
+echo PHP_EOL;
+echo 'COMMANDS' . PHP_EOL;
+echo '  install                   Initialize databases and regenerate nesh.js.' . PHP_EOL;
+echo '  domain <URL>              Configure deployment URLs for all applications.' . PHP_EOL;
+echo '  db --all [output.sql]     Build one SQL file from all application /database folders.' . PHP_EOL;
+echo '                            Order: account -> admin -> dyscover -> dominions.' . PHP_EOL;
+echo '                            Default output: nesh/database/ielectro.sql' . PHP_EOL;
+echo '  db <application> <db>     Rename the database for one application.' . PHP_EOL;
+echo '  help                      Display this help page.' . PHP_EOL;
+echo PHP_EOL;
+echo 'EXAMPLES' . PHP_EOL;
+echo '  php nesh install' . PHP_EOL;
+echo '  php nesh domain https://ielectro.com' . PHP_EOL;
+echo '  php nesh domain http://localhost/ielectro' . PHP_EOL;
+echo '  php nesh db --all' . PHP_EOL;
+echo '  php nesh db --all backup/ielectro.sql' . PHP_EOL;
+echo '  php nesh db account ielectro_new_account' . PHP_EOL;

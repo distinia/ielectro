@@ -1,5 +1,4 @@
 <?php
-require_once NESH_CLI . '/deployment.php';
 use Nesh\Deployment;
 $url = $argv[2] ?? '';
 if ($url === '') {
