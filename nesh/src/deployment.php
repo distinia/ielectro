@@ -10,6 +10,13 @@ final class Deployment
         'nesh',
         'www',
     ];
+    public const APP_FOLDERS = [
+        'account',
+        'admin',
+        'dyscover',
+        'dominions',
+        'www',
+    ];
     private const PRODUCTION_URLS = [
         'account' => 'https://account.ielectro.com',
         'admin' => 'https://admin.ielectro.com',
@@ -23,31 +30,26 @@ final class Deployment
             'global' => 'account',
             'name' => 'iElectro Account',
             'database' => 'ielectro_account',
-            'version' => '1.0.0',
         ],
         'admin' => [
             'global' => 'admin',
             'name' => 'iElectro Admin',
             'database' => 'ielectro_admin',
-            'version' => '1.0.0',
         ],
         'dyscover' => [
             'global' => 'dyscover',
             'name' => 'Dyscover',
             'database' => 'ielectro_dyscover',
-            'version' => '1.0.0',
         ],
         'dominions' => [
             'global' => 'dominions',
             'name' => 'Dominions',
             'database' => 'ielectro_dominions',
-            'version' => '1.0.0',
         ],
         'www' => [
             'global' => 'ielectro',
             'name' => 'iElectro',
             'database' => null,
-            'version' => '1.0.0',
         ],
     ];
     private const SCAN_EXTENSIONS = [
@@ -65,6 +67,9 @@ final class Deployment
     ];
     private const COPY_SKIP_DIRS = [
         '.git',
+    ];
+    private const COPY_SKIP_RELATIVE_DIRS = [
+        'assets/users',
     ];
     private string $root;
     private string $autoloadPath;
@@ -119,6 +124,37 @@ final class Deployment
             throw new \RuntimeException('Unable to copy project to: ' . $targetRoot);
         }
     }
+    public static function validateAppFolder(string $app): string
+    {
+        $app = strtolower(trim($app));
+        if (!in_array($app, self::APP_FOLDERS, true)) {
+            throw new \InvalidArgumentException(
+                'Unknown application: ' . $app . '. Allowed: '
+                . implode(', ', self::APP_FOLDERS) . '.'
+            );
+        }
+        return $app;
+    }
+    public static function copyAppFolder(
+        string $sourceRoot,
+        string $targetRoot,
+        string $app
+    ): void {
+        $app = self::validateAppFolder($app);
+        $sourceRoot = rtrim(str_replace('\\', '/', $sourceRoot), '/');
+        $targetRoot = rtrim(str_replace('\\', '/', $targetRoot), '/');
+        $source = $sourceRoot . '/' . $app;
+        $target = $targetRoot . '/' . $app;
+        if (!is_dir($source)) {
+            throw new \RuntimeException('Application folder not found: ' . $source);
+        }
+        if (is_dir($target) && !File::deleteDirectory($target)) {
+            throw new \RuntimeException('Unable to replace application folder: ' . $target);
+        }
+        if (!self::copyDirectorySkipping($source, $target, self::COPY_SKIP_DIRS)) {
+            throw new \RuntimeException('Unable to copy application to: ' . $target);
+        }
+    }
     public static function zipDirectory(string $directory): string
     {
         if (!class_exists(\ZipArchive::class)) {
@@ -148,6 +184,50 @@ final class Deployment
             $pathname = str_replace('\\', '/', $file->getPathname());
             $relative = substr($pathname, $rootLength);
             if ($relative === false || $relative === '') {
+                continue;
+            }
+            if ($file->isDir()) {
+                $zip->addEmptyDir($relative);
+                continue;
+            }
+            $zip->addFile($pathname, $relative);
+        }
+        if (!$zip->close()) {
+            throw new \RuntimeException('Unable to finalize archive: ' . $zipPath);
+        }
+        return $zipPath;
+    }
+    public static function zipAppDirectory(string $deploymentRoot, string $app): string
+    {
+        $app = self::validateAppFolder($app);
+        if (!class_exists(\ZipArchive::class)) {
+            throw new \RuntimeException('ZipArchive is not available in this PHP build.');
+        }
+        $deploymentRoot = rtrim(str_replace('\\', '/', $deploymentRoot), '/');
+        $directory = $deploymentRoot . '/' . $app;
+        if (!is_dir($directory)) {
+            throw new \RuntimeException('Application folder not found: ' . $directory);
+        }
+        $zipPath = $deploymentRoot . '/' . $app . '.zip';
+        if (is_file($zipPath) && !unlink($zipPath)) {
+            throw new \RuntimeException('Unable to replace existing archive: ' . $zipPath);
+        }
+        $zip = new \ZipArchive();
+        if ($zip->open($zipPath, \ZipArchive::CREATE) !== true) {
+            throw new \RuntimeException('Unable to create archive: ' . $zipPath);
+        }
+        $rootLength = strlen($directory) + 1;
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator(
+                $directory,
+                \FilesystemIterator::SKIP_DOTS
+            ),
+            \RecursiveIteratorIterator::SELF_FIRST
+        );
+        foreach ($iterator as $file) {
+            $pathname = str_replace('\\', '/', $file->getPathname());
+            $relative = $app . '/' . substr($pathname, $rootLength);
+            if ($relative === false || $relative === $app . '/') {
                 continue;
             }
             if ($file->isDir()) {
@@ -231,6 +311,52 @@ final class Deployment
         }
         return $removed;
     }
+    public static function isAssetVersion(string $value): bool
+    {
+        return preg_match('/^\d+\.\d+\.\d+([.-][A-Za-z0-9]+)*$/', trim($value)) === 1;
+    }
+    public static function validateAssetVersion(string $version): string
+    {
+        $version = trim($version);
+        if (!self::isAssetVersion($version)) {
+            throw new \InvalidArgumentException(
+                'Invalid asset version. Expected format: 1.2.3'
+            );
+        }
+        return $version;
+    }
+    public function applyAssetVersion(string $version, ?string $appFolder = null): array
+    {
+        $version = self::validateAssetVersion($version);
+        if ($appFolder !== null) {
+            $appFolder = self::validateAppFolder($appFolder);
+        }
+        $this->setAssetVersionDefine($version);
+        $filesUpdated = 0;
+        $replacementCount = 0;
+        foreach ($this->scanAssetVersionFiles($appFolder) as $file) {
+            $original = file_get_contents($file);
+            if ($original === false || $original === '') {
+                continue;
+            }
+            $updated = $this->stampAssetVersion($original, $version, $file);
+            if ($updated === $original) {
+                continue;
+            }
+            file_put_contents($file, $updated);
+            $filesUpdated++;
+            $replacementCount += max(
+                0,
+                substr_count($updated, '?v=' . $version)
+                    - substr_count($original, '?v=' . $version)
+            );
+        }
+        return [
+            'version' => $version,
+            'files' => $filesUpdated,
+            'replacements' => $replacementCount,
+        ];
+    }
     public function apply(string $inputUrl): array
     {
         $parsed = $this->parseUrl($inputUrl);
@@ -253,10 +379,13 @@ final class Deployment
             $parsed['scheme'] ?? 'https'
         );
         $fileStats = $this->migrateProjectFiles($replacementMap);
+        $updatedAutoload = $this->removeDbPortDefine($updatedAutoload);
         if ($updatedAutoload !== $autoload) {
             file_put_contents($this->autoloadPath, $updatedAutoload);
         }
-        $userAssets = $this->clearUserAssetDirectories();
+        $userAssets = $this->shouldClearUserAssets()
+            ? $this->clearUserAssetDirectories()
+            : [];
         return [
             'mode' => $mode,
             'base_url' => $baseUrl,
@@ -266,6 +395,119 @@ final class Deployment
             'replacements' => $fileStats['replacements'],
             'user_assets_cleared' => $userAssets,
         ];
+    }
+    public function applyDatabaseConfig(array $config): array
+    {
+        $updates = self::normalizeDatabaseConfig($config);
+        if ($updates === []) {
+            return ['updated' => []];
+        }
+        if (!array_key_exists('pass', $config)) {
+            $updates['pass'] = '';
+        }
+        $autoload = file_get_contents($this->autoloadPath);
+        if ($autoload === false) {
+            throw new \RuntimeException('Unable to read autoload.php');
+        }
+        $updated = $autoload;
+        $applied = [];
+        if (isset($updates['host'])) {
+            $updated = $this->replaceAutoloadDefine(
+                $updated,
+                'DB_HOST',
+                $this->escapeDefineString($updates['host'])
+            );
+            $applied['host'] = $updates['host'];
+        }
+        if (isset($updates['user'])) {
+            $updated = $this->replaceAutoloadDefine(
+                $updated,
+                'DB_USER',
+                $this->escapeDefineString($updates['user'])
+            );
+            $applied['user'] = $updates['user'];
+        }
+        if (isset($updates['pass'])) {
+            $updated = $this->replaceAutoloadDefine(
+                $updated,
+                'DB_PASS',
+                $this->escapeDefineString($updates['pass'])
+            );
+            $applied['pass'] = $updates['pass'];
+        }
+        $updated = $this->removeDbPortDefine($updated);
+        if ($updated === $autoload) {
+            throw new \RuntimeException('Unable to update database settings in autoload.php');
+        }
+        file_put_contents($this->autoloadPath, $updated);
+        return ['updated' => $applied];
+    }
+    public static function normalizeDatabaseConfig(array $config): array
+    {
+        $allowed = ['host', 'user', 'pass'];
+        $updates = [];
+        foreach ($config as $key => $value) {
+            if (!in_array($key, $allowed, true)) {
+                throw new \InvalidArgumentException(
+                    'Unknown database option: ' . $key
+                );
+            }
+            if ($value === null) {
+                continue;
+            }
+            $updates[$key] = self::validateDatabaseString($key, $value);
+        }
+        return $updates;
+    }
+    private static function validateDatabaseString(string $key, mixed $value): string
+    {
+        if (!is_string($value) && !is_numeric($value)) {
+            throw new \InvalidArgumentException(
+                'Database ' . $key . ' must be a string.'
+            );
+        }
+        $value = trim((string) $value);
+        if ($key !== 'pass' && $value === '') {
+            throw new \InvalidArgumentException(
+                'Database ' . $key . ' cannot be empty.'
+            );
+        }
+        return $value;
+    }
+    private function removeDbPortDefine(string $content): string
+    {
+        $updated = preg_replace(
+            "/^define\\('DB_PORT',\\s*.+\\);\\R?/m",
+            '',
+            $content
+        );
+        return is_string($updated) ? $updated : $content;
+    }
+    private function replaceAutoloadDefine(
+        string $content,
+        string $name,
+        string $value,
+        bool $quoted = true
+    ): string {
+        $line = $quoted
+            ? "define('{$name}', '{$value}');"
+            : "define('{$name}', {$value});";
+        $pattern = $quoted
+            ? "/define\\('{$name}',\\s*'(?:\\\\'|[^'])*'\\);/"
+            : "/define\\('{$name}',\\s*\\d+\\);/";
+        $updated = preg_replace($pattern, $line, $content, 1);
+        if (!is_string($updated)) {
+            throw new \RuntimeException('Unable to update ' . $name . ' in autoload.php');
+        }
+        return $updated;
+    }
+    private function escapeDefineString(string $value): string
+    {
+        return str_replace(['\\', "'"], ['\\\\', "\\'"], $value);
+    }
+    private function shouldClearUserAssets(): bool
+    {
+        return !is_dir($this->root . '/.git');
     }
     private function clearUserAssetDirectories(): array
     {
@@ -424,7 +666,7 @@ final class Deployment
             $database = $app['database'] === null
                 ? 'null'
                 : "'" . $app['database'] . "'";
-            $line = "\$GLOBALS['{$app['global']}'] = new App('{$app['name']}', '{$url}', '{$folder}', {$database}, '{$app['version']}');";
+            $line = "\$GLOBALS['{$app['global']}'] = new App('{$app['name']}', '{$url}', '{$folder}', {$database});";
             $pattern = '/\$GLOBALS\[\'' . preg_quote($app['global'], '/') . '\'\]\s*=\s*new App\([^;]+\);/';
             if (preg_match($pattern, $content)) {
                 $content = preg_replace($pattern, $line, $content, 1) ?? $content;
@@ -547,7 +789,7 @@ final class Deployment
             return [];
         }
         $registry = [];
-        $pattern = '/\$GLOBALS\[\'([^\']+)\'\]\s*=\s*new App\(\s*\'([^\']*)\',\s*\'([^\']*)\',\s*\'([^\']+)\',\s*(\'[^\']*\'|null),\s*\'[^\']*\'\s*\);/';
+        $pattern = '/\$GLOBALS\[\'([^\']+)\'\]\s*=\s*new App\(\s*\'([^\']*)\',\s*\'([^\']*)\',\s*\'([^\']+)\',\s*(\'[^\']*\'|null)\s*\);/';
         if (!preg_match_all($pattern, $content, $matches, PREG_SET_ORDER)) {
             return $registry;
         }
@@ -574,6 +816,156 @@ final class Deployment
         }
         return $outputPath;
     }
+    private function scanAssetVersionFiles(?string $appFolder = null): \Generator
+    {
+        $extensions = ['css', 'js', 'html'];
+        if ($appFolder !== null) {
+            foreach (['styles', 'scripts', 'pages'] as $directory) {
+                yield from $this->scanFilesByExtension(
+                    $this->root . '/' . $appFolder . '/' . $directory,
+                    $extensions
+                );
+            }
+            return;
+        }
+        foreach (self::FOLDERS as $folder) {
+            foreach (['styles', 'scripts', 'pages'] as $directory) {
+                yield from $this->scanFilesByExtension(
+                    $this->root . '/' . $folder . '/' . $directory,
+                    $extensions
+                );
+            }
+        }
+        yield from $this->scanFilesByExtension(
+            $this->root . '/nesh/styles',
+            ['css']
+        );
+        yield from $this->scanFilesByExtension(
+            $this->root . '/nesh/scripts',
+            ['js']
+        );
+    }
+    private function setAssetVersionDefine(string $version): void
+    {
+        $autoload = file_get_contents($this->autoloadPath);
+        if ($autoload === false) {
+            throw new \RuntimeException('Unable to read autoload.php');
+        }
+        $line = "define('ASSET_VERSION', '{$version}');";
+        if (preg_match("/define\\('ASSET_VERSION',\\s*'[^']*'\\);/", $autoload)) {
+            $updated = preg_replace(
+                "/define\\('ASSET_VERSION',\\s*'[^']*'\\);/",
+                $line,
+                $autoload,
+                1
+            );
+        } else {
+            $updated = preg_replace(
+                '/(# CDN\r?\n)/',
+                '$1' . $line . "\n",
+                $autoload,
+                1
+            );
+        }
+        if (!is_string($updated)) {
+            throw new \RuntimeException('Unable to update ASSET_VERSION in autoload.php');
+        }
+        if ($updated === $autoload) {
+            return;
+        }
+        file_put_contents($this->autoloadPath, $updated);
+    }
+    private function scanFilesByExtension(string $directory, array $extensions): \Generator
+    {
+        if (!is_dir($directory)) {
+            return;
+        }
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator(
+                $directory,
+                \FilesystemIterator::SKIP_DOTS
+            )
+        );
+        foreach ($iterator as $file) {
+            if (!$file->isFile()) {
+                continue;
+            }
+            $pathname = str_replace('\\', '/', $file->getPathname());
+            foreach (self::SKIP_DIRS as $skip) {
+                if (str_contains($pathname, '/' . $skip . '/')) {
+                    continue 2;
+                }
+            }
+            $extension = strtolower($file->getExtension());
+            if (in_array($extension, $extensions, true)) {
+                yield $pathname;
+            }
+        }
+    }
+    private function stampAssetVersion(string $content, string $version, string $file): string
+    {
+        $content = $this->stripAssetVersion($content);
+        $suffix = '?v=' . $version;
+        $content = preg_replace_callback(
+            '/@import\s+(url\(\s*)?(["\'])([^"\']+)\2(\s*\)?)/i',
+            function (array $match) use ($suffix): string {
+                if (!$this->shouldVersionAsset($match[3])) {
+                    return $match[0];
+                }
+                $urlPrefix = $match[1] ?? '';
+                return '@import '
+                    . $urlPrefix
+                    . $match[2]
+                    . $match[3]
+                    . $suffix
+                    . $match[2]
+                    . ($match[4] ?? '');
+            },
+            $content
+        ) ?? $content;
+        $content = preg_replace_callback(
+            '/(\b(?:import|from)\s+)(["\'])([^"\']+\.js)\2/i',
+            function (array $match) use ($suffix): string {
+                if (!$this->shouldVersionAsset($match[3])) {
+                    return $match[0];
+                }
+                return $match[1] . $match[2] . $match[3] . $suffix . $match[2];
+            },
+            $content
+        ) ?? $content;
+        $content = preg_replace_callback(
+            '/(\b(?:href|src)\s*=\s*)(["\'])([^"\']+)\2/i',
+            function (array $match) use ($suffix): string {
+                if (!$this->shouldVersionAsset($match[3])) {
+                    return $match[0];
+                }
+                return $match[1] . $match[2] . $match[3] . $suffix . $match[2];
+            },
+            $content
+        ) ?? $content;
+        return $content;
+    }
+    private function stripAssetVersion(string $content): string
+    {
+        return preg_replace(
+            '/(\.(?:css|js|ico))\?v=[^"\'\s\)<>]*/i',
+            '$1',
+            $content
+        ) ?? $content;
+    }
+    private function shouldVersionAsset(string $url): bool
+    {
+        if (!preg_match('/\.(?:css|js|ico)(?:[?#]|$)/i', $url)) {
+            return false;
+        }
+        if (preg_match('#^https?://#i', $url)) {
+            return !preg_match(
+                '#(cdnjs|googleapis|google\.com|gstatic|cloudflare|accounts\.google)#i',
+                $url
+            );
+        }
+        return true;
+    }
     private function normalizePath(string $path): string
     {
         $path = str_replace('\\', '/', $path);
@@ -586,7 +978,8 @@ final class Deployment
     private static function copyDirectorySkipping(
         string $source,
         string $destination,
-        array $skipDirs
+        array $skipDirs,
+        string $relativePath = ''
     ): bool {
         if (!is_dir($source)) {
             return false;
@@ -596,10 +989,14 @@ final class Deployment
             if (in_array($item, $skipDirs, true)) {
                 continue;
             }
+            $itemRelative = ltrim($relativePath . '/' . $item, '/');
+            if (self::shouldSkipRelativeCopyPath($itemRelative)) {
+                continue;
+            }
             $from = rtrim($source, '/\\') . DIRECTORY_SEPARATOR . $item;
             $to = rtrim($destination, '/\\') . DIRECTORY_SEPARATOR . $item;
             if (is_dir($from)) {
-                if (!self::copyDirectorySkipping($from, $to, $skipDirs)) {
+                if (!self::copyDirectorySkipping($from, $to, $skipDirs, $itemRelative)) {
                     return false;
                 }
                 continue;
@@ -609,5 +1006,16 @@ final class Deployment
             }
         }
         return true;
+    }
+    private static function shouldSkipRelativeCopyPath(string $relativePath): bool
+    {
+        foreach (self::COPY_SKIP_RELATIVE_DIRS as $skipPath) {
+            if ($relativePath === $skipPath
+                || str_starts_with($relativePath, $skipPath . '/')
+            ) {
+                return true;
+            }
+        }
+        return false;
     }
 }

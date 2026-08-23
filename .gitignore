@@ -8,7 +8,7 @@ nesh/ai/config.local.php
 # Storage
 /storage/
 /docs/
-/dyscover/assets/users/
+# /dyscover/assets/users/
 # Logs
 *.log
 logs/

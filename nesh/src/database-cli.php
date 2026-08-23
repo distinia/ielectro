@@ -14,6 +14,18 @@ final class DatabaseCli
         'dyscover',
         'dominions',
     ];
+    private const SOURCE_DATABASES = [
+        'ielectro_account',
+        'ielectro_admin',
+        'ielectro_dyscover',
+        'ielectro_dominions',
+    ];
+    private const CANONICAL_DATABASES = [
+        'account' => 'ielectro_account',
+        'admin' => 'ielectro_admin',
+        'dyscover' => 'ielectro_dyscover',
+        'dominions' => 'ielectro_dominions',
+    ];
     private const SCAN_EXTENSIONS = [
         'php',
         'sql',
@@ -39,7 +51,7 @@ final class DatabaseCli
     {
         $database = $this->validateDatabaseName($database);
         $registry = $this->readAutoloadRegistry();
-        $migrations = [];
+        $autoloadMigrations = [];
         foreach (self::APP_ORDER as $folder) {
             $entry = $registry[$folder] ?? null;
             if ($entry === null || $entry['database'] === null) {
@@ -48,17 +60,39 @@ final class DatabaseCli
             if ($entry['database'] === $database) {
                 continue;
             }
-            $migrations[] = [
+            $autoloadMigrations[] = [
                 'folder' => $folder,
                 'name' => $entry['name'],
                 'from' => $entry['database'],
                 'to' => $database,
             ];
         }
-        if ($migrations === []) {
-            return $this->unchangedResult($registry, $database, true);
+        $replacementMap = $this->buildUnifiedReplacementMap($database, $registry);
+        return $this->execute($autoloadMigrations, $replacementMap, true, $database);
+    }
+    public function syncDeploymentReferences(): array
+    {
+        $registry = $this->readAutoloadRegistry();
+        $database = $this->unifiedDatabaseName($registry);
+        if ($database === null) {
+            return [
+                'synced' => false,
+                'database' => null,
+                'updated' => [
+                    'php' => 0,
+                    'sql' => 0,
+                    'other' => 0,
+                ],
+            ];
         }
-        return $this->execute($migrations, true, $database);
+        $fileStats = $this->migrateProjectFiles(
+            $this->buildUnifiedReplacementMap($database, $registry)
+        );
+        return [
+            'synced' => true,
+            'database' => $database,
+            'updated' => $fileStats,
+        ];
     }
     public function applyOne(string $identifier, string $newDatabase): array
     {
@@ -76,7 +110,18 @@ final class DatabaseCli
             );
         }
         if ($entry['database'] === $newDatabase) {
-            return $this->unchangedResult($registry, $newDatabase, false, [$identifier]);
+            return $this->execute(
+                [],
+                $this->buildSingleReplacementMap($identifier, $newDatabase),
+                false,
+                $newDatabase,
+                [$identifier]
+            );
+        }
+        $replacementMap = [$entry['database'] => $newDatabase];
+        $canonical = self::CANONICAL_DATABASES[$identifier] ?? null;
+        if ($canonical !== null && $canonical !== $newDatabase) {
+            $replacementMap[$canonical] = $newDatabase;
         }
         return $this->execute(
             [[
@@ -85,6 +130,7 @@ final class DatabaseCli
                 'from' => $entry['database'],
                 'to' => $newDatabase,
             ]],
+            $this->sortReplacementMap($replacementMap),
             false,
             $newDatabase
         );
@@ -131,24 +177,21 @@ final class DatabaseCli
         }
         return $registry;
     }
-    private function execute(array $migrations, bool $all, string $newDatabase): array
-    {
+    private function execute(
+        array $autoloadMigrations,
+        array $replacementMap,
+        bool $all,
+        string $newDatabase,
+        ?array $reportFolders = null
+    ): array {
         $registry = $this->readAutoloadRegistry();
-        $replacementMap = [];
-        foreach ($migrations as $migration) {
-            $replacementMap[$migration['from']] = $migration['to'];
-        }
-        uksort(
-            $replacementMap,
-            static fn(string $a, string $b): int => strlen($b) <=> strlen($a)
-        );
         $autoload = file_get_contents($this->autoloadPath);
         if ($autoload === false) {
             throw new \RuntimeException('Unable to read autoload.php.');
         }
         $updatedAutoload = $autoload;
         $autoloadChanged = false;
-        foreach ($migrations as $migration) {
+        foreach ($autoloadMigrations as $migration) {
             $folder = $migration['folder'];
             $global = $registry[$folder]['global'] ?? null;
             if ($global === null) {
@@ -172,7 +215,7 @@ final class DatabaseCli
         }
         $updatedSchema = $schema;
         $schemaChanged = false;
-        foreach ($migrations as $migration) {
+        foreach ($autoloadMigrations as $migration) {
             $constant = self::SCHEMA_CONSTANTS[$migration['folder']] ?? null;
             if ($constant === null) {
                 continue;
@@ -194,9 +237,20 @@ final class DatabaseCli
         if ($schemaChanged) {
             file_put_contents($this->schemaPath, $updatedSchema);
         }
+        $reportMigrations = $autoloadMigrations;
+        if ($reportMigrations === [] && $reportFolders !== null) {
+            $reportMigrations = $this->reportMigrations($registry, $newDatabase, $reportFolders);
+        } elseif ($reportMigrations === [] && $all) {
+            $reportMigrations = $this->reportMigrations($registry, $newDatabase, self::APP_ORDER);
+        }
+        $unchanged = !$autoloadChanged
+            && !$schemaChanged
+            && $fileStats['php'] === 0
+            && $fileStats['sql'] === 0
+            && $fileStats['other'] === 0;
         return [
             'all' => $all,
-            'unchanged' => false,
+            'unchanged' => $unchanged,
             'new_database' => $newDatabase,
             'migrations' => array_map(
                 static fn(array $migration): array => [
@@ -205,7 +259,7 @@ final class DatabaseCli
                     'from' => $migration['from'],
                     'to' => $migration['to'],
                 ],
-                $migrations
+                $reportMigrations
             ),
             'updated' => [
                 'autoload' => $autoloadChanged,
@@ -216,13 +270,11 @@ final class DatabaseCli
             ],
         ];
     }
-    private function unchangedResult(
+    private function reportMigrations(
         array $registry,
         string $database,
-        bool $all,
-        ?array $folders = null
+        array $folders
     ): array {
-        $folders ??= self::APP_ORDER;
         $migrations = [];
         foreach ($folders as $folder) {
             $entry = $registry[$folder] ?? null;
@@ -236,19 +288,60 @@ final class DatabaseCli
                 'to' => $database,
             ];
         }
-        return [
-            'all' => $all,
-            'unchanged' => true,
-            'new_database' => $database,
-            'migrations' => $migrations,
-            'updated' => [
-                'autoload' => false,
-                'schema' => false,
-                'php' => 0,
-                'sql' => 0,
-                'other' => 0,
-            ],
-        ];
+        return $migrations;
+    }
+    private function buildUnifiedReplacementMap(
+        string $database,
+        array $registry
+    ): array {
+        $sources = self::SOURCE_DATABASES;
+        foreach ($registry as $entry) {
+            if ($entry['database'] === null) {
+                continue;
+            }
+            $sources[] = $entry['database'];
+        }
+        $map = [];
+        foreach (array_unique($sources) as $source) {
+            if ($source !== $database) {
+                $map[$source] = $database;
+            }
+        }
+        return $this->sortReplacementMap($map);
+    }
+    private function buildSingleReplacementMap(
+        string $folder,
+        string $database
+    ): array {
+        $canonical = self::CANONICAL_DATABASES[$folder] ?? null;
+        if ($canonical === null || $canonical === $database) {
+            return [];
+        }
+        return $this->sortReplacementMap([$canonical => $database]);
+    }
+    private function sortReplacementMap(array $map): array
+    {
+        uksort(
+            $map,
+            static fn(string $a, string $b): int => strlen($b) <=> strlen($a)
+        );
+        return $map;
+    }
+    private function unifiedDatabaseName(array $registry): ?string
+    {
+        $names = [];
+        foreach (self::APP_ORDER as $folder) {
+            $entry = $registry[$folder] ?? null;
+            if ($entry === null || $entry['database'] === null) {
+                continue;
+            }
+            $names[] = $entry['database'];
+        }
+        if ($names === []) {
+            return null;
+        }
+        $unique = array_values(array_unique($names));
+        return count($unique) === 1 ? $unique[0] : null;
     }
     private function replaceAutoloadDatabase(
         string $content,

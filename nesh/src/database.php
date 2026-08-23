@@ -8,13 +8,7 @@ class Database
         if (self::$server instanceof \mysqli) {
             return self::$server;
         }
-        self::$server = mysqli_connect(
-            DB_HOST,
-            DB_USER,
-            DB_PASS,
-            null,
-            DB_PORT
-        );
+        self::$server = self::connect();
         if (!self::$server) {
             Response::error('Database connection error');
         }
@@ -25,23 +19,21 @@ class Database
     }
     public static function create(string $name): void
     {
-        $server = mysqli_connect(
-            DB_HOST,
-            DB_USER,
-            DB_PASS,
-            null,
-            DB_PORT
-        );
+        if (self::databaseAccessible($name)) {
+            return;
+        }
+        $server = self::connect();
         if (!$server) {
             Response::error('Server connection error');
         }
         mysqli_set_charset($server, DB_CHARSET);
+        $database = str_replace('`', '``', $name);
         $sql = sprintf(
             "CREATE DATABASE IF NOT EXISTS `%s` CHARACTER SET %s COLLATE utf8mb4_unicode_ci",
-            $name,
+            $database,
             DB_CHARSET
         );
-        if (!mysqli_query($server, $sql)) {
+        if (!mysqli_query($server, $sql) || !self::databaseAccessible($name)) {
             mysqli_close($server);
             Response::error('Database creation error');
         }
@@ -97,5 +89,23 @@ class Database
             mysqli_close(self::$server);
             self::$server = null;
         }
+    }
+    private static function connect(): \mysqli|false
+    {
+        return mysqli_connect(DB_HOST, DB_USER, DB_PASS);
+    }
+    private static function databaseAccessible(string $name): bool
+    {
+        $connection = @mysqli_connect(
+            DB_HOST,
+            DB_USER,
+            DB_PASS,
+            $name
+        );
+        if (!$connection) {
+            return false;
+        }
+        mysqli_close($connection);
+        return true;
     }
 }

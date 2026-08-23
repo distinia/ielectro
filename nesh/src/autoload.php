@@ -13,7 +13,6 @@ define('CHARSET', 'UTF-8');
 define('DB_HOST', 'database.ielectro.com');
 define('DB_USER', 'root');
 define('DB_PASS', '');
-define('DB_PORT', 3310);
 define('DB_CHARSET', 'utf8mb4');
 # Session
 define('SESSION_NAME', 'ielectro_session');
@@ -51,6 +50,7 @@ define('REALTIME_URL', '');
 define('REALTIME_TOKEN', '');
 # CDN
 define('CDN_ENABLED', false);
+define('ASSET_VERSION', '');
 # Paths & Initialization
 define('ROOT_PATH', dirname(__DIR__, 2));
 define('NESH_VERSION', '1.0.0');
@@ -78,6 +78,16 @@ spl_autoload_register(function (string $class): void {
         . '/api';
     if (!is_dir($directory)) {
         return;
+    }
+    if ($parts !== []) {
+        $fileName = strtolower(
+            preg_replace('/(?<!^)[A-Z]/', '-$0', $parts[0])
+        ) . '.php';
+        $file = $directory . '/' . $fileName;
+        if (is_file($file)) {
+            require_once $file;
+            return;
+        }
     }
     foreach (glob($directory . '/*.php') as $file) {
         require_once $file;

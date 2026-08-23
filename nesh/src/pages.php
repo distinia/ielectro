@@ -29,12 +29,13 @@ class Pages
         if (!is_file($this->app->paths['root'] . $stylesheet)) {
             $stylesheet = '/styles/' . $file . '/index.css';
         }
+        $version = \ASSET_VERSION !== '' ? '?v=' . \ASSET_VERSION : '';
         $head = '    <meta charset="' . CHARSET . '">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="iElectro">
-    <link rel="icon" href="' . $this->app->url . '/assets/brand/favicon.ico?v=' . $this->app->version . '">
-    <link rel="stylesheet" href="' . $this->app->url . $stylesheet . '?v=' . $this->app->version . '">
-    <script type="module" src="' . $this->app->url . '/scripts/' . $file . '/index.js?v=' . $this->app->version . '"></script>';
+    <link rel="icon" href="' . $this->app->url . '/assets/brand/favicon.ico' . $version . '">
+    <link rel="stylesheet" href="' . $this->app->url . $stylesheet . $version . '">
+    <script type="module" src="' . $this->app->url . '/scripts/' . $file . '/index.js' . $version . '"></script>';
         $html = str_replace('<head>', "<head>\n" . $head, $html);
         $html = preg_replace(
             '/<title>(.*?)<\/title>/is',
