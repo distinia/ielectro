@@ -25,29 +25,16 @@ class Services
                 'profile' => $profile,
             ];
         }
-        $dominionsApp = App::get('dominions');
-        if ($dominionsApp) {
-            $profile = Dominions::profile($accountId);
-            $services[] = [
-                'id' => 'dominions',
-                'name' => $dominionsApp->name,
-                'url' => $dominionsApp->url,
-                'linked' => $profile !== null,
-                'profile' => $profile,
-            ];
-        }
         Response::success(['services' => $services]);
     }
     public static function create(int $accountId): void
     {
         \Nesh\Avatar::provision($accountId);
         Dyscover::create($accountId);
-        Dominions::create($accountId);
     }
     public static function delete(int $accountId): void
     {
         Dyscover::delete($accountId);
-        Dominions::delete($accountId);
     }
 }
 class Dyscover
@@ -142,45 +129,5 @@ class Dyscover
             return;
         }
         \Dyscover\PostMentions::rewriteUsername($oldUsername, $newUsername);
-    }
-}
-class Dominions
-{
-    public static function create(int $accountId): void
-    {
-        Query::execute(
-            'INSERT INTO ' . Schema::DOMINIONS_USERS . ' (account_id)
-            VALUES (?)',
-            [$accountId]
-        );
-    }
-    public static function delete(int $accountId): void
-    {
-        Query::execute(
-            'DELETE
-            FROM ' . Schema::DOMINIONS_USERS . '
-            WHERE account_id = ?',
-            [$accountId]
-        );
-    }
-    public static function profile(int $accountId): ?array
-    {
-        $row = Query::fetch(
-            'SELECT id, created_at
-            FROM ' . Schema::DOMINIONS_USERS . '
-            WHERE account_id = ?
-            LIMIT 1',
-            [$accountId]
-        );
-        if (!$row) {
-            return null;
-        }
-        $app = App::get('dominions');
-        $baseUrl = $app ? $app->url : 'https://dominions.ielectro.com';
-        return [
-            'id' => (int) $row['id'],
-            'created_at' => $row['created_at'],
-            'profile_url' => $baseUrl,
-        ];
     }
 }

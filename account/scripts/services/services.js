@@ -78,24 +78,6 @@ export class ServicesDashboard {
             ${this.openButton(profileUrl, "View on Dyscover")}
         </article>`;
     }
-    dominionsCard(service) {
-        const profile = service.profile || {};
-        const profileUrl = profile.profile_url || service.url;
-        return `<article class="services-card services-card--dominions">
-            ${this.brandHeader(service, `<span class="services-status services-status--ok">Linked</span>`)}
-            <div class="services-profile services-profile--compact">
-                ${this.avatarHtml({}, "briefcase")}
-                <div class="services-profile-main">
-                    <p class="services-username">Account connected</p>
-                    <p class="services-bio services-bio--muted">Your iElectro account is linked. More profile details will appear here as Dominions grows.</p>
-                </div>
-            </div>
-            <div class="services-stats">
-                ${this.stat("Member since", this.formatWhen(profile.created_at))}
-            </div>
-            ${this.openButton(profileUrl, "Open Dominions")}
-        </article>`;
-    }
     unlinkedCard(service) {
         return `<article class="services-card services-card--empty">
             ${this.brandHeader(service, `<span class="services-status services-status--warn">Not linked</span>`)}
@@ -110,9 +92,6 @@ export class ServicesDashboard {
         }
         if (service.id === "dyscover") {
             return this.dyscoverCard(service);
-        }
-        if (service.id === "dominions") {
-            return this.dominionsCard(service);
         }
         return this.unlinkedCard(service);
     }

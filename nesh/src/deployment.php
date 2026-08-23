@@ -6,7 +6,6 @@ final class Deployment
         'account',
         'admin',
         'dyscover',
-        'dominions',
         'nesh',
         'www',
     ];
@@ -14,14 +13,12 @@ final class Deployment
         'account',
         'admin',
         'dyscover',
-        'dominions',
         'www',
     ];
     private const PRODUCTION_URLS = [
         'account' => 'https://account.ielectro.com',
         'admin' => 'https://admin.ielectro.com',
         'dyscover' => 'https://dyscover.ielectro.com',
-        'dominions' => 'https://dominions.ielectro.com',
         'nesh' => 'https://nesh.ielectro.com',
         'www' => 'https://www.ielectro.com',
     ];
@@ -40,11 +37,6 @@ final class Deployment
             'global' => 'dyscover',
             'name' => 'Dyscover',
             'database' => 'ielectro_dyscover',
-        ],
-        'dominions' => [
-            'global' => 'dominions',
-            'name' => 'Dominions',
-            'database' => 'ielectro_dominions',
         ],
         'www' => [
             'global' => 'ielectro',

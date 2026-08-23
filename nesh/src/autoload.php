@@ -96,6 +96,5 @@ spl_autoload_register(function (string $class): void {
 use Nesh\App;
 $GLOBALS['account'] = new App('iElectro Account', 'https://account.ielectro.com', 'account', 'ielectro_account', '1.0.0');
 $GLOBALS['admin'] = new App('iElectro Admin', 'https://admin.ielectro.com', 'admin', 'ielectro_admin', '1.0.0');
-$GLOBALS['dyscover'] = new App('Dyscover', 'https://dyscover.ielectro.com', 'dyscover', 'ielectro_dyscover', '1.0.0');
-$GLOBALS['dominions'] = new App('Dominions', 'https://dominions.ielectro.com', 'dominions', 'ielectro_dominions', '1.0.0');
+$GLOBALS['dyscover'] = new App('iElectro Dyscover', 'https://dyscover.ielectro.com', 'dyscover', 'ielectro_dyscover', '1.0.0');
 $GLOBALS['ielectro'] = new App('iElectro', 'https://www.ielectro.com', 'www', null, '1.0.3');

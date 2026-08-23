@@ -5,8 +5,6 @@ final class Schema
     public const ACCOUNT = 'ielectro_account';
     public const ADMIN = 'ielectro_admin';
     public const DYSCOVER = 'ielectro_dyscover';
-    public const DOMINIONS = 'ielectro_dominions';
-    public const DOMINIONS_USERS = self::DOMINIONS . '.users';
     public const ACCOUNTS = self::ACCOUNT . '.accounts';
     public const ACCOUNT_SESSIONS = self::ACCOUNT . '.account_sessions';
     public const ACCOUNT_ACTIVITY = self::ACCOUNT . '.account_activity';

@@ -5,26 +5,22 @@ final class DatabaseCli
     private const SCHEMA_CONSTANTS = [
         'account' => 'ACCOUNT',
         'admin' => 'ADMIN',
-        'dyscover' => 'DYSCOVER',
-        'dominions' => 'DOMINIONS',
+        'dyscover' => 'DYSCOVER'
     ];
     private const APP_ORDER = [
         'account',
         'admin',
-        'dyscover',
-        'dominions',
+        'dyscover'
     ];
     private const SOURCE_DATABASES = [
         'ielectro_account',
         'ielectro_admin',
-        'ielectro_dyscover',
-        'ielectro_dominions',
+        'ielectro_dyscover'
     ];
     private const CANONICAL_DATABASES = [
         'account' => 'ielectro_account',
         'admin' => 'ielectro_admin',
-        'dyscover' => 'ielectro_dyscover',
-        'dominions' => 'ielectro_dominions',
+        'dyscover' => 'ielectro_dyscover'
     ];
     private const SCAN_EXTENSIONS = [
         'php',

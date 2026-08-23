@@ -54,9 +54,6 @@
 .services-card--dyscover .services-card-head {
     background: linear-gradient(135deg, #1e3a8a 0%, #5b21b6 52%, #9d174d 100%);
 }
-.services-card--dominions .services-card-head {
-    background: linear-gradient(135deg, #78350f 0%, #c2410c 52%, #991b1b 100%);
-}
 .services-card--empty .services-card-head {
     background: linear-gradient(135deg, #334155 0%, #475569 100%);
 }
@@ -145,10 +142,6 @@
     color: var(--primary-color);
     font-size: 1.75rem;
 }
-.services-card--dominions .services-avatar--placeholder {
-    background: linear-gradient(145deg, rgba(234, 88, 12, 0.14), rgba(220, 38, 38, 0.12));
-    color: #c2410c;
-}
 .services-profile-main {
     width: 100%;
     min-width: 0;
@@ -201,9 +194,6 @@
     padding: 16px 0 0;
     border-top: 1px solid var(--border-color);
 }
-.services-card--dominions .services-stats {
-    grid-template-columns: 1fr;
-}
 .services-stat {
     display: flex;
     flex-direction: column;
@@ -251,10 +241,6 @@
         transform var(--transition-fast),
         box-shadow var(--transition-fast),
         filter var(--transition-fast);
-}
-.services-card--dominions .services-open {
-    background: linear-gradient(135deg, #ea580c, #dc2626);
-    box-shadow: 0 8px 20px rgba(234, 88, 12, 0.22);
 }
 .services-open:hover {
     transform: translateY(-1px);
