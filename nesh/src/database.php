@@ -12,9 +12,6 @@ class Database
         if (!self::$server) {
             Response::error('Database connection error');
         }
-        if (!mysqli_set_charset(self::$server, DB_CHARSET)) {
-            Response::error('Database charset error');
-        }
         return self::$server;
     }
     public static function create(string $name): void
@@ -26,12 +23,10 @@ class Database
         if (!$server) {
             Response::error('Server connection error');
         }
-        mysqli_set_charset($server, DB_CHARSET);
         $database = str_replace('`', '``', $name);
         $sql = sprintf(
             "CREATE DATABASE IF NOT EXISTS `%s` CHARACTER SET %s COLLATE utf8mb4_unicode_ci",
-            $database,
-            DB_CHARSET
+            $database
         );
         if (!mysqli_query($server, $sql) || !self::databaseAccessible($name)) {
             mysqli_close($server);

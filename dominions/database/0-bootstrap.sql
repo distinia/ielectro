@@ -1,8 +1,0 @@
-CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`dominions_users` (
-  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `account_id` BIGINT UNSIGNED NOT NULL,
-  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_users_account_id` (`account_id`)
-);

@@ -10,10 +10,9 @@ define('TIMEZONE', 'Europe/Rome');
 define('LOCALE', 'en_US');
 define('CHARSET', 'UTF-8');
 # Database
-define('DB_HOST', 'database.ielectro.com');
+define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', '');
-define('DB_CHARSET', 'utf8mb4');
 # Session
 define('SESSION_NAME', 'ielectro_session');
 define('SESSION_LIFETIME', 60 * 60 * 24 * 180); // 180 days (~6 months)
