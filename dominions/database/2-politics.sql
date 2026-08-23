@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`factions` (
+CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`dominions_factions` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `territory_id` BIGINT UNSIGNED NOT NULL,
   `name` VARCHAR(100) NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`factions` (
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`statesmen` (
+CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`dominions_statesmen` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `territory_id` BIGINT UNSIGNED NOT NULL,
   `faction_id` BIGINT UNSIGNED DEFAULT NULL,
@@ -42,11 +42,11 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`statesmen` (
     ON UPDATE CASCADE,
   CONSTRAINT `dominions_statesmen_ibfk_2`
     FOREIGN KEY (`faction_id`)
-    REFERENCES `ielectro_dominions`.`factions` (`id`)
+    REFERENCES `ielectro_dominions`.`dominions_factions` (`id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`leaders` (
+CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`dominions_leaders` (
     `territory_id` BIGINT UNSIGNED NOT NULL,
     `statesman_id` BIGINT UNSIGNED NOT NULL,
     PRIMARY KEY (`territory_id`),
@@ -58,11 +58,11 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`leaders` (
         ON UPDATE CASCADE,
     CONSTRAINT `dominions_fk_leaders_statesman`
         FOREIGN KEY (`statesman_id`)
-        REFERENCES `ielectro_dominions`.`statesmen`(`id`)
+        REFERENCES `ielectro_dominions`.`dominions_statesmen`(`id`)
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`elections` (
+CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`dominions_elections` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `territory_id` BIGINT UNSIGNED NOT NULL,
   `name` VARCHAR(150) NOT NULL,
@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`elections` (
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`election_candidates` (
+CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`dominions_election_candidates` (
   `election_id` BIGINT UNSIGNED NOT NULL,
   `statesman_id` BIGINT UNSIGNED NOT NULL,
   `votes` BIGINT UNSIGNED NOT NULL DEFAULT 0,
@@ -87,12 +87,12 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`election_candidates` (
   KEY `idx_statesman_id` (`statesman_id`),
   CONSTRAINT `dominions_election_candidates_ibfk_1`
     FOREIGN KEY (`election_id`)
-    REFERENCES `ielectro_dominions`.`elections` (`id`)
+    REFERENCES `ielectro_dominions`.`dominions_elections` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `dominions_election_candidates_ibfk_2`
     FOREIGN KEY (`statesman_id`)
-    REFERENCES `ielectro_dominions`.`statesmen` (`id`)
+    REFERENCES `ielectro_dominions`.`dominions_statesmen` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );

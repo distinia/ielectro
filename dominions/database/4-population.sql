@@ -1,7 +1,7 @@
-CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`population` (
+CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`dominions_population` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `territory_id` BIGINT UNSIGNED NOT NULL,
-  `ielectro_dominions`.`population` BIGINT UNSIGNED NOT NULL DEFAULT 0,
+  `ielectro_dominions`.`dominions_population` BIGINT UNSIGNED NOT NULL DEFAULT 0,
   `birth_rate` DECIMAL(6,3) DEFAULT NULL,
   `death_rate` DECIMAL(6,3) DEFAULT NULL,
   `growth_rate` DECIMAL(6,3) DEFAULT NULL,
@@ -20,17 +20,17 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`population` (
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`ethnicities` (
+CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`dominions_ethnicities` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(100) NOT NULL,
   `description` TEXT DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_name` (`name`)
 );
-CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`territory_ethnicities` (
+CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`dominions_territory_ethnicities` (
   `territory_id` BIGINT UNSIGNED NOT NULL,
   `ethnicity_id` BIGINT UNSIGNED NOT NULL,
-  `ielectro_dominions`.`population` BIGINT UNSIGNED NOT NULL DEFAULT 0,
+  `ielectro_dominions`.`dominions_population` BIGINT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`territory_id`, `ethnicity_id`),
   KEY `idx_ethnicity_id` (`ethnicity_id`),
   CONSTRAINT `dominions_territory_ethnicities_ibfk_1`
@@ -40,21 +40,21 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`territory_ethnicities` (
     ON UPDATE CASCADE,
   CONSTRAINT `dominions_territory_ethnicities_ibfk_2`
     FOREIGN KEY (`ethnicity_id`)
-    REFERENCES `ielectro_dominions`.`ethnicities` (`id`)
+    REFERENCES `ielectro_dominions`.`dominions_ethnicities` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`religions` (
+CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`dominions_religions` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(100) NOT NULL,
   `description` TEXT DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_name` (`name`)
 );
-CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`territory_religions` (
+CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`dominions_territory_religions` (
   `territory_id` BIGINT UNSIGNED NOT NULL,
   `religion_id` BIGINT UNSIGNED NOT NULL,
-  `ielectro_dominions`.`population` BIGINT UNSIGNED NOT NULL DEFAULT 0,
+  `ielectro_dominions`.`dominions_population` BIGINT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`territory_id`, `religion_id`),
   KEY `idx_religion_id` (`religion_id`),
   CONSTRAINT `dominions_territory_religions_ibfk_1`
@@ -64,11 +64,11 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`territory_religions` (
     ON UPDATE CASCADE,
   CONSTRAINT `dominions_territory_religions_ibfk_2`
     FOREIGN KEY (`religion_id`)
-    REFERENCES `ielectro_dominions`.`religions` (`id`)
+    REFERENCES `ielectro_dominions`.`dominions_religions` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`languages` (
+CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`dominions_languages` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(100) NOT NULL,
   `iso_code` VARCHAR(10) DEFAULT NULL,
@@ -76,10 +76,10 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`languages` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_name` (`name`)
 );
-CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`territory_languages` (
+CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`dominions_territory_languages` (
   `territory_id` BIGINT UNSIGNED NOT NULL,
   `language_id` BIGINT UNSIGNED NOT NULL,
-  `ielectro_dominions`.`population` BIGINT UNSIGNED NOT NULL DEFAULT 0,
+  `ielectro_dominions`.`dominions_population` BIGINT UNSIGNED NOT NULL DEFAULT 0,
   `is_official` TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`territory_id`, `language_id`),
   KEY `idx_language_id` (`language_id`),
@@ -90,20 +90,20 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`territory_languages` (
     ON UPDATE CASCADE,
   CONSTRAINT `dominions_territory_languages_ibfk_2`
     FOREIGN KEY (`language_id`)
-    REFERENCES `ielectro_dominions`.`languages` (`id`)
+    REFERENCES `ielectro_dominions`.`dominions_languages` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`genders` (
+CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`dominions_genders` (
   `id` TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(50) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_name` (`name`)
 );
-CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`territory_genders` (
+CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`dominions_territory_genders` (
   `territory_id` BIGINT UNSIGNED NOT NULL,
   `gender_id` TINYINT UNSIGNED NOT NULL,
-  `ielectro_dominions`.`population` BIGINT UNSIGNED NOT NULL DEFAULT 0,
+  `ielectro_dominions`.`dominions_population` BIGINT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`territory_id`, `gender_id`),
   KEY `idx_gender_id` (`gender_id`),
   CONSTRAINT `dominions_territory_genders_ibfk_1`
@@ -113,11 +113,11 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`territory_genders` (
     ON UPDATE CASCADE,
   CONSTRAINT `dominions_territory_genders_ibfk_2`
     FOREIGN KEY (`gender_id`)
-    REFERENCES `ielectro_dominions`.`genders` (`id`)
+    REFERENCES `ielectro_dominions`.`dominions_genders` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`age_groups` (
+CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`dominions_age_groups` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(100) NOT NULL,
   `minimum_age` SMALLINT UNSIGNED NOT NULL,
@@ -126,10 +126,10 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`age_groups` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_name` (`name`)
 );
-CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`territory_age_groups` (
+CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`dominions_territory_age_groups` (
   `territory_id` BIGINT UNSIGNED NOT NULL,
   `age_group_id` BIGINT UNSIGNED NOT NULL,
-  `ielectro_dominions`.`population` BIGINT UNSIGNED NOT NULL DEFAULT 0,
+  `ielectro_dominions`.`dominions_population` BIGINT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`territory_id`, `age_group_id`),
   KEY `idx_age_group_id` (`age_group_id`),
   CONSTRAINT `dominions_territory_age_groups_ibfk_1`
@@ -139,7 +139,7 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`territory_age_groups` (
     ON UPDATE CASCADE,
   CONSTRAINT `dominions_territory_age_groups_ibfk_2`
     FOREIGN KEY (`age_group_id`)
-    REFERENCES `ielectro_dominions`.`age_groups` (`id`)
+    REFERENCES `ielectro_dominions`.`dominions_age_groups` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );

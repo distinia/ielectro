@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`territories` (
+CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`dominions_territories` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `parent_id` BIGINT UNSIGNED DEFAULT NULL,
   `created_by` BIGINT UNSIGNED NOT NULL,
@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`territories` (
   KEY `idx_created_by` (`created_by`),
   CONSTRAINT `dominions_territories_ibfk_1`
     FOREIGN KEY (`parent_id`)
-    REFERENCES `ielectro_dominions`.`territories` (`id`)
+    REFERENCES `ielectro_dominions`.`dominions_territories` (`id`)
     ON DELETE SET NULL
     ON UPDATE CASCADE,
   CONSTRAINT `dominions_territories_ibfk_2`
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`territories` (
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`countries` (
+CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`dominions_countries` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `territory_id` BIGINT UNSIGNED NOT NULL,
   `official_name` VARCHAR(255) NOT NULL,
@@ -72,17 +72,17 @@ CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`countries` (
   UNIQUE KEY `uq_countries_official_name` (`official_name`),
   CONSTRAINT `dominions_countries_ibfk_1`
     FOREIGN KEY (`territory_id`)
-    REFERENCES `ielectro_dominions`.`territories` (`id`)
+    REFERENCES `ielectro_dominions`.`dominions_territories` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`country_languages` (
+CREATE TABLE IF NOT EXISTS `ielectro_dominions`.`dominions_country_languages` (
   `country_id` BIGINT UNSIGNED NOT NULL,
   `language` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`country_id`, `language`),
   CONSTRAINT `dominions_country_languages_ibfk_1`
     FOREIGN KEY (`country_id`)
-    REFERENCES `ielectro_dominions`.`countries` (`id`)
+    REFERENCES `ielectro_dominions`.`dominions_countries` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
