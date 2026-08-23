@@ -271,11 +271,6 @@ php nesh/cli/nesh help
   ```bash
   php nesh/cli/nesh database account new_account_db https://account.yourdomain.com
   ```
-* **Fix Asset Image Filenames (Match DB Post UUIDs)**:
-  ```bash
-  php nesh/cli/nesh fix-images
-  # Options: --user <id|all>, --dry-run, --app <folder>
-  ```
 
 ---
 
