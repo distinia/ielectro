@@ -16,6 +16,9 @@ echo '                                            Options: --db, --db-host, --db
 echo '                                            --app <folder>' . PHP_EOL;
 echo '  database <app> <database> <URL>           Rename one application database inside an' . PHP_EOL;
 echo '                                            existing deployment folder.' . PHP_EOL;
+echo '  fix-images [options]                      Rename Dyscover image asset files to match their' . PHP_EOL;
+echo '                                            corresponding post UUIDs in the database.' . PHP_EOL;
+echo '                                            Options: --user <id>, --dry-run, --app <folder>' . PHP_EOL;
 echo '  help                                      Display this help page.' . PHP_EOL;
 echo PHP_EOL;
 echo 'EXAMPLES' . PHP_EOL;
