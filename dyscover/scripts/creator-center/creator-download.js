@@ -26,9 +26,6 @@ export class CreatorDownload {
             }
         }
         if (ok && !failed) {
-            Alert.success(
-                ok === 1 ? "Download started" : `${ok} downloads started`,
-            );
             return;
         }
         if (ok && failed) {
