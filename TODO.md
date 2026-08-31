@@ -1,0 +1,3 @@
+1. Quando edito, la barra laterale del Index, scompare completamente. I pulsanti CHIUDI, SALVA etc spostali dove ci sono gli altri strumenti
+
+2. Quando edito testuale, voglio che dividi il editor in due lati. a sinistra rimane uguale come il editor grafico pure con i strumenti. mentre a destra ci sara il editor testuale. Vorrei aggiungere che quando scrivo nel textarea posso vedere in tempo reale nella parte editor grafica cosa sta accadendo
