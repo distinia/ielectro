@@ -14,3 +14,5 @@
 6. quando arrivo a scrivere 5 tag e premo il autocomplete dei tags, mi viene l'alerta che massimo sono 5 anche se in realta sto scrivendo il quinto
 
 7. quando sono nel input per cercare con explore sia in expxlore o in article quando voglio cercare media o links, dai qualche ritardo di secondi alla tastiera. senno appena scrivo mi appare tutto, anche se vorrei scriver una parola diversa
+
+8. quando scrivo nel editor testuale i ** me ne genera uno in piu a volte -> **mamma** -> ***mamma**
