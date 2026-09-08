@@ -16,3 +16,8 @@
 7. quando sono nel input per cercare con explore sia in expxlore o in article quando voglio cercare media o links, dai qualche ritardo di secondi alla tastiera. senno appena scrivo mi appare tutto, anche se vorrei scriver una parola diversa
 
 8. quando scrivo nel editor testuale i ** me ne genera uno in piu a volte -> **mamma** -> ***mamma**
+
+9. quando vado a capo nel editor dovrebbe creare i paragrafo nuovo e mettermi il cursore li. (ovviamente non sto intendendo dentro tabelle, legende etc.)
+
+
+10. vorrei che i template posso aggiungerne di piu in una pagina. ovviamente il posizionamento del cursore sarà come la logica dei .image (cioè che mette il tag prima del current position tag)
