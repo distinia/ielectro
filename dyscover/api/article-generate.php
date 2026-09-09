@@ -807,7 +807,7 @@ class ArticleGenerate
                     . 'Formation fields must show 4 to 6 major political stages of the country or organization '
                     . '(Kingdom, Empire, Unification, Independence, Revolution, Treaty, Proclamation, Current constitution). '
                     . 'NEVER use the full official country/organization name as an event (e.g. not "Kingdom of Jarnovia", '
-                    . 'not "Republic of X", not "Edrobean Community" as a row). Prefer short labels: Kingdom, Empire, '
+                    . 'not "Republic of X", not "Edrobean Union" as a row). Prefer short labels: Kingdom, Empire, '
                     . 'Proclamation, Coronation of X, Treaty of X. NEVER use form-of-state labels such as Constitutional '
                     . 'Monarchy, Parliamentary Monarchy, Modern Kingdom, Modern Party State, Liberal Republic, Federal '
                     . 'Constitution, Presidential Republic. Final row should usually be "Current constitution" (or '
@@ -964,7 +964,7 @@ STYLE REFERENCE — Here is how a well-written Dyscover article looks (lead para
 
 **Destenia**, officially the **Destenian Republic**, is a country located in **southern Edrobe** and is **Edrobe's largest country**. It operates as a [[unitary semi-presidential republic|URL]] with **Distinia** as capital city. **Destenia** is bordered by [[Agaritia|URL]] to the north-east and [[Laocitia|URL]] to the north-west along its land frontiers. By sea, it is bordered by [[Alveria|URL]] to the north-west, [[Cavallesia|URL]] to the east, [[Kashiria|URL]] to the west, [[Lamberia|URL]] to the south, and [[Stasia|URL]] to the south-west.
 
-Destenia is a **member** of the [[United Nations|URL]], the [[Edrobean Community|URL]], and other **international organizations** such as the **Global Reserve Fund**, **World Trade Network**, and **International Energy Agency**. As a **global power**, it is maintaining a non-aligned foreign policy based on multilateralism, sovereignty, and strategic economic integration.
+Destenia is a **member** of the [[United Nations|URL]], the [[Edrobean Union|URL]], and other **international organizations** such as the **Global Reserve Fund**, **World Trade Network**, and **International Energy Agency**. As a **global power**, it is maintaining a non-aligned foreign policy based on multilateralism, sovereignty, and strategic economic integration.
 
 # Etymology
 

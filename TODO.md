@@ -1,3 +1,5 @@
+COSE DA CORREGGERE:
+
 1. Quando edito, la barra laterale del Index, scompare completamente. I pulsanti CHIUDI, SALVA etc spostali dove ci sono gli altri strumenti. (non colorali)
 
 1.2 Unifica il ? sia grafico sia testuale in un unico ?
@@ -21,3 +23,7 @@
 
 
 10. vorrei che i template posso aggiungerne di piu in una pagina. ovviamente il posizionamento del cursore sarà come la logica dei .image (cioè che mette il tag prima del current position tag)
+
+11. nel Index del articolo, il problema sta che quando clicko un heading, la prima volta non mi posiziona direttamente nel heading. ma se premo 2 volte si. correggi
+
+12. QUANDO AGGIUNGO RIGHE O COLONNE NELLA TABLE non me lo fa editare
