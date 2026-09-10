@@ -13,7 +13,7 @@ class Geolocation
             return;
         }
         try {
-            $reader = new \GeoIp2\Database\Reader(NESH_PATH . '/data/geoip-countries.mmdb');
+            $reader = new \GeoIp2\Database\Reader(NESH_PATH . '/database/geoip-countries.mmdb');
             $record = $reader->city($ip);
             $this->city = $record->city->name ?: null;
             $this->country = $record->country->isoCode ?: null;
